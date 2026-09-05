@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { InvitationsModule } from './modules/invitations/invitations.module.js';
 import { AttractionsModule } from './modules/attractions/attractions.module.js';
 import { AccommodationsModule } from './modules/accommodations/accommodations.module.js';
+import { BookingsModule } from './modules/bookings/bookings.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -16,6 +17,7 @@ import { AppService } from './app.service.js';
     InvitationsModule,
     AttractionsModule,
     AccommodationsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -39,8 +39,8 @@ Haz clic en el enlace del módulo que desees probar para ver el detalle de cada 
 3. 🏡 [**03 - Alojamientos y Hospedajes**](./manual-testing/03-accommodations.md)  
    * Catálogo público con filtros por fechas (algoritmo anti-overbooking), capacidad de huéspedes, tipo y amenidades; panel de cabañas del prestador (`my-accommodations`), alta, edición, control de permisos de dueño y gestión de fotos.
 
-4. 📅 [**04 - Motor de Reservas y Anti-Overbooking**](./manual-testing/04-bookings.md) *(Próxima Fase)*  
-   * Solicitud de reserva, bloqueo de solapamiento de fechas y máquina de estados (`PENDING`, `CONFIRMED`, `CANCELLED`).
+4. 📅 [**04 - Motor de Reservas y Anti-Overbooking**](./manual-testing/04-bookings.md)  
+   * Solicitud de reserva, bloqueo transaccional de solapamiento de fechas (HTTP 409 Conflict), máquina de estados (`PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`) y búsqueda pública por código.
 
 ---
 

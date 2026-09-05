@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* Leaflet marker reset for custom DivIcons */
+.custom-leaflet-marker {
+  background: transparent !important;
+  border: none !important;
+}
 
 /* Design System Oficial — Capilla del Monte (Pueblo Uritorco) */
 @theme {

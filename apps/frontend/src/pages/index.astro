@@ -1,0 +1,210 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { api } from '../services/api.js';
+
+let attractions = [];
+try {
+  attractions = await api.getAttractions();
+} catch (e) {
+  attractions = [];
+}
+---
+
+<Layout
+  title="Turismo Capilla del Monte — Portal Oficial y Reservas Directas"
+  description="Descubrí la magia del Cerro Uritorco, paseos naturales y reservá cabañas directas con prestadores habilitados de Capilla del Monte."
+>
+  <!-- Hero Section con Identidad Serrana -->
+  <section class="relative bg-gradient-to-b from-sand-100/70 via-sand-50 to-sand-50 pt-16 pb-24 overflow-hidden border-b border-sand-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100/80 border border-primary-200 text-primary-800 text-xs font-semibold tracking-wide">
+          <span>🌿</span>
+          <span>Portal Oficial de la Comisión de Turismo</span>
+        </div>
+
+        <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-sand-900 tracking-tight leading-[1.1]">
+          Descubrí la energía y los paisajes de <span class="text-primary-600">Capilla del Monte</span>
+        </h1>
+
+        <p class="text-lg text-sand-800 leading-relaxed max-w-2xl mx-auto font-normal">
+          El pico más alto de las Sierras Chicas, ríos de aguas cristalinas, leyendas ancestrales y la tranquilidad de reservar directo con prestadores locales sin comisiones intermedias.
+        </p>
+      </div>
+
+      <!-- Buscador de Disponibilidad Rápido -->
+      <div class="mt-12 max-w-4xl mx-auto bg-white rounded-2xl shadow-xl shadow-sand-300/40 border border-sand-200 p-4 sm:p-6">
+        <form action="/alojamientos" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+          <div>
+            <label for="checkIn" class="block text-xs font-bold text-sand-700 uppercase tracking-wider mb-1.5">
+              Ingreso (Check-In)
+            </label>
+            <input
+              type="date"
+              id="checkIn"
+              name="checkIn"
+              class="w-full px-3.5 py-2.5 rounded-lg border border-sand-300 text-sm text-sand-900 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-sand-50/50"
+            />
+          </div>
+
+          <div>
+            <label for="checkOut" class="block text-xs font-bold text-sand-700 uppercase tracking-wider mb-1.5">
+              Egreso (Check-Out)
+            </label>
+            <input
+              type="date"
+              id="checkOut"
+              name="checkOut"
+              class="w-full px-3.5 py-2.5 rounded-lg border border-sand-300 text-sm text-sand-900 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-sand-50/50"
+            />
+          </div>
+
+          <div>
+            <label for="guests" class="block text-xs font-bold text-sand-700 uppercase tracking-wider mb-1.5">
+              Huéspedes
+            </label>
+            <select
+              id="guests"
+              name="guests"
+              class="w-full px-3.5 py-2.5 rounded-lg border border-sand-300 text-sm text-sand-900 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-sand-50/50 cursor-pointer"
+            >
+              <option value="1">1 persona</option>
+              <option value="2" selected>2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+              <option value="5">5 o más personas</option>
+            </select>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="w-full py-2.5 px-6 rounded-lg bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold text-sm transition-colors shadow-md shadow-primary-500/20 cursor-pointer h-[42px] flex items-center justify-center gap-2"
+            >
+              <span>Buscar Cabañas</span>
+              <span>→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Atractivos Principales -->
+  <section class="py-20 bg-sand-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-primary-600 block mb-2">
+            Naturaleza y Mística
+          </span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-sand-900">
+            Paseos y Circuitos Imperdibles
+          </h2>
+        </div>
+        <a
+          href="/atractivos"
+          class="mt-4 md:mt-0 text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group"
+        >
+          <span>Ver todos los paseos</span>
+          <span class="group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      </div>
+
+      <!-- Grid de Atractivos -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {attractions.length > 0 ? (
+          attractions.slice(0, 4).map((attr) => (
+            <article class="bg-white rounded-2xl border border-sand-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group">
+              <div class="h-48 bg-sand-200 relative overflow-hidden">
+                <div class="w-full h-full bg-gradient-to-t from-black/60 via-transparent to-transparent absolute inset-0 z-10" />
+                <div class="absolute top-3 left-3 z-20">
+                  <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/90 text-sand-900 shadow-sm uppercase tracking-wide">
+                    {attr.category}
+                  </span>
+                </div>
+                <div class="absolute bottom-3 left-3 right-3 z-20">
+                  <h3 class="font-display font-bold text-lg text-white group-hover:text-primary-200 transition-colors">
+                    {attr.name}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
+                <p class="text-xs text-sand-700 line-clamp-3 leading-relaxed">
+                  {attr.description}
+                </p>
+
+                <div class="pt-3 border-t border-sand-100 flex items-center justify-between text-xs text-sand-600">
+                  {attr.difficulty && (
+                    <span>Dificultad: <strong class="text-sand-900 font-semibold">{attr.difficulty}</strong></span>
+                  )}
+                  {attr.estimatedDuration && (
+                    <span>⏱ {attr.estimatedDuration}</span>
+                  )}
+                </div>
+
+                <a
+                  href={`/atractivos/${attr.id}`}
+                  class="block text-center py-2 px-4 rounded-lg bg-sand-100 hover:bg-sand-200 text-sand-900 text-xs font-semibold transition-colors"
+                >
+                  Ver Ficha Técnica
+                </a>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div class="col-span-4 py-12 text-center text-sm text-sand-600">
+            Cargando paseos turísticos de Capilla del Monte...
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios de Reserva Directa -->
+  <section class="py-20 bg-sand-100/50 border-t border-b border-sand-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="font-display font-bold text-3xl text-sand-900">
+          ¿Por qué reservar a través del Portal Oficial?
+        </h2>
+        <p class="mt-3 text-sm text-sand-700">
+          Garantizamos una experiencia transparente, segura y de apoyo directo a la comunidad de Capilla del Monte.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-2xl border border-sand-200 shadow-sm space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-xl text-secondary-600">
+            🤝
+          </div>
+          <h3 class="font-display font-bold text-lg text-sand-900">Trato Directo con el Dueño</h3>
+          <p class="text-xs text-sand-700 leading-relaxed">
+            Sin intermediarios ni comisiones de plataformas internacionales. Conversás directamente con el cabañero que te recibirá al pie de las sierras.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-sand-200 shadow-sm space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center text-xl text-primary-600">
+            ✓
+          </div>
+          <h3 class="font-display font-bold text-lg text-sand-900">Prestadores Habilitados</h3>
+          <p class="text-xs text-sand-700 leading-relaxed">
+            Cada establecimiento cuenta con token de validación emitido por la Comisión de Turismo de Capilla del Monte, evitando estafas y alojamientos no registrados.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-sand-200 shadow-sm space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-accent-100 flex items-center justify-center text-xl text-accent-600">
+            🛡️
+          </div>
+          <h3 class="font-display font-bold text-lg text-sand-900">Motor Anti-Overbooking</h3>
+          <p class="text-xs text-sand-700 leading-relaxed">
+            Bloqueo de fechas atómico en base de datos. Si una fecha está reservada, no hay posibilidad de doble reserva. Tu tranquilidad está asegurada.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

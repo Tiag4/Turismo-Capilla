@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "pnpm --filter backend start:dev",
     "dev:backend": "pnpm --filter backend start:dev",
-    "build": "pnpm -r run build",
+    "build": "pnpm --filter backend build && pnpm --filter frontend build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
-    "studio": "pnpm --filter backend run prisma:studio"
+    "studio": "pnpm --filter backend run prisma:studio",
+    "dev:frontend": "pnpm --filter frontend dev"
   },
   "packageManager": "pnpm@11.23.0"
 }

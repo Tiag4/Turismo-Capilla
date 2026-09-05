@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #fdf6f3;
+  --color-primary-100: #f9e9e3;
+  --color-primary-200: #f3d1c4;
+  --color-primary-300: #e9b19e;
+  --color-primary-400: #dc8970;
+  --color-primary-500: #9c4a2f;
+  --color-primary-600: #803820;
+  --color-primary-700: #662c19;
+  --color-primary-800: #542516;
+  --color-primary-900: #462215;
+
+  --color-secondary-50: #f2f7f4;
+  --color-secondary-100: #e1ede6;
+  --color-secondary-200: #c4dbcf;
+  --color-secondary-300: #9bc0ae;
+  --color-secondary-400: #6ea189;
+  --color-secondary-500: #2d5a43;
+  --color-secondary-600: #1f3e2e;
+  --color-secondary-700: #162c21;
+
+  --color-accent-50: #f0f6f9;
+  --color-accent-100: #ddedf2;
+  --color-accent-500: #3a758c;
+  --color-accent-600: #295566;
+
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f4f0e8;
+  --color-sand-200: #e6dfd3;
+  --color-sand-300: #d4c9b8;
+  --color-sand-400: #b5a58f;
+  --color-sand-800: #3c3833;
+  --color-sand-900: #22201e;
+
+  --font-display: 'Outfit', 'Playfair Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-sand-50);
+  color: var(--color-sand-900);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}

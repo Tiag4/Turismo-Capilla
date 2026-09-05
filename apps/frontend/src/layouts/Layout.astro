@@ -1,0 +1,141 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Turismo Capilla del Monte — Portal Oficial',
+  description = 'Descubrí los cerros, balnearios, paseos y alojamientos en Capilla del Monte, Córdoba. Reserva directa sin intermediarios.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
+    <!-- Navbar Oficial -->
+    <header class="sticky top-0 z-40 bg-sand-50/90 backdrop-blur-md border-b border-sand-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <!-- Logo con Identidad de Capilla -->
+        <a href="/" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-display font-bold shadow-md shadow-primary-500/20 group-hover:scale-105 transition-transform">
+            ▲
+          </div>
+          <div>
+            <span class="block font-display font-bold text-lg leading-tight tracking-tight text-sand-900">
+              Capilla del Monte
+            </span>
+            <span class="block text-[11px] font-medium tracking-wider text-primary-600 uppercase">
+              Turismo & Reservas
+            </span>
+          </div>
+        </a>
+
+        <!-- Enlaces Principales -->
+        <nav class="hidden md:flex items-center gap-8">
+          <a
+            href="/"
+            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+          >
+            Inicio
+          </a>
+          <a
+            href="/atractivos"
+            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+          >
+            Paseos y Cerros
+          </a>
+          <a
+            href="/alojamientos"
+            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+          >
+            Cabañas y Hoteles
+          </a>
+          <a
+            href="/reservas/consulta"
+            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+          >
+            Mi Reserva
+          </a>
+        </nav>
+
+        <!-- CTA Panel Prestador -->
+        <div class="flex items-center gap-3">
+          <a
+            href="/admin"
+            class="inline-flex items-center justify-center text-xs font-semibold px-4 py-2 rounded-lg bg-sand-200 hover:bg-sand-300 text-sand-900 border border-sand-300/60 transition-all duration-200"
+          >
+            Soy Prestador / Acceso
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow">
+      <slot />
+    </main>
+
+    <!-- Footer Institucional -->
+    <footer class="bg-sand-900 text-sand-200 border-t border-sand-800 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="col-span-1 md:col-span-2 space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="text-primary-400 font-bold text-xl">▲</span>
+            <span class="font-display font-bold text-xl text-white">Turismo Capilla del Monte</span>
+          </div>
+          <p class="text-sm text-sand-300 max-w-md leading-relaxed">
+            Plataforma oficial desarrollada en conjunto con la Comisión de Turismo de Capilla del Monte. Información verificada de atractivos y reservas directas con prestadores habilitados.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-display font-semibold text-white mb-3 text-sm tracking-wider uppercase">
+            Paseos Destacados
+          </h4>
+          <ul class="space-y-2 text-sm text-sand-300">
+            <li><a href="/atractivos" class="hover:text-white transition-colors">Cerro Uritorco</a></li>
+            <li><a href="/atractivos" class="hover:text-white transition-colors">Los Terrones</a></li>
+            <li><a href="/atractivos" class="hover:text-white transition-colors">El Zapato</a></li>
+            <li><a href="/atractivos" class="hover:text-white transition-colors">Balneario La Toma</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-display font-semibold text-white mb-3 text-sm tracking-wider uppercase">
+            Información Útil
+          </h4>
+          <ul class="space-y-2 text-sm text-sand-300">
+            <li>Secretaría de Turismo: Estación FC</li>
+            <li>Tel: +54 3548 481903</li>
+            <li>Capilla del Monte, Córdoba, Argentina</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between text-xs text-sand-400 gap-4">
+        <span>© 2026 Comisión de Turismo de Capilla del Monte. Todos los derechos reservados.</span>
+        <span>Programación III — Cátedra Universitaria</span>
+      </div>
+    </footer>
+  </body>
+</html>

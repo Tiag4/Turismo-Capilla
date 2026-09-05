@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { AstrotourismContainer } from '../components/astrotourism/AstrotourismContainer';
+---
+
+<Layout
+  title="Astroturismo & Cielos Bortle 3 — Turismo Capilla del Monte"
+  description="Explorá la bóveda celeste sobre el Cerro Uritorco, la posición de la Vía Láctea y los miradores certificados de astroturismo en Capilla del Monte."
+>
+  <div class="py-12 sm:py-16 bg-sand-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      {/* Encabezado Editorial */}
+      <div class="max-w-3xl space-y-4">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 hover:text-primary-700 transition-colors"
+        >
+          <span>← Volver al Inicio</span>
+        </a>
+
+        <h1 class="font-display font-black text-4xl sm:text-6xl text-sand-900 tracking-tight leading-tight">
+          La Noche del Uritorco & Astroturismo
+        </h1>
+
+        <p class="text-base sm:text-lg text-sand-700 leading-relaxed font-normal">
+          Capilla del Monte cuenta con certificación de cielos limpios clase Bortle 3. Este simulador te permite explorar cómo gira la bóveda celeste sobre la cumbre (1.979 msnm), cuándo asoma el centro de la Vía Láctea y cuáles son los miradores oficiales de astrofotografía.
+        </p>
+      </div>
+
+      {/* Simulador Interactivo Completo */}
+      <AstrotourismContainer client:load />
+    </div>
+  </div>
+</Layout>

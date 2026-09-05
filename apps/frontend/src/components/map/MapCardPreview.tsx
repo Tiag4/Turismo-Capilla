@@ -20,45 +20,24 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
           loading="lazy"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
-
-        {/* Indicador Superior Limpio */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5">
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-white shadow-sm ${
-              isAccommodation ? 'bg-primary-500' : 'bg-uritorco-600'
-            }`}
-          >
-            {isAccommodation ? (
-              <>
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Habilitado Municipal</span>
-              </>
-            ) : (
-              <>
-                <Compass className="w-3.5 h-3.5" />
-                <span>Circuito Natural</span>
-              </>
-            )}
-          </span>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
 
         {/* Botón Cerrar */}
         <button
           onClick={onClose}
           type="button"
           aria-label="Cerrar vista previa"
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* Categoría y Título sobre imagen */}
+        {/* Datos y Título sobre imagen (sin eyebrows ni badges) */}
         <div className="absolute bottom-3 left-3 right-3 text-white">
-          <span className="text-[11px] uppercase font-bold tracking-wider text-sand-200 block">
+          <span className="text-xs text-sand-300 font-normal block">
             {place.category}
           </span>
-          <h4 className="font-display font-bold text-lg leading-tight drop-shadow-sm truncate">
+          <h4 className="font-display font-bold text-lg leading-tight drop-shadow-sm truncate mt-0.5">
             {place.title}
           </h4>
         </div>

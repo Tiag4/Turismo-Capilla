@@ -32,75 +32,130 @@ const {
     />
   </head>
   <body class="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
-    <!-- Navbar Oficial -->
-    <header class="sticky top-0 z-40 bg-sand-50/90 backdrop-blur-md border-b border-sand-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <!-- Logo con Identidad de Capilla -->
+    <!-- Navbar Oficial Bespoke (Cero Vibecoded, Cero Eyebrows, Altura Disciplinada 68px) -->
+    <header class="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md border-b border-sand-200/80">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-17 flex items-center justify-between">
+        <!-- Logo con Marca Oficial del Cerro Uritorco -->
         <a href="/" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-display font-bold shadow-md shadow-primary-500/20 group-hover:scale-105 transition-transform">
-            ▲
+          <div class="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center text-white shadow-xs group-hover:bg-primary-600 transition-colors">
+            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+            </svg>
           </div>
           <div>
-            <span class="block font-display font-bold text-lg leading-tight tracking-tight text-sand-900">
+            <span class="block font-display font-bold text-lg leading-none tracking-tight text-sand-900 group-hover:text-primary-600 transition-colors">
               Capilla del Monte
             </span>
-            <span class="block text-[11px] font-medium tracking-wider text-primary-600 uppercase">
-              Turismo & Reservas
+            <span class="block text-xs text-sand-500 font-normal mt-0.5">
+              Portal Oficial de Turismo
             </span>
           </div>
         </a>
 
-        <!-- Enlaces Principales -->
-        <nav class="hidden md:flex items-center gap-8">
+        <!-- Enlaces Principales de Navegación -->
+        <nav class="hidden md:flex items-center gap-7">
           <a
             href="/"
-            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+            class="text-sm font-semibold text-sand-900 hover:text-primary-600 transition-colors"
           >
             Inicio
           </a>
           <a
-            href="/atractivos"
-            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+            href="/alojamientos"
+            class="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
           >
-            Paseos y Cerros
+            Alojamientos
           </a>
           <a
-            href="/alojamientos"
-            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+            href="/atractivos"
+            class="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
           >
-            Cabañas y Hoteles
+            Senderos & Paseos
+          </a>
+          <a
+            href="/#mapa-valle"
+            class="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
+          >
+            Mapa del Valle
+          </a>
+          <a
+            href="/atractivos/casonas"
+            class="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
+          >
+            Patrimonio
           </a>
           <a
             href="/reservas/consulta"
-            class="text-sm font-medium text-sand-800 hover:text-primary-600 transition-colors"
+            class="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
           >
             Mi Reserva
           </a>
         </nav>
 
-        <!-- CTA Panel Prestador -->
+        <!-- CTA Panel Prestador & Menú Móvil -->
         <div class="flex items-center gap-3">
           <a
             href="/admin"
-            class="inline-flex items-center justify-center text-xs font-semibold px-4 py-2 rounded-lg bg-sand-200 hover:bg-sand-300 text-sand-900 border border-sand-300/60 transition-all duration-200"
+            class="hidden sm:inline-flex items-center justify-center text-xs font-semibold px-4 py-2.5 rounded-xl bg-sand-900 hover:bg-sand-800 text-white transition-colors cursor-pointer"
           >
-            Soy Prestador / Acceso
+            Acceso Prestadores
+          </a>
+
+          <!-- Botón de Menú Móvil -->
+          <button
+            type="button"
+            id="mobile-menu-btn"
+            aria-label="Abrir menú"
+            class="md:hidden p-2 rounded-xl text-sand-800 hover:bg-sand-200 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menú Móvil Desplegable -->
+      <div id="mobile-menu" class="hidden md:hidden border-t border-sand-200 bg-sand-50 px-4 py-4 space-y-3">
+        <a href="/" class="block text-sm font-semibold text-sand-900 py-1.5">Inicio</a>
+        <a href="/alojamientos" class="block text-sm font-semibold text-sand-700 py-1.5">Alojamientos</a>
+        <a href="/atractivos" class="block text-sm font-semibold text-sand-700 py-1.5">Senderos & Paseos</a>
+        <a href="/#mapa-valle" class="block text-sm font-semibold text-sand-700 py-1.5">Mapa del Valle</a>
+        <a href="/atractivos/casonas" class="block text-sm font-semibold text-sand-700 py-1.5">Patrimonio</a>
+        <a href="/reservas/consulta" class="block text-sm font-semibold text-sand-700 py-1.5">Mi Reserva</a>
+        <div class="pt-2 border-t border-sand-200">
+          <a href="/admin" class="block w-full text-center text-xs font-semibold py-2.5 rounded-xl bg-sand-900 text-white">
+            Acceso Prestadores
           </a>
         </div>
       </div>
     </header>
+
+    <script is:inline>
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          menu.classList.toggle('hidden');
+        });
+      }
+    </script>
 
     <!-- Contenido Principal -->
     <main class="flex-grow">
       <slot />
     </main>
 
-    <!-- Footer Institucional -->
+    <!-- Footer Institucional Limpio -->
     <footer class="bg-sand-900 text-sand-200 border-t border-sand-800 py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div class="col-span-1 md:col-span-2 space-y-3">
           <div class="flex items-center gap-3">
-            <span class="text-primary-400 font-bold text-xl">▲</span>
+            <div class="w-7 h-7 rounded-lg bg-primary-500 flex items-center justify-center text-white">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+              </svg>
+            </div>
             <span class="font-display font-bold text-xl text-white">Turismo Capilla del Monte</span>
           </div>
           <p class="text-sm text-sand-300 max-w-md leading-relaxed">
@@ -109,7 +164,7 @@ const {
         </div>
 
         <div>
-          <h4 class="font-display font-semibold text-white mb-3 text-sm tracking-wider uppercase">
+          <h4 class="font-display font-semibold text-white mb-3 text-sm">
             Paseos Destacados
           </h4>
           <ul class="space-y-2 text-sm text-sand-300">
@@ -121,7 +176,7 @@ const {
         </div>
 
         <div>
-          <h4 class="font-display font-semibold text-white mb-3 text-sm tracking-wider uppercase">
+          <h4 class="font-display font-semibold text-white mb-3 text-sm">
             Información Útil
           </h4>
           <ul class="space-y-2 text-sm text-sand-300">

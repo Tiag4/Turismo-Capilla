@@ -34,15 +34,15 @@ export const InteractiveMapContainer: React.FC = () => {
         </div>
       )}
 
-      {/* Controles de Filtros Flotantes */}
-      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2">
+      {/* Controles de Filtros Integrados (Segmented Control sin Pill Badges) */}
+      <div className="absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-xs p-1 rounded-xl border border-sand-200/80 shadow-md flex items-center gap-1">
         <button
           type="button"
           onClick={() => setCategory('all')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-md cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
             category === 'all'
               ? 'bg-sand-900 text-white'
-              : 'bg-white/95 text-sand-800 hover:bg-white border border-sand-200'
+              : 'text-sand-700 hover:text-sand-900 hover:bg-sand-100'
           }`}
         >
           Todo ({MOCK_PLACES.length})
@@ -51,27 +51,27 @@ export const InteractiveMapContainer: React.FC = () => {
         <button
           type="button"
           onClick={() => setCategory('accommodation')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
             category === 'accommodation'
               ? 'bg-primary-500 text-white'
-              : 'bg-white/95 text-sand-800 hover:bg-white border border-sand-200'
+              : 'text-sand-700 hover:text-sand-900 hover:bg-sand-100'
           }`}
         >
           <Home className="w-3.5 h-3.5" />
-          <span>Cabañas & Alojamientos</span>
+          <span>Alojamientos</span>
         </button>
 
         <button
           type="button"
           onClick={() => setCategory('attraction')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
             category === 'attraction'
               ? 'bg-uritorco-600 text-white'
-              : 'bg-white/95 text-sand-800 hover:bg-white border border-sand-200'
+              : 'text-sand-700 hover:text-sand-900 hover:bg-sand-100'
           }`}
         >
           <Mountain className="w-3.5 h-3.5" />
-          <span>Paseos & Senderos</span>
+          <span>Paseos</span>
         </button>
       </div>
 

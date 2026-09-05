@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useSmartFloating } from './useSmartFloating';
 
 export interface Option {
   value: string;
@@ -26,39 +28,33 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { triggerRef, popoverRef, coords } = useSmartFloating({
+    isOpen,
+    onClose: () => setIsOpen(false),
+    estimatedHeight: 280,
+    estimatedWidth: 260,
+  });
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
   return (
-    <div ref={containerRef} className={`relative w-full ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
+    <div className={`relative w-full ${className}`}>
+      {/* Trigger Button con Affordance de Norman y Ley de Fitts */}
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className="w-full text-left bg-[#fbf9f5] hover:bg-[#f3eee3] border border-stone-300/80 rounded-2xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer group"
+        className={`w-full text-left bg-[#fbf9f5] hover:bg-[#f3eee3] active:bg-[#ede7d8] border rounded-2xl px-4 py-3 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer group ${
+          isOpen ? 'ring-2 ring-primary-500 border-primary-500 bg-[#f3eee3]' : 'border-stone-300/80'
+        }`}
       >
         <div className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 select-none">
           {icon && <span className="text-terracotta-600 shrink-0">{icon}</span>}
@@ -80,10 +76,22 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         </div>
       </button>
 
-      {isOpen && (
+      {/* Popover Inteligente renderizado en document.body (Inmune a Stacking Contexts y Overflow) */}
+      {isOpen && isMounted && coords && createPortal(
         <div
+          ref={popoverRef}
           role="listbox"
-          className="absolute left-0 right-0 top-full mt-2 z-[100] bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 min-w-[240px] max-h-64 overflow-y-auto"
+          style={{
+            position: 'fixed',
+            top: coords.top !== undefined ? `${coords.top}px` : undefined,
+            bottom: coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
+            left: coords.left !== undefined ? `${coords.left}px` : undefined,
+            right: coords.right !== undefined ? `${coords.right}px` : undefined,
+            minWidth: `${Math.max(260, coords.width || 0)}px`,
+            maxWidth: '92vw',
+            zIndex: 99999,
+          }}
+          className="bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 max-h-72 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-150"
         >
           {options.map((option) => {
             const isSelected = option.value === value;
@@ -117,7 +125,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

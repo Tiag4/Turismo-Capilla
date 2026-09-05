@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useSmartFloating } from './useSmartFloating';
 
 export interface CustomDatePickerProps {
   label: string;
@@ -27,9 +29,20 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Parse initial view date
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { triggerRef, popoverRef, coords } = useSmartFloating({
+    isOpen,
+    onClose: () => setIsOpen(false),
+    estimatedHeight: 380,
+    estimatedWidth: 320,
+  });
+
+  // Parse date safely
   const parseDate = (dStr?: string) => {
     if (!dStr) return new Date();
     const parts = dStr.split('-').map(Number);
@@ -48,27 +61,6 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     }
   }, [value]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
   const formatDisplay = (dStr: string) => {
     if (!dStr) return placeholder;
     const parts = dStr.split('-');
@@ -76,7 +68,6 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   };
 
-  // Calendar calculations
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
 
@@ -117,13 +108,17 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   };
 
   return (
-    <div ref={containerRef} className={`relative w-full ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
+    <div className={`relative w-full ${className}`}>
+      {/* Botón Trigger con Affordance clara y feedback visual */}
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        className="w-full text-left bg-[#fbf9f5] hover:bg-[#f3eee3] border border-stone-300/80 rounded-2xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer group"
+        className={`w-full text-left bg-[#fbf9f5] hover:bg-[#f3eee3] active:bg-[#ede7d8] border rounded-2xl px-4 py-3 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer group ${
+          isOpen ? 'ring-2 ring-primary-500 border-primary-500 bg-[#f3eee3]' : 'border-stone-300/80'
+        }`}
       >
         <div className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 select-none">
           {icon && <span className="text-terracotta-600 shrink-0">{icon}</span>}
@@ -148,9 +143,25 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         </div>
       </button>
 
-      {isOpen && (
-        <div className="absolute left-0 top-full mt-2 z-[100] bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 w-[310px] animate-in fade-in-0 zoom-in-95">
-          {/* Header del Calendario */}
+      {/* Calendario Inteligente renderizado en document.body (Inmune a Cortes y Solapamientos) */}
+      {isOpen && isMounted && coords && createPortal(
+        <div
+          ref={popoverRef}
+          role="dialog"
+          aria-label="Calendario de selección de fecha"
+          style={{
+            position: 'fixed',
+            top: coords.top !== undefined ? `${coords.top}px` : undefined,
+            bottom: coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
+            left: coords.left !== undefined ? `${coords.left}px` : undefined,
+            right: coords.right !== undefined ? `${coords.right}px` : undefined,
+            width: '320px',
+            maxWidth: '94vw',
+            zIndex: 99999,
+          }}
+          className="bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 text-stone-900 animate-in fade-in-0 zoom-in-95 duration-150"
+        >
+          {/* Header del Calendario (Nielsen #1: Visibilidad de estado) */}
           <div className="flex items-center justify-between mb-4">
             <button
               type="button"
@@ -177,7 +188,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             </button>
           </div>
 
-          {/* Días de la semana */}
+          {/* Días de la semana (Gestalt: Similitud y Alineación) */}
           <div className="grid grid-cols-7 gap-1 text-center mb-2">
             {WEEKDAY_NAMES.map((name) => (
               <span key={name} className="text-[11px] font-bold text-stone-400 select-none">
@@ -186,7 +197,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             ))}
           </div>
 
-          {/* Matriz de Días */}
+          {/* Matriz de Días (Nielsen #5: Prevención de errores con estados disabled claros) */}
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: firstDayIndex }).map((_, i) => (
               <div key={`empty-${i}`} className="w-9 h-9" />
@@ -216,7 +227,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             })}
           </div>
 
-          {/* Botón rápido "Hoy" */}
+          {/* Acciones Rápidas (Nielsen #3: Control y libertad del usuario) */}
           <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
             <button
               type="button"
@@ -230,6 +241,18 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             >
               Hoy
             </button>
+            {value && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange('');
+                  setIsOpen(false);
+                }}
+                className="text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+              >
+                Borrar
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setIsOpen(false)}
@@ -238,7 +261,8 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               Cerrar
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

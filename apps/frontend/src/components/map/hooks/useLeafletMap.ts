@@ -52,7 +52,7 @@ export function useLeafletMap({
   places,
   selectedPlace,
   onSelectPlace,
-  tileStyle = 'opentopo',
+  tileStyle = 'esri',
 }: UseLeafletMapOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any>(null);

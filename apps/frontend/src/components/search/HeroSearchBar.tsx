@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CustomSelect, type Option } from '../ui/CustomSelect';
 import { CustomDatePicker } from '../ui/CustomDatePicker';
 
@@ -23,6 +23,15 @@ export const HeroSearchBar: React.FC = () => {
   const [guests, setGuests] = useState('2');
 
   const todayStr = new Date().toISOString().split('T')[0];
+
+  // Gestalt & Nielsen #1: Visibility of system status (calcular noches dinámicamente)
+  const nightsCount = useMemo(() => {
+    if (!checkIn || !checkOut) return null;
+    const d1 = new Date(checkIn);
+    const d2 = new Date(checkOut);
+    const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+    return diff > 0 ? diff : null;
+  }, [checkIn, checkOut]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +74,7 @@ export const HeroSearchBar: React.FC = () => {
             value={checkIn}
             onChange={(date) => {
               setCheckIn(date);
-              if (checkOut && date > checkOut) {
+              if (checkOut && date >= checkOut) {
                 setCheckOut('');
               }
             }}
@@ -81,20 +90,27 @@ export const HeroSearchBar: React.FC = () => {
             }
           />
 
-          {/* Check-Out Custom */}
-          <CustomDatePicker
-            label="Check-out"
-            value={checkOut}
-            onChange={setCheckOut}
-            minDate={checkIn || todayStr}
-            placeholder="Seleccionar"
-            icon={
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2" />
-                <path d="m9 11 3 3L22 4" />
-              </svg>
-            }
-          />
+          {/* Check-Out Custom con indicador visual de noches (Steve Krug & Nielsen #1) */}
+          <div className="relative">
+            <CustomDatePicker
+              label="Check-out"
+              value={checkOut}
+              onChange={setCheckOut}
+              minDate={checkIn || todayStr}
+              placeholder="Seleccionar"
+              icon={
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg>
+              }
+            />
+            {nightsCount !== null && (
+              <span className="absolute top-2.5 right-3 bg-terracotta-100 text-terracotta-800 border border-terracotta-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full pointer-events-none select-none">
+                {nightsCount} {nightsCount === 1 ? 'noche' : 'noches'}
+              </span>
+            )}
+          </div>
 
           {/* Viajeros Custom */}
           <CustomSelect
@@ -112,7 +128,7 @@ export const HeroSearchBar: React.FC = () => {
             }
           />
 
-          {/* Botón Buscar */}
+          {/* Botón Buscar (Ley de Fitts: Gran objetivo táctil y visual) */}
           <button
             type="submit"
             className="w-full lg:w-auto h-[58px] px-8 rounded-2xl bg-[#0c261a] hover:bg-[#153e2b] active:bg-[#071911] text-white font-display font-bold text-base flex items-center justify-center gap-2.5 shadow-lg shadow-[#0c261a]/25 transition-all cursor-pointer select-none"

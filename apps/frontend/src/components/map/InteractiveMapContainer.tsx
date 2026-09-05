@@ -57,7 +57,7 @@ const FILTERS: FilterItem[] = [
 export const InteractiveMapContainer: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [selectedPlace, setSelectedPlace] = useState<MapPlace | null>(null);
-  const [tileStyle, setTileStyle] = useState<TileStyle>('opentopo');
+  const [tileStyle, setTileStyle] = useState<TileStyle>('esri');
   const [showLegend, setShowLegend] = useState(true);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 

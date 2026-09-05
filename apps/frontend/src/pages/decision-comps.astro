@@ -1,0 +1,163 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const comps = [
+  {
+    id: 'comp-1',
+    title: 'Opción 1: Split-Screen Dinámico (Territorio & Mapa)',
+    tag: 'Recomendada para Exploración',
+    image: '/mocks/comp-1-split.jpg',
+    description: 'Pantalla dividida con 60% grilla de alojamientos y 40% mapa topográfico interactivo del Cerro Uritorco con pines de precio flotantes.',
+    heuristics: [
+      'Gestalt: Región Común y Proximidad directa entre la tarjeta y su ubicación geográfica.',
+      'Steve Krug: El turista no tiene que saltar de pestaña ni imaginar dónde queda cada cabaña.',
+      'Nielsen #1: Visibilidad inmediata de la distribución espacial y densidad de tarifas.'
+    ],
+    pros: [
+      'Orientación espacial inmejorable para turistas que no conocen Capilla del Monte.',
+      'Pines de precio territoriales que agilizan la toma de decisiones presupuestarias.',
+      'Filtros rápidos en píldoras horizontales que no consumen espacio vertical.'
+    ],
+    cons: [
+      'Requiere más ancho en desktop; en mobile el mapa debe pasar a vista toggle o modal.'
+    ]
+  },
+  {
+    id: 'comp-2',
+    title: 'Opción 2: Grilla Editorial Inmersiva (Catálogo Visual)',
+    tag: 'Enfoque de Fotografía & Calidez',
+    image: '/mocks/comp-2-editorial.jpg',
+    description: 'Grilla expansiva de 3 columnas de tarjetas ricas de gran escala, con buscador horizontal tipo cápsula y botón flotante "Ver en Mapa".',
+    heuristics: [
+      'Gestalt: Similitud y Ritmo visual uniforme en tarjetas de 3 columnas.',
+      'Steve Krug: Cero ruido inicial, la fotografía de las cabañas serranas lidera la atención.',
+      'Norman Affordance: Botón principal terracota claro "Ver detalles y reservar".'
+    ],
+    pros: [
+      'Impacto visual de alta gama para destacar la arquitectura de piedra y madera.',
+      'Experiencia de navegación relajada, ideal para reservas de descanso o escapadas.',
+      'Excelente adaptabilidad a tablets y móviles.'
+    ],
+    cons: [
+      'El mapa queda en segundo plano (requiere click explícito para abrirlo).'
+    ]
+  },
+  {
+    id: 'comp-3',
+    title: 'Opción 3: Modular con Filtros Facetados (Power Search)',
+    tag: 'Enfoque E-commerce & Filtros Quirúrgicos',
+    image: '/mocks/comp-3-sidebar.jpg',
+    description: 'Sidebar izquierdo fijo (280px) con acordeones de filtros profundos (slider de precio, tipologías, zonas y amenities) y grilla de resultados con badges descartables.',
+    heuristics: [
+      'Nielsen #3: Control y libertad del usuario para afinar o resetear filtros activos.',
+      'Gestalt: Jerarquía por agrupamiento en panel lateral estructurado.',
+      'Fitts Law: Sliders e inputs de precio numéricos directos.'
+    ],
+    pros: [
+      'Búsquedas quirúrgicas rápidas para familias o turistas con requerimientos específicos (pileta, asador, pet-friendly).',
+      'Badges de filtros activos con cruz ("x") para descartar parámetros en un solo toque.',
+      'Patrón reconocido de e-commerce turístico.'
+    ],
+    cons: [
+      'Mayor carga cognitiva en el primer viewport debido a la cantidad de checkboxes.'
+    ]
+  }
+];
+---
+
+<Layout title="Impeccable Decision Board — Turismo Capilla del Monte">
+  <div class="min-h-screen bg-[#FAF8F5] py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-10">
+      
+      <!-- Cabecera -->
+      <div class="text-center space-y-3">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-terracotta-100 text-terracotta-800 text-xs font-bold uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-terracotta-500 animate-pulse"></span>
+          Impeccable Comp-Led Decision Board
+        </div>
+        <h1 class="font-display font-black text-3xl sm:text-5xl text-stone-900 tracking-tight">
+          Catálogo de Alojamientos (/alojamientos)
+        </h1>
+        <p class="text-stone-600 max-w-2xl mx-auto text-base">
+          Revisá las 3 propuestas de composición generadas según las directrices de Impeccable y las leyes de UX/UI.
+        </p>
+      </div>
+
+      <!-- Selector de Comps -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {comps.map((comp, idx) => (
+          <div class="bg-white rounded-3xl border border-stone-200/90 shadow-xl overflow-hidden flex flex-col transition-all hover:shadow-2xl">
+            <!-- Imagen -->
+            <div class="relative group bg-stone-100 aspect-video overflow-hidden">
+              <img
+                src={comp.image}
+                alt={comp.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div class="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md text-white font-mono text-xs font-bold px-3 py-1 rounded-lg">
+                OPCIÓN 0{idx + 1}
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="p-6 flex-1 flex flex-col justify-between space-y-6">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-terracotta-600 bg-terracotta-50 px-2.5 py-1 rounded-md">
+                    {comp.tag}
+                  </span>
+                </div>
+
+                <h3 class="font-display font-extrabold text-xl text-stone-900 leading-tight">
+                  {comp.title}
+                </h3>
+
+                <p class="text-xs text-stone-600 leading-relaxed">
+                  {comp.description}
+                </p>
+
+                <!-- Heurísticas Aplicadas -->
+                <div class="space-y-1.5 pt-2 border-t border-stone-100">
+                  <span class="text-[11px] font-bold text-stone-900 uppercase tracking-wider block">
+                    Principios de Diseño:
+                  </span>
+                  <ul class="text-xs text-stone-600 space-y-1 list-disc pl-4">
+                    {comp.heuristics.map((h) => (
+                      <li>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <!-- Pros & Contras -->
+                <div class="grid grid-cols-1 gap-2 pt-2 border-t border-stone-100 text-xs">
+                  <div class="text-emerald-800 bg-emerald-50/70 p-2.5 rounded-xl">
+                    <span class="font-bold block mb-0.5">Ventajas clave:</span>
+                    <ul class="list-disc pl-3 space-y-0.5">
+                      {comp.pros.map((p) => <li>{p}</li>)}
+                    </ul>
+                  </div>
+                  <div class="text-amber-800 bg-amber-50/70 p-2.5 rounded-xl">
+                    <span class="font-bold block mb-0.5">Consideraciones:</span>
+                    <ul class="list-disc pl-3 space-y-0.5">
+                      {comp.cons.map((c) => <li>{c}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Footer con Instrucciones -->
+      <div class="bg-stone-900 text-sand-100 p-6 rounded-3xl text-center space-y-2">
+        <h4 class="font-display font-bold text-lg text-white">¿Cuál de estas 3 direcciones querés que construyamos?</h4>
+        <p class="text-xs text-sand-300 max-w-xl mx-auto">
+          Podés elegir la <strong class="text-terracotta-400">Opción 1</strong> (Split-Screen), la <strong class="text-terracotta-400">Opción 2</strong> (Editorial) o la <strong class="text-terracotta-400">Opción 3</strong> (Filtros Facetados), o combinarlas.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</Layout>

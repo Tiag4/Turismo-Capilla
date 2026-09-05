@@ -65,9 +65,8 @@
   --color-secondary-500: var(--color-uritorco-500);
   --color-secondary-600: var(--color-uritorco-600);
 
-  /* Tipografías */
+  /* Tipografías Oficiales */
   --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 

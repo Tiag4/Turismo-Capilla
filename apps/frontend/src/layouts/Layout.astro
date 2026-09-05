@@ -23,18 +23,18 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
 
-    <!-- Google Fonts: Outfit, Playfair Display & Plus Jakarta Sans -->
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body class="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
     <!-- Navbar Oficial Bespoke (Cero Vibecoded, Cero Eyebrows, Altura Disciplinada 68px) -->
     <header class="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md border-b border-sand-200/80">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-17 flex items-center justify-between">
+      <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-17 flex items-center justify-between">
         <!-- Logo Oficial de Capilla del Monte (Pueblo Uritorco) -->
         <a href="/" class="flex items-center group py-1" aria-label="Capilla del Monte — Pueblo Uritorco">
           <img
@@ -146,51 +146,98 @@ const {
       <slot />
     </main>
 
-    <!-- Footer Institucional Limpio -->
-    <footer class="bg-sand-900 text-sand-200 border-t border-sand-800 py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="col-span-1 md:col-span-2 space-y-3">
+    <!-- Footer Institucional Limpio y Expansivo (Desktop Wide) -->
+    <footer class="bg-sand-900 text-sand-200 border-t border-sand-800 py-16">
+      <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-12">
+        <div class="lg:col-span-2 space-y-4">
           <div class="flex items-center gap-3">
             <img
               src="/cropped-logo-capilla-del-monte-2024.png"
               alt="Capilla del Monte — Pueblo Uritorco"
-              class="h-10 w-auto object-contain bg-white/95 px-2 py-1 rounded-lg"
+              class="h-11 w-auto object-contain bg-white/95 px-2.5 py-1.5 rounded-xl shadow-sm"
               loading="lazy"
             />
-            <span class="font-display font-bold text-xl text-white">Turismo Capilla del Monte</span>
+            <div>
+              <span class="font-display font-extrabold text-xl text-white block leading-tight">Turismo Capilla del Monte</span>
+              <span class="text-xs text-sand-400 font-medium">Pueblo Uritorco · Portal Oficial</span>
+            </div>
           </div>
           <p class="text-sm text-sand-300 max-w-md leading-relaxed">
-            Plataforma oficial desarrollada en conjunto con la Comisión de Turismo de Capilla del Monte. Información verificada de atractivos y reservas directas con prestadores habilitados.
+            Plataforma oficial desarrollada en conjunto con la Comisión de Turismo de Capilla del Monte. Información verificada de circuitos serranos y reservas directas con prestadores habilitados oficialmente, sin comisiones ocultas.
           </p>
+          <div class="pt-2 flex items-center gap-4 text-xs text-sand-400">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-uritorco-500"></span>
+              <span>Prestadores Habilitados</span>
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+              <span>Tarifa Transparente</span>
+            </span>
+          </div>
         </div>
 
         <div>
-          <h4 class="font-display font-semibold text-white mb-3 text-sm">
-            Paseos Destacados
+          <h4 class="font-display font-bold text-white mb-4 text-sm tracking-wide">
+            Paseos & Naturaleza
           </h4>
-          <ul class="space-y-2 text-sm text-sand-300">
-            <li><a href="/atractivos" class="hover:text-white transition-colors">Cerro Uritorco</a></li>
-            <li><a href="/atractivos" class="hover:text-white transition-colors">Los Terrones</a></li>
-            <li><a href="/atractivos" class="hover:text-white transition-colors">El Zapato</a></li>
-            <li><a href="/atractivos" class="hover:text-white transition-colors">Balneario La Toma</a></li>
+          <ul class="space-y-2.5 text-sm text-sand-300">
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Cerro Uritorco</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Los Terrones</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Dique El Cajón</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Balneario La Toma</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Paseo El Zapato</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Los Mogotes</a></li>
           </ul>
         </div>
 
         <div>
-          <h4 class="font-display font-semibold text-white mb-3 text-sm">
-            Información Útil
+          <h4 class="font-display font-bold text-white mb-4 text-sm tracking-wide">
+            Dónde Dormir
           </h4>
-          <ul class="space-y-2 text-sm text-sand-300">
-            <li>Secretaría de Turismo: Estación FC</li>
+          <ul class="space-y-2.5 text-sm text-sand-300">
+            <li><a href="/alojamientos?amenity=pileta-climatizada" class="hover:text-primary-400 transition-colors">Cabañas con pileta</a></li>
+            <li><a href="/alojamientos?zone=falda-del-uritorco" class="hover:text-primary-400 transition-colors">Falda del Uritorco</a></li>
+            <li><a href="/alojamientos?petFriendly=true" class="hover:text-primary-400 transition-colors">Alojamientos Pet-friendly</a></li>
+            <li><a href="/alojamientos?zone=la-toma" class="hover:text-primary-400 transition-colors">Cerca del río</a></li>
+            <li><a href="/alojamientos" class="hover:text-primary-400 transition-colors">Catálogo habilitado</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-display font-bold text-white mb-4 text-sm tracking-wide">
+            Experiencias
+          </h4>
+          <ul class="space-y-2.5 text-sm text-sand-300">
+            <li><a href="/astroturismo" class="hover:text-primary-400 transition-colors">Astroturismo Bortle 3</a></li>
+            <li><a href="/atractivos/uritorco" class="hover:text-primary-400 transition-colors">Ascenso nocturno</a></li>
+            <li><a href="/#mapa-valle" class="hover:text-primary-400 transition-colors">Mapa interactivo</a></li>
+            <li><a href="/atractivos" class="hover:text-primary-400 transition-colors">Guías habilitados</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-display font-bold text-white mb-4 text-sm tracking-wide">
+            Atención Turística
+          </h4>
+          <ul class="space-y-2.5 text-sm text-sand-300">
+            <li class="text-sand-200 font-medium">Secretaría de Turismo</li>
+            <li>Predio Estación Ferrocarril</li>
             <li>Tel: +54 3548 481903</li>
-            <li>Capilla del Monte, Córdoba, Argentina</li>
+            <li>Guardia Turística: 103</li>
+            <li class="pt-1 text-xs text-sand-400">Capilla del Monte, Valle de Punilla, Córdoba</li>
           </ul>
         </div>
       </div>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between text-xs text-sand-400 gap-4">
+      <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 mt-12 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-sand-400 gap-4">
         <span>© 2026 Comisión de Turismo de Capilla del Monte. Todos los derechos reservados.</span>
-        <span>Programación III — Cátedra Universitaria</span>
+        <div class="flex items-center gap-6">
+          <a href="/astroturismo" class="hover:text-sand-300 transition-colors">Astroturismo</a>
+          <a href="/alojamientos" class="hover:text-sand-300 transition-colors">Alojamientos</a>
+          <a href="/atractivos" class="hover:text-sand-300 transition-colors">Paseos</a>
+          <span>Programación III — Cátedra Universitaria</span>
+        </div>
       </div>
     </footer>
   </body>

@@ -36,7 +36,13 @@ Tienes dos opciones para ver la base de datos en tiempo real:
 
 ### Fase 1: Atractivos y Paseos Turísticos (`/api/v1/attractions`)
 
-#### Prueba 1.1: Crear un Paseo Turístico
+> **Nota de Seguridad (Swagger Bearer Auth):**  
+> Para crear, editar o eliminar atractivos se requiere rol `ADMIN`. Antes de ejecutar estas acciones:
+> 1. Realiza el login en `POST /api/v1/auth/login` con `admin@capilladelmonte.gov.ar` y `AdminCapilla2026!`.
+> 2. Copia el `accessToken` devuelto.
+> 3. Sube arriba en Swagger, haz clic en el botón verde **"Authorize"**, pega el token en el campo `Value` y haz clic en **"Authorize"**.
+
+#### Prueba 1.1: Crear un Paseo Turístico (Comisión / Admin)
 1. En Swagger, expande `POST /api/v1/attractions` y pulsa **"Try it out"**.
 2. Ingresa el siguiente JSON en el cuerpo de la petición:
    ```json

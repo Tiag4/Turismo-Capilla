@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { InvitationsModule } from './modules/invitations/invitations.module.js';
 import { AttractionsModule } from './modules/attractions/attractions.module.js';
+import { AccommodationsModule } from './modules/accommodations/accommodations.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -14,6 +15,7 @@ import { AppService } from './app.service.js';
     AuthModule,
     InvitationsModule,
     AttractionsModule,
+    AccommodationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

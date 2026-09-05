@@ -1,225 +1,52 @@
-# Guía de Pruebas Manuales — Turismo Capilla del Monte
+# Guías de Pruebas Manuales — Turismo Capilla del Monte
 
-Esta guía detalla el paso a paso para probar manualmente cada endpoint del backend mediante la interfaz interactiva de **Swagger** y verificar la persistencia e integridad de datos directamente en **PostgreSQL** (mediante SQL o Prisma Studio).
+Este índice centraliza los documentos individuales de pruebas manuales para cada módulo del sistema, diseñados para probar los endpoints interactivamente a través de **Swagger** ([http://localhost:3001/api](http://localhost:3001/api)) y auditar la persistencia en **PostgreSQL**.
 
 ---
 
 ## 1. Preparación del Entorno
 
-### Paso 1: Iniciar el Backend
-Desde la raíz del repositorio:
+### Paso 1: Iniciar el Servidor Backend
+Desde la raíz del repositorio o dentro de `apps/backend`:
 ```bash
 pnpm dev
 ```
-* **Swagger UI:** Abre en tu navegador [http://localhost:3001/api](http://localhost:3001/api).
+* **Swagger UI:** [http://localhost:3001/api](http://localhost:3001/api)
 
-### Paso 2: Abrir Herramienta de Inspección de Base de Datos
-Tienes dos opciones para ver la base de datos en tiempo real:
-
-* **Opción A (Visual - Recomendada): Prisma Studio**
-  En una segunda terminal ejecuta:
+### Paso 2: Herramientas de Inspección de Base de Datos
+* **Prisma Studio (Visual en Navegador):**
   ```bash
   pnpm --filter backend run prisma:studio
   ```
-  Abre [http://localhost:5555](http://localhost:5555) en tu navegador para ver todas las tablas en vivo.
-
-* **Opción B (Terminal SQL): `psql`**
+  Accede a [http://localhost:5555](http://localhost:5555).
+* **Terminal SQL (`psql`):**
   ```bash
   psql -U postgres -d turismo_capilla
   ```
 
 ---
 
-## 2. Flujo de Pruebas por Módulo
+## 2. Documentos de Pruebas por Módulo
+
+Haz clic en el enlace del módulo que desees probar para ver el detalle de cada endpoint, payloads de ejemplo y consultas SQL de verificación:
+
+1. 🔐 [**01 - Autenticación, Invitaciones y Roles**](./manual-testing/01-auth-and-invitations.md)  
+   * Login Admin, generación y validación de tokens de invitación, registro de prestadores (`HOST`), registro de turistas (`TOURIST`), perfil `/auth/me`.
+
+2. 🏔️ [**02 - Atractivos y Paseos Turísticos**](./manual-testing/02-attractions.md)  
+   * Catálogo público con filtros (`category`, `difficulty`, `requiresGuide`, `search`), creación/edición/baja institucional (`ADMIN`) y galería de imágenes.
+
+3. 🏡 [**03 - Alojamientos y Hospedajes**](./manual-testing/03-accommodations.md)  
+   * Catálogo público con filtros por fechas (algoritmo anti-overbooking), capacidad de huéspedes, tipo y amenidades; panel de cabañas del prestador (`my-accommodations`), alta, edición, control de permisos de dueño y gestión de fotos.
+
+4. 📅 [**04 - Motor de Reservas y Anti-Overbooking**](./manual-testing/04-bookings.md) *(Próxima Fase)*  
+   * Solicitud de reserva, bloqueo de solapamiento de fechas y máquina de estados (`PENDING`, `CONFIRMED`, `CANCELLED`).
 
 ---
 
-### Fase 1: Atractivos y Paseos Turísticos (`/api/v1/attractions`)
+## 3. Consultas SQL de Diagnóstico Rápido
 
-> **Nota de Seguridad (Swagger Bearer Auth):**  
-> Para crear, editar o eliminar atractivos se requiere rol `ADMIN`. Antes de ejecutar estas acciones:
-> 1. Realiza el login en `POST /api/v1/auth/login` con `admin@capilladelmonte.gov.ar` y `AdminCapilla2026!`.
-> 2. Copia el `accessToken` devuelto.
-> 3. Sube arriba en Swagger, haz clic en el botón verde **"Authorize"**, pega el token en el campo `Value` y haz clic en **"Authorize"**.
-
-#### Prueba 1.1: Crear un Paseo Turístico (Comisión / Admin)
-1. En Swagger, expande `POST /api/v1/attractions` y pulsa **"Try it out"**.
-2. Ingresa el siguiente JSON en el cuerpo de la petición:
-   ```json
-   {
-     "name": "Cerro Uritorco",
-     "description": "El pico más alto de las Sierras Chicas con 1979 msnm. Famoso por sus senderos y mística.",
-     "category": "HILL",
-     "difficulty": "ALTA",
-     "estimatedDuration": "6 a 8 horas",
-     "howToGet": "Acceso por la base del cerro, a 3 km del centro de Capilla del Monte.",
-     "requiresGuide": false,
-     "admissionFee": 15000.00,
-     "latitude": -30.8492,
-     "longitude": -64.4789
-   }
-   ```
-3. Pulsa **"Execute"**. Debe responder con código **HTTP 201 Created** y el objeto creado con su `id` generado.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT id, name, category, difficulty, "admissionFee" FROM attractions;
-   ```
-
-#### Prueba 1.2: Listar Paseos con Filtros
-1. En Swagger, expande `GET /api/v1/attractions`.
-2. Pulsa **"Try it out"**, selecciona `category: HILL` y pulsa **"Execute"**.
-3. Debe retornar una lista que contenga el "Cerro Uritorco" (**HTTP 200 OK**).
-
----
-
-### Fase 2: Autenticación, Invitaciones y Usuarios (`/api/v1/auth`, `/api/v1/invitations`)
-
-#### Prueba 2.1: Generar Token de Invitación (Comisión de Turismo)
-1. En Swagger, expande `POST /api/v1/invitations`.
-2. Envía los datos del nuevo prestador adherido:
-   ```json
-   {
-     "email": "cabanias.valle@gmail.com"
-   }
-   ```
-3. Debe responder con **HTTP 201** y un token único (ej. `inv-8f4b1a2c...`). Copia este token.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT id, token, email, "expiresAt", "usedAt" FROM invitation_tokens;
-   ```
-
-#### Prueba 2.2: Registrar Prestador con Token Validado
-1. En Swagger, expande `POST /api/v1/auth/register-host`.
-2. Envía el formulario completando el token obtenido:
-   ```json
-   {
-     "token": "PEGA_AQUI_EL_TOKEN_OBTENIDO",
-     "name": "Carlos",
-     "lastName": "Gómez",
-     "email": "cabanias.valle@gmail.com",
-     "password": "PasswordSegura123!",
-     "phone": "+543548123456"
-   }
-   ```
-3. Debe responder con **HTTP 201 Created**.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT id, name, "lastName", email, role FROM users;
-   SELECT token, "usedAt" FROM invitation_tokens; -- usedAt no debe ser NULL
-   ```
-
-#### Prueba 2.3: Iniciar Sesión y Autorizarse en Swagger
-1. En Swagger, expande `POST /api/v1/auth/login`.
-2. Envía las credenciales registradas:
-   ```json
-   {
-     "email": "cabanias.valle@gmail.com",
-     "password": "PasswordSegura123!"
-   }
-   ```
-3. Debe responder **HTTP 200 OK** con el token JWT:
-   ```json
-   {
-     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
-     "user": { ... }
-   }
-   ```
-4. **Autorizar Swagger:** Copia el `accessToken`. En la esquina superior derecha de Swagger, pulsa el botón verde **"Authorize"**, pega el token en el campo `Value` y pulsa **Authorize**. Ahora todos los endpoints protegidos usarán este token automáticamente.
-
----
-
-### Fase 3: Alojamientos (`/api/v1/accommodations`)
-
-#### Prueba 3.1: Dar de Alta una Cabaña
-1. En Swagger, expande `POST /api/v1/accommodations`.
-2. Envía el payload:
-   ```json
-   {
-     "name": "Cabañas del Sol",
-     "description": "Hermosas cabañas con vista panorámica al Cerro Uritorco, piscina y asador individual.",
-     "type": "CABIN",
-     "address": "Av. Las Gemelas 450",
-     "locality": "Capilla del Monte",
-     "pricePerNight": 45000.00,
-     "maxGuests": 5,
-     "amenities": ["Wi-Fi", "Piscina", "Estacionamiento", "Parrilla", "Aire Acondicionado"],
-     "latitude": -30.8541,
-     "longitude": -64.5213
-   }
-   ```
-3. Debe responder con **HTTP 201 Created** y el ID del alojamiento. Copia este `id`.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT id, name, type, "pricePerNight", "maxGuests", "hostId" FROM accommodations;
-   ```
-
-#### Prueba 3.2: Búsqueda Pública de Alojamientos con Filtros
-1. En Swagger, expande `GET /api/v1/accommodations`.
-2. Prueba filtrar con `guests: 4` y rango de fechas estimadas.
-3. Debe retornar la cabaña creada si su capacidad es suficiente (**HTTP 200 OK**).
-
----
-
-### Fase 4: Motor de Reservas y Prevención de Overbooking (`/api/v1/bookings`)
-
-#### Prueba 4.1: Crear Solicitud de Reserva (Turista)
-1. En Swagger, expande `POST /api/v1/bookings`.
-2. Ingresa los datos de la estadía para el alojamiento creado:
-   ```json
-   {
-     "accommodationId": "ID_DE_LA_CABAÑA_CREADA",
-     "checkIn": "2026-10-10",
-     "checkOut": "2026-10-15",
-     "guestCount": 3,
-     "guestName": "Lucía Fernández",
-     "guestEmail": "lucia.turista@gmail.com",
-     "guestPhone": "+541198765432",
-     "guestOrigin": "Buenos Aires",
-     "notes": "Llegamos en horario de la tarde."
-   }
-   ```
-3. Debe responder con **HTTP 201 Created**, generando un código único (ej. `CAP-2026-8912`) y estado `PENDING`.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT id, "bookingCode", "checkIn", "checkOut", "totalNights", "totalAmount", status 
-   FROM bookings;
-   ```
-
-#### Prueba 4.2: Prueba de Conflicto de Fechas (Anti-Overbooking)
-1. Intenta enviar **exactamente la misma reserva** (o una que se solape, ej. `checkIn: 2026-10-12` a `checkOut: 2026-10-14`).
-2. **Resultado Esperado:** El sistema debe rechazar la solicitud con código **HTTP 409 Conflict** y el mensaje:
-   ```json
-   {
-     "statusCode": 409,
-     "message": "El alojamiento no tiene disponibilidad para las fechas seleccionadas."
-   }
-   ```
-3. **Verificación en PostgreSQL:**
-   ```sql
-   -- Verifica que NO se creó una segunda reserva solapada
-   SELECT count(*) FROM bookings WHERE "accommodationId" = 'ID_DE_LA_CABAÑA_CREADA';
-   ```
-
-#### Prueba 4.3: Confirmación de Reserva por el Cabañero
-1. En Swagger, expande `PATCH /api/v1/bookings/{id}/status`.
-2. Ingresa el `id` de la reserva y el nuevo estado:
-   ```json
-   {
-     "status": "CONFIRMED"
-   }
-   ```
-3. Debe responder con **HTTP 200 OK**.
-4. **Verificación en PostgreSQL:**
-   ```sql
-   SELECT "bookingCode", status, "updatedAt" FROM bookings;
-   -- status debe figurar como CONFIRMED
-   ```
-
----
-
-## 3. Resumen de Consultas SQL de Diagnóstico Rápido
-
-Para auditar el estado completo de tu base de datos en cualquier momento desde `psql`:
+Para auditar el estado global de la base de datos:
 
 ```sql
 -- 1. Ver usuarios y sus roles
@@ -228,14 +55,11 @@ SELECT id, name, "lastName", email, role FROM users;
 -- 2. Ver invitaciones emitidas y si fueron usadas
 SELECT token, email, "expiresAt", "usedAt" FROM invitation_tokens;
 
--- 3. Ver alojamientos con sus prestadores
-SELECT a.name AS cabaña, a."pricePerNight", a."maxGuests", u.name AS dueño
+-- 3. Ver atractivos registrados y sus tarifas
+SELECT id, name, category, difficulty, "admissionFee" FROM attractions;
+
+-- 4. Ver alojamientos con sus prestadores dueños
+SELECT a.name AS cabaña, a."pricePerNight", a."maxGuests", a."isActive", u.email AS prestador
 FROM accommodations a
 JOIN users u ON a."hostId" = u.id;
-
--- 4. Ver reservas activas con detalle de fechas
-SELECT b."bookingCode", a.name AS cabaña, b."guestName", b."checkIn", b."checkOut", b.status
-FROM bookings b
-JOIN accommodations a ON b."accommodationId" = a.id
-ORDER BY b."checkIn" ASC;
 ```

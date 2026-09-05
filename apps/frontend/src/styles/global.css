@@ -1,39 +1,61 @@
 @import "tailwindcss";
 
+/* Design System Oficial — Capilla del Monte (Pueblo Uritorco) */
 @theme {
-  --color-primary-50: #fdf6f3;
-  --color-primary-100: #f9e9e3;
-  --color-primary-200: #f3d1c4;
-  --color-primary-300: #e9b19e;
-  --color-primary-400: #dc8970;
-  --color-primary-500: #9c4a2f;
-  --color-primary-600: #803820;
-  --color-primary-700: #662c19;
-  --color-primary-800: #542516;
-  --color-primary-900: #462215;
+  /* Color Principal: Terracota Casonas / Atardecer Serrano */
+  --color-terracotta-50: #fdf6f2;
+  --color-terracotta-100: #faebdF;
+  --color-terracotta-200: #f4d4be;
+  --color-terracotta-300: #ebb593;
+  --color-terracotta-400: #e08962;
+  --color-terracotta-500: #e06d39; /* Color insignia botones y footer */
+  --color-terracotta-600: #c95627;
+  --color-terracotta-700: #a7421e;
+  --color-terracotta-800: #86361d;
+  --color-terracotta-900: #6d2f1b;
 
-  --color-secondary-50: #f2f7f4;
-  --color-secondary-100: #e1ede6;
-  --color-secondary-200: #c4dbcf;
-  --color-secondary-300: #9bc0ae;
-  --color-secondary-400: #6ea189;
-  --color-secondary-500: #2d5a43;
-  --color-secondary-600: #1f3e2e;
-  --color-secondary-700: #162c21;
+  /* Color Secundario: Verde Brote Uritorco (Logo Oficial) */
+  --color-uritorco-50: #f6f9f0;
+  --color-uritorco-100: #ebf3de;
+  --color-uritorco-200: #d6e7c0;
+  --color-uritorco-300: #b9d799;
+  --color-uritorco-400: #9bc271;
+  --color-uritorco-500: #749b3f; /* Verde del logo Capilla */
+  --color-uritorco-600: #5c7e30;
+  --color-uritorco-700: #476127;
+  --color-uritorco-800: #394d22;
+  --color-uritorco-900: #30411f;
 
-  --color-accent-50: #f0f6f9;
-  --color-accent-100: #ddedf2;
-  --color-accent-500: #3a758c;
-  --color-accent-600: #295566;
+  /* Verde Esmeralda / Institucional */
+  --color-emerald-portal-500: #1c8b68;
+  --color-emerald-portal-600: #157255;
+  --color-emerald-portal-900: #0d2f22; /* Barra inferior copyright */
 
+  /* Azul Noche / Pizarra (Banners de descargas y planes de gestión) */
+  --color-navy-portal-700: #344256;
+  --color-navy-portal-800: #2b3648;
+  --color-navy-portal-900: #1e2634;
+
+  /* Marrón Rústico / Caoba (Banners culturales) */
+  --color-mahogany-800: #4e261e;
+  --color-mahogany-900: #3a1b15;
+
+  /* Neutros Cálidos y Fondos */
   --color-sand-50: #faf8f5;
   --color-sand-100: #f4f0e8;
-  --color-sand-200: #e6dfd3;
-  --color-sand-300: #d4c9b8;
-  --color-sand-400: #b5a58f;
+  --color-sand-200: #ece8df;
+  --color-sand-300: #ded8cb;
+  --color-sand-400: #bcbaa9;
   --color-sand-800: #3c3833;
   --color-sand-900: #22201e;
 
+  /* Alias semánticos para coherencia */
+  --color-primary-500: var(--color-terracotta-500);
+  --color-primary-600: var(--color-terracotta-600);
+  --color-secondary-500: var(--color-uritorco-500);
+  --color-secondary-600: var(--color-uritorco-600);
+
+  /* Tipografías */
   --font-display: 'Outfit', 'Playfair Display', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }

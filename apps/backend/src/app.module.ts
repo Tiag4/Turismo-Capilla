@@ -6,6 +6,8 @@ import { InvitationsModule } from './modules/invitations/invitations.module.js';
 import { AttractionsModule } from './modules/attractions/attractions.module.js';
 import { AccommodationsModule } from './modules/accommodations/accommodations.module.js';
 import { BookingsModule } from './modules/bookings/bookings.module.js';
+import { HealthModule } from './modules/health/health.module.js';
+import { UsersModule } from './modules/users/users.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -18,6 +20,8 @@ import { AppService } from './app.service.js';
     AttractionsModule,
     AccommodationsModule,
     BookingsModule,
+    HealthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

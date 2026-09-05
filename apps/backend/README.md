@@ -1,114 +1,148 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend API — Turismo Capilla del Monte
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Servidor REST desarrollado con **NestJS**, **Prisma ORM**, **PostgreSQL** y **TypeScript** bajo principios **SOLID** y arquitectura modular hexagonal.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 1. Requisitos Previos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Antes de comenzar, asegúrate de tener instalado en tu máquina:
+* **Node.js:** Versión 22.x o superior.
+* **pnpm:** Versión 10.x o superior (`npm install -g pnpm`).
+* **PostgreSQL:** Versión 16.x en ejecución (local o en Docker en el puerto `5432`).
 
-## Project setup
+---
 
-```bash
-$ pnpm install
+## 2. Configuración del Entorno (`.env`)
+
+Crea un archivo `.env` dentro del directorio `apps/backend/` (puedes tomar como base `.env.example`):
+
+```env
+DATABASE_URL="postgresql://postgres:TU_PASSWORD@localhost:5432/turismo_capilla?schema=public"
+JWT_SECRET="super-secret-jwt-key-turismo-capilla-monte-2026"
+JWT_EXPIRES_IN="7d"
+PORT=3001
 ```
 
-## Compile and run the project
+> **Nota sobre el puerto:** Se utiliza el puerto **3001** por defecto para evitar colisiones con procesos que suelan utilizar el puerto 3000.
+
+---
+
+## 3. Instalación y Base de Datos
+
+Desde la raíz del monorepo o dentro de `apps/backend/`:
 
 ```bash
-# development
-$ pnpm run start
+# 1. Instalar dependencias
+pnpm install
 
-# watch mode
-$ pnpm run start:dev
+# 2. Generar el cliente de Prisma
+pnpm --filter backend run prisma:generate
 
-# production mode
-$ pnpm run start:prod
+# 3. Aplicar las migraciones a la base de datos PostgreSQL
+pnpm --filter backend run prisma:migrate
+
+# 4. Poblar la base de datos con datos semilla iniciales
+pnpm --filter backend run prisma:seed
 ```
 
-## Run tests
+### Datos Semilla Iniciales (Seed)
+Al ejecutar `prisma:seed` se crean automáticamente:
+* **Administrador Oficial:**
+  * **Email:** `admin@capilladelmonte.gov.ar`
+  * **Contraseña:** `AdminCapilla2026!`
+  * **Rol:** `ADMIN`
+* **Atractivos Turísticos Iniciales:**
+  * Cerro Uritorco (Ascenso, 1979 msnm)
+  * Los Terrones (Parque autóctono y geológico)
+  * El Zapato (Monumento natural de roca)
+  * Balneario La Toma (Río Calabalumba)
+
+---
+
+## 4. Ejecución del Servidor
 
 ```bash
-# unit tests
-$ pnpm run test
+# Modo desarrollo con recarga en vivo (hot-reload)
+pnpm --filter backend run dev
 
-# e2e tests
-$ pnpm run test:e2e
+# Compilar el proyecto para producción
+pnpm --filter backend run build
 
-# test coverage
-$ pnpm run test:cov
+# Iniciar el build compilado
+pnpm --filter backend run start:prod
 ```
 
-## Deployment
+Una vez iniciado el servidor:
+* **API REST Base:** [http://localhost:3001/api/v1](http://localhost:3001/api/v1)
+* **Documentación Interactiva (Swagger):** [http://localhost:3001/api](http://localhost:3001/api)
+* **Healthcheck:** [http://localhost:3001/api/v1/health](http://localhost:3001/api/v1/health)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 5. Inspección Visual de la Base de Datos (Prisma Studio)
+
+Para ver, editar y consultar todas las tablas de la base de datos en una interfaz web amigable:
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm --filter backend run prisma:studio
+```
+Abre [http://localhost:5555](http://localhost:5555) en tu navegador.
+
+---
+
+## 6. Testing y Calidad de Código
+
+El proyecto utiliza **Vitest** para pruebas unitarias de ultra alta velocidad y **Oxlint** para análisis estático:
+
+```bash
+# Ejecutar toda la suite de pruebas unitarias
+pnpm --filter backend run test
+
+# Modo interactivo / observador (watch mode)
+pnpm --filter backend run test:watch
+
+# Ejecutar el linter estricto (Oxlint)
+pnpm --filter backend run lint
+
+# Formatear el código con Prettier
+pnpm --filter backend run format
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Observability
+## 7. Estructura de Directorios
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+```text
+apps/backend/
+├── prisma/
+│   ├── schema.prisma              # Modelo de datos PostgreSQL (User, Booking, Accommodation, etc.)
+│   ├── migrations/                # Historial de migraciones versionadas
+│   └── seed.ts                    # Script de población inicial
+├── src/
+│   ├── common/                    # Infraestructura transversal compartida
+│   │   ├── decorators/            # @Roles(), @CurrentUser()
+│   │   ├── filters/               # HttpExceptionFilter (estandarización de errores)
+│   │   └── guards/                # JwtAuthGuard, RolesGuard, OptionalJwtAuthGuard
+│   ├── modules/                   # Módulos de dominio (Screaming Architecture)
+│   │   ├── auth/                  # Login, registro de turistas y prestadores, JWT Strategy
+│   │   ├── invitations/           # Tokens de invitación emitidos por la Comisión
+│   │   ├── users/                 # Consulta y auditoría de usuarios para Admin
+│   │   ├── attractions/           # Catálogo de paseos y circuitos de Capilla del Monte
+│   │   ├── accommodations/        # Hospedajes, búsqueda por fechas y fotos
+│   │   ├── bookings/              # Motor transaccional de reservas y anti-overbooking
+│   │   └── health/                # Endpoint de disponibilidad y estado de PostgreSQL
+│   ├── prisma/                    # Servicio global inyectable de Prisma
+│   ├── app.module.ts              # Módulo raíz de la aplicación
+│   └── main.ts                    # Punto de entrada (CORS, ValidationPipe, Swagger, Filters)
+├── tsconfig.json                  # Configuración de TypeScript
+└── vitest.config.ts               # Configuración de Vitest
+```
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+---
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+## 8. Documentación Adicional
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+* 📖 [**Referencia Completa de la API REST**](../../docs/api-reference.md)
+* 🧪 [**Guías de Pruebas Manuales por Módulo**](../../docs/manual-testing-guide.md)
+* 🏛️ [**Especificación Arquitectónica y Principios SOLID**](../../docs/architecture.md)

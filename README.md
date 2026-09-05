@@ -1,154 +1,134 @@
-# Turismo-Capilla
-# Turismo Capilla del Monte
+# Turismo Capilla del Monte — Monorepo
 
 <p align="center">
   <img src="https://img.shields.io/badge/Proyecto-Turismo%20Capilla%20del%20Monte-2ea44f?style=for-the-badge" alt="Proyecto">
-  <img src="https://img.shields.io/badge/Estado-En%20desarrollo-yellow?style=for-the-badge" alt="Estado">
+  <img src="https://img.shields.io/badge/Monorepo-pnpm%20workspaces-f69220?style=for-the-badge&logo=pnpm" alt="pnpm">
+  <img src="https://img.shields.io/badge/Backend-NestJS%2012%20%2B%20Prisma-e0234e?style=for-the-badge&logo=nestjs" alt="NestJS">
+  <img src="https://img.shields.io/badge/Base%20de%20Datos-PostgreSQL-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Estado-Sprint%200%20Completado-brightgreen?style=for-the-badge" alt="Estado">
 </p>
 
-<p align="center">
-  <strong>Plataforma web para promocionar y facilitar el acceso a información turística de Capilla del Monte.</strong>
-</p>
+Plataforma web oficial para la promoción turística, catálogo de atractivos y motor de reservas directas de alojamientos en la localidad de **Capilla del Monte, Córdoba, Argentina**, desarrollada para la **Comisión de Turismo de Capilla del Monte**.
 
 ---
 
-## Sobre el proyecto
+## 1. Estructura del Monorepo
 
-**Turismo Capilla del Monte** es un proyecto de desarrollo web orientado a la promoción turística de la localidad de **Capilla del Monte, Córdoba, Argentina**.
+El repositorio está organizado como un **monorepo administrado con `pnpm` workspaces**:
 
-La propuesta busca centralizar y presentar de manera clara, atractiva y accesible información relevante para turistas y potenciales visitantes, facilitando el descubrimiento de atractivos, actividades, lugares de interés y otros servicios disponibles en la localidad.
-
-El proyecto se encuentra actualmente en una etapa inicial de análisis y planificación, por lo que el alcance y las funcionalidades pueden evolucionar durante el desarrollo.
-
----
-
-## Problema
-
-La información turística de Capilla del Monte puede encontrarse distribuida entre diferentes sitios web, redes sociales y otros medios.
-
-Esta distribución puede dificultar que los visitantes encuentren rápidamente la información necesaria para conocer el destino y planificar su visita.
-
-Por este motivo, el proyecto busca desarrollar una experiencia web que permita **centralizar, organizar y presentar información turística de forma sencilla y atractiva**.
-
----
-
-## Objetivo
-
-El objetivo principal es desarrollar una plataforma web que permita **promocionar Capilla del Monte y facilitar el acceso a información turística relevante**, ofreciendo una experiencia clara, moderna y accesible para potenciales visitantes.
-
-### Objetivos específicos
-
-* Investigar las necesidades de los potenciales usuarios.
-* Identificar la información turística más relevante.
-* Diseñar una interfaz atractiva y fácil de utilizar.
-* Presentar información sobre atractivos y actividades.
-* Desarrollar una primera versión funcional.
-* Evaluar mejoras y funcionalidades futuras.
-* Adaptar la experiencia a computadoras y dispositivos móviles.
+```text
+Turismo-Capilla/
+├── .agents/                       # Reglas de ingeniería y directrices para agentes y desarrolladores
+│   ├── AGENTS.md                  # Convenciones generales y estándares de Clean Code
+│   └── skills/solid-principles/   # Guía práctica de los 5 principios SOLID en TypeScript/NestJS
+├── apps/
+│   ├── backend/                   # API REST en NestJS + Prisma ORM + PostgreSQL + Swagger
+│   └── frontend/                  # Portal público (Astro + React) y panel administrativo (React + Vite)
+├── docs/                          # Documentación arquitectónica, técnica y de QA
+│   ├── api-reference.md           # Referencia exhaustiva de todos los endpoints de la API
+│   ├── architecture.md            # Blueprint arquitectónico (Modular Hexagonal y Screaming Architecture)
+│   ├── endpoints.md               # Mapeo de rutas REST con las Historias de Usuario (HU-01 a HU-10)
+│   ├── manual-testing-guide.md    # Índice maestro de pruebas manuales interactivas en Swagger
+│   └── manual-testing/            # Guías de testing manual paso a paso por módulo
+│       ├── 01-auth-and-invitations.md
+│       ├── 02-attractions.md
+│       ├── 03-accommodations.md
+│       └── 04-bookings.md
+├── package.json                   # Scripts globales del monorepo
+├── pnpm-workspace.yaml            # Configuración de espacios de trabajo
+└── README.md                      # Documento principal del repositorio
+```
 
 ---
 
-## Alcance inicial
+## 2. Pila Tecnológica (Stack)
 
-La primera versión del proyecto contempla el desarrollo de una plataforma que podrá incluir:
-
-* Página principal de presentación.
-* Información general sobre Capilla del Monte.
-* Atractivos turísticos.
-* Actividades y experiencias.
-* Galería de imágenes.
-* Información de contacto y enlaces relevantes.
-* Diseño responsive para dispositivos móviles y computadoras.
-
-El alcance definitivo será establecido a medida que avance el análisis y desarrollo del proyecto.
+| Capa / Componente | Tecnología | Propósito |
+| :--- | :--- | :--- |
+| **Monorepo Manager** | `pnpm` (Workspaces) | Gestión eficiente de dependencias, scripts unificados y aislamiento entre apps. |
+| **Backend Framework** | `NestJS 12` + `TypeScript` | Arquitectura modular escalable, inyección de dependencias y tipado estático estricto. |
+| **ORM & Database** | `Prisma 6` + `PostgreSQL 16` | Modelado de datos declarativo, migraciones versionadas y consultas transaccionales. |
+| **Documentación API** | `Swagger (OpenAPI 3.0)` | Interfaz web interactiva disponible en vivo en `http://localhost:3001/api`. |
+| **Pruebas Unitarias** | `Vitest` | Suite de pruebas de ultra alta velocidad (33 tests pasando en verde). |
+| **Linter & Formato** | `Oxlint` + `Prettier` | Análisis estático instantáneo y consistencia estilística en todo el código. |
+| **Frontend (Planificado)** | `Astro` + `React` (Islas) | Portal público ultra rápido para turistas y panel de administración en React. |
 
 ---
 
-## Tecnologías
+## 3. Puesta en Marcha Rápida (Quick Start)
 
-Las tecnologías definitivas todavía se encuentran en proceso de definición.
+### 3.1 Prerrequisitos
+* **Node.js:** `>= 22.0.0`
+* **pnpm:** `>= 10.0.0` (`npm install -g pnpm`)
+* **PostgreSQL:** En ejecución local o Docker en el puerto `5432`.
 
-Se evaluarán diferentes alternativas de desarrollo web y se seleccionarán aquellas que mejor se adapten a los requerimientos, alcance y objetivos del proyecto.
+### 3.2 Pasos de Instalación
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Tiag4/Turismo-Capilla.git
+cd Turismo-Capilla
 
-> **Nota:** esta sección será actualizada cuando el equipo defina el stack tecnológico definitivo.
+# 2. Instalar dependencias del monorepo
+pnpm install
 
----
+# 3. Configurar variables de entorno del backend
+cp apps/backend/.env.example apps/backend/.env
+# Ajusta tu contraseña de PostgreSQL en apps/backend/.env si es necesario
 
-## Equipo
+# 4. Generar Prisma y aplicar migraciones
+pnpm --filter backend run prisma:migrate
 
-Proyecto desarrollado por:
+# 5. Cargar datos iniciales (Admin y atractivos de Capilla del Monte)
+pnpm --filter backend run prisma:seed
 
-| Integrante              |
-| ----------------------- |
-| **Tiago Nicolitsis**    |
-| **Martino Costigliolo** |
-| **Juan Larcher**        |
-| **Braian Aguilera**     |
-| **Iris De Dominicci**   |
+# 6. Iniciar el servidor backend en modo desarrollo
+pnpm dev
+```
 
----
-
-## Etapas del proyecto
-
-El desarrollo se organizará en diferentes etapas:
-
-### 1. Investigación y análisis
-
-Definición del problema, usuarios objetivo, necesidades y requerimientos iniciales.
-
-### 2. Planificación
-
-Definición del alcance, funcionalidades, tecnologías y organización del trabajo.
-
-### 3. Diseño
-
-Creación de la estructura, wireframes y diseño visual de la plataforma.
-
-### 4. Desarrollo
-
-Implementación de las funcionalidades y diseño definidos.
-
-### 5. Pruebas y mejoras
-
-Evaluación de la plataforma, detección de errores y aplicación de mejoras.
-
-### 6. Entrega
-
-Publicación de la primera versión y presentación del resultado final.
+* **Swagger UI:** [http://localhost:3001/api](http://localhost:3001/api)
+* **Healthcheck:** [http://localhost:3001/api/v1/health](http://localhost:3001/api/v1/health)
+* **Prisma Studio (GUI de Base de Datos):** `pnpm --filter backend run prisma:studio` ([http://localhost:5555](http://localhost:5555))
 
 ---
 
-## Entregables
+## 4. Scripts Globales Disponibles
 
-Durante el desarrollo se espera obtener:
+Desde la raíz del repositorio puedes ejecutar:
 
-* Análisis inicial del proyecto.
-* Definición de requerimientos.
-* Diseño de interfaz.
-* Wireframes y/o prototipos.
-* Landing page funcional.
-* Primera versión desplegada.
-* Documentación del proyecto.
-
----
-
-## Estado del proyecto
-
-**Actualmente: En etapa de inicio, investigación y análisis.**
-
-El equipo se encuentra trabajando en la definición del alcance, objetivos, funcionalidades, público objetivo y tecnologías que serán utilizadas.
-
-Este README será actualizado a medida que el proyecto avance.
+```bash
+pnpm dev                # Inicia el backend en modo desarrollo con hot-reload
+pnpm build              # Compila todas las aplicaciones del monorepo
+pnpm test               # Ejecuta toda la suite de pruebas unitarias con Vitest
+pnpm lint               # Corre el linter rápido (Oxlint)
+pnpm format             # Da formato a todo el código fuente con Prettier
+```
 
 ---
 
-## Documentación
+## 5. Mapeo de Historias de Usuario (Backlog)
 
-La documentación y planificación del proyecto se encuentra disponible en la **Wiki del repositorio**, donde se detallan los aspectos relacionados con el PMI, análisis, planificación y evolución del proyecto.
+| Código | Historia de Usuario | Módulo Backend | Estado |
+| :--- | :--- | :--- | :---: |
+| `HU-01` | Landing Page & Atractivos Principales | `attractions` | ✅ Implementado |
+| `HU-02` | Catálogo de Paseos y Circuitos Categorizados | `attractions` | ✅ Implementado |
+| `HU-03` | Ficha Técnica y Detalle del Atractivo | `attractions` | ✅ Implementado |
+| `HU-04` | Catálogo de Alojamientos con Filtros | `accommodations` | ✅ Implementado |
+| `HU-05` | Detalle del Alojamiento y Servicios | `accommodations` | ✅ Implementado |
+| `HU-06` | Solicitud de Reserva Directa (Anti-Overbooking) | `bookings` | ✅ Implementado |
+| `HU-07` | Panel del Cabañero: Gestión de Establecimientos | `accommodations` | ✅ Implementado |
+| `HU-08` | Búsqueda por Fechas y Disponibilidad | `accommodations`, `bookings` | ✅ Implementado |
+| `HU-09` | Panel del Cabañero: Gestión de Reservas | `bookings` | ✅ Implementado |
+| `HU-10` | Invitación Exclusiva para Prestadores Adheridos | `invitations`, `auth` | ✅ Implementado |
 
 ---
 
-<p align="center">
-  <strong>Turismo Capilla del Monte</strong><br>
-  Proyecto de desarrollo web orientado a la promoción turística de Capilla del Monte.
-</p>
+## 6. Equipo de Desarrollo
+
+* **Tiago Nicolitsis**
+* **Martino Costigliolo**
+* **Juan Larcher**
+* **Braian Aguilera**
+* **Iris De Dominicci**
+
+**Cátedra:** Programación III — 2026.  
+**Cliente:** Comisión de Turismo de Capilla del Monte, Córdoba, Argentina.

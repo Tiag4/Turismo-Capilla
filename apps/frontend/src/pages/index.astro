@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { InteractiveMapContainer } from '../components/map/InteractiveMapContainer';
+import { HeroSearchBar } from '../components/search/HeroSearchBar';
 import { MOCK_PLACES } from '../data/mock-places';
 
 const featuredAttractions = MOCK_PLACES.filter((p) => p.type === 'attraction');
@@ -38,144 +39,8 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
 
     <!-- Buscador Integrado Horizontal (CRO) anclado al pie del Hero -->
     <div class="relative z-20 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-14 w-full mt-10">
-      <div class="hero-anim bg-white rounded-3xl shadow-2xl p-5 sm:p-6 border border-sand-200/80 max-w-6xl mx-auto">
-        <form action="/alojamientos" method="GET" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_auto] gap-3.5 items-center">
-            <!-- Segmento 1: Qué estás buscando -->
-            <div class="bg-sand-50/90 hover:bg-sand-100/70 border border-sand-200/80 rounded-2xl px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent">
-              <label for="searchCategory" class="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 cursor-pointer">
-                <svg class="w-3.5 h-3.5 text-terracotta-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-                </svg>
-                <span>¿Qué estás buscando?</span>
-              </label>
-              <div class="relative">
-                <select
-                  id="searchCategory"
-                  name="category"
-                  class="w-full bg-transparent font-display font-bold text-sm sm:text-base text-sand-950 focus:outline-none cursor-pointer appearance-none pr-6"
-                >
-                  <option value="alojamientos">Alojamientos & Cabañas</option>
-                  <option value="paseos">Paseos & Trekking</option>
-                  <option value="gastronomia">Gastronomía Serrana</option>
-                </select>
-                <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-sand-400">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m6 9 6 6 6-6"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Segmento 2: Check-In -->
-            <div class="bg-sand-50/90 hover:bg-sand-100/70 border border-sand-200/80 rounded-2xl px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent">
-              <label for="checkIn" class="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 cursor-pointer">
-                <svg class="w-3.5 h-3.5 text-terracotta-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
-                </svg>
-                <span>Check-in</span>
-              </label>
-              <input
-                type="date"
-                id="checkIn"
-                name="checkIn"
-                class="w-full bg-transparent font-display font-bold text-sm sm:text-base text-sand-950 focus:outline-none cursor-pointer"
-              />
-            </div>
-
-            <!-- Segmento 3: Check-Out -->
-            <div class="bg-sand-50/90 hover:bg-sand-100/70 border border-sand-200/80 rounded-2xl px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent">
-              <label for="checkOut" class="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 cursor-pointer">
-                <svg class="w-3.5 h-3.5 text-terracotta-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"/><path d="m9 11 3 3L22 4"/>
-                </svg>
-                <span>Check-out</span>
-              </label>
-              <input
-                type="date"
-                id="checkOut"
-                name="checkOut"
-                class="w-full bg-transparent font-display font-bold text-sm sm:text-base text-sand-950 focus:outline-none cursor-pointer"
-              />
-            </div>
-
-            <!-- Segmento 4: Viajeros -->
-            <div class="bg-sand-50/90 hover:bg-sand-100/70 border border-sand-200/80 rounded-2xl px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent">
-              <label for="guests" class="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 cursor-pointer">
-                <svg class="w-3.5 h-3.5 text-terracotta-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                <span>Viajeros</span>
-              </label>
-              <div class="relative">
-                <select
-                  id="guests"
-                  name="guests"
-                  class="w-full bg-transparent font-display font-bold text-sm sm:text-base text-sand-950 focus:outline-none cursor-pointer appearance-none pr-6"
-                >
-                  <option value="2">2 adultos · 1 cabaña</option>
-                  <option value="1">1 adulto · 1 cabaña</option>
-                  <option value="3">3 adultos · 1 cabaña</option>
-                  <option value="4">Familia (4 personas)</option>
-                  <option value="5">Grupo (5+ personas)</option>
-                </select>
-                <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-sand-400">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m6 9 6 6 6-6"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Botón Buscar -->
-            <button
-              type="submit"
-              class="w-full lg:w-auto h-[58px] px-8 rounded-2xl bg-[#0c261a] hover:bg-[#153e2b] active:bg-[#071911] text-white font-display font-bold text-base flex items-center justify-center gap-2.5 shadow-lg shadow-[#0c261a]/25 transition-all cursor-pointer"
-            >
-              <svg class="w-5 h-5 text-sand-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-              </svg>
-              <span>Buscar</span>
-            </button>
-          </div>
-
-          <!-- Filtros Frecuentes al pie del buscador -->
-          <div class="border-t border-sand-100 pt-3.5 flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
-            <span class="font-semibold text-sand-500 text-[11px] uppercase tracking-wider">
-              Filtros frecuentes:
-            </span>
-            <a
-              href="/alojamientos?petFriendly=true"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100/90 hover:bg-sand-200/90 text-sand-700 font-medium transition-colors border border-sand-200/60"
-            >
-              Pet-friendly
-            </a>
-            <a
-              href="/alojamientos?amenity=pileta-climatizada"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100/90 hover:bg-sand-200/90 text-sand-700 font-medium transition-colors border border-sand-200/60"
-            >
-              Con piscina climatizada
-            </a>
-            <a
-              href="/atractivos/uritorco"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100/90 hover:bg-sand-200/90 text-sand-700 font-medium transition-colors border border-sand-200/60"
-            >
-              Guías Uritorco
-            </a>
-            <a
-              href="/atractivos/el-zapato"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100/90 hover:bg-sand-200/90 text-sand-700 font-medium transition-colors border border-sand-200/60"
-            >
-              Paseo El Zapato
-            </a>
-            <a
-              href="/alojamientos?zone=falda-del-uritorco"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100/90 hover:bg-sand-200/90 text-sand-700 font-medium transition-colors border border-sand-200/60"
-            >
-              Falda del cerro
-            </a>
-          </div>
-        </form>
+      <div class="hero-anim">
+        <HeroSearchBar client:load />
       </div>
     </div>
   </section>
@@ -239,8 +104,8 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
     </div>
   </section>
 
-  <!-- Sección 1: «Hay mucho por descubrir.» (Bento Grid Asimétrico de Alto Contraste) -->
-  <section class="py-16 sm:py-24 bg-sand-50 border-t border-sand-200">
+  <!-- Sección 1: «Hay mucho por descubrir.» (Bento Grid Asimétrico de Alto Contraste Sin Huecos) -->
+  <section class="py-16 sm:py-24 bg-sand-50">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
         <div class="max-w-2xl">
@@ -260,279 +125,288 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
         </a>
       </div>
 
-      <!-- Grilla Bento Asimétrica de 6 Destinos Icónicos -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 gsap-discover-grid">
-        <!-- Tarjeta 1 (Principal Grande): Los Terrones -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-2') || featuredAttractions[0];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-2 lg:col-span-7 group relative h-[460px] sm:h-[520px] lg:h-[580px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-12 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+      <!-- Grilla Bento de 6 Destinos Icónicos (Row 1: 7 cols + 5 cols apilados; Row 2: 3 cols iguales) -->
+      <div class="space-y-6 gsap-discover-grid">
+        <!-- Fila 1: Gran Destino + Dúo Lateral Apilado -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Tarjeta 1 (Principal Grande): Los Terrones -->
+          {(() => {
+            const item = featuredAttractions.find((p) => p.id === 'att-2') || featuredAttractions[0];
+            return (
+              <a
+                href={item.ctaUrl}
+                class="gsap-discover-card lg:col-span-7 group relative min-h-[460px] sm:min-h-[520px] lg:h-[580px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-12 border border-sand-200/80 cursor-pointer"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
-              <div class="relative z-10 space-y-3">
-                <span class="block text-xs font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-white leading-tight drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <p class="text-sm sm:text-base text-sand-100/90 font-normal leading-relaxed max-w-xl line-clamp-2">
-                  {item.subtitle}
-                </p>
-                <div class="pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-sand-200 font-medium">
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="m3 11 19-9-9 19-2-8-8-2z"/>
-                    </svg>
+                <div class="relative z-10 space-y-3">
+                  <span class="block text-xs font-bold text-terracotta-400 tracking-widest uppercase">
+                    {item.category}
+                  </span>
+                  <h3 class="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-white leading-tight drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                  <p class="text-sm sm:text-base text-sand-100/90 font-normal leading-relaxed max-w-xl line-clamp-2">
+                    {item.subtitle}
+                  </p>
+                  <div class="pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-sand-200 font-medium">
+                    <span class="flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 11 19-9-9 19-2-8-8-2z"/>
+                      </svg>
+                      <span>{item.distanceFromCenter}</span>
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      <span>{item.duration}</span>
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+                      </svg>
+                      <span>Dificultad {item.difficulty?.toLowerCase()}</span>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            );
+          })()}
+
+          <!-- Columna Lateral Apilada (5 cols): Dique El Cajón + Balneario La Toma (278px + 24px + 278px = 580px) -->
+          <div class="lg:col-span-5 flex flex-col gap-6">
+            <!-- Tarjeta 2 (Mediana Superior): Dique El Cajón -->
+            {(() => {
+              const item = featuredAttractions.find((p) => p.id === 'att-4') || featuredAttractions[1];
+              return (
+                <a
+                  href={item.ctaUrl}
+                  class="gsap-discover-card flex-1 group relative min-h-[260px] lg:h-[278px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+
+                  <div class="relative z-10 space-y-1.5">
+                    <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
+                      {item.category}
+                    </span>
+                    <h3 class="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
+                      {item.title}
+                    </h3>
+                    <div class="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sand-200 font-medium">
+                      <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="m3 11 19-9-9 19-2-8-8-2z"/>
+                        </svg>
+                        <span>{item.distanceFromCenter}</span>
+                      </span>
+                      <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>{item.duration}</span>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })()}
+
+            <!-- Tarjeta 3 (Mediana Inferior): Balneario La Toma -->
+            {(() => {
+              const item = featuredAttractions.find((p) => p.id === 'att-5') || featuredAttractions[2];
+              return (
+                <a
+                  href={item.ctaUrl}
+                  class="gsap-discover-card flex-1 group relative min-h-[260px] lg:h-[278px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+
+                  <div class="relative z-10 space-y-1.5">
+                    <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
+                      {item.category}
+                    </span>
+                    <h3 class="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
+                      {item.title}
+                    </h3>
+                    <div class="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sand-200 font-medium">
+                      <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="m3 11 19-9-9 19-2-8-8-2z"/>
+                        </svg>
+                        <span>{item.distanceFromCenter}</span>
+                      </span>
+                      <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>{item.duration}</span>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })()}
+          </div>
+        </div>
+
+        <!-- Fila 2: Tres tarjetas iguales (El Zapato, Los Mogotes, Calle Techada) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Tarjeta 4: Geoforma El Zapato -->
+          {(() => {
+            const item = featuredAttractions.find((p) => p.id === 'att-3') || featuredAttractions[3];
+            return (
+              <a
+                href={item.ctaUrl}
+                class="gsap-discover-card group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+
+                <div class="relative z-10 space-y-1.5">
+                  <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
+                    {item.category}
+                  </span>
+                  <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                  <p class="text-xs text-sand-200 line-clamp-1 font-normal">
+                    {item.subtitle}
+                  </p>
+                  <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
                     <span>{item.distanceFromCenter}</span>
-                  </span>
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
+                    <span>•</span>
                     <span>{item.duration}</span>
-                  </span>
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-                    </svg>
-                    <span>Dificultad {item.difficulty?.toLowerCase()}</span>
-                  </span>
+                  </div>
                 </div>
-              </div>
-            </a>
-          );
-        })()}
+              </a>
+            );
+          })()}
 
-        <!-- Tarjeta 2 (Mediana Superior): Dique El Cajón -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-4') || featuredAttractions[1];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-1 lg:col-span-5 group relative h-[260px] sm:h-[278px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+          <!-- Tarjeta 5: Los Mogotes & Paso del Indio -->
+          {(() => {
+            const item = featuredAttractions.find((p) => p.id === 'att-7') || featuredAttractions[4];
+            return (
+              <a
+                href={item.ctaUrl}
+                class="gsap-discover-card group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
-              <div class="relative z-10 space-y-1.5">
-                <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <div class="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sand-200 font-medium">
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="m3 11 19-9-9 19-2-8-8-2z"/>
-                    </svg>
+                <div class="relative z-10 space-y-1.5">
+                  <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
+                    {item.category}
+                  </span>
+                  <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                  <p class="text-xs text-sand-200 line-clamp-1 font-normal">
+                    {item.subtitle}
+                  </p>
+                  <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
                     <span>{item.distanceFromCenter}</span>
-                  </span>
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
+                    <span>•</span>
                     <span>{item.duration}</span>
-                  </span>
+                  </div>
                 </div>
-              </div>
-            </a>
-          );
-        })()}
+              </a>
+            );
+          })()}
 
-        <!-- Tarjeta 3 (Mediana Inferior): Balneario La Toma -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-5') || featuredAttractions[2];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-1 lg:col-span-5 group relative h-[260px] sm:h-[278px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+          <!-- Tarjeta 6: Calle Techada & Casco Histórico -->
+          {(() => {
+            const item = featuredAttractions.find((p) => p.id === 'att-8') || featuredAttractions[5];
+            return (
+              <a
+                href={item.ctaUrl}
+                class="gsap-discover-card group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
-              <div class="relative z-10 space-y-1.5">
-                <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <div class="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sand-200 font-medium">
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="m3 11 19-9-9 19-2-8-8-2z"/>
-                    </svg>
+                <div class="relative z-10 space-y-1.5">
+                  <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
+                    {item.category}
+                  </span>
+                  <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                  <p class="text-xs text-sand-200 line-clamp-1 font-normal">
+                    {item.subtitle}
+                  </p>
+                  <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
                     <span>{item.distanceFromCenter}</span>
-                  </span>
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-sand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
+                    <span>•</span>
                     <span>{item.duration}</span>
-                  </span>
+                  </div>
                 </div>
-              </div>
-            </a>
-          );
-        })()}
-
-        <!-- Tarjeta 4 (Fila 2 - Columna 4): Geoforma El Zapato -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-3') || featuredAttractions[3];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-1 lg:col-span-4 group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
-
-              <div class="relative z-10 space-y-1.5">
-                <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <p class="text-xs text-sand-200 line-clamp-1 font-normal">
-                  {item.subtitle}
-                </p>
-                <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
-                  <span>{item.distanceFromCenter}</span>
-                  <span>•</span>
-                  <span>{item.duration}</span>
-                </div>
-              </div>
-            </a>
-          );
-        })()}
-
-        <!-- Tarjeta 5 (Fila 2 - Columna 4): Los Mogotes & Paso del Indio -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-7') || featuredAttractions[4];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-1 lg:col-span-4 group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
-
-              <div class="relative z-10 space-y-1.5">
-                <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <p class="text-xs text-sand-200 line-clamp-1 font-normal">
-                  {item.subtitle}
-                </p>
-                <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
-                  <span>{item.distanceFromCenter}</span>
-                  <span>•</span>
-                  <span>{item.duration}</span>
-                </div>
-              </div>
-            </a>
-          );
-        })()}
-
-        <!-- Tarjeta 6 (Fila 2 - Columna 4): Calle Techada & Casco Histórico -->
-        {(() => {
-          const item = featuredAttractions.find((p) => p.id === 'att-8') || featuredAttractions[5];
-          return (
-            <a
-              href={item.ctaUrl}
-              class="gsap-discover-card col-span-1 md:col-span-2 lg:col-span-4 group relative h-[320px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-6 sm:p-8 border border-sand-200/80 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
-
-              <div class="relative z-10 space-y-1.5">
-                <span class="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                  {item.category}
-                </span>
-                <h3 class="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
-                  {item.title}
-                </h3>
-                <p class="text-xs text-sand-200 line-clamp-1 font-normal">
-                  {item.subtitle}
-                </p>
-                <div class="pt-1 flex items-center gap-3 text-xs text-sand-200 font-medium">
-                  <span>{item.distanceFromCenter}</span>
-                  <span>•</span>
-                  <span>{item.duration}</span>
-                </div>
-              </div>
-            </a>
-          );
-        })()}
+              </a>
+            );
+          })()}
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Sección 2: «Destino Destacado: Cerro Uritorco» (Ancho Completo 100vw, Cero Slop, Editorial Bespoke) -->
-  <section class="w-full bg-[#071710] text-white border-t border-sand-200/20 overflow-hidden">
-    <!-- Header Editorial del Destino Destacado -->
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-14 sm:pt-20 pb-6">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-[2px] bg-primary-500"></div>
-        <span class="text-xs font-bold tracking-[0.25em] text-sand-300 uppercase font-display">
-          Destino Destacado
-        </span>
-      </div>
-    </div>
-
-    <!-- Fotografía Panorámica de Ancho Completo (Sin Nieve, Auténtica de las Sierras) -->
-    <div class="w-full relative h-[440px] sm:h-[580px] lg:h-[660px] overflow-hidden">
+  <section class="w-full bg-[#0e261d] text-white overflow-hidden relative">
+    <!-- Fotografía Panorámica de Ancho Completo que arranca desde el borde superior -->
+    <div class="w-full relative h-[500px] sm:h-[620px] lg:h-[720px] overflow-hidden">
       <img
         src="https://images.unsplash.com/photo-1544198365-f5d60b6d8190?auto=format&fit=crop&w=2400&q=85"
         alt="Cerro Uritorco y las Sierras Chicas al atardecer"
         class="w-full h-full object-cover object-center brightness-95 contrast-105"
         loading="lazy"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-[#0e261d] via-transparent to-black/30" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0e261d] via-black/20 to-black/60" />
+
+      <!-- Header Editorial «Destino Destacado» POR ENCIMA de la imagen -->
+      <div class="absolute top-8 sm:top-12 left-0 right-0 z-10 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
+        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/20">
+          <div class="w-2.5 h-2.5 rounded-full bg-primary-400"></div>
+          <span class="text-xs font-bold tracking-[0.25em] text-white uppercase font-display">
+            Destino Destacado
+          </span>
+        </div>
+      </div>
     </div>
 
     <!-- Panel de Información de Ancho Completo en Verde Bosque (#0e261d) -->
-    <div class="w-full bg-[#0e261d] -mt-14 sm:-mt-24 relative z-10 rounded-t-[32px] sm:rounded-t-[48px] border-t border-white/10 pt-12 sm:pt-16 pb-16 sm:pb-24">
+    <div class="w-full bg-[#0e261d] -mt-16 sm:-mt-28 relative z-10 rounded-t-[32px] sm:rounded-t-[48px] border-t border-white/10 pt-12 sm:pt-16 pb-16 sm:pb-24">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
         <div class="max-w-4xl space-y-4">
           <h2 class="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.05]">
@@ -595,7 +469,7 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
   </section>
 
   <!-- Teaser Editorial: Astroturismo & Cielos Bortle 3 (Cero Slop, Alto Impacto, CTA Directo) -->
-  <section id="astroturismo" class="py-16 sm:py-24 bg-sand-50 border-t border-sand-200">
+  <section id="astroturismo" class="py-16 sm:py-24 bg-sand-50">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
       <div class="relative rounded-3xl overflow-hidden bg-sand-900 text-white min-h-[380px] sm:min-h-[440px] flex flex-col justify-end p-8 sm:p-14 border border-sand-800 shadow-xl group">
         <!-- Imagen Panorámica Nocturna Auténtica -->
@@ -725,7 +599,7 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
   </section>
 
   <!-- Mapa Interactivo Destacado con Leaflet -->
-  <section id="mapa-valle" class="py-16 sm:py-24 bg-sand-100/70 border-t border-sand-200">
+  <section id="mapa-valle" class="py-16 sm:py-24 bg-sand-100/70">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
         <div class="max-w-2xl">
@@ -748,37 +622,49 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
     </div>
   </section>
 
-  <!-- Circuito Patrimonial: Casonas con Historia (Paseo Histórico, Cero Eyebrows) -->
-  <section class="py-20 bg-[#3d2019] text-white">
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
+  <!-- Circuito Patrimonial: Casonas con Historia (Fotografía de Arquitectura de Fondo, Cero Fondos Planos) -->
+  <section class="relative py-24 sm:py-32 bg-stone-950 text-white overflow-hidden">
+    <!-- Fotografía Panorámica de Casona de Piedra con Overlays Graduales -->
+    <div class="absolute inset-0 z-0">
+      <img
+        src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2000&q=85"
+        alt="Casona señorial histórica de estilo normando y piedra de cantera"
+        class="w-full h-full object-cover object-center brightness-[0.38] contrast-[1.1]"
+        loading="lazy"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/85 to-stone-950/40" />
+      <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-stone-950/60" />
+    </div>
+
+    <div class="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
       <div class="max-w-3xl space-y-6 gsap-casonas-content">
-        <h2 class="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+        <h2 class="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight drop-shadow-sm">
           Casonas con Historia
         </h2>
-        <p class="text-base sm:text-lg text-sand-200 leading-relaxed font-normal">
+        <p class="text-base sm:text-lg text-sand-100 leading-relaxed font-normal">
           A principios del siglo XX, la llegada del ferrocarril convirtió a Capilla del Monte en una distinguida villa de veraneo. Familias notables construyeron residencias señoriales de estilos normando, pintoresquista y Tudor con piedras de las canteras locales.
         </p>
 
         <!-- Datos clave del circuito -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-white/15">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-white/20">
           <div>
-            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">14</span>
-            <span class="text-xs text-sand-300 font-medium">Residencias catalogadas</span>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-terracotta-400">14</span>
+            <span class="text-xs text-sand-200 font-medium">Residencias catalogadas</span>
           </div>
           <div>
-            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">2.5 km</span>
-            <span class="text-xs text-sand-300 font-medium">Circuito peatonal autoguiado</span>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-terracotta-400">2.5 km</span>
+            <span class="text-xs text-sand-200 font-medium">Circuito peatonal autoguiado</span>
           </div>
           <div>
-            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">1910–1930</span>
-            <span class="text-xs text-sand-300 font-medium">Época dorada fundacional</span>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-terracotta-400">1910–1930</span>
+            <span class="text-xs text-sand-200 font-medium">Época dorada fundacional</span>
           </div>
         </div>
 
         <div class="pt-4">
           <a
             href="/atractivos/casonas"
-            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-xs tracking-wide shadow-xl transition-all cursor-pointer"
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-bold text-xs tracking-wide shadow-xl transition-all cursor-pointer"
           >
             Descargar Mapa y Guía del Circuito Patrimonial →
           </a>
@@ -788,7 +674,7 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
   </section>
 
   <!-- Sección 3: «¿Listo para descubrir Capilla del Monte?» (Ancho Completo 100vw, Cero Slop) -->
-  <section class="w-full relative min-h-[480px] sm:min-h-[560px] flex items-center justify-center bg-sand-950 text-white overflow-hidden py-24 sm:py-32 px-4 sm:px-8 lg:px-12 border-t border-sand-200/20">
+  <section class="w-full relative min-h-[480px] sm:min-h-[560px] flex items-center justify-center bg-sand-950 text-white overflow-hidden py-24 sm:py-32 px-4 sm:px-8 lg:px-12">
     <!-- Fotografía Panorámica Nocturna Serrana Edge-to-Edge -->
     <img
       src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2400&q=85"

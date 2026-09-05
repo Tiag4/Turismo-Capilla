@@ -1,18 +1,62 @@
 import { useEffect, useRef, useState } from 'react';
 import type { MapPlace } from '../../../data/mock-places';
 
-// Importación condicional de tipos de Leaflet
-type LeafletModule = typeof import('leaflet');
+export type TileStyle = 'opentopo' | 'esri' | 'voyager';
+
+interface TileConfig {
+  url: string;
+  options: {
+    attribution: string;
+    subdomains?: string;
+    maxZoom?: number;
+    maxNativeZoom?: number;
+  };
+}
+
+const TILE_STYLES: Record<TileStyle, TileConfig> = {
+  opentopo: {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    options: {
+      attribution:
+        '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>), &copy; OpenStreetMap',
+      subdomains: 'abc',
+      maxNativeZoom: 17,
+      maxZoom: 19,
+    },
+  },
+  esri: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    options: {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, USGS, NPS',
+      maxZoom: 19,
+    },
+  },
+  voyager: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    options: {
+      attribution: '&copy; CARTO & OpenStreetMap contributors',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    },
+  },
+};
 
 interface UseLeafletMapOptions {
   places: MapPlace[];
   selectedPlace: MapPlace | null;
   onSelectPlace: (place: MapPlace) => void;
+  tileStyle?: TileStyle;
 }
 
-export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafletMapOptions) {
+export function useLeafletMap({
+  places,
+  selectedPlace,
+  onSelectPlace,
+  tileStyle = 'opentopo',
+}: UseLeafletMapOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any>(null);
+  const tileLayerRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -37,12 +81,10 @@ export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafl
         scrollWheelZoom: true,
       });
 
-      // CartoDB Voyager — Paleta limpia y cálida tipo editorial
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> & OpenStreetMap contributors',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      }).addTo(map);
+      // Capa base topográfica con curvas de nivel y relieve
+      const styleConfig = TILE_STYLES[tileStyle] || TILE_STYLES.opentopo;
+      const tileLayer = L.tileLayer(styleConfig.url, styleConfig.options).addTo(map);
+      tileLayerRef.current = tileLayer;
 
       mapInstanceRef.current = map;
       setIsLoaded(true);
@@ -59,6 +101,24 @@ export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafl
     };
   }, []);
 
+  // Cambiar capa de mosaicos si el usuario alterna entre estilos
+  useEffect(() => {
+    if (!isLoaded || !mapInstanceRef.current) return;
+
+    import('leaflet').then(({ default: L }) => {
+      const map = mapInstanceRef.current;
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
+      const styleConfig = TILE_STYLES[tileStyle] || TILE_STYLES.opentopo;
+      const newLayer = L.tileLayer(styleConfig.url, styleConfig.options).addTo(map);
+      if (newLayer.bringToBack) {
+        newLayer.bringToBack();
+      }
+      tileLayerRef.current = newLayer;
+    });
+  }, [isLoaded, tileStyle]);
+
   // Actualizar marcadores cuando cambian los lugares o el mapa está listo
   useEffect(() => {
     if (!isLoaded || !mapInstanceRef.current) return;
@@ -74,7 +134,7 @@ export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafl
         const isAccommodation = place.type === 'accommodation';
         const isSelected = selectedPlace?.id === place.id;
 
-        // Custom HTML DivIcon con Tailwind libre de overflow y sin emojis
+        // Custom HTML DivIcon con Tailwind libre de overflow y sin emojis (SSOT oficial)
         const iconHtml = isAccommodation
           ? `
             <div class="relative inline-flex flex-col items-center cursor-pointer transition-transform duration-200 ${

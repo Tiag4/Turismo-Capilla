@@ -13,9 +13,9 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
   description="Portal oficial de Capilla del Monte, Córdoba. Senderos al Cerro Uritorco, paseos naturales y reservas directas con prestadores habilitados."
 >
   <!-- Hero Section Inmersivo con Fotografía Panorámica -->
-  <section class="relative min-h-[90vh] flex flex-col justify-between bg-sand-900 text-white overflow-hidden">
+  <section class="relative min-h-[90vh] flex flex-col justify-between bg-sand-900 text-white z-30">
     <!-- Imagen de Fondo Panorámica del Cerro Uritorco -->
-    <div class="absolute inset-0 z-0">
+    <div class="absolute inset-0 z-0 overflow-hidden">
       <img
         src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85"
         alt="Sierras de Capilla del Monte y Cerro Uritorco al atardecer"
@@ -38,7 +38,7 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
     </div>
 
     <!-- Buscador Integrado Horizontal (CRO) anclado al pie del Hero -->
-    <div class="relative z-20 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-14 w-full mt-10">
+    <div class="relative z-40 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-14 w-full mt-10">
       <div class="hero-anim">
         <HeroSearchBar client:load />
       </div>
@@ -46,7 +46,7 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
   </section>
 
   <!-- Dúo de Accesos Principales: Qué Hacer & Dónde Dormir -->
-  <section class="py-16 sm:py-24 bg-sand-50">
+  <section class="relative z-10 py-16 sm:py-24 bg-sand-50">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 gsap-duo-container">
         <!-- Tarjeta Qué Hacer (Cero Badges, Cero Eyebrows) -->
@@ -393,16 +393,6 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
         loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-[#0e261d] via-black/20 to-black/60" />
-
-      <!-- Header Editorial «Destino Destacado» POR ENCIMA de la imagen -->
-      <div class="absolute top-8 sm:top-12 left-0 right-0 z-10 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
-        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/20">
-          <div class="w-2.5 h-2.5 rounded-full bg-primary-400"></div>
-          <span class="text-xs font-bold tracking-[0.25em] text-white uppercase font-display">
-            Destino Destacado
-          </span>
-        </div>
-      </div>
     </div>
 
     <!-- Panel de Información de Ancho Completo en Verde Bosque (#0e261d) -->

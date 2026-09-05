@@ -52,7 +52,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   }, []);
 
   return (
-    <div ref={containerRef} className={`relative w-full ${className}`}>
+    <div ref={containerRef} className={`relative w-full ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -83,7 +83,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 min-w-[240px] max-h-64 overflow-y-auto"
+          className="absolute left-0 right-0 top-full mt-2 z-[100] bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 min-w-[240px] max-h-64 overflow-y-auto"
         >
           {options.map((option) => {
             const isSelected = option.value === value;

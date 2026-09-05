@@ -117,7 +117,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   };
 
   return (
-    <div ref={containerRef} className={`relative w-full ${className}`}>
+    <div ref={containerRef} className={`relative w-full ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -149,7 +149,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 w-[310px] animate-in fade-in-0 zoom-in-95">
+        <div className="absolute left-0 top-full mt-2 z-[100] bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 w-[310px] animate-in fade-in-0 zoom-in-95">
           {/* Header del Calendario */}
           <div className="flex items-center justify-between mb-4">
             <button

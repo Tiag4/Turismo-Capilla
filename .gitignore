@@ -34,6 +34,10 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
+# Temporary files
+tmp/
+*.tmp
+
 # Coverage
 coverage/
 *.lcov

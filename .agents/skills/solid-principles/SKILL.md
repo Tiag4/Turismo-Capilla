@@ -129,3 +129,67 @@ export class CreateBookingUseCase {
   ) {}
 }
 ```
+
+---
+
+## 6. SOLID en Frontend (React & Astro Islands)
+
+En la capa de presentación (`apps/frontend`), aplicamos los mismos 5 principios para evitar componentes monolíticos y frágiles:
+
+### 6.1 S - Single Responsibility Principle (SRP) & Container-Presentational
+* **Smart Containers (`< 100 líneas`)**: Se encargan de orquestar custom hooks, coordinar el estado de la búsqueda o reserva, y distribuir datos a subcomponentes. No renderizan markup visual complejo ni layouts densos.
+* **Custom Hooks (`/hooks`)**: Toda la lógica no visual, cálculo de noches/tarifas y llamadas a la API de NestJS vive encapsulada en custom hooks (`useBookingFlow`, `useAvailabilitySearch`).
+* **Dumb Components (`/components` o `/ui`)**: Componentes puramente visuales, puros y testeables que solo reciben props y disparan callbacks. Cero efectos secundarios directos (`useEffect` con fetch de datos).
+
+```tsx
+// ❌ MAL: Componente monolítico de 300 líneas con fetch, cálculo y renderizado mezclado
+export function CabinCard({ cabinId }: { cabinId: string }) {
+  const [data, setData] = useState(null);
+  useEffect(() => { fetch(`/api/v1/accommodations/${cabinId}`).then(...); }, []);
+  // ... cálculos de fechas, modales y JSX mezclado ...
+}
+
+// ✅ BIEN: SRP con Custom Hook + Dumb Component
+export function CabinCardContainer({ cabinId }: { cabinId: string }) {
+  const { cabin, isLoading, onBook } = useCabinBooking(cabinId);
+  if (isLoading) return <CabinCardSkeleton />;
+  return <CabinCardView cabin={cabin} onBook={onBook} />;
+}
+```
+
+### 6.2 O - Open/Closed Principle (OCP)
+* Extender componentes mediante composición (`children` o slots) en lugar de agregar cadenas interminables de `if/else` o booleanos como `isPromoted`, `isFeatured`, `hasSeasonalDiscount` dentro del mismo componente.
+
+```tsx
+// ✅ BIEN: Composición abierta a extensión
+export function CardHeader({ title, badge }: { title: string; badge?: React.ReactNode }) {
+  return (
+    <div className="flex justify-between items-center">
+      <h3 className="font-display font-bold text-lg">{title}</h3>
+      {badge}
+    </div>
+  );
+}
+```
+
+### 6.3 L - Liskov Substitution Principle (LSP)
+* Todo componente derivado o wrapper (ej. `Button`, `DateInput`, `Modal`) debe propagar correctamente referencias (`forwardRef`) y aceptar todas las propiedades estándar del elemento HTML subyacente sin alterar su contrato funcional.
+
+### 6.4 I - Interface Segregation Principle (ISP)
+* Los componentes visuales no deben recibir entidades gigantes si solo necesitan 2 o 3 campos. Pasar solo lo indispensable para reducir acoplamiento y re-renders innecesarios.
+
+```tsx
+// ❌ MAL: Acopla la tarjeta a toda la entidad de base de datos
+function PriceBadge({ accommodation }: { accommodation: AccommodationWithRelations }) {
+  return <span>${accommodation.pricePerNight}</span>;
+}
+
+// ✅ BIEN: Interfaz segregada mínima
+function PriceBadge({ pricePerNight }: { pricePerNight: number }) {
+  return <span>${pricePerNight.toLocaleString('es-AR')}</span>;
+}
+```
+
+### 6.5 D - Dependency Inversion Principle (DIP)
+* Los dumb components dependen de funciones callback abstractas (`onSelectDate`, `onConfirmBooking`) provistas por el container, nunca de mutaciones o llamadas directas a APIs globales.
+

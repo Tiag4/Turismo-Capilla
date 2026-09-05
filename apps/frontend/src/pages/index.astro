@@ -11,37 +11,34 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
   title="Turismo Capilla del Monte — Portal Oficial y Reservas Directas"
   description="Portal oficial de Capilla del Monte, Córdoba. Senderos al Cerro Uritorco, paseos naturales y reservas directas con prestadores habilitados."
 >
-  <!-- Hero Section Inmersivo con Fotografía de Montaña -->
-  <section class="relative min-h-[85vh] flex flex-col justify-between bg-sand-900 text-white overflow-hidden">
+  <!-- Hero Section Inmersivo con Fotografía Panorámica -->
+  <section class="relative min-h-[90vh] flex flex-col justify-between bg-sand-900 text-white overflow-hidden">
     <!-- Imagen de Fondo Panorámica del Cerro Uritorco -->
     <div class="absolute inset-0 z-0">
       <img
         src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85"
         alt="Sierras de Capilla del Monte y Cerro Uritorco al atardecer"
-        class="w-full h-full object-cover object-center brightness-[0.7] contrast-[1.05]"
+        class="w-full h-full object-cover object-center brightness-[0.65] contrast-[1.05]"
         loading="eager"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-sand-900 via-sand-900/30 to-black/40" />
+      <div class="absolute inset-0 bg-gradient-to-t from-sand-900 via-sand-900/30 to-black/50" />
     </div>
 
-    <!-- Contenido Superior: Identidad Editorial -->
+    <!-- Contenido Superior: Identidad Editorial sin Eyebrows Artificiales -->
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-36 w-full">
-      <div class="max-w-3xl space-y-4">
-        <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-uritorco-300">
-          Secretaría de Turismo • Capilla del Monte
-        </span>
-        <h1 class="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white tracking-[-0.03em] leading-[1.05]">
+      <div class="max-w-3xl space-y-5">
+        <h1 class="hero-anim font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-[-0.03em] leading-[1.02]">
           El valle del Uritorco, directo y sin intermediarios.
         </h1>
-        <p class="text-base sm:text-xl text-sand-100/90 font-normal max-w-2xl leading-relaxed">
-          Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente en el pueblo.
+        <p class="hero-anim text-base sm:text-xl text-sand-100/90 font-normal max-w-2xl leading-relaxed">
+          Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.
         </p>
       </div>
     </div>
 
     <!-- Buscador Integrado Horizontal (CRO) anclado al pie del Hero -->
-    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full mt-12">
-      <div class="bg-white rounded-2xl shadow-2xl p-4 sm:p-5 border border-sand-200">
+    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full mt-10">
+      <div class="hero-anim bg-white rounded-3xl shadow-2xl p-4 sm:p-6 border border-sand-200">
         <form action="/alojamientos" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           <div>
             <label for="checkIn" class="block text-[11px] font-bold text-sand-700 uppercase tracking-wider mb-1.5">
@@ -69,28 +66,28 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
 
           <div>
             <label for="guests" class="block text-[11px] font-bold text-sand-700 uppercase tracking-wider mb-1.5">
-              Cantidad de Huéspedes
+              Huéspedes
             </label>
             <select
               id="guests"
               name="guests"
               class="w-full px-3.5 py-2.5 rounded-xl border border-sand-300 text-sm text-sand-900 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-sand-50/60 font-sans cursor-pointer"
             >
-              <option value="1">1 Huésped</option>
-              <option value="2" selected>2 Huéspedes</option>
-              <option value="3">3 Huéspedes</option>
-              <option value="4">4 Huéspedes</option>
-              <option value="5">5 o más Huéspedes</option>
+              <option value="1">1 Persona</option>
+              <option value="2" selected>2 Personas</option>
+              <option value="3">3 Personas</option>
+              <option value="4">4 Personas</option>
+              <option value="5">5 o más Personas</option>
             </select>
           </div>
 
           <div>
             <button
               type="submit"
-              class="w-full py-2.5 px-6 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold text-sm transition-colors shadow-lg shadow-primary-500/25 cursor-pointer h-[42px] flex items-center justify-center gap-2"
+              class="w-full py-2.5 px-6 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold text-sm transition-colors shadow-lg shadow-primary-500/25 cursor-pointer h-[44px] flex items-center justify-center gap-2"
             >
               <span>Buscar Disponibilidad</span>
-              <span>→</span>
+              <span class="text-base leading-none">→</span>
             </button>
           </div>
         </form>
@@ -101,60 +98,60 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
   <!-- Dúo de Accesos Principales: Qué Hacer & Dónde Dormir -->
   <section class="py-16 sm:py-24 bg-sand-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Tarjeta Qué Hacer -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 gsap-duo-container">
+        <!-- Tarjeta Qué Hacer (Limpia sin pill badges) -->
         <a
           href="/atractivos"
-          class="group relative h-[420px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-10 border border-sand-200"
+          class="gsap-duo-card group relative h-[440px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-12 border border-sand-200"
         >
           <img
             src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
             alt="Parque Los Terrones y senderos de montaña"
             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
 
           <div class="relative z-10 space-y-3">
-            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-uritorco-600 text-white inline-block">
-              Naturaleza & Trekking
+            <span class="text-xs uppercase font-bold tracking-widest text-uritorco-300 block">
+              Circuitos de Montaña & Naturaleza
             </span>
             <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
               Qué Hacer
             </h2>
             <p class="text-sm text-sand-200 line-clamp-2 max-w-md font-normal leading-relaxed">
-              Ascensos a la cumbre del Cerro Uritorco, cañadones de Los Terrones, espejos de agua en El Cajón y ollas del río Calabalumba.
+              12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones, ollas de agua en La Toma y espejos del dique El Cajón.
             </p>
             <div class="pt-2 flex items-center gap-2 text-sm font-semibold text-white group-hover:text-uritorco-300 transition-colors">
-              <span>Explorar 12 circuitos oficiales</span>
+              <span>Explorar los circuitos y requisitos técnicos</span>
               <span class="group-hover:translate-x-1.5 transition-transform">→</span>
             </div>
           </div>
         </a>
 
-        <!-- Tarjeta Dónde Dormir -->
+        <!-- Tarjeta Dónde Dormir (Limpia sin pill badges) -->
         <a
           href="/alojamientos"
-          class="group relative h-[420px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-10 border border-sand-200"
+          class="gsap-duo-card group relative h-[440px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-end p-8 sm:p-12 border border-sand-200"
         >
           <img
             src="https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80"
             alt="Cabañas serranas al pie del cerro"
             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
 
           <div class="relative z-10 space-y-3">
-            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-500 text-white inline-block">
-              Hospedajes Habilitados
+            <span class="text-xs uppercase font-bold tracking-widest text-primary-300 block">
+              Establecimientos Habilitados Oficialmente
             </span>
             <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
               Dónde Dormir
             </h2>
             <p class="text-sm text-sand-200 line-clamp-2 max-w-md font-normal leading-relaxed">
-              Cabañas de piedra y madera, hosterías de época y posadas con vista panorámica a las sierras, verificadas por el municipio.
+              Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época. Trato directo con el prestador, sin comisiones ni sobreprecios.
             </p>
             <div class="pt-2 flex items-center gap-2 text-sm font-semibold text-white group-hover:text-primary-300 transition-colors">
-              <span>Ver catálogo con tarifas directas</span>
+              <span>Ver catálogo con tarifas transparentes</span>
               <span class="group-hover:translate-x-1.5 transition-transform">→</span>
             </div>
           </div>
@@ -163,16 +160,16 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
     </div>
   </section>
 
-  <!-- Paseos Icónicos: Composición Asimétrica (Bento) -->
+  <!-- Paseos Icónicos: Composición Asimétrica (Bento) Enriquecida -->
   <section class="py-16 sm:py-24 bg-sand-100/60 border-t border-sand-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
-        <div class="max-w-xl">
+        <div class="max-w-2xl">
           <h2 class="font-display font-extrabold text-3xl sm:text-5xl text-sand-900 tracking-tight">
-            Paseos y Circuitos Icónicos
+            Senderos y Circuitos Icónicos
           </h2>
           <p class="mt-3 text-base text-sand-700 leading-relaxed font-normal">
-            Rutas de montaña señalizadas y protegidas por guardaparques y defensa civil.
+            Rutas de montaña señalizadas con datos técnicos verificados por guardaparques y guías habilitados.
           </p>
         </div>
         <a
@@ -184,40 +181,42 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
         </a>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 gsap-bento-grid">
         <!-- Atractivo Protagonista: Cerro Uritorco (Span 2) -->
-        <article class="lg:col-span-2 relative rounded-3xl overflow-hidden bg-sand-900 text-white min-h-[440px] flex flex-col justify-end p-8 sm:p-12 shadow-xl border border-sand-200 group">
+        <article class="gsap-bento-item lg:col-span-2 relative rounded-3xl overflow-hidden bg-sand-900 text-white min-h-[460px] flex flex-col justify-end p-8 sm:p-12 shadow-xl border border-sand-200 group">
           <img
             src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85"
             alt="Cerro Uritorco"
             class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-700"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
 
           <div class="relative z-10 space-y-4 max-w-2xl">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-xs text-white">
-                1.979 msnm • Cumbre Mayor
-              </span>
-              <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-sand-950">
-                Dificultad Alta • 7-8 hs
-              </span>
+            <!-- Barra de datos técnicos editorial (sin badges flotantes) -->
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-sand-300">
+              <span class="text-white font-bold">1.979 msnm</span>
+              <span class="text-sand-500">•</span>
+              <span>7 a 8 hs ida y vuelta</span>
+              <span class="text-sand-500">•</span>
+              <span class="text-amber-300">Exigencia técnica alta</span>
+              <span class="text-sand-500">•</span>
+              <span>Registro en La Toma</span>
             </div>
 
-            <h3 class="font-display font-black text-3xl sm:text-4xl text-white">
+            <h3 class="font-display font-black text-3xl sm:text-5xl text-white">
               Cerro Uritorco
             </h3>
 
             <p class="text-sm sm:text-base text-sand-200 leading-relaxed font-normal">
-              El emblema máximo del Valle de Punilla. El ascenso exige calzado técnico, registro previo obligatorio en la base de La Toma y descenso antes del anochecer.
+              El techo de las Sierras Chicas. El ascenso requiere calzado de montaña con suela de tracción, ración de 2 litros de agua por persona y registro presencial obligatorio antes de las 11:00 hs en la base de La Toma.
             </p>
 
             <div class="pt-2">
               <a
                 href="/atractivos/uritorco"
-                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white text-sand-900 hover:bg-sand-100 font-bold text-xs transition-colors"
+                class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white text-sand-900 hover:bg-sand-100 font-bold text-xs transition-colors"
               >
-                Guía completa de ascenso →
+                Guía completa y requisitos de ascenso →
               </a>
             </div>
           </div>
@@ -225,31 +224,39 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
 
         <!-- Columna Secundaria: Los Terrones y Dique El Cajón -->
         <div class="space-y-8 flex flex-col justify-between">
-          <article class="relative rounded-3xl overflow-hidden bg-sand-900 text-white h-[208px] flex flex-col justify-end p-6 shadow-md border border-sand-200 group">
+          <article class="gsap-bento-item relative rounded-3xl overflow-hidden bg-sand-900 text-white h-[216px] flex flex-col justify-end p-6 shadow-md border border-sand-200 group">
             <img
               src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
               alt="Parque Los Terrones"
               class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             <div class="relative z-10 space-y-1">
-              <span class="text-xs font-bold text-uritorco-300">Dificultad Media • 2-3 hs</span>
+              <div class="text-[11px] font-semibold text-sand-300 flex items-center gap-2">
+                <span>1.400 msnm</span>
+                <span>•</span>
+                <span>2 a 3 hs de circuito</span>
+              </div>
               <h4 class="font-display font-bold text-xl text-white">Parque Los Terrones</h4>
-              <p class="text-xs text-sand-300 line-clamp-1">Formaciones de arenisca rojiza y cañadones.</p>
+              <p class="text-xs text-sand-300 line-clamp-2">Cañadones rojizos y formaciones de arenisca esculpidas hace 300 millones de años.</p>
             </div>
           </article>
 
-          <article class="relative rounded-3xl overflow-hidden bg-sand-900 text-white h-[208px] flex flex-col justify-end p-6 shadow-md border border-sand-200 group">
+          <article class="gsap-bento-item relative rounded-3xl overflow-hidden bg-sand-900 text-white h-[216px] flex flex-col justify-end p-6 shadow-md border border-sand-200 group">
             <img
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
               alt="Dique El Cajón"
               class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             <div class="relative z-10 space-y-1">
-              <span class="text-xs font-bold text-emerald-portal-300">Paseo Familiar • Sin Dificultad</span>
+              <div class="text-[11px] font-semibold text-sand-300 flex items-center gap-2">
+                <span>Paseo familiar accesible</span>
+                <span>•</span>
+                <span>Mirador y deportes sin motor</span>
+              </div>
               <h4 class="font-display font-bold text-xl text-white">Dique El Cajón</h4>
-              <p class="text-xs text-sand-300 line-clamp-1">Espejo de agua, paredones de piedra y mirador.</p>
+              <p class="text-xs text-sand-300 line-clamp-2">Paredón de hormigón de 42m, espejo de agua cristalina y vista panorámica a Los Terrones.</p>
             </div>
           </article>
         </div>
@@ -257,16 +264,16 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
     </div>
   </section>
 
-  <!-- Alojamientos Destacados del Mes (Showcase con Precios Reales) -->
+  <!-- Alojamientos Destacados del Mes (Showcase con Precios y Cero Badge Slop) -->
   <section class="py-16 sm:py-24 bg-sand-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
         <div class="max-w-xl">
           <h2 class="font-display font-extrabold text-3xl sm:text-5xl text-sand-900 tracking-tight">
-            Cabañas y Posadas Verificadas
+            Cabañas y Posadas del Valle
           </h2>
           <p class="mt-3 text-base text-sand-700 leading-relaxed font-normal">
-            Establecimientos formalmente inspeccionados y adheridos a la Comisión de Turismo.
+            Establecimientos formalmente inspeccionados por la Secretaría de Turismo, con habilitación vigente y contacto directo.
           </p>
         </div>
         <a
@@ -278,9 +285,9 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
         </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 gsap-cabins-grid">
         {featuredCabins.map((cabin) => (
-          <article class="bg-white rounded-3xl border border-sand-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+          <article class="gsap-cabin-card bg-white rounded-3xl border border-sand-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
             <div class="relative h-60 w-full overflow-hidden bg-sand-200">
               <img
                 src={cabin.imageUrl}
@@ -289,36 +296,52 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <div class="absolute top-4 left-4">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-primary-500 text-white shadow-md">
-                  Verificado Municipal
+              <div class="absolute bottom-3 left-4 text-white">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-sand-200 block">
+                  {cabin.category}
                 </span>
               </div>
             </div>
 
             <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
               <div>
-                <span class="text-xs uppercase font-bold tracking-wider text-sand-500">
-                  {cabin.category}
-                </span>
-                <h3 class="font-display font-bold text-xl text-sand-900 mt-1 group-hover:text-primary-600 transition-colors">
+                <h3 class="font-display font-bold text-xl text-sand-900 group-hover:text-primary-600 transition-colors">
                   {cabin.title}
                 </h3>
                 <p class="text-xs text-sand-600 mt-2 line-clamp-2 leading-relaxed">
                   {cabin.subtitle}
                 </p>
+
+                <!-- Amenities y servicios integrados -->
+                {cabin.amenities && (
+                  <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] text-sand-500">
+                    {cabin.amenities.map((amenity, idx) => (
+                      <span>
+                        {amenity}
+                        {idx < cabin.amenities!.length - 1 ? ' ·' : ''}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div class="pt-4 border-t border-sand-100 flex items-center justify-between">
+              <div class="pt-4 border-t border-sand-100 flex items-end justify-between">
                 <div>
-                  <span class="text-[11px] text-sand-500 block">Tarifa por noche</span>
-                  <span class="text-lg font-black text-sand-900">
+                  <!-- Indicador de habilitación limpio sin badge flotante -->
+                  <div class="flex items-center gap-1.5 text-[11px] text-emerald-portal-700 font-medium mb-1">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>Habilitación Oficial</span>
+                  </div>
+                  <span class="text-[11px] text-sand-500 block">Por noche desde</span>
+                  <span class="text-xl font-black text-sand-900">
                     ${(cabin.pricePerNight ?? 0).toLocaleString('es-AR')}
                   </span>
                 </div>
                 <a
                   href={cabin.ctaUrl}
-                  class="px-4 py-2 rounded-xl bg-sand-900 hover:bg-primary-600 text-white font-semibold text-xs transition-colors"
+                  class="px-4 py-2.5 rounded-xl bg-sand-900 hover:bg-primary-600 text-white font-semibold text-xs transition-colors"
                 >
                   Consultar →
                 </a>
@@ -339,68 +362,87 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
             Explorá el Valle en el Mapa
           </h2>
           <p class="mt-3 text-base text-sand-700 leading-relaxed font-normal">
-            Ubicá cabañas habilitadas, senderos al Uritorco, balnearios y diques. Hacé click en cualquier punto para ver tarifas y distancias.
+            Ubicá cabañas habilitadas, senderos al Uritorco, balnearios y diques. Hacé zoom o click en cualquier punto para ver tarifas y distancias reales.
           </p>
         </div>
 
-        <div class="mt-4 md:mt-0 flex items-center gap-4 text-xs font-semibold text-sand-600">
+        <div class="mt-4 md:mt-0 flex items-center gap-5 text-xs font-semibold text-sand-700">
           <div class="flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-[#e06d39] inline-block shadow-xs"></span>
+            <span class="w-3 h-3 rounded-full bg-[#e06d39] inline-block shadow-xs"></span>
             <span>Cabañas Habilitadas</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-[#5c7e30] inline-block shadow-xs"></span>
+            <span class="w-3 h-3 rounded-full bg-[#5c7e30] inline-block shadow-xs"></span>
             <span>Paseos & Senderos</span>
           </div>
         </div>
       </div>
 
-      <InteractiveMapContainer client:only="react" />
+      <div class="gsap-map-container">
+        <InteractiveMapContainer client:only="react" />
+      </div>
     </div>
   </section>
 
-  <!-- Circuito Patrimonial: Casonas con Historia (Captura Oficial) -->
-  <section class="py-20 bg-[#4e261e] text-white">
+  <!-- Circuito Patrimonial: Casonas con Historia (Paseo Histórico) -->
+  <section class="py-20 bg-[#3d2019] text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-3xl space-y-6">
-        <span class="text-xs font-bold uppercase tracking-[0.2em] text-primary-300">
-          Circuito Histórico & Arquitectónico
+      <div class="max-w-3xl space-y-6 gsap-casonas-content">
+        <span class="text-xs uppercase font-bold tracking-widest text-primary-300 block">
+          Patrimonio Arquitectónico de Capilla del Monte
         </span>
         <h2 class="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
           Casonas con Historia
         </h2>
         <p class="text-base sm:text-lg text-sand-200 leading-relaxed font-normal">
-          A principios del siglo XX, Capilla del Monte fue el destino elegido por familias aristocráticas que construyeron residencias señoriales de estilo inglés, francés y pintoresquista. Descubrí el circuito autoguiado por el casco fundacional del pueblo.
+          A principios del siglo XX, la llegada del ferrocarril convirtió a Capilla del Monte en una distinguida villa de veraneo. Familias notables construyeron residencias señoriales de estilos normando, pintoresquista y Tudor con piedras de las canteras locales.
         </p>
+
+        <!-- Datos clave del circuito -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-white/15">
+          <div>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">14</span>
+            <span class="text-xs text-sand-300 font-medium">Residencias catalogadas</span>
+          </div>
+          <div>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">2.5 km</span>
+            <span class="text-xs text-sand-300 font-medium">Circuito peatonal autoguiado</span>
+          </div>
+          <div>
+            <span class="block font-display font-black text-2xl sm:text-3xl text-primary-400">1910–1930</span>
+            <span class="text-xs text-sand-300 font-medium">Época dorada fundacional</span>
+          </div>
+        </div>
+
         <div class="pt-4">
           <a
             href="/atractivos/casonas"
-            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-sm shadow-xl transition-all cursor-pointer"
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-xs tracking-wide shadow-xl transition-all cursor-pointer"
           >
-            Descargar Mapa del Circuito Patrimonial →
+            Descargar Mapa y Guía del Circuito Patrimonial →
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Respaldo Institucional (Anti-Estafas) -->
+  <!-- Respaldo Institucional (Garantía Anti-Fraudes) -->
   <section class="py-16 sm:py-20 bg-sand-50 border-t border-sand-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-white rounded-3xl border border-sand-200 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-sm">
+      <div class="gsap-trust-card bg-white rounded-3xl border border-sand-200 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-sm">
         <div class="max-w-2xl space-y-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-portal-600">
-            Seguridad Turística Municipal
+          <span class="text-xs uppercase font-bold tracking-widest text-emerald-portal-700 block">
+            Garantía Oficial de Reserva Directa
           </span>
           <h3 class="font-display font-bold text-2xl sm:text-3xl text-sand-900">
-            Reservá con la tranquilidad de prestadores registrados
+            Tranquilidad y seguridad para tu estadía en las sierras
           </h3>
           <p class="text-sm text-sand-600 leading-relaxed">
-            Cada establecimiento publicado en este portal cuenta con inspección formal y habilitación vigente otorgada por la Secretaría de Turismo de Capilla del Monte, evitando sobreprecios y fraudes de alquileres no verificados.
+            Cada establecimiento publicado en este portal cuenta con verificación técnica presencial y habilitación comercial otorgada por la Municipalidad de Capilla del Monte, protegiéndote contra estafas virtuales y alojamientos clandestinos.
           </p>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+        <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0">
           <a
             href="/reservas/consulta"
             class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-sand-100 hover:bg-sand-200 text-sand-900 font-bold text-xs transition-colors text-center"
@@ -418,3 +460,112 @@ const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation').sli
     </div>
   </section>
 </Layout>
+
+<!-- GSAP ScrollTrigger Animations Script -->
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // MatchMedia para respetar accesibilidad y preferencias de reducción de movimiento
+  const mm = gsap.matchMedia();
+
+  mm.add(
+    {
+      isNormal: '(prefers-reduced-motion: no-preference)',
+      isReduced: '(prefers-reduced-motion: reduce)',
+    },
+    (context) => {
+      const { isReduced } = context.conditions as { isReduced: boolean };
+
+      if (isReduced) {
+        return;
+      }
+
+      // Animación de entrada Hero
+      gsap.from('.hero-anim', {
+        y: 28,
+        autoAlpha: 0,
+        duration: 0.85,
+        stagger: 0.15,
+        ease: 'power2.out',
+      });
+
+      // Animación Dúo de Accesos
+      gsap.from('.gsap-duo-card', {
+        scrollTrigger: {
+          trigger: '.gsap-duo-container',
+          start: 'top 82%',
+        },
+        y: 35,
+        autoAlpha: 0,
+        duration: 0.8,
+        stagger: 0.18,
+        ease: 'power2.out',
+      });
+
+      // Animación Bento Grid de Paseos
+      gsap.from('.gsap-bento-item', {
+        scrollTrigger: {
+          trigger: '.gsap-bento-grid',
+          start: 'top 80%',
+        },
+        y: 30,
+        autoAlpha: 0,
+        duration: 0.75,
+        stagger: 0.14,
+        ease: 'power2.out',
+      });
+
+      // Animación Cards de Cabañas
+      gsap.from('.gsap-cabin-card', {
+        scrollTrigger: {
+          trigger: '.gsap-cabins-grid',
+          start: 'top 82%',
+        },
+        y: 30,
+        autoAlpha: 0,
+        duration: 0.7,
+        stagger: 0.12,
+        ease: 'power2.out',
+      });
+
+      // Animación Contenedor de Mapa
+      gsap.from('.gsap-map-container', {
+        scrollTrigger: {
+          trigger: '.gsap-map-container',
+          start: 'top 85%',
+        },
+        y: 25,
+        autoAlpha: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      });
+
+      // Animación Casonas
+      gsap.from('.gsap-casonas-content', {
+        scrollTrigger: {
+          trigger: '.gsap-casonas-content',
+          start: 'top 85%',
+        },
+        y: 25,
+        autoAlpha: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      });
+
+      // Animación Sello de Seguridad
+      gsap.from('.gsap-trust-card', {
+        scrollTrigger: {
+          trigger: '.gsap-trust-card',
+          start: 'top 88%',
+        },
+        y: 25,
+        autoAlpha: 0,
+        duration: 0.75,
+        ease: 'power2.out',
+      });
+    }
+  );
+</script>

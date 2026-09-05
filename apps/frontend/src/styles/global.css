@@ -5,6 +5,9 @@
 .custom-leaflet-marker {
   background: transparent !important;
   border: none !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 /* Design System Oficial — Capilla del Monte (Pueblo Uritorco) */

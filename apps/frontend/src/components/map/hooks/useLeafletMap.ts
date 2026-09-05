@@ -31,10 +31,10 @@ export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafl
 
       // Centro geográfico de Capilla del Monte (Valle del Uritorco)
       const map = L.map(containerRef.current, {
-        center: [-30.858, -64.522],
-        zoom: 13,
+        center: [-30.8585, -64.5245],
+        zoom: 14.5,
         zoomControl: true,
-        scrollWheelZoom: false, // Evita atrapar el scroll de la página
+        scrollWheelZoom: true,
       });
 
       // CartoDB Voyager — Paleta limpia y cálida tipo editorial
@@ -74,40 +74,40 @@ export function useLeafletMap({ places, selectedPlace, onSelectPlace }: UseLeafl
         const isAccommodation = place.type === 'accommodation';
         const isSelected = selectedPlace?.id === place.id;
 
-        // Custom HTML DivIcon con Tailwind
+        // Custom HTML DivIcon con Tailwind libre de overflow y sin emojis
         const iconHtml = isAccommodation
           ? `
-            <div class="relative group cursor-pointer transition-transform duration-200 ${
+            <div class="relative inline-flex flex-col items-center cursor-pointer transition-transform duration-200 ${
               isSelected ? 'scale-125 z-50' : 'hover:scale-110'
-            }">
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e06d39] text-white shadow-lg shadow-[#e06d39]/40 border-2 ${
-                isSelected ? 'border-white ring-4 ring-[#e06d39]/30' : 'border-white'
-              } font-sans text-xs font-bold whitespace-nowrap">
-                <span>🏡</span>
+            } select-none">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e06d39] text-white shadow-md border-2 ${
+                isSelected ? 'border-white ring-4 ring-[#e06d39]/40' : 'border-white'
+              } font-sans text-[11px] font-bold whitespace-nowrap">
+                <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span>$${((place.pricePerNight ?? 0) / 1000).toFixed(0)}k</span>
               </div>
-              <div class="w-2 h-2 bg-[#e06d39] rotate-45 mx-auto -mt-1 border-r border-b border-white"></div>
+              <div class="w-2 h-2 bg-[#e06d39] rotate-45 -mt-1 border-r border-b border-white"></div>
             </div>
           `
           : `
-            <div class="relative group cursor-pointer transition-transform duration-200 ${
+            <div class="relative inline-flex flex-col items-center cursor-pointer transition-transform duration-200 ${
               isSelected ? 'scale-125 z-50' : 'hover:scale-110'
-            }">
-              <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#5c7e30] text-white shadow-lg shadow-[#5c7e30]/40 border-2 ${
-                isSelected ? 'border-white ring-4 ring-[#5c7e30]/30' : 'border-white'
-              } font-sans text-xs font-bold whitespace-nowrap">
-                <span>⛰️</span>
+            } select-none">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#5c7e30] text-white shadow-md border-2 ${
+                isSelected ? 'border-white ring-4 ring-[#5c7e30]/40' : 'border-white'
+              } font-sans text-[11px] font-bold whitespace-nowrap">
+                <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                 <span>${place.title.split(' ')[0]}</span>
               </div>
-              <div class="w-2 h-2 bg-[#5c7e30] rotate-45 mx-auto -mt-1 border-r border-b border-white"></div>
+              <div class="w-2 h-2 bg-[#5c7e30] rotate-45 -mt-1 border-r border-b border-white"></div>
             </div>
           `;
 
         const customIcon = L.divIcon({
           html: iconHtml,
           className: 'custom-leaflet-marker',
-          iconSize: [80, 36],
-          iconAnchor: [40, 36],
+          iconSize: undefined,
+          iconAnchor: [34, 26],
         });
 
         const marker = L.marker([place.lat, place.lng], { icon: customIcon }).addTo(map);

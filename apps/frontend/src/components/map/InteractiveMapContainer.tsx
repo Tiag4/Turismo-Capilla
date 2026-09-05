@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Home, Mountain } from 'lucide-react';
 import { MOCK_PLACES, type MapPlace } from '../../data/mock-places';
 import { useLeafletMap } from './hooks/useLeafletMap';
 import { MapCardPreview } from './MapCardPreview';
@@ -56,7 +57,7 @@ export const InteractiveMapContainer: React.FC = () => {
               : 'bg-white/95 text-sand-800 hover:bg-white border border-sand-200'
           }`}
         >
-          <span>🏡</span>
+          <Home className="w-3.5 h-3.5" />
           <span>Cabañas & Alojamientos</span>
         </button>
 
@@ -69,7 +70,7 @@ export const InteractiveMapContainer: React.FC = () => {
               : 'bg-white/95 text-sand-800 hover:bg-white border border-sand-200'
           }`}
         >
-          <span>⛰️</span>
+          <Mountain className="w-3.5 h-3.5" />
           <span>Paseos & Senderos</span>
         </button>
       </div>

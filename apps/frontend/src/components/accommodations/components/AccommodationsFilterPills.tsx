@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Waves, Mountain, HeartHandshake, Flame, Droplets, ArrowUpDown } from 'lucide-react';
+import { Layers, Waves, Mountain, HeartHandshake, Flame, Droplets, ArrowUpDown } from 'lucide-react';
 import type { PillFilter, SortOption } from '../hooks/useAccommodationsFilter';
 
 interface AccommodationsFilterPillsProps {
@@ -17,7 +17,7 @@ interface PillItem {
 }
 
 const PILLS: PillItem[] = [
-  { id: 'all', label: 'Todos', icon: <Sparkles className="w-3.5 h-3.5" /> },
+  { id: 'all', label: 'Todos', icon: <Layers className="w-3.5 h-3.5" /> },
   { id: 'pileta', label: 'Con pileta', icon: <Waves className="w-3.5 h-3.5" /> },
   { id: 'falda', label: 'Falda del Uritorco', icon: <Mountain className="w-3.5 h-3.5" /> },
   { id: 'pet', label: 'Pet-friendly', icon: <HeartHandshake className="w-3.5 h-3.5" /> },

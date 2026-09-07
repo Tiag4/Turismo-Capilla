@@ -11,8 +11,8 @@ export const AccommodationsCatalogContainer: React.FC = () => {
   const {
     searchQuery,
     setSearchQuery,
-    selectedPill,
-    setSelectedPill,
+    selectedPills,
+    togglePill,
     sortOption,
     setSortOption,
     checkIn,
@@ -45,10 +45,10 @@ export const AccommodationsCatalogContainer: React.FC = () => {
         nightsCount={nightsCount}
       />
 
-      {/* Píldoras de Filtro Rápido y Selector de Orden */}
+      {/* Píldoras de Filtro Rápido Multi-selección y Selector de Orden Custom */}
       <AccommodationsFilterPills
-        selectedPill={selectedPill}
-        onSelectPill={setSelectedPill}
+        selectedPills={selectedPills}
+        onTogglePill={togglePill}
         sortOption={sortOption}
         onSortChange={setSortOption}
         totalCount={totalCount}
@@ -72,8 +72,8 @@ export const AccommodationsCatalogContainer: React.FC = () => {
       {/* Botón Flotante para Abrir Mapa */}
       <FloatingMapTrigger totalCount={totalCount} onOpenMap={openMap} />
 
-      {/* Modal Drawer con Mapa Interactivo */}
-      <AccommodationsMapModal isOpen={isMapOpen} onClose={closeMap} />
+      {/* Modal Drawer con Mapa Interactivo (Carga defensiva bajo demanda) */}
+      {isMapOpen && <AccommodationsMapModal isOpen={isMapOpen} onClose={closeMap} />}
     </div>
   );
 };

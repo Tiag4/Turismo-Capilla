@@ -6,7 +6,7 @@ export type SortOption = 'recommended' | 'price-asc' | 'price-desc' | 'rating-de
 
 export function useAccommodationsFilter() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPill, setSelectedPill] = useState<PillFilter>('all');
+  const [selectedPills, setSelectedPills] = useState<PillFilter[]>(['all']);
   const [sortOption, setSortOption] = useState<SortOption>('recommended');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -27,15 +27,38 @@ export function useAccommodationsFilter() {
     if (qCheckOut) setCheckOut(qCheckOut);
     if (qGuests) setGuests(qGuests);
 
+    const initialPills: PillFilter[] = [];
     if (qAmenity === 'pileta-climatizada' || qAmenity === 'pileta') {
-      setSelectedPill('pileta');
-    } else if (qAmenity === 'petFriendly' || params.get('petFriendly') === 'true') {
-      setSelectedPill('pet');
-    } else if (qZone === 'falda-del-uritorco') {
-      setSelectedPill('falda');
-    } else if (qZone === 'la-toma') {
-      setSelectedPill('rio');
+      initialPills.push('pileta');
     }
+    if (qAmenity === 'petFriendly' || params.get('petFriendly') === 'true') {
+      initialPills.push('pet');
+    }
+    if (qZone === 'falda-del-uritorco') {
+      initialPills.push('falda');
+    }
+    if (qZone === 'la-toma') {
+      initialPills.push('rio');
+    }
+
+    if (initialPills.length > 0) {
+      setSelectedPills(initialPills);
+    }
+  }, []);
+
+  // Multi-select toggle handler
+  const togglePill = useCallback((pill: PillFilter) => {
+    if (pill === 'all') {
+      setSelectedPills(['all']);
+      return;
+    }
+
+    setSelectedPills((prev) => {
+      const withoutAll = prev.filter((p) => p !== 'all');
+      const exists = withoutAll.includes(pill);
+      const next = exists ? withoutAll.filter((p) => p !== pill) : [...withoutAll, pill];
+      return next.length === 0 ? ['all'] : next;
+    });
   }, []);
 
   // Calculate nights count
@@ -56,39 +79,47 @@ export function useAccommodationsFilter() {
   const filteredAccommodations = useMemo(() => {
     let list = [...rawAccommodations];
 
-    // Pill filters
-    if (selectedPill === 'pileta') {
-      list = list.filter((p) =>
-        p.amenities?.some((a) => a.toLowerCase().includes('pileta') || a.toLowerCase().includes('piscina'))
-      );
-    } else if (selectedPill === 'falda') {
-      list = list.filter((p) => p.zone?.toLowerCase().includes('falda') || p.title.toLowerCase().includes('uritorco'));
-    } else if (selectedPill === 'pet') {
-      list = list.filter((p) =>
-        p.amenities?.some((a) => a.toLowerCase().includes('mascota') || a.toLowerCase().includes('parque')) ||
-        p.zone?.toLowerCase().includes('terrones') ||
-        p.zone?.toLowerCase().includes('toma')
-      );
-    } else if (selectedPill === 'asador') {
-      list = list.filter((p) =>
-        p.amenities?.some((a) => a.toLowerCase().includes('asador') || a.toLowerCase().includes('parrilla'))
-      );
-    } else if (selectedPill === 'rio') {
-      list = list.filter((p) =>
-        p.zone?.toLowerCase().includes('río') ||
-        p.zone?.toLowerCase().includes('toma') ||
-        p.subtitle.toLowerCase().includes('río')
-      );
+    // Multi-Pill filters (conjunction/AND logic)
+    if (!selectedPills.includes('all') && selectedPills.length > 0) {
+      list = list.filter((p) => {
+        return selectedPills.every((pill) => {
+          if (pill === 'pileta') {
+            return p.amenities?.some((a) => a.toLowerCase().includes('pileta') || a.toLowerCase().includes('piscina'));
+          }
+          if (pill === 'falda') {
+            return p.zone?.toLowerCase().includes('falda') || p.title.toLowerCase().includes('uritorco');
+          }
+          if (pill === 'pet') {
+            return (
+              p.amenities?.some((a) => a.toLowerCase().includes('mascota') || a.toLowerCase().includes('parque')) ||
+              p.zone?.toLowerCase().includes('terrones') ||
+              p.zone?.toLowerCase().includes('toma')
+            );
+          }
+          if (pill === 'asador') {
+            return p.amenities?.some((a) => a.toLowerCase().includes('asador') || a.toLowerCase().includes('parrilla'));
+          }
+          if (pill === 'rio') {
+            return (
+              p.zone?.toLowerCase().includes('río') ||
+              p.zone?.toLowerCase().includes('toma') ||
+              p.subtitle.toLowerCase().includes('río')
+            );
+          }
+          return true;
+        });
+      });
     }
 
-    // Text search query
+    // Live Text search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter((p) =>
         p.title.toLowerCase().includes(q) ||
         p.subtitle.toLowerCase().includes(q) ||
         (p.zone?.toLowerCase().includes(q) ?? false) ||
-        (p.category?.toLowerCase().includes(q) ?? false)
+        (p.category?.toLowerCase().includes(q) ?? false) ||
+        p.amenities?.some((a) => a.toLowerCase().includes(q))
       );
     }
 
@@ -102,10 +133,10 @@ export function useAccommodationsFilter() {
     }
 
     return list;
-  }, [rawAccommodations, selectedPill, searchQuery, sortOption]);
+  }, [rawAccommodations, selectedPills, searchQuery, sortOption]);
 
   const resetFilters = useCallback(() => {
-    setSelectedPill('all');
+    setSelectedPills(['all']);
     setSearchQuery('');
     setSortOption('recommended');
   }, []);
@@ -116,8 +147,9 @@ export function useAccommodationsFilter() {
   return {
     searchQuery,
     setSearchQuery,
-    selectedPill,
-    setSelectedPill,
+    selectedPills,
+    setSelectedPills,
+    togglePill,
     sortOption,
     setSortOption,
     checkIn,

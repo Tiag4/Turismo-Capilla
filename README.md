@@ -83,8 +83,6 @@ Proyecto desarrollado por:
 | **Tiago Nicolitsis**    |
 | **Martino Costigliolo** |
 | **Juan Larcher**        |
-| **Braian Aguilera**     |
-| **Iris De Dominicci**   |
 
 ---
 

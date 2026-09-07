@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { AccommodationsCatalogContainer } from '../../components/accommodations/AccommodationsCatalogContainer';
+---
+
+<Layout
+  title="Alojamientos y Cabañas en Capilla del Monte — Pueblo Uritorco"
+  description="Catálogo oficial de cabañas, hosterías y posadas verificadas al pie del Cerro Uritorco. Reserva directa con prestadores habilitados oficialmente sin comisiones ocultas."
+>
+  <main class="min-h-screen bg-[#FAF8F5] text-stone-900">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+      <AccommodationsCatalogContainer client:load />
+    </div>
+  </main>
+</Layout>

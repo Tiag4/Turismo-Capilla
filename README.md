@@ -140,9 +140,13 @@ Este README será actualizado a medida que el proyecto avance.
 
 ---
 
-## Documentación
+## 📚 Documentación y Recursos
 
-La documentación y planificación del proyecto se encuentra disponible en la **Wiki del repositorio**, donde se detallan los aspectos relacionados con el PMI, análisis, planificación y evolución del proyecto.
+La planificación y gestión del proyecto se distribuyen en los siguientes espacios:
+
+- **Wiki del repositorio:** Detalla los aspectos relacionados con el marco PMI, análisis, planificación, actas y evolución del proyecto.
+- **Google Drive:** Almacena la documentación.  
+   [Acceder a la carpeta del proyecto en Google Drive](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E)
 
 ---
 

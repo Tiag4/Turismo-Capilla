@@ -40,10 +40,6 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
     <header className="space-y-6 pt-6 pb-2">
       {/* Título Editorial y Subtítulo */}
       <div className="space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sand-200/80 text-sand-800 text-xs font-bold uppercase tracking-wider">
-          <span className="w-2 h-2 rounded-full bg-uritorco-500"></span>
-          Directorio Oficial de Hospedajes Habilitados
-        </div>
         <h1 className="font-display font-black text-3xl sm:text-5xl text-stone-900 tracking-tight">
           Cabañas y Hospedajes en el Valle
         </h1>

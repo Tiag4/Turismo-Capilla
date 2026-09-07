@@ -36,16 +36,16 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
   const totalPrice = nightsCount && nightsCount > 0 ? (price * nightsCount).toLocaleString('es-AR') : null;
 
   return (
-    <article className="group bg-white rounded-3xl border border-stone-200/90 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden">
-      {/* Portada Fotográfica Uniforme */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden bg-stone-100 shrink-0">
+    <article className="group bg-white rounded-3xl border border-stone-200/90 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-[460px] overflow-hidden">
+      {/* Portada Fotográfica Fija y Calibrada (Inmune a Deformaciones) */}
+      <div className="relative w-full h-56 overflow-hidden bg-stone-100 shrink-0">
         <img
           src={place?.imageUrl ?? '/placeholder-cabin.jpg'}
           alt={place?.title ?? 'Alojamiento en Capilla del Monte'}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/20 to-transparent" />
 
         {/* Badge de Puntuación */}
         <div className="absolute top-3 right-3 bg-stone-900/85 backdrop-blur-xs px-2.5 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1 shadow-sm">
@@ -69,12 +69,9 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
         </div>
       </div>
 
-      {/* Cuerpo de la Tarjeta con Alturas Estrictamente Uniformes */}
+      {/* Cuerpo de la Tarjeta con Altura Fija y Cero Eyebrows */}
       <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-terracotta-700 h-4 truncate block">
-            {place?.category ?? 'Alojamiento'}
-          </span>
+        <div className="space-y-1">
           <h3 className="font-display font-extrabold text-lg sm:text-xl text-stone-900 group-hover:text-terracotta-600 transition-colors truncate h-7 flex items-center">
             {place?.title ?? 'Cabaña'}
           </h3>
@@ -100,7 +97,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
           )}
         </div>
 
-        {/* Pricing y CTA Alineados en Todas las Columnas */}
+        {/* Pricing y CTA Alineados */}
         <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3 min-h-[56px] mt-auto">
           <div>
             <div className="flex items-baseline gap-1">

@@ -8,7 +8,7 @@ import { AccommodationCenterCol } from './components/AccommodationCenterCol';
 import { AccommodationStickyWidget } from './components/AccommodationStickyWidget';
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
-import { AccommodationBookingModal } from './components/AccommodationBookingModal';
+import { AccommodationBookingDrawer } from './components/AccommodationBookingModal';
 
 interface AccommodationDetailContainerProps {
   place: MapPlace;
@@ -29,6 +29,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
 
       {/* 2. Fotos: Carrusel táctil en Mobile / Bento 5 Fotos en Desktop */}
       <AccommodationGalleryBento
+        id={data.id}
         gallery={data.gallery}
         title={data.title}
         onOpenGallery={booking.openGallery}
@@ -83,9 +84,9 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         />
       )}
 
-      {/* Modal de Solicitud de Reserva Directa */}
+      {/* Drawer de Solicitud de Reserva Directa (Bottom-Sheet en mobile / Slide-over en desktop) */}
       {booking.isBookingModalOpen && (
-        <AccommodationBookingModal
+        <AccommodationBookingDrawer
           isOpen={booking.isBookingModalOpen}
           onClose={booking.closeBookingModal}
           data={data}

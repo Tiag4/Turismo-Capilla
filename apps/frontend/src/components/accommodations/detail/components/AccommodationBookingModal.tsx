@@ -13,7 +13,7 @@ interface AccommodationBookingModalProps {
   booking: UseAccommodationBookingReturn;
 }
 
-export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps> = ({
+export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps> = ({
   isOpen,
   onClose,
   data,
@@ -37,6 +37,7 @@ export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps>
     handleSubmitBooking,
     whatsappUrl,
   } = booking;
+
   // Scroll Lock obligatorio (AGENTS.md 8.2)
   useEffect(() => {
     if (!isOpen) return;
@@ -58,14 +59,27 @@ export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps>
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm animate-in fade-in-0 duration-200"
+      className="fixed inset-0 z-50 overflow-hidden"
       role="dialog"
       aria-modal="true"
-      aria-label="Formulario de Solicitud de Reserva"
+      aria-label="Solicitud de Reserva Directa"
     >
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Header Modal */}
-        <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between bg-[#FAF8F5]">
+      {/* Backdrop con cierre al hacer click */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity duration-300 cursor-pointer"
+        aria-hidden="true"
+      />
+
+      {/* Drawer: Bottom-Sheet en Mobile (< 768px), Slide-Over lateral en Desktop (>= 768px) */}
+      <div className="fixed inset-x-0 bottom-0 md:inset-y-0 md:right-0 md:left-auto w-full md:max-w-md lg:max-w-lg bg-white shadow-2xl rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-t md:border-t-0 md:border-l border-stone-200 flex flex-col max-h-[92vh] md:max-h-full h-auto md:h-full z-10 transition-all duration-300">
+        {/* Indicador táctil para Mobile (Drag handle) */}
+        <div className="md:hidden pt-3 pb-1 flex justify-center shrink-0">
+          <div className="w-10 h-1 bg-stone-300 rounded-full" />
+        </div>
+
+        {/* Header Drawer */}
+        <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between bg-[#FAF8F5] shrink-0">
           <div>
             <h3 className="font-display font-black text-lg text-stone-900">Solicitud de Reserva Directa</h3>
             <p className="text-xs text-stone-500 font-medium">{data.title} — {data.zone}</p>
@@ -74,14 +88,14 @@ export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps>
             type="button"
             onClick={onClose}
             className="p-2 rounded-xl text-stone-400 hover:text-stone-900 hover:bg-stone-200 transition-colors cursor-pointer"
-            aria-label="Cerrar modal"
+            aria-label="Cerrar panel de reserva"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Contenido del Formulario */}
-        <div className="p-6 overflow-y-auto space-y-5">
+        {/* Contenido Scrolleable del Formulario */}
+        <div className="p-6 overflow-y-auto space-y-5 flex-1 overscroll-contain">
           {isSuccess ? (
             <AccommodationBookingSuccess
               hostName={data.host.name}
@@ -119,3 +133,5 @@ export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps>
     document.body
   );
 };
+
+export const AccommodationBookingModal = AccommodationBookingDrawer;

@@ -44,6 +44,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
           alt={place?.title ?? 'Alojamiento en Capilla del Monte'}
           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          style={{ viewTransitionName: place?.id ? `accommodation-hero-${place.id}` : undefined }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/20 to-transparent" />
 

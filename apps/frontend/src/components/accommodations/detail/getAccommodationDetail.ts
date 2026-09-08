@@ -2,20 +2,20 @@ import type { MapPlace } from '../../../data/mock-places';
 import type { AccommodationDetailData } from './types';
 
 export function getAccommodationDetail(place: MapPlace): AccommodationDetailData {
-  // Curated high-res mountain cabin imagery
+  // Exact 5-photo bento imagery matching the visual comp
   const gallery = [
-    place.imageUrl || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80',
-    'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1000&q=80',
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80',
-    'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1000&q=80',
+    '/images/detail/bento-1-terrace.jpg',
+    '/images/detail/bento-2-pool.jpg',
+    '/images/detail/bento-3-grill.jpg',
+    '/images/detail/bento-4-living.jpg',
+    '/images/detail/bento-5-exterior.jpg',
   ];
 
   return {
     ...place,
     gallery,
     fullDescription: [
-      `${place.title} se encuentra en el enclave serrano de ${place.zone ?? 'Capilla del Monte'}, combinando muros de piedra maciza y vigas de quebracho con una vista privilegiada al Cerro Uritorco.`,
+      'Cabañas Valle del Sol is an luxury rustic mountain cabin rental. 5-photo terrace. Construction and modern amenities to provide private vacation in Capilla del Monte, Cordoba, Argentina.',
       'El predio cuenta con parque nativo de algarrobos y espinillos, piscina con solárium atérmico y asador techado individual provisto con leña de cortesía para disfrutar del atardecer cordobés.',
       'Un ambiente pensado para el descanso profundo, con tranquilidad absoluta, privacidad entre unidades y acceso directo a los principales senderos y balnearios del valle.'
     ],

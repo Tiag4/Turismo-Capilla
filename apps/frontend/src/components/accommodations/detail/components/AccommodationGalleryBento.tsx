@@ -16,24 +16,24 @@ export const AccommodationGalleryBento: React.FC<AccommodationGalleryBentoProps>
   const secondaryPhotos = gallery.slice(1, 5);
 
   return (
-    <section className="relative rounded-3xl overflow-hidden shadow-xl border border-stone-200/80 bg-stone-100">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 md:h-[460px] lg:h-[520px]">
-        {/* Foto Principal (Gran escala, ocupa 2 columnas) */}
+    <section className="w-full max-w-[1360px] mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4">
+        {/* Foto Principal (50% izquierda) */}
         <div
           onClick={() => onOpenGallery(0)}
-          className="md:col-span-2 h-72 md:h-full relative overflow-hidden group cursor-pointer"
+          className="relative rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer group h-[320px] sm:h-[400px] lg:h-[460px] shadow-sm bg-stone-100"
         >
           <img
             src={mainPhoto}
-            alt={`${title} — Vista principal`}
+            alt={`${title} — Vista principal terraza`}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/10 transition-colors" />
         </div>
 
-        {/* 4 Fotos Secundarias en Grilla 2x2 */}
-        <div className="hidden md:grid md:col-span-2 grid-cols-2 gap-2 h-full">
+        {/* 4 Fotos Secundarias en Grilla 2x2 (50% derecha) */}
+        <div className="grid grid-cols-2 gap-3.5 sm:gap-4 h-[320px] sm:h-[400px] lg:h-[460px]">
           {secondaryPhotos.map((photoUrl, idx) => {
             const photoIndex = idx + 1;
             const isLast = idx === secondaryPhotos.length - 1;
@@ -42,7 +42,7 @@ export const AccommodationGalleryBento: React.FC<AccommodationGalleryBentoProps>
               <div
                 key={photoUrl + idx}
                 onClick={() => onOpenGallery(photoIndex)}
-                className="relative overflow-hidden group cursor-pointer h-[225px] lg:h-[255px]"
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer group h-[152px] sm:h-[192px] lg:h-[222px] shadow-sm bg-stone-100"
               >
                 <img
                   src={photoUrl}
@@ -50,7 +50,7 @@ export const AccommodationGalleryBento: React.FC<AccommodationGalleryBentoProps>
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/20 transition-colors" />
+                <div className="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/10 transition-colors" />
 
                 {/* Botón Flotante en la última foto */}
                 {isLast && (
@@ -61,7 +61,7 @@ export const AccommodationGalleryBento: React.FC<AccommodationGalleryBentoProps>
                         e.stopPropagation();
                         onOpenGallery(0);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 border border-stone-300 text-xs font-bold shadow-lg hover:bg-white hover:scale-105 transition-all cursor-pointer select-none"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 border border-stone-200 text-xs font-bold shadow-md hover:bg-white transition-all cursor-pointer select-none"
                     >
                       <ImageIcon className="w-3.5 h-3.5 text-terracotta-600" />
                       <span>Ver {gallery.length} fotos</span>

@@ -2,12 +2,8 @@ import React, { useMemo } from 'react';
 import type { MapPlace } from '../../../data/mock-places';
 import { getAccommodationDetail } from './getAccommodationDetail';
 import { useAccommodationBooking } from './hooks/useAccommodationBooking';
-import { AccommodationHeaderInfo } from './components/AccommodationHeaderInfo';
 import { AccommodationGalleryBento } from './components/AccommodationGalleryBento';
-import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
-import { AccommodationAmenitiesList } from './components/AccommodationAmenitiesList';
-import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
-import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
+import { AccommodationEditorialContent } from './components/AccommodationEditorialContent';
 import { AccommodationStickyWidget } from './components/AccommodationStickyWidget';
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
@@ -22,29 +18,23 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
   const booking = useAccommodationBooking({ data });
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8 space-y-8 pb-24 lg:pb-12">
-      {/* Cabecera y Navegación */}
-      <AccommodationHeaderInfo data={data} />
-
-      {/* Galería Asimétrica Bento de 5 Fotos */}
+    <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 pb-24 lg:pb-12">
+      {/* Galería Asimétrica Bento de 5 Fotos fiel a la comp */}
       <AccommodationGalleryBento
         gallery={data.gallery}
         title={data.title}
         onOpenGallery={booking.openGallery}
       />
 
-      {/* Estructura a 2 Columnas (Opción 1: Bento & Sticky Checkout) */}
+      {/* Estructura Idéntica a la Captura: Editorial Content + Sticky Widget */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start pt-2">
-        {/* Columna Izquierda (65%): Contenido, Habitaciones, Amenities, Normas y Mapa */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-8">
-          <AccommodationHostAndRooms data={data} />
-          <AccommodationAmenitiesList categories={data.amenityCategories} />
-          <AccommodationRulesPolicies rules={data.rules} />
-          <AccommodationLocationSnippet data={data} />
+        {/* Columna Izquierda y Central (Editorial Content, Dormitorios y Clean Amenities) */}
+        <div className="lg:col-span-8">
+          <AccommodationEditorialContent data={data} />
         </div>
 
-        {/* Columna Derecha (35%): Widget Flotante Sticky de Reserva y Cotización */}
-        <div className="hidden lg:block lg:col-span-5 xl:col-span-4">
+        {/* Columna Derecha: Widget Sticky de Reserva y Cotización */}
+        <div className="lg:col-span-4">
           <AccommodationStickyWidget data={data} booking={booking} />
         </div>
       </div>

@@ -110,7 +110,8 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
         <button
           type="button"
           onClick={openBookingModal}
-          className="w-full py-3.5 px-4 rounded-xl bg-[#C95627] hover:bg-[#b54a1e] active:bg-[#9e3e18] text-white font-display font-bold text-base shadow-sm hover:shadow transition-all cursor-pointer select-none text-center"
+          style={{ backgroundColor: '#C95627', color: '#ffffff' }}
+          className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center"
         >
           Reserve Now
         </button>

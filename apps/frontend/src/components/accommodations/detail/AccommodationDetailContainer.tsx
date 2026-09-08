@@ -3,7 +3,8 @@ import type { MapPlace } from '../../../data/mock-places';
 import { getAccommodationDetail } from './getAccommodationDetail';
 import { useAccommodationBooking } from './hooks/useAccommodationBooking';
 import { AccommodationGalleryBento } from './components/AccommodationGalleryBento';
-import { AccommodationEditorialContent } from './components/AccommodationEditorialContent';
+import { AccommodationLeftCol } from './components/AccommodationLeftCol';
+import { AccommodationCenterCol } from './components/AccommodationCenterCol';
 import { AccommodationStickyWidget } from './components/AccommodationStickyWidget';
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
@@ -18,7 +19,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
   const booking = useAccommodationBooking({ data });
 
   return (
-    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 lg:pt-14 space-y-10 sm:space-y-12 pb-24 lg:pb-16">
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 lg:pt-12 space-y-8 sm:space-y-10 pb-24 lg:pb-16">
       {/* Galería Asimétrica Bento de 5 Fotos fiel a la comp */}
       <AccommodationGalleryBento
         gallery={data.gallery}
@@ -26,17 +27,16 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         onOpenGallery={booking.openGallery}
       />
 
-      {/* Estructura Idéntica a la Captura: Editorial Content (flex-1) + Sticky Widget (w-80/w-96) */}
-      <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start w-full pt-2">
-        {/* Columna Izquierda y Central (Editorial Content, Dormitorios y Clean Amenities) */}
-        <div className="flex-1 w-full min-w-0">
-          <AccommodationEditorialContent data={data} />
-        </div>
+      {/* Grilla Directa a 3 Columnas Fiel a detail_comp_bento_1788830967288.jpg */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start w-full pt-2">
+        {/* Columna 1: Info General, Badge y Bedroom */}
+        <AccommodationLeftCol data={data} />
 
-        {/* Columna Derecha: Widget Sticky de Reserva y Cotización */}
-        <div className="w-full lg:w-[380px] lg:shrink-0">
-          <AccommodationStickyWidget data={data} booking={booking} />
-        </div>
+        {/* Columna 2: Bedroom y Clean Amenities (4x2) */}
+        <AccommodationCenterCol />
+
+        {/* Columna 3: Widget Sticky de Reserva y Cotización */}
+        <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
       {/* Barra Inferior Fija para Móviles */}

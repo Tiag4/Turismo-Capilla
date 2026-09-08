@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { AccommodationDetailData } from '../types';
 
 interface UseAccommodationBookingProps {
@@ -93,6 +93,25 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     [guestName, guestPhone]
   );
 
+  // In-page reservation card visibility (for mobile bottom dock appearance)
+  const [isReservationCardVisible, setIsReservationCardVisible] = useState(true);
+  const cardObserverRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = cardObserverRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsReservationCardVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return {
     checkIn,
     setCheckIn,
@@ -103,6 +122,8 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     nightsCount,
     totalPrice,
     depositRequired,
+    isReservationCardVisible,
+    cardObserverRef,
     isGalleryOpen,
     activePhotoIndex,
     openGallery,

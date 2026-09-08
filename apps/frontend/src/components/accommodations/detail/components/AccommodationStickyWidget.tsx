@@ -10,7 +10,7 @@ interface AccommodationStickyWidgetProps {
   booking: UseAccommodationBookingReturn;
 }
 
-const GUEST_OPTIONS: Option[] = [
+export const GUEST_OPTIONS: Option[] = [
   { value: '1', label: '1 persona' },
   { value: '2', label: '2 personas' },
   { value: '3', label: '3 personas' },
@@ -40,7 +40,7 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
   const price = data.pricePerNight ?? 0;
 
   return (
-    <aside className="sticky top-24 w-full bg-white rounded-2xl border border-stone-200 shadow-md p-6 space-y-4">
+    <aside className="md:sticky md:top-24 w-full bg-white rounded-2xl border border-stone-200 shadow-md p-6 space-y-4">
       {/* Tarifa / Price per night */}
       <div className="space-y-0.5">
         <span className="text-xs font-medium text-stone-500 block">

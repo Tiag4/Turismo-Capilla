@@ -84,19 +84,13 @@ body {
 }
 
 /* Grilla Bespoke a 3 Columnas para Detalle de Alojamiento (Inmune a purgas de JIT) */
-.detail-bento-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  align-items: start;
-  width: 100%;
-}
-
 @media (min-width: 768px) {
   .detail-bento-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr 1fr !important;
     gap: 1.5rem !important;
+    align-items: start;
+    width: 100%;
   }
 }
 

@@ -37,7 +37,9 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
       {/* Versión Mobile (< 768px): Jerarquía estricta según requerimiento */}
       <div className="md:hidden space-y-8 pt-2">
         {/* 3. Sacar la reserva */}
-        <AccommodationStickyWidget data={data} booking={booking} />
+        <div ref={booking.cardObserverRef}>
+          <AccommodationStickyWidget data={data} booking={booking} />
+        </div>
 
         {/* 4. Servicios (Clean Amenities) */}
         <AccommodationCenterCol />
@@ -64,6 +66,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         nightsCount={booking.nightsCount}
         totalPrice={booking.totalPrice}
         onOpenBookingModal={booking.openBookingModal}
+        isVisible={!booking.isReservationCardVisible}
       />
 
       {/* Modal Lightbox de Galería Fotográfica */}

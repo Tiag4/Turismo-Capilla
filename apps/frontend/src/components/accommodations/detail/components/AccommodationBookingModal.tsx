@@ -95,8 +95,11 @@ export const AccommodationBookingModal: React.FC<AccommodationBookingModalProps>
             <AccommodationBookingForm
               data={data}
               checkIn={checkIn}
+              onCheckInChange={booking.setCheckIn}
               checkOut={checkOut}
+              onCheckOutChange={booking.setCheckOut}
               guests={guests}
+              onGuestsChange={booking.setGuests}
               nightsCount={nightsCount}
               totalPrice={totalPrice}
               depositRequired={depositRequired}

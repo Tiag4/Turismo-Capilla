@@ -18,7 +18,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
   const booking = useAccommodationBooking({ data });
 
   return (
-    <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 pb-24 lg:pb-12">
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 lg:pt-14 space-y-10 sm:space-y-12 pb-24 lg:pb-16">
       {/* Galería Asimétrica Bento de 5 Fotos fiel a la comp */}
       <AccommodationGalleryBento
         gallery={data.gallery}
@@ -26,15 +26,15 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         onOpenGallery={booking.openGallery}
       />
 
-      {/* Estructura Idéntica a la Captura: Editorial Content + Sticky Widget */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start pt-2">
+      {/* Estructura Idéntica a la Captura: Editorial Content (flex-1) + Sticky Widget (w-80/w-96) */}
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start w-full pt-2">
         {/* Columna Izquierda y Central (Editorial Content, Dormitorios y Clean Amenities) */}
-        <div className="lg:col-span-8">
+        <div className="flex-1 w-full min-w-0">
           <AccommodationEditorialContent data={data} />
         </div>
 
         {/* Columna Derecha: Widget Sticky de Reserva y Cotización */}
-        <div className="lg:col-span-4">
+        <div className="w-full lg:w-[380px] lg:shrink-0">
           <AccommodationStickyWidget data={data} booking={booking} />
         </div>
       </div>

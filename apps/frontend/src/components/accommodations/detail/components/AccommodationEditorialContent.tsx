@@ -18,9 +18,9 @@ interface AccommodationEditorialContentProps {
 
 export const AccommodationEditorialContent: React.FC<AccommodationEditorialContentProps> = ({ data }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 w-full">
       {/* Columna Izquierda: Título, Badge, Descripción y Distribución de Dormitorios */}
-      <div className="space-y-4">
+      <div className="w-full md:w-1/2 space-y-4">
         <div>
           <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-stone-900 tracking-tight leading-tight">
             {data.title}
@@ -47,7 +47,7 @@ export const AccommodationEditorialContent: React.FC<AccommodationEditorialConte
       </div>
 
       {/* Columna Central: Bedroom y Clean Amenities (grilla 4x2) */}
-      <div className="space-y-6">
+      <div className="w-full md:w-1/2 space-y-6">
         {/* Bedroom (duplicado/expandido idéntico a la captura) */}
         <div className="space-y-1.5">
           <h3 className="font-display font-bold text-base text-stone-900">Bedroom</h3>

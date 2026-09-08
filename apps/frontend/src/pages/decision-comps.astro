@@ -4,160 +4,359 @@ import Layout from '../layouts/Layout.astro';
 const comps = [
   {
     id: 'comp-1',
-    title: 'Opción 1: Split-Screen Dinámico (Territorio & Mapa)',
-    tag: 'Recomendada para Exploración',
-    image: '/mocks/comp-1-split.jpg',
-    description: 'Pantalla dividida con 60% grilla de alojamientos y 40% mapa topográfico interactivo del Cerro Uritorco con pines de precio flotantes.',
+    number: '01',
+    title: 'Opción 1: Bento Editorial & Sticky Checkout',
+    tag: 'Recomendada para Alta Conversión (CRO)',
+    image: '/mocks/detail-comp-1-bento.jpg',
+    summary: 'Grilla Bento asimétrica superior de 5 fotografías que exhiben la arquitectura serrana de piedra y madera, con vista al Cerro Uritorco, piscina y asador. Estructura a 2 columnas con panel de contenido (65%) y widget de reserva flotante sticky (35%).',
     heuristics: [
-      'Gestalt: Región Común y Proximidad directa entre la tarjeta y su ubicación geográfica.',
-      'Steve Krug: El turista no tiene que saltar de pestaña ni imaginar dónde queda cada cabaña.',
-      'Nielsen #1: Visibilidad inmediata de la distribución espacial y densidad de tarifas.'
+      'Steve Krug / CRO: El bloque de reserva y el precio por noche se mantienen siempre anclados y visibles durante todo el scroll vertical.',
+      'Gestalt: Ley de Cierre y Región Común en la grilla Bento para resumir la vivencia del lugar en un solo golpe de vista.',
+      'Norman Affordance: Fechas con CustomDatePicker integrado, selector de huéspedes y botón de acción terracota de alto contraste ("Solicitar Reserva").'
     ],
     pros: [
-      'Orientación espacial inmejorable para turistas que no conocen Capilla del Monte.',
-      'Pines de precio territoriales que agilizan la toma de decisiones presupuestarias.',
-      'Filtros rápidos en píldoras horizontales que no consumen espacio vertical.'
+      'Tasa de conversión óptima: el visitante puede cotizar e iniciar su reserva en cualquier punto de la lectura sin regresar al tope.',
+      'La grilla Bento de 5 imágenes es el estándar de hospitalidad premium moderna (Airbnb Plus, Relais & Châteaux).',
+      'Desacople arquitectónico limpio en dumb components independientes (Gallery, Info, Amenities, BookingWidget).'
     ],
     cons: [
-      'Requiere más ancho en desktop; en mobile el mapa debe pasar a vista toggle o modal.'
-    ]
+      'En dispositivos móviles el widget lateral debe colapsar a una barra inferior fija (bottom dock).'
+    ],
+    architecture: {
+      container: 'AccommodationDetailContainer.tsx (< 100 líneas)',
+      hook: 'useAccommodationBooking.ts (< 250 líneas)',
+      components: [
+        'AccommodationGalleryBento.tsx (< 120 líneas)',
+        'AccommodationStickyWidget.tsx (< 140 líneas)',
+        'AccommodationAmenitiesList.tsx (< 100 líneas)',
+        'AccommodationLocationMap.tsx (< 110 líneas)'
+      ]
+    }
   },
   {
     id: 'comp-2',
-    title: 'Opción 2: Grilla Editorial Inmersiva (Catálogo Visual)',
-    tag: 'Enfoque de Fotografía & Calidez',
-    image: '/mocks/comp-2-editorial.jpg',
-    description: 'Grilla expansiva de 3 columnas de tarjetas ricas de gran escala, con buscador horizontal tipo cápsula y botón flotante "Ver en Mapa".',
+    number: '02',
+    title: 'Opción 2: Panorama Storytelling (Paisaje & Calidez)',
+    tag: 'Enfoque Escénico & Experiencia de Destino',
+    image: '/mocks/detail-comp-2-panorama.jpg',
+    summary: 'Hero cinematográfico a todo el ancho de la pantalla (full-bleed 16:9) con atardecer serrano sobre el Uritorco. Barra de navegación por anclas para salto rápido y lectura fluida a una columna ancha con viñetas fotográficas de asador y hogar a leña.',
     heuristics: [
-      'Gestalt: Similitud y Ritmo visual uniforme en tarjetas de 3 columnas.',
-      'Steve Krug: Cero ruido inicial, la fotografía de las cabañas serranas lidera la atención.',
-      'Norman Affordance: Botón principal terracota claro "Ver detalles y reservar".'
+      'Inmersión Emocional: La fotografía del entorno natural de Capilla del Monte lidera la decisión afectiva del turista.',
+      'Nielsen #3 (Control): Pestañas de anclaje rápido (La Cabaña, Servicios, Entorno, Normas) para navegar sin fatiga de scroll.',
+      'Fitts Law: Botón de reserva en barra fija inferior (dock) con área táctil generosa y precio transparente por noche.'
     ],
     pros: [
-      'Impacto visual de alta gama para destacar la arquitectura de piedra y madera.',
-      'Experiencia de navegación relajada, ideal para reservas de descanso o escapadas.',
-      'Excelente adaptabilidad a tablets y móviles.'
+      'Impacto visual de alto nivel que pone en primer plano la tranquilidad serrana y el paisaje.',
+      'Despeja la interfaz de cajas laterales rígidas, brindando una lectura de revista de viajes o editorial de arquitectura.',
+      'Muy fácil de adaptar a pantallas táctiles y móviles.'
     ],
     cons: [
-      'El mapa queda en segundo plano (requiere click explícito para abrirlo).'
-    ]
+      'El desglose fino de fechas e importes requiere expandir la barra inferior o abrir un modal de checkout.'
+    ],
+    architecture: {
+      container: 'AccommodationDetailContainer.tsx (< 100 líneas)',
+      hook: 'useAccommodationBooking.ts (< 250 líneas)',
+      components: [
+        'AccommodationHeroPanorama.tsx (< 110 líneas)',
+        'AccommodationAnchorNav.tsx (< 80 líneas)',
+        'AccommodationStoryContent.tsx (< 130 líneas)',
+        'AccommodationBottomDock.tsx (< 100 líneas)'
+      ]
+    }
   },
   {
     id: 'comp-3',
-    title: 'Opción 3: Modular con Filtros Facetados (Power Search)',
-    tag: 'Enfoque E-commerce & Filtros Quirúrgicos',
-    image: '/mocks/comp-3-sidebar.jpg',
-    description: 'Sidebar izquierdo fijo (280px) con acordeones de filtros profundos (slider de precio, tipologías, zonas y amenities) y grilla de resultados con badges descartables.',
+    number: '03',
+    title: 'Opción 3: Split-View Dual (Visual + Checkout Directo)',
+    tag: 'Enfoque Operativo & Reserva Sin Saltos',
+    image: '/mocks/detail-comp-3-split.jpg',
+    summary: 'Pantalla dividida 50/50: mitad izquierda fija con carrusel fotográfico de la cabaña y mapa satelital topográfico con pines de distancia al Cerro Uritorco; mitad derecha scrolleable con detalles y formulario de cotización directa.',
     heuristics: [
-      'Nielsen #3: Control y libertad del usuario para afinar o resetear filtros activos.',
-      'Gestalt: Jerarquía por agrupamiento en panel lateral estructurado.',
-      'Fitts Law: Sliders e inputs de precio numéricos directos.'
+      'Gestalt: Proximidad directa entre la evidencia territorial (mapa + fotos) y la acción de compra.',
+      'Steve Krug: Cero pasos intermedios; se cotiza y se solicita la reserva en la misma pantalla sin redirecciones.',
+      'Nielsen #1: Visibilidad de estado absoluta sobre noches, precio por noche y geolocalización exacta.'
     ],
     pros: [
-      'Búsquedas quirúrgicas rápidas para familias o turistas con requerimientos específicos (pileta, asador, pet-friendly).',
-      'Badges de filtros activos con cruz ("x") para descartar parámetros en un solo toque.',
-      'Patrón reconocido de e-commerce turístico.'
+      'Ideal para turistas orientados a la practicidad que exigen ver la ubicación geográfica exacta antes de pagar.',
+      'El mapa satelital permanente aclara la cercanía con el río Calabalumba o senderos al Uritorco.',
+      'Flujo de checkout ultra-directo.'
     ],
     cons: [
-      'Mayor carga cognitiva en el primer viewport debido a la cantidad de checkboxes.'
-    ]
+      'Requiere viewports desktop amplios (mínimo 1280px); en pantallas angostas debe reorganizarse en flujo vertical.'
+    ],
+    architecture: {
+      container: 'AccommodationDetailContainer.tsx (< 100 líneas)',
+      hook: 'useAccommodationBooking.ts (< 250 líneas)',
+      components: [
+        'AccommodationSplitVisuals.tsx (< 130 líneas)',
+        'AccommodationDirectCheckout.tsx (< 140 líneas)',
+        'AccommodationAmenitiesList.tsx (< 100 líneas)'
+      ]
+    }
   }
 ];
 ---
 
-<Layout title="Impeccable Decision Board — Turismo Capilla del Monte">
-  <div class="min-h-screen bg-[#FAF8F5] py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto space-y-10">
+<Layout title="Propuestas de Detalle de Alojamiento — Turismo Capilla del Monte">
+  <div class="min-h-screen bg-[#FAF8F5] text-stone-900 py-10 px-4 sm:px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto space-y-12">
       
-      <!-- Cabecera -->
-      <div class="text-center space-y-3">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-terracotta-100 text-terracotta-800 text-xs font-bold uppercase tracking-wider">
+      <!-- Cabecera Editorial -->
+      <header class="text-center space-y-4 max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta-100 text-terracotta-800 text-xs font-bold uppercase tracking-wider">
           <span class="w-2 h-2 rounded-full bg-terracotta-500 animate-pulse"></span>
-          Impeccable Comp-Led Decision Board
+          Impeccable Visual Decision Board
         </div>
         <h1 class="font-display font-black text-3xl sm:text-5xl text-stone-900 tracking-tight">
-          Catálogo de Alojamientos (/alojamientos)
+          Ficha de Alojamiento (/alojamientos/[id])
         </h1>
-        <p class="text-stone-600 max-w-2xl mx-auto text-base">
-          Revisá las 3 propuestas de composición generadas según las directrices de Impeccable y las leyes de UX/UI.
+        <p class="text-sm sm:text-base text-stone-600 leading-relaxed">
+          Composiciones a escala real generadas según las pautas de <strong class="text-stone-900 font-semibold">Impeccable</strong>, <strong class="text-stone-900 font-semibold">Anti-Vibecoded</strong> y <strong class="text-stone-900 font-semibold">React SOLID</strong>. Hacé clic en cualquier imagen para abrirla en pantalla completa de alta resolución.
         </p>
-      </div>
+      </header>
 
-      <!-- Selector de Comps -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Selector de Pestañas Interactivo -->
+      <nav class="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-stone-200/60 backdrop-blur-sm rounded-2xl max-w-2xl mx-auto" role="tablist">
         {comps.map((comp, idx) => (
-          <div class="bg-white rounded-3xl border border-stone-200/90 shadow-xl overflow-hidden flex flex-col transition-all hover:shadow-2xl">
-            <!-- Imagen -->
-            <div class="relative group bg-stone-100 aspect-video overflow-hidden">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={idx === 0 ? "true" : "false"}
+            aria-controls={`panel-${comp.id}`}
+            id={`tab-${comp.id}`}
+            data-tab-target={comp.id}
+            class={`tab-trigger flex-1 min-w-[160px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer select-none text-center ${
+              idx === 0
+                ? 'bg-stone-900 text-white shadow-md'
+                : 'text-stone-700 hover:text-stone-950 hover:bg-stone-100'
+            }`}
+          >
+            <span>Opción {comp.number}</span>
+          </button>
+        ))}
+      </nav>
+
+      <!-- Contenedores de las Propuestas a Gran Escala -->
+      <div class="space-y-16">
+        {comps.map((comp, idx) => (
+          <section
+            id={`panel-${comp.id}`}
+            data-panel-id={comp.id}
+            class={`comp-panel space-y-8 ${idx === 0 ? 'block' : 'hidden'}`}
+          >
+            <!-- Título y Tag de la Opción -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4">
+              <div>
+                <span class="text-xs font-black uppercase tracking-wider text-terracotta-600">
+                  {comp.tag}
+                </span>
+                <h2 class="font-display font-black text-2xl sm:text-3xl text-stone-900 mt-1">
+                  {comp.title}
+                </h2>
+              </div>
+              <button
+                type="button"
+                data-lightbox-src={comp.image}
+                data-lightbox-title={comp.title}
+                class="btn-open-lightbox inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-stone-300 hover:border-stone-400 hover:bg-stone-50 text-xs font-bold text-stone-800 shadow-2xs transition-all cursor-pointer self-start sm:self-auto"
+              >
+                <svg class="w-4 h-4 text-terracotta-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
+                <span>Ver en Pantalla Completa</span>
+              </button>
+            </div>
+
+            <!-- Previsualización Visual a Gran Escala (Width Completo) -->
+            <div
+              class="group relative w-full bg-stone-100 rounded-3xl overflow-hidden border border-stone-300/80 shadow-2xl transition-all hover:shadow-stone-900/15 cursor-zoom-in"
+              data-lightbox-src={comp.image}
+              data-lightbox-title={comp.title}
+            >
               <img
                 src={comp.image}
                 alt={comp.title}
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
+                class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+                loading="eager"
               />
-              <div class="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md text-white font-mono text-xs font-bold px-3 py-1 rounded-lg">
-                OPCIÓN 0{idx + 1}
+              <div class="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/10 transition-colors pointer-events-none flex items-center justify-center">
+                <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-stone-900/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">
+                  Hacé clic para ampliar en alta resolución
+                </span>
               </div>
             </div>
 
-            <!-- Contenido -->
-            <div class="p-6 flex-1 flex flex-col justify-between space-y-6">
-              <div class="space-y-4">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-terracotta-600 bg-terracotta-50 px-2.5 py-1 rounded-md">
-                    {comp.tag}
-                  </span>
-                </div>
-
-                <h3 class="font-display font-extrabold text-xl text-stone-900 leading-tight">
-                  {comp.title}
+            <!-- Desglose Arquitectónico, Heurísticas y Pros/Cons -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-xl">
+              <!-- Resumen y Principios -->
+              <div class="space-y-4 lg:col-span-2">
+                <h3 class="font-display font-extrabold text-lg text-stone-900">
+                  Concepto & Heurísticas de Diseño
                 </h3>
-
-                <p class="text-xs text-stone-600 leading-relaxed">
-                  {comp.description}
+                <p class="text-sm text-stone-600 leading-relaxed">
+                  {comp.summary}
                 </p>
 
-                <!-- Heurísticas Aplicadas -->
-                <div class="space-y-1.5 pt-2 border-t border-stone-100">
-                  <span class="text-[11px] font-bold text-stone-900 uppercase tracking-wider block">
-                    Principios de Diseño:
+                <div class="space-y-2 pt-2 border-t border-stone-100">
+                  <span class="text-xs font-bold text-stone-900 uppercase tracking-wider block">
+                    Fundamentos de Usabilidad (Krug, Gestalt, Norman):
                   </span>
-                  <ul class="text-xs text-stone-600 space-y-1 list-disc pl-4">
-                    {comp.heuristics.map((h) => (
-                      <li>{h}</li>
-                    ))}
+                  <ul class="text-xs text-stone-600 space-y-2 list-disc pl-4">
+                    {comp.heuristics.map((h) => <li>{h}</li>)}
                   </ul>
                 </div>
+              </div>
 
-                <!-- Pros & Contras -->
-                <div class="grid grid-cols-1 gap-2 pt-2 border-t border-stone-100 text-xs">
-                  <div class="text-emerald-800 bg-emerald-50/70 p-2.5 rounded-xl">
-                    <span class="font-bold block mb-0.5">Ventajas clave:</span>
-                    <ul class="list-disc pl-3 space-y-0.5">
+              <!-- Trade-offs y Desacople SOLID -->
+              <div class="space-y-4 lg:border-l lg:border-stone-200 lg:pl-6">
+                <div class="space-y-3">
+                  <div class="p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl text-xs text-emerald-900">
+                    <strong class="block font-extrabold mb-1">Ventajas Clave:</strong>
+                    <ul class="list-disc pl-4 space-y-1">
                       {comp.pros.map((p) => <li>{p}</li>)}
                     </ul>
                   </div>
-                  <div class="text-amber-800 bg-amber-50/70 p-2.5 rounded-xl">
-                    <span class="font-bold block mb-0.5">Consideraciones:</span>
-                    <ul class="list-disc pl-3 space-y-0.5">
+
+                  <div class="p-3 bg-amber-50/80 border border-amber-200/80 rounded-2xl text-xs text-amber-900">
+                    <strong class="block font-extrabold mb-1">Puntos de Atención:</strong>
+                    <ul class="list-disc pl-4 space-y-1">
                       {comp.cons.map((c) => <li>{c}</li>)}
                     </ul>
                   </div>
                 </div>
+
+                <div class="pt-2 border-t border-stone-100">
+                  <span class="text-xs font-bold text-stone-900 uppercase tracking-wider block mb-1">
+                    Estructura SOLID React:
+                  </span>
+                  <p class="text-[11px] font-mono text-stone-500 mb-1">
+                    Smart Container: <code class="text-terracotta-700">{comp.architecture.container}</code>
+                  </p>
+                  <ul class="text-[11px] font-mono text-stone-600 list-disc pl-4 space-y-0.5">
+                    {comp.architecture.components.map((c) => <li>{c}</li>)}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
         ))}
       </div>
 
-      <!-- Footer con Instrucciones -->
-      <div class="bg-stone-900 text-sand-100 p-6 rounded-3xl text-center space-y-2">
-        <h4 class="font-display font-bold text-lg text-white">¿Cuál de estas 3 direcciones querés que construyamos?</h4>
-        <p class="text-xs text-sand-300 max-w-xl mx-auto">
-          Podés elegir la <strong class="text-terracotta-400">Opción 1</strong> (Split-Screen), la <strong class="text-terracotta-400">Opción 2</strong> (Editorial) o la <strong class="text-terracotta-400">Opción 3</strong> (Filtros Facetados), o combinarlas.
+      <!-- Conclusión y Llamado a la Acción -->
+      <footer class="bg-stone-900 text-stone-100 p-8 rounded-3xl text-center space-y-3 max-w-4xl mx-auto shadow-2xl">
+        <h3 class="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
+          ¿Con cuál de estas 3 alternativas avanzamos?
+        </h3>
+        <p class="text-xs sm:text-sm text-stone-300 max-w-xl mx-auto leading-relaxed">
+          Elegí la <strong class="text-terracotta-400">Opción 1</strong> (Bento & Sticky), la <strong class="text-terracotta-400">Opción 2</strong> (Panorama Storytelling) o la <strong class="text-terracotta-400">Opción 3</strong> (Split-View), y comenzaremos de inmediato con la arquitectura de componentes y hooks.
         </p>
-      </div>
+      </footer>
 
     </div>
   </div>
+
+  <!-- Modal Lightbox para Inspección de Alta Resolución -->
+  <div
+    id="lightbox-modal"
+    class="fixed inset-0 z-50 hidden bg-stone-950/90 backdrop-blur-md p-4 sm:p-8 flex flex-col items-center justify-center animate-in fade-in duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Visualizador de alta resolución"
+  >
+    <div class="w-full max-w-7xl flex items-center justify-between text-white pb-3">
+      <span id="lightbox-caption" class="font-display font-bold text-sm sm:text-base truncate pr-4"></span>
+      <button
+        type="button"
+        id="lightbox-close"
+        class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+        aria-label="Cerrar modal"
+      >
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="relative w-full max-w-7xl max-h-[88vh] overflow-auto rounded-2xl border border-white/20 shadow-2xl flex items-center justify-center bg-stone-950">
+      <img id="lightbox-img" src="" alt="" class="w-full h-auto object-contain rounded-xl" />
+    </div>
+  </div>
+
+  <!-- Lógica de Pestañas y Lightbox en Vanilla JS -->
+  <script>
+    function setupDecisionBoard() {
+      // Tab switcher
+      const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-trigger');
+      const panels = document.querySelectorAll<HTMLElement>('.comp-panel');
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.getAttribute('data-tab-target');
+
+          tabs.forEach((t) => {
+            t.setAttribute('aria-selected', 'false');
+            t.className = 'tab-trigger flex-1 min-w-[160px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer select-none text-center text-stone-700 hover:text-stone-950 hover:bg-stone-100';
+          });
+
+          tab.setAttribute('aria-selected', 'true');
+          tab.className = 'tab-trigger flex-1 min-w-[160px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer select-none text-center bg-stone-900 text-white shadow-md';
+
+          panels.forEach((p) => {
+            if (p.getAttribute('data-panel-id') === targetId) {
+              p.classList.remove('hidden');
+              p.classList.add('block');
+            } else {
+              p.classList.remove('block');
+              p.classList.add('hidden');
+            }
+          });
+        });
+      });
+
+      // Lightbox modal
+      const modal = document.getElementById('lightbox-modal');
+      const modalImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+      const modalCaption = document.getElementById('lightbox-caption');
+      const btnClose = document.getElementById('lightbox-close');
+
+      const openLightbox = (src: string, title: string) => {
+        if (!modal || !modalImg) return;
+        modalImg.src = src;
+        modalImg.alt = title;
+        if (modalCaption) modalCaption.textContent = title;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeLightbox = () => {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      };
+
+      document.querySelectorAll<HTMLElement>('[data-lightbox-src]').forEach((el) => {
+        el.addEventListener('click', () => {
+          const src = el.getAttribute('data-lightbox-src');
+          const title = el.getAttribute('data-lightbox-title') || 'Vista Previa';
+          if (src) openLightbox(src, title);
+        });
+      });
+
+      if (btnClose) btnClose.addEventListener('click', closeLightbox);
+
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeLightbox();
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeLightbox();
+        }
+      });
+    }
+
+    setupDecisionBoard();
+  </script>
 </Layout>
+

@@ -25,13 +25,6 @@ export const AccommodationLeftCol: React.FC<AccommodationLeftColProps> = ({ data
       <p className="text-sm text-stone-600 leading-relaxed font-normal pt-1">
         {data.fullDescription?.[0] ?? `${data.title} is an luxury rustic mountain cabin rental. 5-photo terrace. Construction and modern amenities to provide private vacation in Capilla del Monte, Cordoba, Argentina.`}
       </p>
-
-      {/* Sección Bedroom en columna izquierda */}
-      <div className="pt-4 space-y-1.5 border-t border-stone-100">
-        <h3 className="font-display font-bold text-base text-stone-900">Bedroom</h3>
-        <p className="text-sm text-stone-600 font-medium">Bedroom 1: King Bed</p>
-        <p className="text-sm text-stone-600 font-medium">Bedroom 2: Twin Beds</p>
-      </div>
     </div>
   );
 };

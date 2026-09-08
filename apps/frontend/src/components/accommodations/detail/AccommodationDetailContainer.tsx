@@ -28,7 +28,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
       />
 
       {/* Grilla Directa a 3 Columnas Fiel a detail_comp_bento_1788830967288.jpg */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start w-full pt-2">
+      <div className="detail-bento-grid pt-2">
         {/* Columna 1: Info General, Badge y Bedroom */}
         <AccommodationLeftCol data={data} />
 

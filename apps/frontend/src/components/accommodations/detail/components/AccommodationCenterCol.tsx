@@ -24,52 +24,68 @@ export const AccommodationCenterCol: React.FC = () => {
       <div className="space-y-4 pt-1">
         <h3 className="font-display font-bold text-base text-stone-900">Clean Amenities</h3>
         <div
-          className="gap-y-6 gap-x-2 text-center"
+          className="gap-y-4 gap-x-2 text-center"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
           }}
         >
           {/* Fila 1 */}
-          <div className="flex flex-col items-center space-y-1.5">
-            <Wifi className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Free Wi-Fi</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <Wifi className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Free Wi-Fi</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <UtensilsCrossed className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Fully Equipped Kitchen</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <UtensilsCrossed className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Fully Equipped Kitchen</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <Bath className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Hot Tub</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <Bath className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Hot Tub</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <CircleParking className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Parking</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <CircleParking className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Parking</span>
           </div>
 
           {/* Fila 2 */}
-          <div className="flex flex-col items-center space-y-1.5">
-            <BedDouble className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Bedroom / Rooms</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <BedDouble className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Bedroom / Rooms</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <Sofa className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Living / Fireplace</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <Sofa className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Living / Fireplace</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <Mountain className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Scenic Views</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <Mountain className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Scenic Views</span>
           </div>
 
-          <div className="flex flex-col items-center space-y-1.5">
-            <ShieldCheck className="w-5 h-5 text-stone-700" strokeWidth={1.75} />
-            <span className="text-[11px] font-medium text-stone-700 leading-tight">Private Access</span>
+          <div className="flex flex-col items-center group">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
+              <ShieldCheck className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Private Access</span>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { Info, CheckCircle2, ChevronRight, Clock } from 'lucide-react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 import type { UseBookingWizardReturn } from '../hooks/useBookingWizard';
 import { AccommodationRoomTypeCard } from '../../accommodations/detail/components/AccommodationRoomTypeCard';
-import { CustomSelect, type Option } from '../../../ui/CustomSelect';
+import { CustomSelect, type Option } from '../../ui/CustomSelect';
 
 interface BookingWizardStep2FieldsProps {
   data: AccommodationDetailData;

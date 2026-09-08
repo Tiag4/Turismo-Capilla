@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Calendar, MessageSquare } from 'lucide-react';
 import { CustomDatePicker } from '../../../ui/CustomDatePicker';
 import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
 import type { AccommodationDetailData } from '../types';
@@ -113,12 +113,6 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
           <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
           <span>Consultar por WhatsApp</span>
         </a>
-      </div>
-
-      {/* Microcopy de Confianza */}
-      <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 text-center select-none pt-1">
-        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-        <span>Official Direct Booking • No hidden fees</span>
       </div>
     </aside>
   );

@@ -20,17 +20,28 @@ export interface BookingWizardState {
 }
 
 export function useBookingWizard(data: AccommodationDetailData) {
-  // Read initial query params from URL
-  const initialParams = useMemo(() => {
-    if (typeof window === 'undefined') return { checkIn: '', checkOut: '', adults: 2, children: 0, childAges: [], rooms: 1 };
+  // Read initial query params from URL safely in client and SSR
+  const [initialParams, setInitialParams] = useState({
+    checkIn: '',
+    checkOut: '',
+    adults: 2,
+    children: 0,
+    childAges: [] as (number | null)[],
+    rooms: 1,
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const checkIn = params.get('checkIn') || '';
     const checkOut = params.get('checkOut') || '';
     const adults = Math.max(1, Number(params.get('adults')) || 2);
     const children = Math.max(0, Number(params.get('children')) || 0);
-    const childAges = params.get('childAges') ? params.get('childAges')!.split(',').map((s) => (s ? Number(s) : null)) : [];
+    const childAges = params.get('childAges')
+      ? params.get('childAges')!.split(',').map((s) => (s ? Number(s) : null))
+      : [];
     const rooms = Math.max(1, Number(params.get('rooms')) || 1);
-    return { checkIn, checkOut, adults, children, childAges, rooms };
+    setInitialParams({ checkIn, checkOut, adults, children, childAges, rooms });
   }, []);
 
   const [step, setStep] = useState<2 | 3 | 'success'>(2);

@@ -104,17 +104,12 @@ export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps>
           type="button"
           onClick={completeBooking}
           disabled={isSubmitting || !form.acceptedTerms}
-          style={{ backgroundColor: '#006ce4', color: '#ffffff' }}
+          style={{ backgroundColor: '#C95627', color: '#ffffff' }}
           className="w-full py-4 px-6 rounded-xl font-display font-bold text-base shadow-md hover:brightness-95 active:brightness-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <Lock className="w-4 h-4" />
           <span>{isSubmitting ? 'Confirmando solicitud...' : 'Completa la reserva'}</span>
         </button>
-
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-500 text-center">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>Contacto oficial directo • Sin comisiones de intermediarios</span>
-        </div>
       </div>
     </div>
   );

@@ -55,68 +55,58 @@ export const AccommodationAmenitiesDrawer: React.FC<AccommodationAmenitiesDrawer
       {/* Backdrop */}
       <div
         onClick={handleClose}
-        className={`fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity duration-300 cursor-pointer ${
+        className={`fixed inset-0 bg-stone-950/60 transition-opacity duration-300 cursor-pointer ${
           isAnimating ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         aria-hidden="true"
       />
 
-      {/* Drawer: Bottom-sheet on mobile / Slide-over on desktop */}
+      {/* Drawer: Recto en todos sus lados (sin bordes redondeados ni saltos de altura) */}
       <div
-        className={`fixed bottom-0 left-0 right-0 md:left-auto md:top-0 md:bottom-0 md:right-0 w-full md:w-[500px] lg:w-[560px] bg-white shadow-2xl rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-t md:border-t-0 md:border-l border-stone-200 flex flex-col h-[94vh] max-h-[96vh] md:h-full md:max-h-full z-50 transition-all duration-300 ease-out transform ${
-          isAnimating
-            ? 'translate-y-0 opacity-100 md:translate-x-0 md:translate-y-0'
-            : 'translate-y-full opacity-0 md:translate-x-full md:translate-y-0'
+        className={`fixed top-0 bottom-0 right-0 w-full sm:w-[480px] md:w-[540px] bg-white shadow-2xl rounded-none border-l border-stone-200 flex flex-col h-full z-50 transition-transform duration-300 ease-out transform ${
+          isAnimating ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Mobile drag handle */}
-        <div className="md:hidden pt-3 pb-1 flex justify-center shrink-0">
-          <div className="w-10 h-1 bg-stone-300 rounded-full" />
-        </div>
-
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between bg-[#FAF8F5] shrink-0">
+        {/* Header flush con el tope */}
+        <div className="px-6 py-5 border-b border-stone-200 flex items-center justify-between bg-sand-50 shrink-0">
           <div>
-            <h3 className="font-display font-black text-lg text-stone-900">Servicios e Instalaciones</h3>
-            <p className="text-xs text-stone-500 font-medium">Equipamiento completo de {title}</p>
+            <h3 className="font-display font-extrabold text-lg text-stone-900 leading-tight">Servicios e Instalaciones</h3>
+            <p className="text-xs text-stone-500 mt-0.5">{title}</p>
           </div>
           <button
             type="button"
             onClick={handleClose}
-            className="p-2 rounded-xl text-stone-400 hover:text-stone-900 hover:bg-stone-200 transition-colors cursor-pointer"
+            className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200 transition-colors cursor-pointer"
             aria-label="Cerrar panel de servicios"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Categories list */}
+        {/* Categories list limpia, sin puntitos naranjas ni cajas anidadas vibecoded */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 overscroll-contain">
           {ACCOMMODATION_SERVICES_CATALOG.map((group) => (
-            <section key={group.category} className="space-y-2.5 pb-4 border-b border-stone-100 last:border-0">
-              <h4 className="font-display font-bold text-sm text-stone-900 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-terracotta-500" />
-                <span>{group.category}</span>
+            <section key={group.category} className="space-y-3 pb-5 border-b border-stone-100 last:border-0">
+              <h4 className="font-display font-bold text-xs uppercase tracking-wider text-stone-700">
+                {group.category}
               </h4>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <ul className="space-y-1 text-xs">
                 {group.items.map((item) => (
-                  <li key={item.name} className="p-2 rounded-xl bg-stone-50/80 border border-stone-200/60 flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                  <li key={item.name} className="py-2 px-2.5 rounded-lg hover:bg-stone-50 transition-colors flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-medium text-stone-800">{item.name}</span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-stone-900 text-xs sm:text-sm">{item.name}</span>
                         {item.badge && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md ${
-                            item.badge === 'Gratis' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            item.badge === 'De pago' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            'bg-blue-50 text-blue-700 border border-blue-200'
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider ${
+                            item.badge === 'De pago' ? 'bg-stone-900 text-white' : 'bg-emerald-800 text-white'
                           }`}>
                             {item.badge}
                           </span>
                         )}
                       </div>
                       {item.description && (
-                        <p className="text-[11px] text-stone-500 mt-0.5 leading-snug">{item.description}</p>
+                        <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{item.description}</p>
                       )}
                     </div>
                   </li>

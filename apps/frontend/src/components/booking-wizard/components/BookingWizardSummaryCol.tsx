@@ -29,9 +29,6 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
       <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs">
         <div className="relative aspect-16/9 overflow-hidden">
           <img src={image} alt={data.title} className="w-full h-full object-cover" />
-          <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-amber-500 text-stone-900 font-bold text-[10px] uppercase shadow-xs">
-            Habilitado Oficial
-          </span>
         </div>
         <div className="p-4 space-y-2">
           <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">{data.title}</h3>

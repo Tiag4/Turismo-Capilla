@@ -1,0 +1,26 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { MOCK_PLACES, type MapPlace } from '../../../data/mock-places';
+import { BookingWizardContainer } from '../../../components/booking-wizard/BookingWizardContainer';
+
+export function getStaticPaths() {
+  const accommodations = MOCK_PLACES.filter((p) => p.type === 'accommodation');
+  return accommodations.map((place) => ({
+    params: { id: place.id },
+    props: { place },
+  }));
+}
+
+interface Props {
+  place: MapPlace;
+}
+
+const { place } = Astro.props;
+
+const pageTitle = `Reservar en ${place.title} — Turismo Capilla del Monte`;
+const pageDescription = `Completá tu solicitud de reserva directa para ${place.title}. Sin comisiones ni intermediarios en Capilla del Monte, Córdoba.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <BookingWizardContainer place={place} client:load />
+</Layout>

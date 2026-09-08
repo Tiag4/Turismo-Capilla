@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { AccommodationDetailData } from '../types';
+import type { GuestsSelection } from '../components/AccommodationGuestsPicker';
 
 interface UseAccommodationBookingProps {
   data: AccommodationDetailData;
@@ -8,13 +9,19 @@ interface UseAccommodationBookingProps {
 export function useAccommodationBooking({ data }: UseAccommodationBookingProps) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
+    adults: 2,
+    childrenCount: 0,
+    childAges: [],
+    rooms: 1,
+  });
+  const guests = String(guestsSelection.adults + guestsSelection.childrenCount);
 
   // Lightbox Gallery state
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  // Booking Modal & Request state
+  // Booking Modal & Request state (Legacy fallback if needed)
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
@@ -83,6 +90,20 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
   }, [data.title, checkIn, checkOut, nightsCount, guests]);
 
+  // Booking Wizard URL generation
+  const wizardUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    if (checkIn) params.set('checkIn', checkIn);
+    if (checkOut) params.set('checkOut', checkOut);
+    params.set('adults', String(guestsSelection.adults));
+    params.set('children', String(guestsSelection.childrenCount));
+    if (guestsSelection.childAges.length > 0) {
+      params.set('childAges', guestsSelection.childAges.map((a) => (a === null ? '' : a)).join(','));
+    }
+    params.set('rooms', String(guestsSelection.rooms));
+    return `/alojamientos/${data.id}/reservar?${params.toString()}`;
+  }, [data.id, checkIn, checkOut, guestsSelection]);
+
   // Form submission
   const handleSubmitBooking = useCallback(
     async (e: React.FormEvent) => {
@@ -123,7 +144,9 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     checkOut,
     setCheckOut,
     guests,
-    setGuests,
+    guestsSelection,
+    setGuestsSelection,
+    wizardUrl,
     nightsCount,
     totalPrice,
     depositRequired,

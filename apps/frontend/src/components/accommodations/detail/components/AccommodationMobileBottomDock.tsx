@@ -5,7 +5,7 @@ interface AccommodationMobileBottomDockProps {
   data: AccommodationDetailData;
   nightsCount: number | null;
   totalPrice: number | null;
-  onOpenBookingModal: () => void;
+  wizardUrl: string;
   isVisible?: boolean;
 }
 
@@ -13,7 +13,7 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
   data,
   nightsCount,
   totalPrice,
-  onOpenBookingModal,
+  wizardUrl,
   isVisible = true,
 }) => {
   const price = data.pricePerNight ?? 0;
@@ -38,13 +38,12 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
         </span>
       </div>
 
-      <button
-        type="button"
-        onClick={onOpenBookingModal}
-        className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs shadow-md transition-all cursor-pointer select-none"
+      <a
+        href={wizardUrl}
+        className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs shadow-md transition-all cursor-pointer select-none block text-center"
       >
-        Reservar
-      </button>
+        Solicitar reserva
+      </a>
     </div>
   );
 };

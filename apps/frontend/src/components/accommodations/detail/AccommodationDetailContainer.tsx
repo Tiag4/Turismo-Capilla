@@ -8,7 +8,6 @@ import { AccommodationCenterCol } from './components/AccommodationCenterCol';
 import { AccommodationStickyWidget } from './components/AccommodationStickyWidget';
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
-import { AccommodationBookingDrawer } from './components/AccommodationBookingModal';
 import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitiesDrawer';
 
 interface AccommodationDetailContainerProps {
@@ -41,14 +40,14 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <div ref={booking.cardObserverRef}>
           <AccommodationStickyWidget data={data} booking={booking} />
         </div>
-        <AccommodationCenterCol onOpenAmenities={booking.openAmenities} />
+        <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
       {/* Desktop (>= 768px): Grilla Fija 3 Columnas */}
       <div className="hidden md:grid detail-bento-grid pt-2">
         <AccommodationLeftCol data={data} />
-        <AccommodationCenterCol onOpenAmenities={booking.openAmenities} />
+        <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
@@ -57,11 +56,11 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         data={data}
         nightsCount={booking.nightsCount}
         totalPrice={booking.totalPrice}
-        onOpenBookingModal={booking.openBookingModal}
+        wizardUrl={booking.wizardUrl}
         isVisible={!booking.isReservationCardVisible}
       />
 
-      {/* Overlays / Modals */}
+      {/* Modals & Drawers */}
       {booking.isGalleryOpen && (
         <AccommodationGalleryModal
           isOpen={booking.isGalleryOpen}
@@ -72,15 +71,6 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           onNext={booking.nextPhoto}
           onPrev={booking.prevPhoto}
           title={data.title}
-        />
-      )}
-
-      {booking.isBookingModalOpen && (
-        <AccommodationBookingDrawer
-          isOpen={booking.isBookingModalOpen}
-          onClose={booking.closeBookingModal}
-          data={data}
-          booking={booking}
         />
       )}
 

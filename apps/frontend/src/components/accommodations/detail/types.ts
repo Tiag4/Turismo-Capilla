@@ -16,6 +16,19 @@ export interface AmenityCategory {
   items: AmenityItem[];
 }
 
+export interface UnitDetails {
+  title: string;
+  capacityText: string;
+  maxAdults: number;
+  maxChildren: number;
+  bedrooms: {
+    roomName: string;
+    bedDetails: string;
+    isDouble?: boolean;
+  }[];
+  features: string[];
+}
+
 export interface AccommodationDetailData extends MapPlace {
   gallery: string[];
   fullDescription: string[];
@@ -37,4 +50,5 @@ export interface AccommodationDetailData extends MapPlace {
     cancellation: string;
   };
   depositPercent: number;
+  unitDetails: UnitDetails;
 }

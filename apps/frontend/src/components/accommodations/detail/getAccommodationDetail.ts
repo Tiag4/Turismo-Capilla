@@ -79,5 +79,22 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
       cancellation: 'Cancelación flexible hasta 7 días antes de la fecha de ingreso',
     },
     depositPercent: 50,
+    unitDetails: {
+      title: 'Chalet de 2 dormitorios',
+      capacityText: 'Capacidad: 2 a 5 personas (2 adultos base)',
+      maxAdults: 4,
+      maxChildren: 3,
+      bedrooms: [
+        { roomName: 'Dormitorio 1', bedDetails: '1 cama doble', isDouble: true },
+        { roomName: 'Dormitorio 2', bedDetails: '3 camas individuales', isDouble: false },
+      ],
+      features: [
+        'Chalet de montaña entero',
+        '45 m²',
+        'Cocina privada',
+        'Baño en la habitación',
+        'TV de pantalla plana',
+      ],
+    },
   };
 }

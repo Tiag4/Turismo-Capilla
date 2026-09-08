@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, Users, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Calendar, MessageSquare, ShieldCheck } from 'lucide-react';
 import { CustomDatePicker } from '../../../ui/CustomDatePicker';
-import { CustomSelect, type Option } from '../../../ui/CustomSelect';
+import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
 import type { AccommodationDetailData } from '../types';
 import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
 
@@ -9,14 +9,6 @@ interface AccommodationStickyWidgetProps {
   data: AccommodationDetailData;
   booking: UseAccommodationBookingReturn;
 }
-
-export const GUEST_OPTIONS: Option[] = [
-  { value: '1', label: '1 persona' },
-  { value: '2', label: '2 personas' },
-  { value: '3', label: '3 personas' },
-  { value: '4', label: '4 personas' },
-  { value: '5', label: '5+ personas' },
-];
 
 export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps> = ({
   data,
@@ -27,12 +19,12 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
     setCheckIn,
     checkOut,
     setCheckOut,
-    guests,
-    setGuests,
+    guestsSelection,
+    setGuestsSelection,
+    wizardUrl,
     nightsCount,
     totalPrice,
     depositRequired,
-    openBookingModal,
     whatsappUrl,
   } = booking;
 
@@ -51,7 +43,7 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
         </div>
       </div>
 
-      {/* Selectores de Fechas: Arrival Date & Departure Date */}
+      {/* Selectores de Fechas y Ocupación */}
       <div className="space-y-3 pt-1">
         <div className="grid grid-cols-2 gap-2.5">
           <CustomDatePicker
@@ -75,13 +67,10 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
           />
         </div>
 
-        {/* Guest Count */}
-        <CustomSelect
-          label="Guest Count"
-          value={guests}
-          onChange={setGuests}
-          options={GUEST_OPTIONS}
-          icon={<Users className="w-3.5 h-3.5 text-stone-400" />}
+        {/* Selector avanzado de Ocupación */}
+        <AccommodationGuestsPicker
+          value={guestsSelection}
+          onChange={setGuestsSelection}
         />
       </div>
 
@@ -105,16 +94,15 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
         </div>
       ) : null}
 
-      {/* Botón Reserve Now fiel a la captura */}
+      {/* Botón Solicitar reserva directo al Wizard */}
       <div className="space-y-2 pt-2">
-        <button
-          type="button"
-          onClick={openBookingModal}
+        <a
+          href={wizardUrl}
           style={{ backgroundColor: '#C95627', color: '#ffffff' }}
-          className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center"
+          className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center block"
         >
-          Reserve Now
-        </button>
+          Solicitar reserva
+        </a>
 
         <a
           href={whatsappUrl}

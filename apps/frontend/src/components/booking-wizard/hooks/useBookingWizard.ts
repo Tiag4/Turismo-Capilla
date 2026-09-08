@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 
 export interface BookingWizardState {

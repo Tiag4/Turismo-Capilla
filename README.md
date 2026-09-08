@@ -127,8 +127,7 @@ pnpm format             # Da formato a todo el código fuente con Prettier
 * **Tiago Nicolitsis**
 * **Martino Costigliolo**
 * **Juan Larcher**
-* **Braian Aguilera**
-* **Iris De Dominicci**
+
 
 **Cátedra:** Programación III — 2026.  
-**Cliente:** Comisión de Turismo de Capilla del Monte, Córdoba, Argentina.
+**Cliente:** Camara de Turismo de Capilla del Monte, Córdoba, Argentina.

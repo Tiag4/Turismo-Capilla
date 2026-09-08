@@ -108,6 +108,7 @@ Todo componente o vista interactiva que supere ~150 líneas DEBE desacoplarse:
 ### 8.2 Reglas de Interfaz
 * **Prohibido `alert()`, `confirm()` y `prompt()`:** Usar modales propios del sistema o notificaciones toast.
 * **Scroll Lock Obligatorio:** Al abrir modales o drawers, bloquear el scroll del body (`overflow = 'hidden'`) y restaurarlo al cerrar.
+* **Animaciones de Apertura y Cierre OBLIGATORIAS:** Todo overlay (modales, drawers laterales, bottom sheets, dropdowns, tooltips, toasts) DEBE contar obligatoriamente con animaciones fluidas tanto de apertura (*slide-in* / *fade-in*) como de cierre (*slide-out* / *fade-out*). Prohibido desmontar componentes interactivos abruptamente sin su respectiva transición de salida.
 * **Jerarquía de Z-Index:** Modales base `z-50`, confirmaciones críticas `z-[100]`, toasts `z-[200]`.
 * **Formateo Monetario:** Todo importe debe formatearse en tiempo real con separador de miles (`$150.000`) y almacenar internamente el número limpio.
 * **Cero UI Vibecoded:** Cumplir obligatoriamente con `.agents/skills/anti-vibecoded/SKILL.md`.

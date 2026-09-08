@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { MOCK_PLACES, type MapPlace } from '../../data/mock-places';
+import { AccommodationDetailContainer } from '../../components/accommodations/detail/AccommodationDetailContainer';
+
+export function getStaticPaths() {
+  const accommodations = MOCK_PLACES.filter((p) => p.type === 'accommodation');
+  return accommodations.map((place) => ({
+    params: { id: place.id },
+    props: { place },
+  }));
+}
+
+interface Props {
+  place: MapPlace;
+}
+
+const { place } = Astro.props;
+
+const pageTitle = `${place.title} — Alojamiento en Capilla del Monte`;
+const pageDescription = `${place.subtitle}. Consultá disponibilidad oficial, fotos y reservá directo sin comisiones en Capilla del Monte, Córdoba.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="min-h-screen bg-[#FAF8F5] text-stone-900">
+    <AccommodationDetailContainer place={place} client:load />
+  </main>
+</Layout>

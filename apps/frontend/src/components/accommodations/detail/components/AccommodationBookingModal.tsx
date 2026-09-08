@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, ShieldCheck } from 'lucide-react';
 import type { AccommodationDetailData } from '../types';
 import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
-import { AccommodationBookingForm } from './AccommodationBookingForm';
+import { AccommodationBookingFormFields } from './AccommodationBookingForm';
 import { AccommodationBookingSuccess } from './AccommodationBookingSuccess';
 
 interface AccommodationBookingModalProps {
@@ -22,57 +22,68 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
   const {
     checkIn,
     checkOut,
-    guests,
     nightsCount,
     totalPrice,
-    depositRequired,
-    guestName,
-    setGuestName,
-    guestEmail,
-    setGuestEmail,
-    guestPhone,
-    setGuestPhone,
     isSubmitting,
     isSuccess,
     handleSubmitBooking,
     whatsappUrl,
   } = booking;
+  const [isRendered, setIsRendered] = useState(isOpen);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Scroll Lock obligatorio (AGENTS.md 8.2)
+  useEffect(() => {
+    if (isOpen) {
+      setIsRendered(true);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setIsAnimating(true));
+      });
+      return () => cancelAnimationFrame(raf);
+    } else {
+      setIsAnimating(false);
+      const timer = setTimeout(() => setIsRendered(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    setIsAnimating(false);
+    setTimeout(onClose, 300);
+  }, [onClose]);
+
   useEffect(() => {
     if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
+    document.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = originalOverflow;
-      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKey);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
-  if (!isOpen || typeof document === 'undefined') return null;
+  if (!isRendered || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50 overflow-hidden"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Solicitud de Reserva Directa"
-    >
-      {/* Backdrop con cierre al hacer click */}
+    <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true" aria-label="Solicitud de Reserva">
+      {/* Backdrop con fade animado */}
       <div
-        onClick={onClose}
-        className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity duration-300 cursor-pointer"
+        onClick={handleClose}
+        className={`fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity duration-300 cursor-pointer ${
+          isAnimating ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         aria-hidden="true"
       />
 
       {/* Drawer: Bottom-Sheet en Mobile (< 768px), Slide-Over lateral en Desktop (>= 768px) */}
-      <div className="fixed inset-x-0 bottom-0 md:inset-y-0 md:right-0 md:left-auto w-full md:max-w-md lg:max-w-lg bg-white shadow-2xl rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-t md:border-t-0 md:border-l border-stone-200 flex flex-col max-h-[92vh] md:max-h-full h-auto md:h-full z-10 transition-all duration-300">
+      <div
+        className={`fixed bottom-0 left-0 right-0 md:left-auto md:top-0 md:bottom-0 md:right-0 w-full md:w-[480px] lg:w-[540px] bg-white shadow-2xl rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-t md:border-t-0 md:border-l border-stone-200 flex flex-col h-[94vh] max-h-[96vh] md:h-full md:max-h-full z-50 transition-all duration-300 ease-out transform ${
+          isAnimating
+            ? 'translate-y-0 opacity-100 md:translate-x-0 md:translate-y-0'
+            : 'translate-y-full opacity-0 md:translate-x-full md:translate-y-0'
+        }`}
+      >
         {/* Indicador táctil para Mobile (Drag handle) */}
         <div className="md:hidden pt-3 pb-1 flex justify-center shrink-0">
           <div className="w-10 h-1 bg-stone-300 rounded-full" />
@@ -86,7 +97,7 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 rounded-xl text-stone-400 hover:text-stone-900 hover:bg-stone-200 transition-colors cursor-pointer"
             aria-label="Cerrar panel de reserva"
           >
@@ -94,9 +105,9 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
           </button>
         </div>
 
-        {/* Contenido Scrolleable del Formulario */}
-        <div className="p-6 overflow-y-auto space-y-5 flex-1 overscroll-contain">
-          {isSuccess ? (
+        {/* Contenido interactivo: Éxito o Formulario con footer fijo */}
+        {isSuccess ? (
+          <div className="p-6 overflow-y-auto space-y-5 flex-1 overscroll-contain">
             <AccommodationBookingSuccess
               hostName={data.host.name}
               checkIn={checkIn}
@@ -105,33 +116,33 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
               totalPrice={totalPrice}
               whatsappUrl={whatsappUrl}
             />
-          ) : (
-            <AccommodationBookingForm
-              data={data}
-              checkIn={checkIn}
-              onCheckInChange={booking.setCheckIn}
-              checkOut={checkOut}
-              onCheckOutChange={booking.setCheckOut}
-              guests={guests}
-              onGuestsChange={booking.setGuests}
-              nightsCount={nightsCount}
-              totalPrice={totalPrice}
-              depositRequired={depositRequired}
-              guestName={guestName}
-              onGuestNameChange={setGuestName}
-              guestEmail={guestEmail}
-              onGuestEmailChange={setGuestEmail}
-              guestPhone={guestPhone}
-              onGuestPhoneChange={setGuestPhone}
-              isSubmitting={isSubmitting}
-              onSubmit={handleSubmitBooking}
-            />
-          )}
-        </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmitBooking} className="flex-1 flex flex-col overflow-hidden">
+            <div className="p-6 overflow-y-auto space-y-5 flex-1 overscroll-contain">
+              <AccommodationBookingFormFields data={data} booking={booking} />
+            </div>
+
+            {/* Footer Fijo Pinned: Botón SIEMPRE visible sin necesidad de scroll */}
+            <div className="shrink-0 px-6 py-4 border-t border-stone-200 bg-white/95 backdrop-blur-xs space-y-2 shadow-lg">
+              <button
+                type="submit"
+                disabled={isSubmitting || !checkIn || !checkOut}
+                style={{ backgroundColor: '#C95627', color: '#ffffff' }}
+                className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-sm shadow-md hover:brightness-95 active:brightness-90 disabled:opacity-50 transition-all cursor-pointer select-none text-center"
+              >
+                {isSubmitting ? 'Solicitando reserva...' : 'Solicitar reserva'}
+              </button>
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-500 text-center select-none">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Contacto directo con el prestador • Sin comisiones</span>
+              </div>
+            </div>
+          </form>
+        )}
       </div>
     </div>,
     document.body
   );
 };
-
 export const AccommodationBookingModal = AccommodationBookingDrawer;

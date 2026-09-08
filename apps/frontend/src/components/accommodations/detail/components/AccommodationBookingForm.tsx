@@ -1,56 +1,43 @@
 import React from 'react';
-import { Calendar, Users, ShieldCheck } from 'lucide-react';
+import { Calendar, Users } from 'lucide-react';
 import { CustomDatePicker } from '../../../ui/CustomDatePicker';
 import { CustomSelect } from '../../../ui/CustomSelect';
 import { GUEST_OPTIONS } from './AccommodationStickyWidget';
 import type { AccommodationDetailData } from '../types';
+import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
 
-interface AccommodationBookingFormProps {
+interface AccommodationBookingFormFieldsProps {
   data: AccommodationDetailData;
-  checkIn: string;
-  onCheckInChange: (v: string) => void;
-  checkOut: string;
-  onCheckOutChange: (v: string) => void;
-  guests: string;
-  onGuestsChange: (v: string) => void;
-  nightsCount: number | null;
-  totalPrice: number | null;
-  depositRequired: number | null;
-  guestName: string;
-  onGuestNameChange: (v: string) => void;
-  guestEmail: string;
-  onGuestEmailChange: (v: string) => void;
-  guestPhone: string;
-  onGuestPhoneChange: (v: string) => void;
-  isSubmitting: boolean;
-  onSubmit: (e: React.FormEvent) => void;
+  booking: UseAccommodationBookingReturn;
 }
 
-export const AccommodationBookingForm: React.FC<AccommodationBookingFormProps> = ({
+export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFieldsProps> = ({
   data,
-  checkIn,
-  onCheckInChange,
-  checkOut,
-  onCheckOutChange,
-  guests,
-  onGuestsChange,
-  nightsCount,
-  totalPrice,
-  depositRequired,
-  guestName,
-  onGuestNameChange,
-  guestEmail,
-  onGuestEmailChange,
-  guestPhone,
-  onGuestPhoneChange,
-  isSubmitting,
-  onSubmit,
+  booking,
 }) => {
+  const {
+    checkIn,
+    setCheckIn,
+    checkOut,
+    setCheckOut,
+    guests,
+    setGuests,
+    nightsCount,
+    totalPrice,
+    depositRequired,
+    guestName,
+    setGuestName,
+    guestEmail,
+    setGuestEmail,
+    guestPhone,
+    setGuestPhone,
+  } = booking;
+
   const todayStr = new Date().toISOString().split('T')[0];
   const price = data.pricePerNight ?? 0;
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <div className="space-y-4">
       {/* Selector de Fechas, Huéspedes y Resumen de Tarifas */}
       <div className="space-y-3 p-4 bg-[#FAF8F5] rounded-2xl border border-stone-200/80">
         <div className="flex justify-between items-center pb-2 border-b border-stone-200">
@@ -63,8 +50,8 @@ export const AccommodationBookingForm: React.FC<AccommodationBookingFormProps> =
             label="Llegada"
             value={checkIn}
             onChange={(d) => {
-              onCheckInChange(d);
-              if (checkOut && d >= checkOut) onCheckOutChange('');
+              setCheckIn(d);
+              if (checkOut && d >= checkOut) setCheckOut('');
             }}
             minDate={todayStr}
             placeholder="Llegada"
@@ -73,7 +60,7 @@ export const AccommodationBookingForm: React.FC<AccommodationBookingFormProps> =
           <CustomDatePicker
             label="Salida"
             value={checkOut}
-            onChange={onCheckOutChange}
+            onChange={setCheckOut}
             minDate={checkIn || todayStr}
             placeholder="Salida"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
@@ -83,7 +70,7 @@ export const AccommodationBookingForm: React.FC<AccommodationBookingFormProps> =
         <CustomSelect
           label="Huéspedes"
           value={guests}
-          onChange={onGuestsChange}
+          onChange={setGuests}
           options={GUEST_OPTIONS}
           icon={<Users className="w-3.5 h-3.5 text-stone-400" />}
         />
@@ -116,33 +103,19 @@ export const AccommodationBookingForm: React.FC<AccommodationBookingFormProps> =
       <div className="space-y-3">
         <div>
           <label className="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Nombre Completo *</label>
-          <input type="text" required value={guestName} onChange={(e) => onGuestNameChange(e.target.value)} placeholder="Ej. Martín Gómez" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Ej. Martín Gómez" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
         </div>
         <div>
           <label className="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Teléfono / WhatsApp *</label>
-          <input type="tel" required value={guestPhone} onChange={(e) => onGuestPhoneChange(e.target.value)} placeholder="Ej. +54 9 351 123 4567" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <input type="tel" required value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} placeholder="Ej. +54 9 351 123 4567" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
         </div>
         <div>
           <label className="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Email de Contacto</label>
-          <input type="email" value={guestEmail} onChange={(e) => onGuestEmailChange(e.target.value)} placeholder="tucorreo@ejemplo.com" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="tucorreo@ejemplo.com" className="w-full bg-[#fbf9f5] border border-stone-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
         </div>
       </div>
-
-      <div className="pt-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{ backgroundColor: '#C95627', color: '#ffffff' }}
-          className="w-full py-3 px-4 rounded-xl font-display font-bold text-xs shadow-md hover:brightness-95 active:brightness-90 disabled:opacity-50 transition-all cursor-pointer select-none text-center"
-        >
-          {isSubmitting ? 'Enviando solicitud...' : 'Enviar Solicitud al Prestador'}
-        </button>
-      </div>
-
-      <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 text-center select-none">
-        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-        <span>Contacto directo sin cargos adicionales</span>
-      </div>
-    </form>
+    </div>
   );
 };
+
+export const AccommodationBookingForm = AccommodationBookingFormFields;

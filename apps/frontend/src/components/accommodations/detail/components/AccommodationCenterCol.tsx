@@ -8,9 +8,14 @@ import {
   Sofa,
   Mountain,
   ShieldCheck,
+  ChevronRight,
 } from 'lucide-react';
 
-export const AccommodationCenterCol: React.FC = () => {
+interface AccommodationCenterColProps {
+  onOpenAmenities?: () => void;
+}
+
+export const AccommodationCenterCol: React.FC<AccommodationCenterColProps> = ({ onOpenAmenities }) => {
   return (
     <div className="space-y-6">
       {/* Bedroom (duplicado/expandido idéntico a la captura) */}
@@ -88,6 +93,17 @@ export const AccommodationCenterCol: React.FC = () => {
             <span className="text-[11px] font-semibold text-stone-800 leading-tight">Private Access</span>
           </div>
         </div>
+
+        {onOpenAmenities && (
+          <button
+            type="button"
+            onClick={onOpenAmenities}
+            className="w-full mt-2 py-2.5 px-4 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-50/50 hover:bg-stone-100 text-stone-800 font-display font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer select-none"
+          >
+            <span>Ver los 40+ servicios completos</span>
+            <ChevronRight className="w-3.5 h-3.5 text-stone-500" />
+          </button>
+        )}
       </div>
     </div>
   );

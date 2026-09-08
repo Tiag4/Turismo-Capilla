@@ -71,6 +71,11 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     setIsBookingModalOpen(false);
   }, []);
 
+  // Amenities Drawer state & handlers
+  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
+  const openAmenities = useCallback(() => setIsAmenitiesOpen(true), []);
+  const closeAmenities = useCallback(() => setIsAmenitiesOpen(false), []);
+
   // WhatsApp link generation
   const whatsappUrl = useMemo(() => {
     const datesText = checkIn && checkOut ? ` del ${checkIn} al ${checkOut} (${nightsCount ?? 0} noches)` : '';
@@ -133,6 +138,9 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     isBookingModalOpen,
     openBookingModal,
     closeBookingModal,
+    isAmenitiesOpen,
+    openAmenities,
+    closeAmenities,
     guestName,
     setGuestName,
     guestEmail,

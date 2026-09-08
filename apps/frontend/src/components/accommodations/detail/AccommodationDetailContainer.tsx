@@ -9,6 +9,7 @@ import { AccommodationStickyWidget } from './components/AccommodationStickyWidge
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
 import { AccommodationBookingDrawer } from './components/AccommodationBookingModal';
+import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitiesDrawer';
 
 interface AccommodationDetailContainerProps {
   place: MapPlace;
@@ -20,14 +21,14 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-24 lg:pb-16">
-      {/* 1. Mobile Only: Nombre del Alojamiento arriba de las fotos */}
+      {/* Mobile Title */}
       <div className="md:hidden">
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-stone-900 tracking-tight leading-tight">
           {data.title}
         </h1>
       </div>
 
-      {/* 2. Fotos: Carrusel táctil en Mobile / Bento 5 Fotos en Desktop */}
+      {/* Gallery Bento / Carousel */}
       <AccommodationGalleryBento
         id={data.id}
         gallery={data.gallery}
@@ -35,33 +36,23 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         onOpenGallery={booking.openGallery}
       />
 
-      {/* Versión Mobile (< 768px): Jerarquía estricta según requerimiento */}
+      {/* Mobile (< 768px): Jerarquía requerida */}
       <div className="md:hidden space-y-8 pt-2">
-        {/* 3. Sacar la reserva */}
         <div ref={booking.cardObserverRef}>
           <AccommodationStickyWidget data={data} booking={booking} />
         </div>
-
-        {/* 4. Servicios (Clean Amenities) */}
-        <AccommodationCenterCol />
-
-        {/* 5. Descripción completa */}
+        <AccommodationCenterCol onOpenAmenities={booking.openAmenities} />
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
-      {/* Versión Desktop (>= 768px): Grilla Fija a 3 Columnas fiel a comp original */}
+      {/* Desktop (>= 768px): Grilla Fija 3 Columnas */}
       <div className="hidden md:grid detail-bento-grid pt-2">
-        {/* Columna 1: Nombre y Descripción */}
         <AccommodationLeftCol data={data} />
-
-        {/* Columna 2: Bedroom y Clean Amenities */}
-        <AccommodationCenterCol />
-
-        {/* Columna 3: Formulario para pagar (Sticky Widget) */}
+        <AccommodationCenterCol onOpenAmenities={booking.openAmenities} />
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
-      {/* Barra Inferior Fija para Móviles (Bottom Dock CRO) */}
+      {/* Bottom Dock Móvil */}
       <AccommodationMobileBottomDock
         data={data}
         nightsCount={booking.nightsCount}
@@ -70,7 +61,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         isVisible={!booking.isReservationCardVisible}
       />
 
-      {/* Modal Lightbox de Galería Fotográfica */}
+      {/* Overlays / Modals */}
       {booking.isGalleryOpen && (
         <AccommodationGalleryModal
           isOpen={booking.isGalleryOpen}
@@ -84,13 +75,20 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         />
       )}
 
-      {/* Drawer de Solicitud de Reserva Directa (Bottom-Sheet en mobile / Slide-over en desktop) */}
       {booking.isBookingModalOpen && (
         <AccommodationBookingDrawer
           isOpen={booking.isBookingModalOpen}
           onClose={booking.closeBookingModal}
           data={data}
           booking={booking}
+        />
+      )}
+
+      {booking.isAmenitiesOpen && (
+        <AccommodationAmenitiesDrawer
+          isOpen={booking.isAmenitiesOpen}
+          onClose={booking.closeAmenities}
+          title={data.title}
         />
       )}
     </div>

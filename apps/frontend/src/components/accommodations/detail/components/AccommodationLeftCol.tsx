@@ -1,5 +1,4 @@
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
 import type { AccommodationDetailData } from '../types';
 
 interface AccommodationLeftColProps {
@@ -8,18 +7,10 @@ interface AccommodationLeftColProps {
 
 export const AccommodationLeftCol: React.FC<AccommodationLeftColProps> = ({ data }) => {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-stone-900 tracking-tight leading-tight">
-          {data.title}
-        </h1>
-
-        {/* Badge Verified Host idéntico a la comp */}
-        <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
-          <CheckCircle2 className="w-3.5 h-3.5 fill-blue-600 text-white shrink-0" />
-          <span>Verified Host</span>
-        </div>
-      </div>
+    <div className="space-y-3">
+      <h1 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-stone-900 tracking-tight leading-tight">
+        {data.title}
+      </h1>
 
       {/* Párrafo descriptivo fiel a la captura */}
       <p className="text-sm text-stone-600 leading-relaxed font-normal pt-1">
@@ -28,3 +19,21 @@ export const AccommodationLeftCol: React.FC<AccommodationLeftColProps> = ({ data
     </div>
   );
 };
+
+export interface AccommodationDescriptionProps {
+  description?: string[];
+}
+
+export const AccommodationDescription: React.FC<AccommodationDescriptionProps> = ({ description }) => {
+  return (
+    <div className="space-y-3 pt-6 border-t border-stone-200">
+      <h2 className="font-display font-bold text-lg text-stone-900">Sobre este hospedaje</h2>
+      {description?.map((para, i) => (
+        <p key={i} className="text-sm text-stone-600 leading-relaxed">
+          {para}
+        </p>
+      ))}
+    </div>
+  );
+};
+

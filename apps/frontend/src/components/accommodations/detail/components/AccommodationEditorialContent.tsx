@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  CheckCircle2,
   Wifi,
   UtensilsCrossed,
   Bath,
@@ -19,19 +18,11 @@ interface AccommodationEditorialContentProps {
 export const AccommodationEditorialContent: React.FC<AccommodationEditorialContentProps> = ({ data }) => {
   return (
     <div className="flex flex-col md:flex-row gap-8 lg:gap-12 w-full">
-      {/* Columna Izquierda: Título, Badge, Descripción y Distribución de Dormitorios */}
+      {/* Columna Izquierda: Título, Descripción y Distribución de Dormitorios */}
       <div className="w-full md:w-1/2 space-y-4">
-        <div>
-          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-stone-900 tracking-tight leading-tight">
-            {data.title}
-          </h1>
-
-          {/* Badge Verified Host idéntico a la comp */}
-          <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5 fill-blue-600 text-white shrink-0" />
-            <span>Verified Host</span>
-          </div>
-        </div>
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-stone-900 tracking-tight leading-tight">
+          {data.title}
+        </h1>
 
         {/* Párrafo descriptivo fiel a la captura */}
         <p className="text-sm text-stone-600 leading-relaxed font-normal pt-1">

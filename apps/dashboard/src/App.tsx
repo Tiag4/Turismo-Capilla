@@ -10,8 +10,7 @@ import { AdminOverview } from './components/overview/AdminOverview.tsx';
 import { OccupancyReportView } from './components/reports/OccupancyReportView.tsx';
 import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
-
-import { AdminSectionPlaceholder } from './components/layout/AdminSectionPlaceholder.tsx';
+import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
 
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
@@ -20,8 +19,6 @@ export const App: React.FC = () => {
   if (!isAuthenticated || !user) {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
   }
-
-  const isPlaceholderTab = ['settings'].includes(currentTab);
 
   return (
     <DashboardLayout
@@ -45,7 +42,7 @@ export const App: React.FC = () => {
       {currentTab === 'reports' && user.role === 'ADMIN' && <OccupancyReportView />}
       {currentTab === 'audit' && user.role === 'ADMIN' && <ActivityLogView />}
       {currentTab === 'moderation' && user.role === 'ADMIN' && <ContentModerationView />}
-      {isPlaceholderTab && user.role === 'ADMIN' && <AdminSectionPlaceholder tab={currentTab} />}
+      {currentTab === 'settings' && user.role === 'ADMIN' && <TourismCalendarSettings />}
     </DashboardLayout>
   );
 };

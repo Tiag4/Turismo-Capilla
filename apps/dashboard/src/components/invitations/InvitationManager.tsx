@@ -3,13 +3,19 @@ import { Plus, ShieldAlert } from 'lucide-react';
 import { useAdminInvitations } from '../../hooks/useAdminInvitations.ts';
 import { InvitationList } from './InvitationList.tsx';
 import { GenerateInvitationModal } from './GenerateInvitationModal.tsx';
+import { RevokeInvitationModal } from './RevokeInvitationModal.tsx';
 import { Button } from '../ui/Button.tsx';
-import type { CreateInvitationDto } from '../../types/invitation.types.ts';
+import type { CreateInvitationDto, InvitationToken } from '../../types/invitation.types.ts';
 
 export const InvitationManager: React.FC = () => {
-  const { invitations, isLoading, createInvitation } = useAdminInvitations();
+  const { invitations, isLoading, createInvitation, revokeInvitation } = useAdminInvitations();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Revoke state
+  const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
+  const [revokingInvitation, setRevokingInvitation] = useState<InvitationToken | null>(null);
+  const [isRevoking, setIsRevoking] = useState(false);
 
   const handleCreate = async (dto: CreateInvitationDto) => {
     setIsSubmitting(true);
@@ -18,6 +24,21 @@ export const InvitationManager: React.FC = () => {
       setIsModalOpen(false);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleOpenRevoke = (invitation: InvitationToken) => {
+    setRevokingInvitation(invitation);
+    setIsRevokeModalOpen(true);
+  };
+
+  const handleRevoke = async (id: string, reason: string) => {
+    setIsRevoking(true);
+    try {
+      await revokeInvitation(id, reason);
+      setIsRevokeModalOpen(false);
+    } finally {
+      setIsRevoking(false);
     }
   };
 
@@ -51,14 +72,27 @@ export const InvitationManager: React.FC = () => {
       </div>
 
       {/* List */}
-      <InvitationList invitations={invitations} isLoading={isLoading} />
+      <InvitationList
+        invitations={invitations}
+        isLoading={isLoading}
+        onOpenRevoke={handleOpenRevoke}
+      />
 
-      {/* Modal */}
+      {/* Generate Modal */}
       <GenerateInvitationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreate}
         isLoading={isSubmitting}
+      />
+
+      {/* Revoke Modal */}
+      <RevokeInvitationModal
+        isOpen={isRevokeModalOpen}
+        onClose={() => setIsRevokeModalOpen(false)}
+        invitation={revokingInvitation}
+        onRevoke={handleRevoke}
+        isLoading={isRevoking}
       />
     </div>
   );

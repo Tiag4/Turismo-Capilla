@@ -1,18 +1,23 @@
 import React from 'react';
-import { Users, MapPin, Edit3, Power } from 'lucide-react';
+import { Users, MapPin, Edit3, Power, ShieldCheck } from 'lucide-react';
 import type { Accommodation } from '../../types/accommodation.types.ts';
 import { Button } from '../ui/Button.tsx';
+import { ComplianceStatusBadge } from './ComplianceStatusBadge.tsx';
 
 export interface AccommodationCardProps {
   accommodation: Accommodation;
   onEdit: (accommodation: Accommodation) => void;
   onToggleActive: (id: string) => void;
+  isAdmin?: boolean;
+  onAudit?: (accommodation: Accommodation) => void;
 }
 
 export const AccommodationCard: React.FC<AccommodationCardProps> = ({
   accommodation,
   onEdit,
   onToggleActive,
+  isAdmin = false,
+  onAudit,
 }) => {
   const mainImage =
     accommodation.images?.find((img) => img.isMain)?.url ||
@@ -57,6 +62,15 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
 
         {/* Content */}
         <div className="p-4 sm:p-5 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <ComplianceStatusBadge status={accommodation.complianceStatus} />
+            {accommodation.auditRecord?.auditedAt && (
+              <span className="text-[10px] text-[var(--color-sand-400)] font-medium">
+                Auditado: {new Date(accommodation.auditRecord.auditedAt).toLocaleDateString('es-AR')}
+              </span>
+            )}
+          </div>
+
           <h4 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit'] line-clamp-1">
             {accommodation.name}
           </h4>
@@ -101,15 +115,30 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           <span>{accommodation.isActive ? 'Pausar' : 'Activar'}</span>
         </Button>
 
-        <Button
-          variant="terracotta"
-          size="sm"
-          onClick={() => onEdit(accommodation)}
-          className="text-xs"
-        >
-          <Edit3 className="w-3.5 h-3.5" />
-          <span>Editar</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          {isAdmin && onAudit && (
+            <Button
+              variant="emerald"
+              size="sm"
+              onClick={() => onAudit(accommodation)}
+              className="text-xs"
+              title="Auditar habilitación municipal"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Auditar</span>
+            </Button>
+          )}
+
+          <Button
+            variant="terracotta"
+            size="sm"
+            onClick={() => onEdit(accommodation)}
+            className="text-xs"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>Editar</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

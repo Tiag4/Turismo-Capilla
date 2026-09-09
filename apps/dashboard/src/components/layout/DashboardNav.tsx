@@ -2,7 +2,14 @@ import React from 'react';
 import { CalendarCheck, Home, KeyRound, BarChart3 } from 'lucide-react';
 import type { UserRole } from '../../types/auth.types.ts';
 
-export type DashboardTab = 'bookings' | 'accommodations' | 'invitations' | 'overview';
+export type DashboardTab =
+  | 'bookings'
+  | 'accommodations'
+  | 'calendar'
+  | 'pricing'
+  | 'performance'
+  | 'invitations'
+  | 'overview';
 
 export interface DashboardNavProps {
   currentTab: DashboardTab;

@@ -18,7 +18,7 @@ Este documento es la **fuente canónica y única de verdad (SSOT)** de directric
 ## 2. Idioma y Formato de Comunicación
 
 * **Español Rioplatense OBLIGATORIO en Chat:** Toda la comunicación directa con el usuario, explicaciones y razonamientos se redactan en español rioplatense natural (voseo).
-* **Artefactos Técnicos en Inglés OBLIGATORIO:** Código fuente, nombres de variables, funciones, interfaces, DTOs, commits (conventional commits), comentarios en código y nombres de archivos deben redactarse estrictamente en inglés.
+* **Artefactos Técnicos en Inglés (Código) y Commits en Español OBLIGATORIO:** Código fuente, nombres de variables, funciones, interfaces, DTOs y comentarios en código deben redactarse en inglés. Los commits (conventional commits) deben redactarse estrictamente en español.
 
 ---
 
@@ -142,6 +142,6 @@ Todo componente o vista interactiva que supere ~150 líneas DEBE desacoplarse:
 
 * **Inspección Previa:** `git status` y `git diff` obligatorios antes de staging.
 * **Staging Granular:** PROHIBIDO `git add .` a ciegas. Seleccionar archivos específicos de la tarea.
-* **Conventional Commits en Inglés:** `<type>(<scope>): <description>` (ej. `feat(bookings): add date collision validation`).
+* **Conventional Commits en Español:** `<type>(<scope>): <descripción>` (ej. `feat(bookings): validar solapamiento de fechas en reservas`).
 * **Cero Atribución de IA:** Nunca incluir `Co-Authored-By` ni referencias a asistentes de IA en mensajes de commit o código.
 

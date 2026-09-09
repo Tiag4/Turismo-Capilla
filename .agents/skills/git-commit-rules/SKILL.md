@@ -24,10 +24,10 @@ Antes de realizar cualquier staging (`git add`), es **estrictamente obligatorio*
 - Realizar commits pequeños y cohesivos por cambio o corrección específica.
 - Al finalizar una fase o ciclo completo de desarrollo o SDD, realizar el commit final de cierre de fase.
 
-## 4. Formato Conventional Commits
-Todos los mensajes de commit deben seguir el estándar **Conventional Commits** en **inglés**:
+## 4. Formato Conventional Commits (OBLIGATORIO en Español)
+Todos los mensajes de commit deben seguir el estándar **Conventional Commits** redactados **estrictamente en español**:
 
-`<type>(<scope>): <short description in lower case>`
+`<type>(<scope>): <descripción breve en minúsculas en español>`
 
 ### Tipos permitidos (`type`):
 - `feat`: Nueva funcionalidad.
@@ -40,13 +40,15 @@ Todos los mensajes de commit deben seguir el estándar **Conventional Commits** 
 
 ### Ámbitos (`scope`) en Turismo-Capilla:
 Indica el módulo afectado. Ejemplos recomendados:
-- `backend`, `frontend`, `monorepo`
+- `backend`, `frontend`, `dashboard`, `monorepo`
 - `auth`, `invitations`, `accommodations`, `bookings`, `attractions`, `users`
 - `design-system`, `ui`, `cro`
 - `skills`, `docs`, `tests`, `db`
 
-### Ejemplo:
-`feat(bookings): prevent overlapping date reservations with atomic prisma transactions`
+### Ejemplos:
+- `feat(bookings): prevenir solapamiento de fechas con transacciones atomicas de prisma`
+- `fix(auth): corregir validacion de token de invitacion`
+- `docs(skills): actualizar regla de commits obligatorios en espanol`
 
 ## 5. Prohibición Estricta de Atribución de IA
 - **PROHIBIDO** incluir cabeceras de atribución de IA como `Co-Authored-By: CoPilot/ChatGPT/Gemini/Claude` o comentarios similares en el mensaje del commit o en el código.

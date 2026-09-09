@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, Shield, Home } from 'lucide-react';
+import { LogOut, Shield, Home, Menu } from 'lucide-react';
 import type { User, UserRole } from '../../types/auth.types.ts';
 import { Button } from '../ui/Button.tsx';
 
@@ -7,18 +7,29 @@ export interface DashboardHeaderProps {
   user: User;
   onLogout: () => void;
   onSwitchRole: (role: UserRole) => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   user,
   onLogout,
   onSwitchRole,
+  onToggleMobileMenu,
 }) => {
   return (
     <header className="bg-white border-b border-[var(--color-sand-200)] sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand & Isotype */}
         <div className="flex items-center gap-3">
+          {onToggleMobileMenu && (
+            <button
+              onClick={onToggleMobileMenu}
+              className="p-2 -ml-2 rounded-xl text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] md:hidden transition-colors cursor-pointer"
+              aria-label="Abrir menú de navegación"
+            >
+              <Menu className="w-5 h-5 text-[var(--color-terracotta-600)]" />
+            </button>
+          )}
           <div className="w-9 h-9 rounded-xl bg-[var(--color-emerald-portal-600)] flex items-center justify-center text-white shadow-xs">
             <span className="font-bold text-base font-['Outfit']">CM</span>
           </div>

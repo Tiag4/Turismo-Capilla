@@ -35,6 +35,45 @@ export const App: React.FC = () => {
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && <AccommodationList />}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
+      {currentTab === 'calendar' && (
+        <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">
+            <span className="text-xl">📅</span>
+          </div>
+          <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            Calendario de Ocupación
+          </h3>
+          <p className="text-xs text-[var(--color-sand-400)] max-w-md mx-auto">
+            Matriz interactiva mensual para el control visual de reservas y bloqueos de fechas.
+          </p>
+        </div>
+      )}
+      {currentTab === 'pricing' && (
+        <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">
+            <span className="text-xl">🏷️</span>
+          </div>
+          <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            Tarifas y Temporadas
+          </h3>
+          <p className="text-xs text-[var(--color-sand-400)] max-w-md mx-auto">
+            Gestión de precios diferenciales para temporada alta, media y fines de semana largos.
+          </p>
+        </div>
+      )}
+      {currentTab === 'performance' && (
+        <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">
+            <span className="text-xl">📊</span>
+          </div>
+          <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            Rendimiento y Balance
+          </h3>
+          <p className="text-xs text-[var(--color-sand-400)] max-w-md mx-auto">
+            Indicadores clave de rendimiento, tasa de ocupación mensual y balance financiero.
+          </p>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

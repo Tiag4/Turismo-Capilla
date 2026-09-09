@@ -8,6 +8,7 @@ import { AccommodationList } from './components/accommodations/AccommodationList
 import { InvitationManager } from './components/invitations/InvitationManager.tsx';
 import { AdminOverview } from './components/overview/AdminOverview.tsx';
 import { BookingCalendar } from './components/calendar/BookingCalendar.tsx';
+import { SeasonalRatesManager } from './components/pricing/SeasonalRatesManager.tsx';
 
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
@@ -37,19 +38,7 @@ export const App: React.FC = () => {
       {currentTab === 'accommodations' && <AccommodationList />}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
       {currentTab === 'calendar' && <BookingCalendar />}
-      {currentTab === 'pricing' && (
-        <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">
-            <span className="text-xl">🏷️</span>
-          </div>
-          <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
-            Tarifas y Temporadas
-          </h3>
-          <p className="text-xs text-[var(--color-sand-400)] max-w-md mx-auto">
-            Gestión de precios diferenciales para temporada alta, media y fines de semana largos.
-          </p>
-        </div>
-      )}
+      {currentTab === 'pricing' && <SeasonalRatesManager />}
       {currentTab === 'performance' && (
         <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
           <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">

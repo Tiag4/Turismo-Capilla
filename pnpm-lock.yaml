@@ -114,7 +114,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(vite@8.2.2(@types/node@22.20.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
 
-  apps/frontend:
+  apps/portal-turismo:
     dependencies:
       '@astrojs/react':
         specifier: ^6.0.5

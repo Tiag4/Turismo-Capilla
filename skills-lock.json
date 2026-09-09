@@ -13,6 +13,12 @@
       "skillPath": "skills/taste-skill/SKILL.md",
       "computedHash": "899b84384f74f540ea5284d9b2e9234e050998b42eacc805410b518d4226c0b3"
     },
+    "excalidraw-diagram-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/excalidraw-diagram-generator/SKILL.md",
+      "computedHash": "d26f6110fda8be59a3ba2e627f26b9d11834cd6a82b8cba05a9d80e97ea457d3"
+    },
     "gsap-core": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
@@ -30,6 +36,12 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/impeccable/SKILL.md",
       "computedHash": "4264ced692d227022ea8d45c20c2d22a27b168c5613daa6dc7b144e94cef947e"
+    },
+    "plantuml-ascii": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/plantuml-ascii/SKILL.md",
+      "computedHash": "2fb2b41487ea6559f4ccf877fe397c87214b35049528685ff1c02bb792b027d1"
     },
     "stop-slop": {
       "source": "hardikpandya/stop-slop",

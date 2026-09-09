@@ -59,7 +59,7 @@ Este documento es la **fuente canónica y única de verdad (SSOT)** de directric
 │   └── skills/              # Skills canónicas instaladas a nivel de proyecto
 ├── apps/
 │   ├── backend/             # API REST en NestJS + Prisma + PostgreSQL
-│   └── frontend/            # Astro 5 + React (Portal público, checkout y admin)
+│   └── portal-turismo/      # Astro 5 + React (Portal público turístico y reservas)
 ├── docs/                    # Documentación arquitectónica, API reference y guías de testing
 ├── package.json             # Root monorepo configuration
 └── pnpm-workspace.yaml

@@ -1,13 +1,13 @@
-# Frontend — Turismo Capilla del Monte
+# Portal de Turismo — Capilla del Monte
 
-Portal turístico público y panel de administración desarrollado con **Astro 5**, **React**, **Tailwind CSS v4** y **GSAP** bajo la **Arquitectura de Islas** y principios de diseño **Anti-AI Slop**.
+Portal turístico público y motor de reservas desarrollado con **Astro 5**, **React**, **Tailwind CSS v4** y **GSAP** bajo la **Arquitectura de Islas** y principios de diseño **Anti-AI Slop**.
 
 ---
 
 ## 1. Tecnologías y Arquitectura
 
 * **Astro 5 (SSG / Islas):** Renderizado estático ultra rápido y optimizado para SEO en el portal público de paseos y cabañas.
-* **React (Componentes Interactivos):** Componentes dinámicos para formularios de búsqueda, modales de reserva y el panel de administración privado (`/admin/*`).
+* **React (Componentes Interactivos):** Componentes dinámicos para formularios de búsqueda, catálogo con filtros, asistente de reserva y consulta de vouchers.
 * **Tailwind CSS v4:** Tokens de diseño nativos inspirados en Capilla del Monte (Terracota Los Terrones, Verde Monte Serrano, Piedra Cálida).
 * **GSAP (GreenSock):** Micro-interacciones y animaciones de alto rendimiento.
 
@@ -19,10 +19,10 @@ Desde la raíz del monorepo:
 
 ```bash
 # Iniciar el servidor de desarrollo en http://localhost:4321
-pnpm dev:frontend
+pnpm dev:portal
 
 # Compilar para producción (cero errores)
-pnpm --filter frontend run build
+pnpm --filter portal-turismo run build
 
 # Previsualizar el build de producción localmente
 pnpm --filter frontend run preview

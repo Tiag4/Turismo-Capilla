@@ -129,5 +129,5 @@ pnpm format             # Da formato a todo el código fuente con Prettier
 * **Juan Larcher**
 
 
-**Cátedra:** Programación III — 2026.  
-**Cliente:** Camara de Turismo de Capilla del Monte, Córdoba, Argentina.
+**Cátedra:** Programación III — 2026. 
+**Cliente:** Cámara de Turismo de Capilla del Monte, Córdoba, Argentina.

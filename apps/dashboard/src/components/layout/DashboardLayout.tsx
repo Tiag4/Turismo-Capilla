@@ -25,8 +25,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const isAdmin = user.role === 'ADMIN';
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col">
-      {/* Admin Sidebar navigation shell */}
+    <div className="min-h-screen bg-[#FAF8F5]">
+      {/* Admin Sidebar navigation shell (fixed w-64 on desktop) */}
       {isAdmin && (
         <AdminSidebar
           currentTab={currentTab}
@@ -39,32 +39,36 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
       )}
 
-      {/* Top Header */}
-      <DashboardHeader
-        user={user}
-        onLogout={onLogout}
-        onSwitchRole={onSwitchRole}
-        onOpenMobileMenu={isAdmin ? () => setIsMobileSidebarOpen(true) : undefined}
-      />
-
-      {/* Fallback top nav for Host role until Tiago implements HostSidebar (TDR-05) */}
-      {!isAdmin && (
-        <DashboardNav
-          currentTab={currentTab}
-          onTabChange={onTabChange}
-          role={user.role}
+      {/* Main Right Area: strictly shifted to the right of the sidebar via md:pl-64 */}
+      <div className={`flex flex-col min-h-screen ${isAdmin ? 'md:pl-64' : ''}`}>
+        {/* Top Header */}
+        <DashboardHeader
+          user={user}
+          onLogout={onLogout}
+          onSwitchRole={onSwitchRole}
+          onOpenMobileMenu={isAdmin ? () => setIsMobileSidebarOpen(true) : undefined}
+          hideBrandOnDesktop={isAdmin}
         />
-      )}
 
-      {/* Main Content Area: Offset by md:pl-64 when Admin Sidebar is fixed */}
-      <main className={`flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isAdmin ? 'md:pl-72 max-w-none' : 'max-w-7xl'}`}>
-        {children}
-      </main>
+        {/* Fallback top nav for Host role until Tiago implements HostSidebar (TDR-05) */}
+        {!isAdmin && (
+          <DashboardNav
+            currentTab={currentTab}
+            onTabChange={onTabChange}
+            role={user.role}
+          />
+        )}
 
-      {/* Footer */}
-      <footer className={`bg-white border-t border-[var(--color-sand-200)] py-4 text-center text-xs text-[var(--color-sand-400)] ${isAdmin ? 'md:pl-64' : ''}`}>
-        Secretaría y Comisión de Turismo de Capilla del Monte — OTA Oficial
-      </footer>
+        {/* Main Content Area: completely clear of the sidebar, full visible width */}
+        <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-white border-t border-[var(--color-sand-200)] py-4 text-center text-xs text-[var(--color-sand-400)]">
+          Secretaría y Comisión de Turismo de Capilla del Monte — OTA Oficial
+        </footer>
+      </div>
     </div>
   );
 };

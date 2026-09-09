@@ -7,6 +7,7 @@ import { BookingList } from './components/bookings/BookingList.tsx';
 import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
 import { InvitationManager } from './components/invitations/InvitationManager.tsx';
 import { AdminOverview } from './components/overview/AdminOverview.tsx';
+import { BookingCalendar } from './components/calendar/BookingCalendar.tsx';
 
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
@@ -35,19 +36,7 @@ export const App: React.FC = () => {
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && <AccommodationList />}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
-      {currentTab === 'calendar' && (
-        <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">
-            <span className="text-xl">📅</span>
-          </div>
-          <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
-            Calendario de Ocupación
-          </h3>
-          <p className="text-xs text-[var(--color-sand-400)] max-w-md mx-auto">
-            Matriz interactiva mensual para el control visual de reservas y bloqueos de fechas.
-          </p>
-        </div>
-      )}
+      {currentTab === 'calendar' && <BookingCalendar />}
       {currentTab === 'pricing' && (
         <div className="bg-white rounded-2xl p-8 border border-[var(--color-sand-200)] text-center space-y-3">
           <div className="w-12 h-12 rounded-xl bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-500)] flex items-center justify-center mx-auto">

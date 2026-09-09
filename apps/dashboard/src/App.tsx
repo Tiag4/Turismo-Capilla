@@ -8,13 +8,17 @@ import { AccommodationList } from './components/accommodations/AccommodationList
 import { InvitationManager } from './components/invitations/InvitationManager.tsx';
 import { AdminOverview } from './components/overview/AdminOverview.tsx';
 
+import { AdminSectionPlaceholder } from './components/layout/AdminSectionPlaceholder.tsx';
+
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
-  const [currentTab, setCurrentTab] = useState<DashboardTab>('bookings');
+  const [currentTab, setCurrentTab] = useState<DashboardTab>('overview');
 
   if (!isAuthenticated || !user) {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
   }
+
+  const isPlaceholderTab = ['reports', 'audit', 'moderation', 'settings'].includes(currentTab);
 
   return (
     <DashboardLayout
@@ -24,7 +28,7 @@ export const App: React.FC = () => {
       onLogout={logout}
       onSwitchRole={(role) => {
         switchRole(role);
-        if (role === 'HOST' && (currentTab === 'invitations' || currentTab === 'overview')) {
+        if (role === 'HOST' && currentTab !== 'bookings' && currentTab !== 'accommodations') {
           setCurrentTab('bookings');
         }
       }}
@@ -35,6 +39,7 @@ export const App: React.FC = () => {
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && <AccommodationList />}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
+      {isPlaceholderTab && user.role === 'ADMIN' && <AdminSectionPlaceholder tab={currentTab} />}
     </DashboardLayout>
   );
 };

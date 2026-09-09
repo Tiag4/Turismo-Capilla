@@ -7,6 +7,24 @@ export interface AccommodationImage {
   isMain: boolean;
 }
 
+export type ComplianceStatus = 'APPROVED' | 'IN_REVIEW' | 'REJECTED';
+
+export interface ComplianceChecklist {
+  fireExtinguisher: boolean;
+  evacuationPlan: boolean;
+  civilLiabilityInsurance: boolean;
+  commercialPermit: boolean;
+  firstAidKit: boolean;
+}
+
+export interface AccommodationAuditRecord {
+  status: ComplianceStatus;
+  checklist: ComplianceChecklist;
+  inspectorNotes?: string;
+  auditedAt?: string;
+  auditedBy?: string;
+}
+
 export interface Accommodation {
   id: string;
   name: string;
@@ -20,6 +38,8 @@ export interface Accommodation {
   maxGuests: number;
   amenities: string[];
   isActive: boolean;
+  complianceStatus?: ComplianceStatus;
+  auditRecord?: AccommodationAuditRecord;
   images: AccommodationImage[];
   hostId: string;
   createdAt: string;

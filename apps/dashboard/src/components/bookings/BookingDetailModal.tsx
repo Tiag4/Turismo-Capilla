@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, User, Phone, Mail, MapPin, CheckCircle, XCircle } from 'lucide-react';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 import { Modal } from '../ui/Modal.tsx';
 import { Button } from '../ui/Button.tsx';
 import { BookingStatusBadge } from './BookingStatusBadge.tsx';
+import { GuestContactActions } from './GuestContactActions.tsx';
+import { BookingVoucherPrint } from './BookingVoucherPrint.tsx';
 
 export interface BookingDetailModalProps {
   booking: Booking | null;
@@ -18,6 +20,8 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   onClose,
   onUpdateStatus,
 }) => {
+  const [isVoucherOpen, setIsVoucherOpen] = useState(false);
+
   if (!booking) return null;
 
   return (
@@ -72,6 +76,12 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
             </div>
           )}
         </div>
+
+        {/* Quick Contact and Reception Actions (WhatsApp & Voucher) */}
+        <GuestContactActions
+          booking={booking}
+          onOpenVoucher={() => setIsVoucherOpen(true)}
+        />
 
         {/* Dates Breakdown */}
         <div className="grid grid-cols-2 gap-3 p-4 bg-white rounded-2xl border border-[var(--color-sand-200)] text-sm">
@@ -150,6 +160,13 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* Printable Voucher Modal */}
+      <BookingVoucherPrint
+        booking={booking}
+        isOpen={isVoucherOpen}
+        onClose={() => setIsVoucherOpen(false)}
+      />
     </Modal>
   );
 };

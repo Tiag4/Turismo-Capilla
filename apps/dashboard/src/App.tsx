@@ -7,6 +7,7 @@ import { BookingList } from './components/bookings/BookingList.tsx';
 import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
 import { InvitationManager } from './components/invitations/InvitationManager.tsx';
 import { AdminOverview } from './components/overview/AdminOverview.tsx';
+import { OccupancyReportView } from './components/reports/OccupancyReportView.tsx';
 
 import { AdminSectionPlaceholder } from './components/layout/AdminSectionPlaceholder.tsx';
 
@@ -18,7 +19,7 @@ export const App: React.FC = () => {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
   }
 
-  const isPlaceholderTab = ['reports', 'audit', 'moderation', 'settings'].includes(currentTab);
+  const isPlaceholderTab = ['audit', 'moderation', 'settings'].includes(currentTab);
 
   return (
     <DashboardLayout
@@ -39,6 +40,7 @@ export const App: React.FC = () => {
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && <AccommodationList />}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
+      {currentTab === 'reports' && user.role === 'ADMIN' && <OccupancyReportView />}
       {isPlaceholderTab && user.role === 'ADMIN' && <AdminSectionPlaceholder tab={currentTab} />}
     </DashboardLayout>
   );

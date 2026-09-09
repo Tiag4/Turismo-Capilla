@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ATTRACTIONS_DATA } from '../../components/attractions/data/attractions-data';
+import { getAttractionDetail } from '../../components/attractions/detail/getAttractionDetail';
+import { AttractionDetailContainer } from '../../components/attractions/detail/AttractionDetailContainer';
+
+export async function getStaticPaths() {
+  const paths: { params: { id: string } }[] = [];
+
+  ATTRACTIONS_DATA.forEach((item) => {
+    // Path by slug (e.g. /atractivos/uritorco)
+    paths.push({ params: { id: item.slug } });
+    // Path by id (e.g. /atractivos/att-1)
+    paths.push({ params: { id: item.id } });
+  });
+
+  // Alias for historical heritage
+  paths.push({ params: { id: 'casonas' } });
+
+  return paths;
+}
+
+const { id } = Astro.params;
+const item = getAttractionDetail(id || '');
+
+if (!item) {
+  return Astro.redirect('/atractivos');
+}
+
+const pageTitle = `${item.title} — Capilla del Monte Oficial`;
+const pageDescription = `${item.subtitle}. Ficha técnica, altimetría, recomendaciones de seguridad y cómo llegar.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="min-h-screen bg-sand-50 text-sand-900">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+      <AttractionDetailContainer item={item} client:load />
+    </div>
+  </main>
+</Layout>

@@ -127,10 +127,43 @@ export function useBookingWizard(data: AccommodationDetailData) {
     await new Promise((res) => setTimeout(res, 900));
     const randomCode = `CAP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     setBookingCode(randomCode);
+
+    // Save to localStorage for instant voucher lookup
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = JSON.parse(localStorage.getItem('capilla_bookings') || '[]');
+        const newRecord = {
+          code: randomCode,
+          accommodationId: data.id,
+          accommodationTitle: data.title,
+          accommodationZone: data.zone,
+          accommodationAddress: data.address,
+          accommodationImage: (data.images && data.images.length > 0) ? data.images[0] : (data.imageUrl || ''),
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          checkIn: initialParams.checkIn,
+          checkOut: initialParams.checkOut,
+          nightsCount,
+          adults: initialParams.adults,
+          children: initialParams.children,
+          childAges: initialParams.childAges,
+          rooms: initialParams.rooms,
+          finalPrice,
+          status: 'PENDING_CONFIRMATION',
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem('capilla_bookings', JSON.stringify([newRecord, ...stored]));
+      } catch (e) {
+        console.warn('Could not cache booking locally', e);
+      }
+    }
+
     setIsSubmitting(false);
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [form.acceptedTerms]);
+  }, [form, data, initialParams, nightsCount, finalPrice]);
 
   const whatsappUrl = useMemo(() => {
     const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS.`;

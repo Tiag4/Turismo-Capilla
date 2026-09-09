@@ -46,7 +46,7 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
               value={code}
               onChange={(e) => onCodeChange(e.target.value)}
               placeholder="CAP-2026-XXXX"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 font-mono text-sm uppercase text-sand-900 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all shadow-xs"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 font-mono text-sm uppercase text-sand-900 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500 focus:bg-white transition-all shadow-xs"
             />
           </div>
 
@@ -60,14 +60,14 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               placeholder="tu-email@ejemplo.com"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-sm text-sand-900 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all shadow-xs"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 text-sm text-sand-900 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500 focus:bg-white transition-all shadow-xs"
             />
           </div>
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-start gap-2">
-            <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="p-3.5 rounded-xl bg-sand-100 border border-sand-300 text-red-700 text-xs font-medium flex items-start gap-2">
+            <svg className="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{error}</span>
@@ -77,13 +77,13 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
           {/* Códigos de Prueba Rápidos */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-semibold text-sand-500">Ejemplos:</span>
+            <span className="text-[11px] font-bold text-sand-500">Ejemplos:</span>
             {DEMO_CODES.map((dc) => (
               <button
                 key={dc}
                 type="button"
                 onClick={() => onSelectDemoCode(dc)}
-                className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-sand-100 text-sand-700 hover:bg-sand-200 hover:text-sand-900 transition-colors cursor-pointer"
+                className="text-[11px] font-mono font-bold text-sand-700 hover:text-terracotta-600 hover:underline cursor-pointer"
               >
                 {dc}
               </button>
@@ -93,7 +93,7 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-primary-600 hover:bg-primary-500 text-white transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-terracotta-600 hover:bg-terracotta-700 text-white transition-colors cursor-pointer shadow-xs disabled:opacity-50"
           >
             {isLoading ? (
               <>

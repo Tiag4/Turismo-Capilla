@@ -74,7 +74,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           <span className="text-[10px] font-bold text-sand-500 uppercase tracking-wider block">
             Código Único de Trámite
           </span>
-          <span className="font-mono font-black text-xl text-primary-600 block tracking-wider">
+          <span className="font-mono font-black text-xl text-terracotta-600 block tracking-wider">
             {voucher.code}
           </span>
           <span className="text-[11px] text-sand-500 block">

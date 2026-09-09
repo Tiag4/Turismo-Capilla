@@ -21,7 +21,7 @@ const CATEGORIES: { id: AttractionCategory; label: string }[] = [
 ];
 
 const DIFFICULTIES: { id: 'todos' | AttractionDifficulty; label: string }[] = [
-  { id: 'todos', label: 'Cualquier Dificultad' },
+  { id: 'todos', label: 'Todas' },
   { id: 'Baja', label: 'Baja' },
   { id: 'Media', label: 'Media' },
   { id: 'Alta', label: 'Alta' },
@@ -38,8 +38,8 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      {/* Fila 1: Píldoras de Categoría con scroll horizontal en mobile */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {/* Selector de Categorías Plano Integrado (Anti-Vibecoded) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {CATEGORIES.map((cat) => {
           const isActive = category === cat.id;
           return (
@@ -47,10 +47,10 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
               key={cat.id}
               type="button"
               onClick={() => onSelectCategory(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer border ${
+              className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-sand-900 text-white border-sand-900 shadow-xs'
-                  : 'bg-white text-sand-700 border-sand-200/90 hover:bg-sand-100 hover:text-sand-900'
+                  ? 'bg-sand-900 text-white shadow-xs'
+                  : 'text-sand-700 hover:text-sand-950 hover:bg-sand-200/60'
               }`}
             >
               {cat.label}
@@ -59,10 +59,10 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
         })}
       </div>
 
-      {/* Fila 2: Filtro por Dificultad + Selector de Orden */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold uppercase tracking-wider text-sand-500">
+      {/* Barra Secundaria: Filtro de Dificultad Plano y Orden */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-1 border-t border-sand-200/60">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-bold uppercase tracking-wider text-sand-500 mr-1">
             Dificultad:
           </span>
           {DIFFICULTIES.map((dif) => {
@@ -72,16 +72,16 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
                 key={dif.id}
                 type="button"
                 onClick={() => onSelectDifficulty(dif.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                   isActive
                     ? dif.id === 'Alta'
-                      ? 'bg-terracotta-600 text-white border-terracotta-600'
+                      ? 'bg-terracotta-600 text-white'
                       : dif.id === 'Media'
-                        ? 'bg-amber-600 text-white border-amber-600'
+                        ? 'bg-amber-600 text-white'
                         : dif.id === 'Baja'
-                          ? 'bg-uritorco-600 text-white border-uritorco-600'
-                          : 'bg-sand-800 text-white border-sand-800'
-                    : 'bg-white text-sand-600 border-sand-200 hover:bg-sand-50'
+                          ? 'bg-uritorco-700 text-white'
+                          : 'bg-sand-900 text-white'
+                    : 'text-sand-700 hover:bg-sand-200/60 hover:text-sand-900'
                 }`}
               >
                 {dif.label}
@@ -91,19 +91,22 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-sand-500 hidden sm:inline">
-            Mostrando <strong>{totalCount}</strong> atractivos
+          <span className="text-xs text-sand-600 font-medium">
+            <strong>{totalCount}</strong> atractivos
           </span>
-          <div className="flex items-center gap-2 text-xs font-medium text-sand-700">
-            <span className="text-sand-500">Ordenar:</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-sand-700">
+            <label htmlFor="sort-attractions" className="text-sand-500 font-normal">
+              Ordenar:
+            </label>
             <select
+              id="sort-attractions"
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as 'popular' | 'cercania' | 'dificultad')}
-              className="bg-white border border-sand-300 rounded-lg px-2.5 py-1.5 text-xs text-sand-800 font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer"
+              className="bg-sand-100 hover:bg-sand-200/80 border-none rounded-lg px-2.5 py-1.5 text-xs text-sand-900 font-bold focus:outline-none focus:ring-2 focus:ring-terracotta-500 cursor-pointer transition-colors"
             >
               <option value="popular">Más destacados</option>
               <option value="cercania">Menor distancia</option>
-              <option value="dificultad">Dificultad (Baja a Alta)</option>
+              <option value="dificultad">Dificultad</option>
             </select>
           </div>
         </div>

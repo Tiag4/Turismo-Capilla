@@ -3,7 +3,10 @@ import { useHostCalendar, WEEKDAYS_ES } from '../../hooks/useHostCalendar.ts';
 import { CalendarHeader } from './CalendarHeader.tsx';
 import { CalendarDayCell } from './CalendarDayCell.tsx';
 import { BookingDetailModal } from '../bookings/BookingDetailModal.tsx';
+import { DateBlockModal } from './DateBlockModal.tsx';
+import { DateBlockDetailModal } from './DateBlockDetailModal.tsx';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
+import type { DateBlock, CreateDateBlockDto } from '../../types/date-block.types.ts';
 
 export const BookingCalendar: React.FC = () => {
   const {
@@ -16,20 +19,26 @@ export const BookingCalendar: React.FC = () => {
     setSelectedAccommodationId,
     accommodations,
     monthStats,
+    createBlock,
+    deleteBlock,
     isLoading,
     updateBookingStatus,
   } = useHostCalendar();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
+
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState<boolean>(false);
+  const [selectedBlock, setSelectedBlock] = useState<DateBlock | null>(null);
+  const [isBlockDetailOpen, setIsBlockDetailOpen] = useState<boolean>(false);
 
   const handleSelectBooking = (booking: Booking) => {
     setSelectedBooking(booking);
-    setIsModalOpen(true);
+    setIsBookingModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseBookingModal = () => {
+    setIsBookingModalOpen(false);
     setSelectedBooking(null);
   };
 
@@ -40,9 +49,22 @@ export const BookingCalendar: React.FC = () => {
     }
   };
 
+  const handleSelectDateBlock = (block: DateBlock) => {
+    setSelectedBlock(block);
+    setIsBlockDetailOpen(true);
+  };
+
+  const handleCreateBlock = (dto: CreateDateBlockDto) => {
+    createBlock(dto);
+  };
+
+  const handleDeleteBlock = (id: string) => {
+    deleteBlock(id);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Calendar Header with Navigation and Filters */}
+      {/* Calendar Header with Navigation, Filters and Block Action */}
       <CalendarHeader
         monthLabel={monthLabel}
         onPrevMonth={prevMonth}
@@ -52,6 +74,7 @@ export const BookingCalendar: React.FC = () => {
         onSelectAccommodation={setSelectedAccommodationId}
         accommodations={accommodations}
         monthStats={monthStats}
+        onOpenBlockModal={() => setIsBlockModalOpen(true)}
       />
 
       {/* Main Calendar Grid Container */}
@@ -85,6 +108,7 @@ export const BookingCalendar: React.FC = () => {
                 key={day.dateKey}
                 day={day}
                 onSelectBooking={handleSelectBooking}
+                onSelectDateBlock={handleSelectDateBlock}
               />
             ))}
           </div>
@@ -104,22 +128,43 @@ export const BookingCalendar: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-xs bg-zinc-700" />
-              <span className="text-[var(--color-sand-400)] font-medium">Bloqueo Administrativo (TDR-10)</span>
+              <span className="text-[var(--color-sand-800)] font-medium">Bloqueo Administrativo (TDR-10)</span>
             </div>
           </div>
           <p className="text-[11px] text-[var(--color-sand-400)] italic">
-            Hacé click en cualquier tarjeta de reserva para ver los detalles del pasajero.
+            Hacé click en cualquier tarjeta o bloqueo para ver detalles o modificarlo.
           </p>
         </div>
       </div>
 
-      {/* Booking Detail Modal for Passenger Information and Quick Action */}
+      {/* Booking Detail Modal */}
       <BookingDetailModal
         booking={selectedBooking}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isBookingModalOpen}
+        onClose={handleCloseBookingModal}
         onUpdateStatus={handleUpdateStatus}
+      />
+
+      {/* Date Block Modal (Crear Bloqueo) */}
+      <DateBlockModal
+        isOpen={isBlockModalOpen}
+        onClose={() => setIsBlockModalOpen(false)}
+        accommodations={accommodations}
+        preselectedAccommodationId={selectedAccommodationId}
+        onCreateBlock={handleCreateBlock}
+      />
+
+      {/* Date Block Detail Modal (Ver/Eliminar Bloqueo) */}
+      <DateBlockDetailModal
+        block={selectedBlock}
+        isOpen={isBlockDetailOpen}
+        onClose={() => {
+          setIsBlockDetailOpen(false);
+          setSelectedBlock(null);
+        }}
+        onDeleteBlock={handleDeleteBlock}
       />
     </div>
   );
 };
+

@@ -1,15 +1,20 @@
 import React from 'react';
+import { Lock } from 'lucide-react';
 import type { CalendarDay } from '../../hooks/useHostCalendar.ts';
 import type { Booking } from '../../types/booking.types.ts';
+import type { DateBlock } from '../../types/date-block.types.ts';
+import { DATE_BLOCK_REASON_LABELS } from '../../types/date-block.types.ts';
 
 export interface CalendarDayCellProps {
   day: CalendarDay;
   onSelectBooking: (booking: Booking) => void;
+  onSelectDateBlock?: (block: DateBlock) => void;
 }
 
 export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   day,
   onSelectBooking,
+  onSelectDateBlock,
 }) => {
   return (
     <div
@@ -68,6 +73,24 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             </button>
           );
         })}
+
+        {/* Date Blocks pills */}
+        {day.dateBlocks.map((block) => (
+          <button
+            key={block.id}
+            onClick={() => onSelectDateBlock && onSelectDateBlock(block)}
+            className="w-full text-left px-2 py-1 rounded-md text-[11px] font-bold leading-tight transition-all cursor-pointer truncate shadow-xs bg-zinc-700 text-white hover:bg-zinc-800 active:scale-98"
+            title={`Bloqueo: ${DATE_BLOCK_REASON_LABELS[block.reason]} — ${block.accommodationName}`}
+          >
+            <div className="flex items-center gap-1">
+              <Lock className="w-3 h-3 text-amber-400 shrink-0" />
+              <span className="truncate">{DATE_BLOCK_REASON_LABELS[block.reason]}</span>
+            </div>
+            <span className="text-[10px] opacity-75 block truncate font-medium">
+              {block.accommodationName}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

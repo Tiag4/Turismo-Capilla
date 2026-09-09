@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useHostBookings } from './useHostBookings.ts';
 import { useHostAccommodations } from './useHostAccommodations.ts';
+import { useDateBlock } from './useDateBlock.ts';
 import type { Booking } from '../types/booking.types.ts';
+import type { DateBlock } from '../types/date-block.types.ts';
 
 export interface CalendarDay {
   date: Date;
@@ -12,6 +14,7 @@ export interface CalendarDay {
   isPast: boolean;
   isWeekend: boolean;
   bookings: Booking[];
+  dateBlocks: DateBlock[];
 }
 
 export const WEEKDAYS_ES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -41,6 +44,7 @@ function formatDateKey(d: Date): string {
 export function useHostCalendar() {
   const { bookings, isLoading: isLoadingBookings, updateBookingStatus, refresh } = useHostBookings();
   const { accommodations, isLoading: isLoadingAccommodations } = useHostAccommodations();
+  const { blocks: dateBlocks, createBlock, deleteBlock } = useDateBlock();
 
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [selectedAccommodationId, setSelectedAccommodationId] = useState<string>('ALL');
@@ -106,6 +110,7 @@ export function useHostCalendar() {
         isPast: dateKey < todayKey,
         isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
         bookings: [],
+        dateBlocks: [],
       });
     }
 
@@ -123,6 +128,7 @@ export function useHostCalendar() {
         isPast: dateKey < todayKey,
         isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
         bookings: [],
+        dateBlocks: [],
       });
     }
 
@@ -142,20 +148,28 @@ export function useHostCalendar() {
         isPast: dateKey < todayKey,
         isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
         bookings: [],
+        dateBlocks: [],
       });
     }
 
-    // 4. Map bookings to each day (semi-open interval: checkIn <= dayKey && dayKey < checkOut)
+    // 4. Map bookings and date blocks to each day
     for (const cell of days) {
       cell.bookings = relevantBookings.filter((b) => {
         const inKey = b.checkIn.substring(0, 10);
         const outKey = b.checkOut.substring(0, 10);
         return inKey <= cell.dateKey && cell.dateKey < outKey;
       });
+
+      cell.dateBlocks = dateBlocks.filter((block) => {
+        if (selectedAccommodationId !== 'ALL' && block.accommodationId !== selectedAccommodationId) {
+          return false;
+        }
+        return block.startDate <= cell.dateKey && cell.dateKey <= block.endDate;
+      });
     }
 
     return days;
-  }, [year, month, todayKey, relevantBookings]);
+  }, [year, month, todayKey, relevantBookings, dateBlocks, selectedAccommodationId]);
 
   // Statistics for current month
   const monthStats = useMemo(() => {
@@ -184,6 +198,9 @@ export function useHostCalendar() {
     setSelectedAccommodationId,
     accommodations,
     monthStats,
+    dateBlocks,
+    createBlock,
+    deleteBlock,
     isLoading: isLoadingBookings || isLoadingAccommodations,
     updateBookingStatus,
     refresh,

@@ -5,6 +5,7 @@
   "description": "Monorepo para la plataforma de turismo y reservas de Capilla del Monte",
   "scripts": {
     "dev": "pnpm --filter backend start:dev",
+    "dev:all": "pnpm -r --parallel dev",
     "dev:backend": "pnpm --filter backend start:dev",
     "build": "pnpm --filter backend build && pnpm --filter frontend build && pnpm --filter dashboard build",
     "test": "pnpm -r run test",

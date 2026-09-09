@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, MapPin, Edit3, Power } from 'lucide-react';
+import { Users, MapPin, Edit3, Power, Camera } from 'lucide-react';
 import type { Accommodation } from '../../types/accommodation.types.ts';
 import { Button } from '../ui/Button.tsx';
 
@@ -53,6 +53,16 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
               {accommodation.isActive ? 'Activo' : 'Pausado'}
             </span>
           </div>
+
+          {/* Photo count indicator */}
+          {accommodation.images && accommodation.images.length > 0 && (
+            <div className="absolute bottom-2.5 right-2.5">
+              <span className="bg-[#22201E]/80 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-xs">
+                <Camera className="w-3 h-3" />
+                {accommodation.images.length} {accommodation.images.length === 1 ? 'foto' : 'fotos'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Content */}

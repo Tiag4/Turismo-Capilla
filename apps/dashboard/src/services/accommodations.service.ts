@@ -17,7 +17,9 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     isActive: true,
     hostId: 'host-01',
     images: [
-      { id: 'img-1', url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-1-1', url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-1-2', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', isMain: false },
+      { id: 'img-1-3', url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80', isMain: false },
     ],
     createdAt: new Date().toISOString(),
   },
@@ -36,7 +38,8 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     isActive: true,
     hostId: 'host-01',
     images: [
-      { id: 'img-2', url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-2-1', url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-2-2', url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80', isMain: false },
     ],
     createdAt: new Date().toISOString(),
   },
@@ -55,7 +58,8 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     isActive: true,
     hostId: 'host-01',
     images: [
-      { id: 'img-3', url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-3-1', url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80', isMain: true },
+      { id: 'img-3-2', url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80', isMain: false },
     ],
     createdAt: new Date().toISOString(),
   },
@@ -87,6 +91,22 @@ export const accommodationsService = {
     try {
       return await apiClient.post<Accommodation>('/accommodations', dto);
     } catch {
+      const parsedImages = (dto.images || []).map((img, index) => {
+        if (typeof img === 'string') {
+          return {
+            id: `img-${Date.now()}-${index}`,
+            url: img,
+            isMain: index === 0,
+          };
+        }
+        return img;
+      });
+
+      // Garantizar que al menos una tenga isMain
+      if (parsedImages.length > 0 && !parsedImages.some((i) => i.isMain)) {
+        parsedImages[0].isMain = true;
+      }
+
       const newAcc: Accommodation = {
         id: `acc-${Date.now()}`,
         name: dto.name,
@@ -101,11 +121,7 @@ export const accommodationsService = {
         amenities: dto.amenities,
         isActive: true,
         hostId: 'host-01',
-        images: (dto.images || []).map((url, index) => ({
-          id: `img-${Date.now()}-${index}`,
-          url,
-          isMain: index === 0,
-        })),
+        images: parsedImages,
         createdAt: new Date().toISOString(),
       };
       localAccommodations = [newAcc, ...localAccommodations];
@@ -120,9 +136,24 @@ export const accommodationsService = {
       const index = localAccommodations.findIndex((a) => a.id === id);
       if (index === -1) throw new Error('Alojamiento no encontrado');
       const existing = localAccommodations[index];
-      const updatedImages = dto.images
-        ? dto.images.map((url, i) => ({ id: `img-${Date.now()}-${i}`, url, isMain: i === 0 }))
-        : existing.images;
+
+      let updatedImages = existing.images;
+      if (dto.images) {
+        updatedImages = dto.images.map((img, index) => {
+          if (typeof img === 'string') {
+            return {
+              id: `img-${Date.now()}-${index}`,
+              url: img,
+              isMain: index === 0,
+            };
+          }
+          return img;
+        });
+
+        if (updatedImages.length > 0 && !updatedImages.some((i) => i.isMain)) {
+          updatedImages[0].isMain = true;
+        }
+      }
 
       const updated: Accommodation = {
         ...existing,

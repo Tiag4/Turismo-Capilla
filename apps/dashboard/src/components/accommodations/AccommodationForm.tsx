@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '../ui/Button.tsx';
 import { Input } from '../ui/Input.tsx';
 import { Select } from '../ui/Select.tsx';
-import type { Accommodation, AccommodationType, CreateAccommodationDto } from '../../types/accommodation.types.ts';
+import type { Accommodation, AccommodationType, CreateAccommodationDto, AccommodationImage } from '../../types/accommodation.types.ts';
+import { ImageGalleryUploader } from './ImageGalleryUploader.tsx';
 
 export interface AccommodationFormProps {
   initialData?: Accommodation | null;
@@ -36,7 +37,17 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
   const [pricePerNight, setPricePerNight] = useState(initialData?.pricePerNight ? String(initialData.pricePerNight) : '75000');
   const [maxGuests, setMaxGuests] = useState(initialData?.maxGuests ? String(initialData.maxGuests) : '4');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(initialData?.amenities || ['Piscina', 'Wi-Fi Starlink', 'Parrilla individual']);
-  const [imageUrl, setImageUrl] = useState(initialData?.images?.[0]?.url || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80');
+  const [images, setImages] = useState<AccommodationImage[]>(
+    initialData?.images && initialData.images.length > 0
+      ? initialData.images
+      : [
+          {
+            id: 'img-initial',
+            url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
+            isMain: true,
+          },
+        ]
+  );
 
   const handleToggleAmenity = (amenity: string) => {
     setSelectedAmenities((prev) =>
@@ -55,7 +66,7 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
       pricePerNight: Number(pricePerNight),
       maxGuests: Number(maxGuests),
       amenities: selectedAmenities,
-      images: imageUrl ? [imageUrl] : [],
+      images,
     });
   };
 
@@ -136,11 +147,10 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
         </div>
       </div>
 
-      <Input
-        label="URL de Fotografía Principal"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-        placeholder="https://..."
+      {/* Photo Gallery Manager */}
+      <ImageGalleryUploader
+        images={images}
+        onChange={setImages}
       />
 
       <div>

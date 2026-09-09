@@ -64,6 +64,14 @@ export const BookingWizardSuccess: React.FC<BookingWizardSuccessProps> = ({ data
         </a>
 
         <a
+          href={`/reservas/consulta?code=${bookingCode}&email=${encodeURIComponent(form.email)}`}
+          className="w-full py-3 px-4 rounded-xl bg-sand-900 hover:bg-sand-800 text-white font-display font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 select-none shadow-xs"
+        >
+          <Download className="w-4 h-4" />
+          <span>Ver o descargar voucher oficial</span>
+        </a>
+
+        <a
           href="/alojamientos"
           className="w-full py-2.5 px-4 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 select-none"
         >

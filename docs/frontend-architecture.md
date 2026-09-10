@@ -124,17 +124,48 @@ flowchart TD
 
 ---
 
-## 6. Próximos Pasos de Implementación
+## 6. Decisión Arquitectónica (ADR): Transición de Astro a React SPA (Vite) y Mitigación de SEO
 
-1. **Fase 1: Instalación de Skills de Diseño en `.agents/skills/`:**
-   * Skill de directrices de diseño y estética (taste/design system).
-   * Skill anti-AI slop para verificación de componentes.
-2. **Fase 2: Scaffolding de `apps/frontend`:**
-   * Inicialización de Astro 5 + React + Tailwind CSS en el monorepo con `pnpm`.
-   * Configuración de Design Tokens (`tokens.css`).
-3. **Fase 3: Biblioteca de Componentes UI Base:**
-   * Button, Input, DatePicker (rango de fechas), Badge, Card, Modal/Dialog.
-4. **Fase 4: Desarrollo del Portal Público (Turista):**
-   * Landing, Catálogo de Paseos, Buscador de Cabañas y Checkout de Reserva.
-5. **Fase 5: Desarrollo del Panel Administrativo (Cabañeros & Admin):**
-   * Dashboard interactivo en React conectado a la API de NestJS.
+### 6.1 Contexto y Criterio de Cátedra
+Por requerimiento pedagógico y curricular de la cátedra de **Programación III**, se estableció la restricción formal de **no utilizar meta-frameworks orientados a SSR/SSG (como Astro o Next.js)**, con el objetivo de evaluar directamente el dominio de arquitecturas Single Page Application (SPA) basadas en **React puro + Vite**, patrones de componentes (Container-Presentational), custom hooks, gestión de estado en cliente y enrutamiento dinámico (`react-router-dom`).
+
+### 6.2 Desafío de SEO en una SPA Tradicional
+Una SPA basada puramente en Client-Side Rendering (CSR) presenta desafíos conocidos para el posicionamiento orgánico:
+1. **Rastreo diferido:** Los motores de búsqueda (Googlebot) rastrean el HTML inicial (`<div id="root"></div>`) antes de programar la ejecución del bundle JavaScript, lo que puede demorar la indexación de contenidos dinámicos.
+2. **Scrapers de redes sociales sin motor JS:** Clientes como WhatsApp, Telegram, Twitter/X y Facebook no ejecutan JavaScript al generar tarjetas de previsualización (OpenGraph). Si el HTML base no contiene metadatos estáticos, el enlace compartido carece de portada, título y descripción.
+
+### 6.3 Estrategia de Mitigación y Optimización de SEO en React + Vite
+Para garantizar un posicionamiento orgánico de primer nivel sin depender de frameworks especializados en SSR, se aplica una estrategia técnica en cuatro capas:
+
+1. **Metadatos Estáticos y OpenGraph en `index.html`:**
+   - Inyección directa en el HTML de entrada de etiquetas canónicas `<title>`, `<meta name="description">` y protocolo OpenGraph (`og:title`, `og:image`, `og:description`, `og:locale="es_AR"`).
+   - Garantiza que al compartir enlaces del portal en WhatsApp o redes sociales, la tarjeta visual con la fotografía de Capilla del Monte se procese al instante sin requerir ejecución de scripts.
+
+2. **Marcado Estructurado JSON-LD (Schema.org):**
+   - Incorporación de un bloque estático `<script type="application/ld+json">` modelando las entidades oficiales `TouristDestination` y `LodgingBusiness`, con:
+     - Nombre oficial, descripción geográfica (Valle de Punilla, Córdoba) y coordenadas GPS.
+     - Tipos de experiencias (turismo de naturaleza, mística del Uritorco, astroturismo).
+   - Permite a Google y Bing indexar la información como datos enriquecidos (Rich Snippets / Knowledge Graph).
+
+3. **Pre-renderizado Estático en Build-time:**
+   - Generación de snapshots HTML para las rutas públicas estáticas (`/`, `/alojamientos`, `/atractivos`) durante el comando de compilación de Vite.
+   - El crawler recibe HTML semántico completo con encabezados, párrafos y enlaces listos para indexar, mientras que el usuario final disfruta de la navegación instantánea de la SPA una vez montado React.
+
+4. **Optimización Extrema de Core Web Vitals (CWV):**
+   - El ranking de Google premia fuertemente la velocidad y estabilidad visual (LCP < 1.2s, CLS = 0, INP < 100ms).
+   - Dimensiones fijas con `aspect-ratio` en todas las imágenes de la galería y tarjetas para erradicar el movimiento involuntario de layout (CLS).
+   - Carga diferida (`loading="lazy"`, `decoding="async"`) y compresión WebP/AVIF en imágenes de Cloudinary.
+   - Tipografías locales optimizadas (`Outfit` y `Plus Jakarta Sans`) con precarga para evitar FOUT (Flash of Unstyled Text).
+
+---
+
+## 7. Próximos Pasos de Implementación
+
+1. **Fase 1: Configuración de React + Vite:**
+   - Inicializar la SPA de React con Vite y Tailwind CSS en `apps/portal-turismo`.
+   - Configurar `index.html` con metadatos OpenGraph y Schema.org JSON-LD de Capilla del Monte.
+2. **Fase 2: Enrutamiento y Migración de Páginas:**
+   - Implementar `react-router-dom` con rutas públicas (`/`, `/alojamientos`, `/alojamientos/:id`, `/atractivos`, `/reservas/consulta`).
+   - Migrar el contenido de las plantillas Astro a componentes de página React reutilizando los componentes `.tsx` existentes.
+3. **Fase 3: Integración con la API Backend Desacoplada:**
+   - Conectar los servicios de cliente HTTP contra la URL del nuevo backend independiente (`http://localhost:3001/api/v1`).

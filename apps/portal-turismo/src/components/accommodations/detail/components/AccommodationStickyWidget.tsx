@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar, MessageSquare } from 'lucide-react';
 import { CustomDatePicker } from '../../../ui/CustomDatePicker';
 import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
@@ -96,13 +97,13 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
 
       {/* Botón Solicitar reserva directo al Wizard */}
       <div className="space-y-2 pt-2">
-        <a
-          href={wizardUrl}
+        <Link
+          to={wizardUrl}
           style={{ backgroundColor: '#C95627', color: '#ffffff' }}
           className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center block"
         >
           Solicitar reserva
-        </a>
+        </Link>
 
         <a
           href={whatsappUrl}

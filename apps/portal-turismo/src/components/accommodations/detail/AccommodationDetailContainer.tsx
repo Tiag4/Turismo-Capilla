@@ -9,6 +9,9 @@ import { AccommodationStickyWidget } from './components/AccommodationStickyWidge
 import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
 import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
 import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitiesDrawer';
+import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
+import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
+import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
 
 interface AccommodationDetailContainerProps {
   place: MapPlace;
@@ -35,7 +38,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         onOpenGallery={booking.openGallery}
       />
 
-      {/* Mobile (< 768px): Jerarquía requerida */}
+      {/* Mobile (< 768px): Jerarquía en columna única */}
       <div className="md:hidden space-y-8 pt-2">
         <div ref={booking.cardObserverRef}>
           <AccommodationStickyWidget data={data} booking={booking} />
@@ -44,11 +47,18 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
-      {/* Desktop (>= 768px): Grilla Fija 3 Columnas */}
+      {/* Desktop (>= 768px): Grilla Fija 3 Columnas Top */}
       <div className="hidden md:grid detail-bento-grid pt-2">
         <AccommodationLeftCol data={data} />
         <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
         <AccommodationStickyWidget data={data} booking={booking} />
+      </div>
+
+      {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación y Normas */}
+      <div className="space-y-10 pt-6 border-t border-stone-200/80">
+        <AccommodationHostAndRooms data={data} />
+        <AccommodationLocationSnippet data={data} />
+        <AccommodationRulesPolicies rules={data.rules} />
       </div>
 
       {/* Bottom Dock Móvil */}

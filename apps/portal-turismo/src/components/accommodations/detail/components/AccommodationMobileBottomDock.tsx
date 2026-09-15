@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { AccommodationDetailData } from '../types';
 
 interface AccommodationMobileBottomDockProps {
@@ -38,12 +39,12 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
         </span>
       </div>
 
-      <a
-        href={wizardUrl}
+      <Link
+        to={wizardUrl}
         className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs shadow-md transition-all cursor-pointer select-none block text-center"
       >
         Solicitar reserva
-      </a>
+      </Link>
     </div>
   );
 };

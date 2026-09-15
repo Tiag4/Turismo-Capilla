@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { AttractionItem, AttractionCategory, AttractionDifficulty } from '../types';
+import type { AttractionCategory, AttractionDifficulty } from '../types';
 import { ATTRACTIONS_DATA } from '../data/attractions-data';
 
 export function useAttractionsFilter() {

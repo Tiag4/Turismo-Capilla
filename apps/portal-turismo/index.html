@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Turismo Capilla del Monte — Portal Oficial</title>
+    <meta
+      name="description"
+      content="Descubrí los cerros, balnearios, paseos y alojamientos en Capilla del Monte, Córdoba. Reserva directa sin intermediarios."
+    />
+
+    <!-- OpenGraph & Social Previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Turismo Capilla del Monte — Portal Oficial" />
+    <meta
+      property="og:description"
+      content="Descubrí los cerros, balnearios, paseos y alojamientos en Capilla del Monte, Córdoba. Reserva directa sin intermediarios."
+    />
+    <meta property="og:image" content="/cropped-logo-capilla-del-monte-2024.png" />
+    <meta property="og:locale" content="es_AR" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TouristDestination",
+        "name": "Capilla del Monte",
+        "description": "Destino turístico emblemático del Valle de Punilla, Córdoba, Argentina, al pie del Cerro Uritorco.",
+        "url": "https://turismocapilla.gob.ar",
+        "touristType": ["NatureTurism", "Ecotourism", "CulturalTourism"],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -30.8608,
+          "longitude": -64.5244
+        }
+      }
+    </script>
+
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

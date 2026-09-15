@@ -193,3 +193,141 @@ function PriceBadge({ pricePerNight }: { pricePerNight: number }) {
 ### 6.5 D - Dependency Inversion Principle (DIP)
 * Los dumb components dependen de funciones callback abstractas (`onSelectDate`, `onConfirmBooking`) provistas por el container, nunca de mutaciones o llamadas directas a APIs globales.
 
+---
+
+## 7. Higiene de Código: Eliminación de Código Muerto y Boilerplate Remanente
+
+> *El código más rápido, seguro y fácil de mantener es el que no existe (YAGNI).*
+
+### 7.1 Cero Scaffolding Huérfano
+* Todo archivo generado automáticamente por CLI (`nest g`, plantillas base como `app.controller.ts`, `app.service.ts` con `"Hello World!"`) DEBE ser eliminado o transformado en un artefacto de negocio real antes de considerar el módulo completo.
+* Si existe un módulo especializado (como `HealthModule` para `/api/v1/health`), el controlador de prueba por defecto y su test e2e asociado deben ser purgados para evitar confusión y endpoints fantasma.
+
+### 7.2 Prohibición de Overrides Vacíos
+* Queda prohibido sobrescribir métodos de clases base o guards para únicamente invocar `super.method()`.
+```typescript
+// ❌ MAL: Método zombi que no altera comportamiento
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  canActivate(context: ExecutionContext) {
+    return super.canActivate(context); // Redundancia innecesaria
+  }
+}
+
+// ✅ BIEN: Solo implementar cuando se agrega lógica o manejo de excepciones
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  handleRequest(err: any, user: any) {
+    if (err || !user) {
+      throw err || new UnauthorizedException('Token inválido o ausente');
+    }
+    return user;
+  }
+}
+```
+
+### 7.3 Dependencias Huérfanas
+* Toda librería instalada en `dependencies` o `devDependencies` en `package.json` debe tener al menos una referencia real o script activo. Paquetes no utilizados ensucian el lockfile y aumentan la superficie de ataque.
+
+---
+
+## 8. Anti-Duplicación (DRY) y Reutilización Tipada
+
+### 8.1 Prohibición de DTOs Clonados
+* Si dos operaciones requieren la misma estructura de datos (ej. cargar una imagen en un alta vs. agregarla a una galería existente), **DEBEN compartir el mismo DTO**.
+```typescript
+// ❌ MAL: Dos archivos o clases con los mismos atributos
+export class AccommodationImageInputDto { url: string; publicId: string; isMain?: boolean; }
+export class AddAccommodationImageDto { url: string; publicId: string; isMain?: boolean; }
+
+// ✅ BIEN: Un único DTO canónico reutilizado en ambas operaciones
+export class AccommodationImageDto { ... }
+```
+
+### 8.2 Herencia y Composición en DTOs
+* Cuando un DTO es una extensión de otro (ej. registro de anfitrión que solicita los mismos datos del turista más un token de invitación), debe extenderlo (`extends`) o componerlo en lugar de duplicar validaciones y decoradores de Swagger.
+```typescript
+// ✅ BIEN: Herencia de DTO
+export class RegisterHostDto extends RegisterTouristDto {
+  @ApiProperty({ description: 'Token de invitación emitido por la Comisión' })
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+}
+```
+
+### 8.3 Centralización de Lógica de Negocio Transversal
+* Validaciones repetitivas (como el chequeo de rango de fechas de reserva `checkIn < checkOut` o el filtro anti-overbooking) no deben duplicarse entre controladores o servicios. Deben residir en servicios de dominio compartidos o helpers testeables.
+* Las proyecciones de Prisma (`select` o `include` recurrentes) deben declararse como constantes tipadas exportables para garantizar que la sanitización de datos (ej. omitir contraseñas) sea uniforme en todo el sistema.
+
+---
+
+## 9. Prevención de Riesgos Técnicos Críticos en Producción
+
+### 9.1 Prohibición de Bucles No Acotados (Anti-Infinite Loops)
+* Queda terminantemente prohibido generar identificadores o códigos mediante bucles `while` que dependan de colisiones aleatorias sin un espacio de búsqueda garantizado ni un límite de reintentos (*bounded retries*).
+```typescript
+// ❌ MAL: Riesgo de bucle infinito bajo alta concurrencia o saturación
+while (exists) {
+  const code = `CAP-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const existing = await tx.booking.findUnique({ where: { bookingCode: code } });
+  if (!existing) exists = false;
+}
+
+// ✅ BIEN: Espacio probabilístico seguro (CUID / NanoID / UUID) o reintentos acotados con excepción
+const MAX_ATTEMPTS = 5;
+for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+  const candidate = generateSecureCode();
+  const exists = await tx.booking.findUnique({ where: { bookingCode: candidate } });
+  if (!exists) return candidate;
+}
+throw new ServiceUnavailableException('No fue posible generar un código único en este momento');
+```
+
+### 9.2 Principio Fail-Fast en Configuración y Secretos
+* Está terminantemente prohibido utilizar fallbacks silenciosos para secretos de autenticación (`JWT_SECRET || 'secret-key-default'`) en código que pueda ejecutarse en producción o staging. Si una variable de entorno crítica está ausente, el proceso debe fallar inmediatamente al arrancar (*fail-fast*).
+
+### 9.3 Consultas Acotadas y Paginación Obligatoria
+* Toda consulta a colección o catálogo público (`findMany`, listados de reservas, atractivos o usuarios) DEBE implementar límites máximos (`take`, `skip`, cursores) y ordenamiento explícito para prevenir saturación de memoria (*heap exhaustion*).
+
+### 9.4 Resiliencia en Filtros Globales de Excepciones
+* El filtro de excepciones global (`HttpExceptionFilter`) debe capturar y traducir de forma determinista errores del motor de persistencia (como violaciones de unicidad `P2002` o registros inexistentes `P2025` de Prisma) a códigos HTTP semánticos (`409 Conflict`, `404 Not Found`), evitando exponer errores 500 no controlados.
+
+---
+
+## 10. Estrategia Obligatoria de Testing
+
+Para certificar la confiabilidad y prevenir regresiones, el proyecto exige tres niveles de pruebas automatizadas:
+
+```
+          / \
+         /   \      Tests Dinámicos / E2E (Flujos completos, concurrencia, transacciones reales)
+        /-----\
+       /       \    Tests Regresivos (Garantía post-bugfix: reproducir y blindar contra reaparición)
+      /---------\
+     /           \  Tests Unitarios (Aislados, mocks de Prisma, casos borde, 100% servicios críticos)
+    ---------------
+```
+
+### 10.1 Tests Unitarios (Unit Tests con `@nestjs/testing` + Vitest)
+* **Alcance:** Probar clases, servicios y funciones de negocio de forma aislada respetando el contenedor IoC.
+* **Stack Obligatorio:** Se utiliza obligatoriamente el módulo oficial `@nestjs/testing` (`Test.createTestingModule`) combinado con **Vitest**. Queda prohibido instanciar clases directamente con `new Service(...)` para asegurar que la inyección de dependencias se evalúe fielmente.
+* **Obligatoriedad:** Todos los módulos que contengan lógica de negocio, validaciones o cálculos (`auth`, `bookings`, `invitations`, `accommodations`) deben tener su respectivo archivo `.spec.ts`.
+* **Reglas:**
+  * Aislar dependencias externas (Prisma, JWT, servicios de terceros) utilizando mocks limpios con la API de Vitest (`vi.fn()`).
+  * Testear obligatoriamente el camino feliz (*happy path*) y **todos los caminos de error y casos límite** (fechas invertidas, capacidad de huéspedes excedida, tokens expirados, usuarios ya registrados).
+
+### 10.2 Tests Regresivos (Regression Tests)
+* **Alcance:** Blindar el sistema contra errores previamente descubiertos.
+* **Protocolo ante Bugfix:**
+  1. Ante un defecto reportado en producción o revisión, **lo primero es escribir un test automatizado que reproduzca fielmente la falla**.
+  2. Implementar la corrección hasta que dicho test pase a verde.
+  3. El test de regresión permanece permanentemente en la suite para asegurar que ningún refactor futuro vuelva a romper la misma funcionalidad.
+
+### 10.3 Tests Dinámicos y de Integración (Dynamic & Integration Tests)
+* **Alcance:** Evaluar el comportamiento del sistema en tiempo de ejecución interactuando con infraestructura real o simulada bajo condiciones cambiantes.
+* **Obligatoriedad en Turismo-Capilla:**
+  * **Integridad Transaccional:** Validar que el motor anti-overbooking (`$transaction`) rechace colisiones de reservas enviadas concurrentemente para el mismo alojamiento y fechas.
+  * **Casos con Datos Dinámicos:** Pruebas que utilicen rangos de fechas dinámicos relativos a la fecha actual (`Date.now() + N días`) para verificar expiraciones de invitaciones y transiciones de estados de reserva (`PENDING` -> `CONFIRMED` -> `COMPLETED`).
+  * **Verificación de Contratos de API (E2E):** Pruebas de integración vía `supertest` que validen códigos de estado HTTP, estructura de respuestas JSON y funcionamiento de Guards (`JwtAuthGuard`, `RolesGuard`).
+

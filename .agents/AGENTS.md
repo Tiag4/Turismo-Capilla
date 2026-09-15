@@ -18,7 +18,7 @@ Este documento es la **fuente canónica y única de verdad (SSOT)** de directric
 ## 2. Idioma y Formato de Comunicación
 
 * **Español Rioplatense OBLIGATORIO en Chat:** Toda la comunicación directa con el usuario, explicaciones y razonamientos se redactan en español rioplatense natural (voseo).
-* **Artefactos Técnicos en Inglés OBLIGATORIO:** Código fuente, nombres de variables, funciones, interfaces, DTOs, commits (conventional commits), comentarios en código y nombres de archivos deben redactarse estrictamente en inglés.
+* **Artefactos Técnicos en Inglés OBLIGATORIO:** Código fuente, nombres de variables, funciones, interfaces, DTOs, comentarios en código y nombres de archivos deben redactarse estrictamente en inglés. (Excepción explícita: commits, mensajes de push y PRs del repositorio backend deben redactarse obligatoriamente en español según `git-commit-rules`).
 
 ---
 
@@ -50,20 +50,21 @@ Este documento es la **fuente canónica y única de verdad (SSOT)** de directric
 
 ---
 
-## 5. Estructura de Monorepo (pnpm)
+## 5. Estructura Multirepo y Ámbitos de Trabajo (CRÍTICO)
 
-```text
-/
-├── .agents/
-│   ├── AGENTS.md            # Este documento (SSOT)
-│   └── skills/              # Skills canónicas instaladas a nivel de proyecto
-├── apps/
-│   ├── backend/             # API REST en NestJS + Prisma + PostgreSQL
-│   └── portal-turismo/      # Astro 5 + React (Portal público turístico y reservas)
-├── docs/                    # Documentación arquitectónica, API reference y guías de testing
-├── package.json             # Root monorepo configuration
-└── pnpm-workspace.yaml
-```
+El proyecto opera bajo una arquitectura **Multirepo** dividida en dos repositorios independientes:
+
+1. **Repositorio Backend (API REST, Base de Datos y Negocio):**
+   * **Ruta local:** `C:\Users\Martino\Documents\PROGRAMACION III\Turismo-Capilla-Backend`
+   * **Remoto GitHub:** `https://github.com/Tiag4/Turismo-Capilla-Backend.git`
+   * **Rama base de desarrollo:** `develop`
+   * **Tecnologías:** NestJS 12, Prisma ORM, PostgreSQL, Vitest.
+   * **Mandato:** Todo trabajo, modificación de código, DTOs, servicios, migraciones de Prisma, tests unitarios, issues, ramas y PRs de backend DEBEN ejecutarse y gestionarse **exclusivamente dentro de este directorio**.
+
+2. **Repositorio Frontend (Portal Turístico y Reservas):**
+   * **Ruta local:** `C:\Users\Martino\Documents\PROGRAMACION III\Turismo-Capilla`
+   * **Remoto GitHub:** `https://github.com/Tiag4/Turismo-Capilla.git`
+   * **Tecnologías:** Astro 5, React, Tailwind CSS v4.
 
 ---
 
@@ -76,6 +77,12 @@ Este documento es la **fuente canónica y única de verdad (SSOT)** de directric
    * Las reservas se crean dentro de transacciones atómicas de Prisma (`$transaction`) con chequeo estricto de solapamiento de fechas: `checkIn < existingCheckOut && checkOut > existingCheckIn`.
 4. **Idempotencia e Inmutabilidad:**
    * Códigos de reserva únicos con formato de negocio auditado (`CAP-YYYY-XXXX`).
+5. **Suite de Testing Oficial (`@nestjs/testing` + Vitest):**
+   * **Stack canónico:** Toda prueba unitaria o de integración en backend DEBE utilizar el módulo oficial `@nestjs/testing` (`Test.createTestingModule`) acoplado a **Vitest** como test runner.
+   * **Prohibido:** El uso de Jest (el monorepo es ESM puro) o instanciar clases a mano con `new Service(...)` en tests unitarios, ya que saltea el contenedor de inyección de dependencias de NestJS. Mocks definidos con `vi.fn()`.
+6. **Estrategia de Identificadores (UUID):**
+   * Todas las entidades de persistencia utilizan el tipo nativo `UUID` de PostgreSQL para prevenir ataques de enumeración (IDOR) y posibilitar la generación descentralizada.
+   * Se promueve activamente el estándar moderno **UUIDv7** (time-ordered) sobre UUIDv4 para evitar la fragmentación de índices B-Tree en disco, manteniendo compatibilidad total de tipo `UUID` (128 bits).
 
 ---
 
@@ -139,9 +146,9 @@ Todo componente o vista interactiva que supere ~150 líneas DEBE desacoplarse:
 ---
 
 ## 11. Convenciones de Git y Commits
-
+ 
 * **Inspección Previa:** `git status` y `git diff` obligatorios antes de staging.
 * **Staging Granular:** PROHIBIDO `git add .` a ciegas. Seleccionar archivos específicos de la tarea.
-* **Conventional Commits en Inglés:** `<type>(<scope>): <description>` (ej. `feat(bookings): add date collision validation`).
+* **Conventional Commits en Español para Backend:** `<type>(<scope>): <descripción en español>` (ej. `feat(bookings): prevenir colisión de fechas con transacciones atomicas`).
 * **Cero Atribución de IA:** Nunca incluir `Co-Authored-By` ni referencias a asistentes de IA en mensajes de commit o código.
 

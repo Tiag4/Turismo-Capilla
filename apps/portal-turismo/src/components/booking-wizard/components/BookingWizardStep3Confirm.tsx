@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Coins, Lock, ChevronLeft, Tag } from 'lucide-react';
+import { Coins, Lock, ChevronLeft, Tag } from 'lucide-react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 import type { UseBookingWizardReturn } from '../hooks/useBookingWizard';
 

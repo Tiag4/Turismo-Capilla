@@ -138,7 +138,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
           accommodationTitle: data.title,
           accommodationZone: data.zone,
           accommodationAddress: data.address,
-          accommodationImage: (data.images && data.images.length > 0) ? data.images[0] : (data.imageUrl || ''),
+          accommodationImage: (data.gallery && data.gallery.length > 0) ? data.gallery[0] : (data.imageUrl || ''),
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,

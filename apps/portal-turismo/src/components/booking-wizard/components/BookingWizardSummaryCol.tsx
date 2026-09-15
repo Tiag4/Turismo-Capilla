@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, PawPrint, CircleParking, ShieldCheck, ChevronLeft } from 'lucide-react';
+import { PawPrint, CircleParking, ChevronLeft } from 'lucide-react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 import type { UseBookingWizardReturn } from '../hooks/useBookingWizard';
 

@@ -5,3 +5,7 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - react-router-dom@7.18.4
+  - react-router@7.18.4

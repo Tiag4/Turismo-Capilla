@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MapPin, Clock, ShieldCheck, Compass, X } from 'lucide-react';
+import { Star, MapPin, Clock, X } from 'lucide-react';
 import type { MapPlace } from '../../data/mock-places';
 
 interface MapCardPreviewProps {

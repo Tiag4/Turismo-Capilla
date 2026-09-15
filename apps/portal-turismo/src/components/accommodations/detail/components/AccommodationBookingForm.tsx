@@ -1,8 +1,7 @@
 import React from 'react';
-import { Calendar, Users } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { CustomDatePicker } from '../../../ui/CustomDatePicker';
-import { CustomSelect } from '../../../ui/CustomSelect';
-import { GUEST_OPTIONS } from './AccommodationStickyWidget';
+import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
 import type { AccommodationDetailData } from '../types';
 import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
 
@@ -20,8 +19,8 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
     setCheckIn,
     checkOut,
     setCheckOut,
-    guests,
-    setGuests,
+    guestsSelection,
+    setGuestsSelection,
     nightsCount,
     totalPrice,
     depositRequired,
@@ -67,12 +66,9 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
           />
         </div>
 
-        <CustomSelect
-          label="Huéspedes"
-          value={guests}
-          onChange={setGuests}
-          options={GUEST_OPTIONS}
-          icon={<Users className="w-3.5 h-3.5 text-stone-400" />}
+        <AccommodationGuestsPicker
+          value={guestsSelection}
+          onChange={setGuestsSelection}
         />
 
         {nightsCount && totalPrice ? (

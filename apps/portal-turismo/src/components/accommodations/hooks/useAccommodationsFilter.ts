@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { MOCK_PLACES, type MapPlace } from '../../../data/mock-places';
+import { MOCK_PLACES } from '../../../data/mock-places';
 
 export type PillFilter = 'all' | 'pileta' | 'falda' | 'pet' | 'asador' | 'rio';
 export type SortOption = 'recommended' | 'price-asc' | 'price-desc' | 'rating-desc';

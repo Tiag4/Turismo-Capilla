@@ -24,29 +24,32 @@ Antes de realizar cualquier staging (`git add`), es **estrictamente obligatorio*
 - Realizar commits pequeños y cohesivos por cambio o corrección específica.
 - Al finalizar una fase o ciclo completo de desarrollo o SDD, realizar el commit final de cierre de fase.
 
-## 4. Formato Conventional Commits
-Todos los mensajes de commit deben seguir el estándar **Conventional Commits** en **inglés**:
+## 4. Formato Conventional Commits (OBLIGATORIO EN ESPAÑOL PARA BACKEND)
+Todos los mensajes de commit, mensajes de push, títulos y descripciones de Pull Requests (PRs) del repositorio de backend **DEBEN ESTAR SIEMPRE ESCRITOS EN ESPAÑOL**.
 
-`<type>(<scope>): <short description in lower case>`
+Estructura:
+`<type>(<scope>): <descripción breve en minúsculas en español>`
 
 ### Tipos permitidos (`type`):
 - `feat`: Nueva funcionalidad.
 - `fix`: Corrección de un error o bug.
-- `refactor`: Cambio de código que ni agrega feature ni corrige bug.
+- `refactor`: Cambio de código que ni agrega feature ni corrige bug (limpieza, deduplicación, arquitectura).
 - `style`: Formateo, espacios, puntos y comas (sin cambios de lógica).
 - `test`: Adición o corrección de pruebas unitarias/integración.
-- `docs`: Cambios exclusivamente en documentación.
+- `docs`: Cambios exclusivamente en documentación o diagramas.
 - `chore`: Tareas de build, dependencias, skills o configuración sin tocar lógica de negocio.
 
-### Ámbitos (`scope`) en Turismo-Capilla:
-Indica el módulo afectado. Ejemplos recomendados:
-- `backend`, `frontend`, `monorepo`
-- `auth`, `invitations`, `accommodations`, `bookings`, `attractions`, `users`
-- `design-system`, `ui`, `cro`
-- `skills`, `docs`, `tests`, `db`
+### Ámbitos (`scope`) en Turismo-Capilla (Backend):
+Indica el módulo o área afectada:
+- `backend`, `db`, `prisma`
+- `auth`, `invitations`, `accommodations`, `bookings`, `attractions`, `users`, `health`
+- `skills`, `docs`, `tests`, `common`
 
-### Ejemplo:
-`feat(bookings): prevent overlapping date reservations with atomic prisma transactions`
+### Ejemplos válidos en español:
+- `refactor(backend): eliminar codigo muerto de app controller e integrar extension uuidv7`
+- `refactor(accommodations): unificar dtos de imagenes y eliminar duplicaciones`
+- `feat(bookings): prevenir solapamiento de fechas con transacciones atomicas de prisma`
+- `test(auth): agregar pruebas unitarias para registro de anfitrion con tokens`
 
 ## 5. Prohibición Estricta de Atribución de IA
 - **PROHIBIDO** incluir cabeceras de atribución de IA como `Co-Authored-By: CoPilot/ChatGPT/Gemini/Claude` o comentarios similares en el mensaje del commit o en el código.

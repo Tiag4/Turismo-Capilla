@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Star, MapPin, Clock, X } from 'lucide-react';
 import type { MapPlace } from '../../data/mock-places';
 
@@ -32,7 +33,7 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
           <X className="w-4 h-4" />
         </button>
 
-        {/* Datos y Título sobre imagen (sin eyebrows ni badges) */}
+        {/* Datos y Título sobre imagen */}
         <div className="absolute bottom-3 left-3 right-3 text-white">
           <span className="text-xs text-sand-300 font-normal block">
             {place.category}
@@ -49,7 +50,7 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
           {place.subtitle}
         </p>
 
-        {/* Métricas y Datos Clave sin emojis */}
+        {/* Métricas y Datos Clave */}
         <div className="flex items-center justify-between text-xs py-2 border-y border-sand-100">
           <div className="flex items-center gap-1 text-amber-600 font-bold">
             <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
@@ -63,7 +64,7 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
           </div>
         </div>
 
-        {/* Especificidades por tipo */}
+        {/* Especificidades por tipo con navegación SPA */}
         {isAccommodation ? (
           <div className="flex items-center justify-between pt-1">
             <div>
@@ -72,12 +73,12 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
                 ${(place.pricePerNight ?? 0).toLocaleString('es-AR')}
               </span>
             </div>
-            <a
-              href={place.ctaUrl}
+            <Link
+              to={place.ctaUrl}
               className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold text-xs shadow-md shadow-primary-500/20 transition-all cursor-pointer"
             >
               Ver Disponibilidad →
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="flex items-center justify-between pt-1">
@@ -88,12 +89,12 @@ export const MapCardPreview: React.FC<MapCardPreviewProps> = ({ place, onClose }
                 <span>{place.duration}</span>
               </div>
             </div>
-            <a
-              href={place.ctaUrl}
+            <Link
+              to={place.ctaUrl}
               className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-uritorco-600 hover:bg-uritorco-700 active:bg-uritorco-800 text-white font-semibold text-xs shadow-md shadow-uritorco-600/20 transition-all cursor-pointer"
             >
               Ficha del Paseo →
-            </a>
+            </Link>
           </div>
         )}
       </div>

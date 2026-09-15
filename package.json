@@ -1,0 +1,15 @@
+{
+  "name": "turismo-capilla-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo para la plataforma de turismo y reservas de Capilla del Monte",
+  "scripts": {
+    "dev": "pnpm --filter portal-turismo dev",
+    "build": "pnpm --filter portal-turismo build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "dev:portal": "pnpm --filter portal-turismo dev",
+    "dev:frontend": "pnpm --filter portal-turismo dev"
+  },
+  "packageManager": "pnpm@11.23.0"
+}

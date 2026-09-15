@@ -2,29 +2,29 @@ import type { MapPlace } from '../../../data/mock-places';
 import type { AccommodationDetailData } from './types';
 
 export function getAccommodationDetail(place: MapPlace): AccommodationDetailData {
-  // Exact 5-photo bento imagery matching the visual comp
+  // Use place image as hero and complementary high-res mountain hospitality photos
   const gallery = [
-    '/images/detail/bento-1-terrace.jpg',
-    '/images/detail/bento-2-pool.jpg',
-    '/images/detail/bento-3-grill.jpg',
-    '/images/detail/bento-4-living.jpg',
-    '/images/detail/bento-5-exterior.jpg',
+    place.imageUrl || '/images/detail/bento-1-terrace.jpg',
+    'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
   ];
 
   return {
     ...place,
     gallery,
     fullDescription: [
-      'Cabañas Valle del Sol is an luxury rustic mountain cabin rental. 5-photo terrace. Construction and modern amenities to provide private vacation in Capilla del Monte, Cordoba, Argentina.',
-      'El predio cuenta con parque nativo de algarrobos y espinillos, piscina con solárium atérmico y asador techado individual provisto con leña de cortesía para disfrutar del atardecer cordobés.',
-      'Un ambiente pensado para el descanso profundo, con tranquilidad absoluta, privacidad entre unidades y acceso directo a los principales senderos y balnearios del valle.'
+      `${place.title} es un establecimiento habilitado oficialmente en la zona de ${place.zone || 'Capilla del Monte'}. ${place.subtitle}.`,
+      'El predio cuenta con parque serrano con especies autóctonas, vistas panorámicas y comodidades para disfrutar del descanso al pie de las sierras cordobesas.',
+      'Trato directo con los anfitriones, garantizando tarifa oficial transparente sin comisiones de intermediarios y asistencia durante toda la estadía.'
     ],
     host: {
-      name: 'Familia Rossi — Prestadores Habilitados',
+      name: `${place.title} — Anfitrión Verificado`,
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-      badgeText: 'Habilitación Municipal N° 412/2023',
-      responseTime: 'Responde en menos de 1 hora',
-      yearsHosting: 8,
+      badgeText: `Habilitación Municipal N° ${place.id.replace('acc-', '14')}/2024`,
+      responseTime: 'Responde en menos de 2 horas',
+      yearsHosting: 5,
       verified: true,
     },
     bedrooms: [

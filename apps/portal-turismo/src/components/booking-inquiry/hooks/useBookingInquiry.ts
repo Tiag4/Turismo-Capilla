@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { BookingVoucherRecord } from '../types';
 import { lookupBooking } from '../data/seed-vouchers';
+import { api } from '../../../services/api';
 
 export function useBookingInquiry() {
   const [code, setCode] = useState<string>('');
@@ -58,8 +59,45 @@ export function useBookingInquiry() {
       setIsLoading(true);
       setError(null);
 
-      // Brief simulated lookup for UI feedback
-      setTimeout(() => {
+      (async () => {
+        if (email.trim()) {
+          try {
+            const apiRes = await api.lookupBooking(cleanCode, email.trim());
+            if (apiRes) {
+              const nameParts = (apiRes.guestName || '').split(' ');
+              const firstName = nameParts[0] || 'Turista';
+              const lastName = nameParts.slice(1).join(' ') || '';
+              const mappedVoucher: BookingVoucherRecord = {
+                code: apiRes.bookingCode,
+                accommodationId: apiRes.accommodation?.id || 'acc-1',
+                accommodationTitle: apiRes.accommodation?.name || 'Alojamiento en Capilla del Monte',
+                accommodationZone: apiRes.accommodation?.locality || 'Capilla del Monte',
+                accommodationAddress: apiRes.accommodation?.address || '',
+                accommodationImage: apiRes.accommodation?.images?.[0]?.url || '/images/detail/bento-1-terrace.jpg',
+                firstName,
+                lastName,
+                email: email.trim(),
+                phone: '',
+                checkIn: apiRes.checkIn,
+                checkOut: apiRes.checkOut,
+                nightsCount: apiRes.totalNights,
+                adults: 2,
+                children: 0,
+                rooms: 1,
+                finalPrice: Number(apiRes.totalAmount) || 0,
+                status: apiRes.status === 'CONFIRMED' ? 'CONFIRMED' : 'PENDING_CONFIRMATION',
+                createdAt: new Date().toISOString(),
+              };
+              setVoucher(mappedVoucher);
+              setIsLoading(false);
+              setHasSearched(true);
+              return;
+            }
+          } catch {
+            // Fallback to seed lookup
+          }
+        }
+
         const result = lookupBooking(cleanCode, email ? email.trim() : undefined);
         setIsLoading(false);
         setHasSearched(true);
@@ -75,7 +113,7 @@ export function useBookingInquiry() {
             }. Verificá los datos e intentá de nuevo.`,
           );
         }
-      }, 400);
+      })();
     },
     [code, email],
   );

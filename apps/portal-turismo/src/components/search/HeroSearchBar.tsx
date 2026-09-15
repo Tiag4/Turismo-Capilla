@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CustomSelect, type Option } from '../ui/CustomSelect';
 import { CustomDatePicker } from '../ui/CustomDatePicker';
 
 const CATEGORY_OPTIONS: Option[] = [
   { value: 'alojamientos', label: 'Alojamientos & Cabañas', description: '12 establecimientos habilitados' },
   { value: 'paseos', label: 'Paseos & Trekking', description: 'Senderos del Uritorco y balnearios' },
-  { value: 'gastronomia', label: 'Gastronomía Serrana', description: 'Restaurantes y casas de té' },
+  { value: 'patrimonio', label: 'Patrimonio & Casonas', description: 'Circuito histórico de casonas' },
 ];
 
 const GUEST_OPTIONS: Option[] = [
@@ -17,6 +18,7 @@ const GUEST_OPTIONS: Option[] = [
 ];
 
 export const HeroSearchBar: React.FC = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState('alojamientos');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -36,18 +38,21 @@ export const HeroSearchBar: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (category === 'paseos') {
-      window.location.href = '/atractivos';
+      navigate('/atractivos');
+      return;
+    }
+    if (category === 'patrimonio') {
+      navigate('/atractivos/casonas');
       return;
     }
 
     const params = new URLSearchParams();
-    if (category && category !== 'alojamientos') params.set('category', category);
     if (checkIn) params.set('checkIn', checkIn);
     if (checkOut) params.set('checkOut', checkOut);
     if (guests) params.set('guests', guests);
 
     const query = params.toString();
-    window.location.href = query ? `/alojamientos?${query}` : '/alojamientos';
+    navigate(query ? `/alojamientos?${query}` : '/alojamientos');
   };
 
   return (

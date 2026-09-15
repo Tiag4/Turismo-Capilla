@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
+import { api } from '../../../services/api';
 
 export interface BookingWizardState {
   firstName: string;
@@ -8,7 +9,7 @@ export interface BookingWizardState {
   phone: string;
   country: string;
   wantsWhatsappUpdates: boolean;
-  bookingFor: 'self' | 'other';
+  bookingFor: 'self' | 'someone_else';
   isWorkTrip: boolean;
   extraBreakfast: boolean;
   extraExcursion: boolean;
@@ -51,7 +52,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
     email: '',
     phone: '',
     country: 'Argentina',
-    wantsWhatsappUpdates: true,
+    wantsWhatsappUpdates: false,
     bookingFor: 'self',
     isWorkTrip: false,
     extraBreakfast: false,
@@ -124,16 +125,36 @@ export function useBookingWizard(data: AccommodationDetailData) {
       return;
     }
     setIsSubmitting(true);
-    await new Promise((res) => setTimeout(res, 900));
-    const randomCode = `CAP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    setBookingCode(randomCode);
+    let finalCode = `CAP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    try {
+      const payload = {
+        accommodationId: data.id,
+        checkIn: initialParams.checkIn,
+        checkOut: initialParams.checkOut,
+        guestCount: initialParams.adults + initialParams.children,
+        guestName: `${form.firstName} ${form.lastName}`.trim(),
+        guestEmail: form.email,
+        guestPhone: form.phone,
+        guestOrigin: form.country,
+        notes: form.specialRequests,
+      };
+      const apiResult = await api.createBooking(payload);
+      if (apiResult?.bookingCode) {
+        finalCode = apiResult.bookingCode;
+      }
+    } catch (apiErr) {
+      console.warn('Backend offline o simulación: guardando reserva localmente', apiErr);
+    }
+
+    setBookingCode(finalCode);
 
     // Save to localStorage for instant voucher lookup
     if (typeof window !== 'undefined') {
       try {
         const stored = JSON.parse(localStorage.getItem('capilla_bookings') || '[]');
         const newRecord = {
-          code: randomCode,
+          code: finalCode,
           accommodationId: data.id,
           accommodationTitle: data.title,
           accommodationZone: data.zone,

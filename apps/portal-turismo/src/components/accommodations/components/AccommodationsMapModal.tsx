@@ -39,7 +39,12 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
       />
 
       {/* Contenedor del Modal */}
-      <div className="relative w-full max-w-6xl h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mapa Territorial de Alojamientos"
+        className="relative w-full max-w-6xl h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10"
+      >
         {/* Barra Superior */}
         <div className="px-6 py-4 border-b border-stone-200 bg-[#FAF8F5] flex items-center justify-between">
           <div className="flex items-center gap-2">

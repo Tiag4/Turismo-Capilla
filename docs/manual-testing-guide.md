@@ -7,8 +7,9 @@ Este índice centraliza los documentos individuales de pruebas manuales para cad
 ## 1. Preparación del Entorno
 
 ### Paso 1: Iniciar el Servidor Backend
-Desde la raíz del repositorio o dentro de `apps/backend`:
+Desde el repositorio independiente `Turismo-Capilla-Backend`:
 ```bash
+# En el directorio del backend
 pnpm dev
 ```
 * **Swagger UI:** [http://localhost:3001/api](http://localhost:3001/api)

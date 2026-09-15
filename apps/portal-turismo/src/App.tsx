@@ -8,6 +8,7 @@ import { AttractionsPage } from './pages/AttractionsPage';
 import { AttractionDetailPage } from './pages/AttractionDetailPage';
 import { AstrotourismPage } from './pages/AstrotourismPage';
 import { BookingInquiryPage } from './pages/BookingInquiryPage';
+import { AccommodationBookingWizardPage } from './pages/AccommodationBookingWizardPage';
 
 export const App: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ export const App: React.FC = () => {
           <Route index element={<HomePage />} />
           <Route path="alojamientos" element={<AccommodationsPage />} />
           <Route path="alojamientos/:id" element={<AccommodationDetailPage />} />
+          <Route path="alojamientos/:id/reservar" element={<AccommodationBookingWizardPage />} />
           <Route path="atractivos" element={<AttractionsPage />} />
           <Route path="atractivos/:id" element={<AttractionDetailPage />} />
           <Route path="astroturismo" element={<AstrotourismPage />} />

@@ -105,7 +105,8 @@ export const AppLayout: React.FC = () => {
             <button
               type="button"
               onClick={toggleMobileMenu}
-              aria-label="Abrir menú"
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={mobileMenuOpen}
               className="md:hidden p-2 rounded-xl text-sand-800 hover:bg-sand-200 transition-colors cursor-pointer"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

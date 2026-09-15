@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PawPrint, CircleParking, ChevronLeft } from 'lucide-react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 import type { UseBookingWizardReturn } from '../hooks/useBookingWizard';
@@ -61,12 +62,12 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
             {initialParams.children > 0 ? `, ${initialParams.children} niños` : ''}
           </div>
           <div className="text-stone-600 font-medium">{data.unitDetails?.title ?? 'Cabaña independiente'}</div>
-          <a
-            href={`/alojamientos/${data.id}`}
+          <Link
+            to={`/alojamientos/${data.id}`}
             className="text-blue-600 hover:text-blue-800 font-semibold text-xs inline-flex items-center gap-1 pt-1"
           >
             <ChevronLeft className="w-3.5 h-3.5" /> Cambiar tu selección
-          </a>
+          </Link>
         </div>
       </div>
 

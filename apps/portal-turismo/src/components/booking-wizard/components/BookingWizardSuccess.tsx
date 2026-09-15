@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { CheckCircle, MessageSquare, ArrowLeft, Download, ShieldCheck } from 'lucide-react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
 import type { UseBookingWizardReturn } from '../hooks/useBookingWizard';
@@ -63,21 +64,21 @@ export const BookingWizardSuccess: React.FC<BookingWizardSuccessProps> = ({ data
           <span>Avisar al anfitrión por WhatsApp</span>
         </a>
 
-        <a
-          href={`/reservas/consulta?code=${bookingCode}&email=${encodeURIComponent(form.email)}`}
+        <Link
+          to={`/reservas/consulta?code=${bookingCode}&email=${encodeURIComponent(form.email)}`}
           className="w-full py-3 px-4 rounded-xl bg-sand-900 hover:bg-sand-800 text-white font-display font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 select-none shadow-xs"
         >
           <Download className="w-4 h-4" />
           <span>Ver o descargar voucher oficial</span>
-        </a>
+        </Link>
 
-        <a
-          href="/alojamientos"
+        <Link
+          to="/alojamientos"
           className="w-full py-2.5 px-4 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 select-none"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Volver al catálogo de alojamientos</span>
-        </a>
+        </Link>
       </div>
 
       <div className="flex items-center justify-center gap-1 text-[11px] text-stone-400 pt-2">

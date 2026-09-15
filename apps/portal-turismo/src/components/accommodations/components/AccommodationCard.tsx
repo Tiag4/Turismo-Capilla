@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Users, MapPin, Waves, Flame, Wifi, Coffee, Trees, Car, Check } from 'lucide-react';
 import type { MapPlace } from '../../../data/mock-places';
 
@@ -70,7 +71,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
         </div>
       </div>
 
-      {/* Cuerpo de la Tarjeta con Altura Fija y Cero Eyebrows */}
+      {/* Cuerpo de la Tarjeta con Altura Fija */}
       <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
         <div className="space-y-1">
           <h3 className="font-display font-extrabold text-lg sm:text-xl text-stone-900 group-hover:text-terracotta-600 transition-colors truncate h-7 flex items-center">
@@ -98,7 +99,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
           )}
         </div>
 
-        {/* Pricing y CTA Alineados */}
+        {/* Pricing y CTA con Link de React Router */}
         <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3 min-h-[56px] mt-auto">
           <div>
             <div className="flex items-baseline gap-1">
@@ -114,12 +115,12 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
             </div>
           </div>
 
-          <a
-            href={place?.ctaUrl ?? `/alojamientos/${place?.id}`}
+          <Link
+            to={place?.ctaUrl ?? `/alojamientos/${place?.id}`}
             className="h-10 px-4 inline-flex items-center justify-center rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer select-none shrink-0"
           >
             Ver detalles →
-          </a>
+          </Link>
         </div>
       </div>
     </article>

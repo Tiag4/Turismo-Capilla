@@ -129,5 +129,22 @@ pnpm format             # Da formato a todo el código fuente con Prettier
 * **Juan Larcher**
 
 
-**Cátedra:** Programación III — 2026. 
+**Cátedra:** Programación III — 2026.  
 **Cliente:** Cámara de Turismo de Capilla del Monte, Córdoba, Argentina.
+
+---
+
+## 7. 📚 Documentación y Recursos
+
+La planificación y gestión del proyecto se distribuyen en los siguientes espacios:
+
+- **Wiki del repositorio:** Detalla los aspectos relacionados con el marco PMI, análisis, planificación, actas y evolución del proyecto.
+- **Google Drive:** Almacena la documentación académica y entregables formales.  
+   [Acceder a la carpeta del proyecto en Google Drive](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E)
+
+---
+
+<p align="center">
+  <strong>Turismo Capilla del Monte</strong><br>
+  Plataforma web oficial y motor de reservas directas de Capilla del Monte, Córdoba.
+</p>

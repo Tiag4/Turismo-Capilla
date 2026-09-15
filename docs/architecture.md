@@ -19,7 +19,7 @@ El sistema provee una plataforma integral para la promoción turística y reserv
 
 2. **Backend (`Turismo-Capilla-Backend` — En Construcción):**
    * **Estado:** En proceso de transición y desarrollo hacia **Java**.
-   * **Stack Objetivo:** Java 21 + Spring Boot 3 + Spring Data JPA (Hibernate) + PostgreSQL 16.
+   * **Stack Objetivo:** Java 17 + Spring Boot 3 + Spring Data JPA (Hibernate) + PostgreSQL 16.
    * **Gestor de Dependencias y Build:** Maven / Gradle.
    * **Autenticación & Seguridad:** Spring Security con tokens JWT stateless y control de acceso basado en roles (`ROLE_TOURIST`, `ROLE_HOST`, `ROLE_ADMIN`).
    * **Persistencia:** Hibernate como proveedor de JPA, con pool de conexiones HikariCP y soporte para transacciones ACID estrictas.
@@ -84,7 +84,7 @@ src/main/java/ar/gob/capilladelmonte/turismo/
 ### Prerrequisitos
 * Node.js `>= 22.0.0`
 * pnpm `>= 10.0.0`
-* Java JDK `>= 21` (para el backend en desarrollo)
+* Java JDK `>= 17` (para el backend en desarrollo)
 
 ### Ejecución del Frontend (Este Repositorio)
 ```bash

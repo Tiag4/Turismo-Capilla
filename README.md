@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Frontend-React%2019.3%20%2B%20Vite%208-61dafb?style=for-the-badge&logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/Router-React%20Router%20v7-ca4245?style=for-the-badge&logo=reactrouter" alt="React Router">
   <img src="https://img.shields.io/badge/Estilos-Tailwind%20CSS%20v4-38bdf8?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Gestor-pnpm%2011-f69220?style=for-the-badge&logo=pnpm" alt="pnpm">
+  <img src="https://img.shields.io/badge/Backend%20Roadmap-Java%2021%20%2B%20Spring%20Boot-orange?style=for-the-badge&logo=openjdk" alt="Java Backend">
   <img src="https://img.shields.io/badge/Estado-Desarrollo%20Activo-brightgreen?style=for-the-badge" alt="Estado">
 </p>
 
@@ -21,10 +21,9 @@ El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacop
    * **Tecnologías:** React 19.3, Vite 8 (Rolldown), React Router v7, Tailwind CSS v4, Lucide React, GSAP.
    * **Puerto por defecto:** `http://localhost:4321`
    * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas y asistente multi-paso de reserva.
-2. **Backend (`Turismo-Capilla-Backend`):**
-   * **Tecnologías:** NestJS 12, Prisma ORM 6, PostgreSQL 16, Swagger, Vitest.
-   * **Puerto por defecto:** `http://localhost:3001` (API en `/api/v1`)
-   * **Responsabilidad:** Lógica de negocio, autenticación JWT, prevención de overbooking con transacciones atómicas y persistencia en base de datos.
+2. **Backend (`Turismo-Capilla-Backend` — En Construcción):**
+   * **Tecnologías Objetivo:** Java 21, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 16.
+   * **Responsabilidad:** Lógica de negocio, autenticación JWT con Spring Security, prevención transaccional de overbooking y persistencia relacional estricta.
 
 ---
 
@@ -54,7 +53,7 @@ Turismo-Capilla/
 │       └── vite.config.ts         # Configuración de Vite con code-splitting funcional
 ├── docs/                          # Documentación arquitectónica, técnica y de QA
 │   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
-│   ├── architecture.md            # Visión general del ecosistema completo
+│   ├── architecture.md            # Blueprint del ecosistema (Frontend React + Backend Java)
 │   ├── api-reference.md           # Referencia de contratos de la API REST
 │   └── manual-testing-guide.md    # Guías de testing manual de integración
 ├── package.json                   # Scripts unificados de ejecución
@@ -63,7 +62,7 @@ Turismo-Capilla/
 
 ---
 
-## 3. Pila Tecnológica (Stack)
+## 3. Pila Tecnológica del Frontend (Stack)
 
 | Capa | Tecnología | Versión | Propósito |
 | :--- | :--- | :--- | :--- |
@@ -149,6 +148,7 @@ pnpm dev
 ## 8. 📚 Documentación y Recursos
 
 * **Documento de Arquitectura Frontend:** [`docs/frontend-architecture.md`](./docs/frontend-architecture.md)
+* **Blueprint del Sistema:** [`docs/architecture.md`](./docs/architecture.md)
 * **Google Drive:** Almacena la documentación académica y entregables formales.  
   [Acceder a la carpeta del proyecto en Google Drive](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E)
 

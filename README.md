@@ -19,7 +19,7 @@ El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacop
 
 1. **Frontend (Este Repositorio — `Turismo-Capilla`):**
    * **Tecnologías:** React 19.3, Vite 8 (Rolldown), React Router v7, Tailwind CSS v4, Lucide React, GSAP.
-   * **Puerto por defecto:** `http://localhost:4321`
+   * **Puerto por defecto:** `http://localhost:5173`
    * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas y asistente multi-paso de reserva.
 2. **Backend (`Turismo-Capilla-Backend` — En Construcción):**
    * **Tecnologías Objetivo:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 16.
@@ -112,7 +112,7 @@ pnpm install
 pnpm dev
 ```
 
-* **Portal Web:** [http://localhost:4321](http://localhost:4321)
+* **Portal Web:** [http://localhost:5173](http://localhost:5173)
 * **Compilación de Producción:**
   ```bash
   pnpm build

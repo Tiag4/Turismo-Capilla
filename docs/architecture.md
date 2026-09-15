@@ -91,7 +91,7 @@ src/main/java/ar/gob/capilladelmonte/turismo/
 # Instalar dependencias
 pnpm install
 
-# Iniciar portal turístico en desarrollo (puerto 4321)
+# Iniciar portal turístico en desarrollo (puerto 5173)
 pnpm dev
 
 # Compilar para producción

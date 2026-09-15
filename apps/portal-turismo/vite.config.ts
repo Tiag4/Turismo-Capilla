@@ -8,7 +8,9 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    port: 4321,
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: false,
   },
   build: {
     rollupOptions: {

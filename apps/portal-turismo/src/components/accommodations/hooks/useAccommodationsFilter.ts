@@ -1,64 +1,119 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { MOCK_PLACES } from '../../../data/mock-places';
+import { MOCK_PLACES, type MapPlace } from '../../../data/mock-places';
+import { api, type Accommodation } from '../../../services/api';
 
-export type PillFilter = 'all' | 'pileta' | 'falda' | 'pet' | 'asador' | 'rio';
+export type AccommodationTypeFilter = 'all' | 'cabin' | 'inn' | 'hotel' | 'apartment';
+export type AmenityFilter = 'pileta' | 'wifi' | 'estacionamiento' | 'pet' | 'asador';
 export type SortOption = 'recommended' | 'price-asc' | 'price-desc' | 'rating-desc';
+
+function mapApiToPlace(item: Accommodation): MapPlace {
+  const price = typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
+  const mainImage = item.images?.find((img) => img.isMain)?.url || item.images?.[0]?.url || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80';
+  
+  const typeMap: Record<string, string> = {
+    CABIN: 'Cabaña de Montaña',
+    HOTEL: 'Hotel Serrano',
+    APARTMENT: 'Departamento',
+    HOSTEL: 'Hostería',
+    CAMPING: 'Camping & Glamping',
+  };
+
+  return {
+    id: item.id,
+    type: 'accommodation',
+    title: item.name,
+    subtitle: item.description,
+    category: typeMap[item.type] || 'Alojamiento',
+    lat: -30.857,
+    lng: -64.515,
+    pricePerNight: isNaN(price) ? 95000 : price,
+    rating: 4.9,
+    reviewCount: 20,
+    imageUrl: mainImage,
+    address: item.address,
+    verified: item.isActive,
+    amenities: item.amenities ?? [],
+    capacity: `Hasta ${item.maxGuests} personas`,
+    zone: item.locality || 'Capilla del Monte',
+    ctaUrl: `/alojamientos/${item.id}`,
+  };
+}
+
+function parseMaxCapacity(capacityStr?: string): number {
+  if (!capacityStr) return 2;
+  const digits = capacityStr.match(/\d+/g)?.map(Number) || [];
+  return digits.length > 0 ? Math.max(...digits) : 2;
+}
 
 export function useAccommodationsFilter() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPills, setSelectedPills] = useState<PillFilter[]>(['all']);
+  const [selectedType, setSelectedType] = useState<AccommodationTypeFilter>('all');
+  const [selectedAmenities, setSelectedAmenities] = useState<AmenityFilter[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('recommended');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('2');
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [places, setPlaces] = useState<MapPlace[]>(() =>
+    MOCK_PLACES.filter((p) => p.type === 'accommodation')
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   // Sync initial state from URL query parameters safely
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    const qZone = params.get('zone');
+    const qType = params.get('type') as AccommodationTypeFilter | null;
     const qAmenity = params.get('amenity');
     const qCheckIn = params.get('checkIn');
     const qCheckOut = params.get('checkOut');
     const qGuests = params.get('guests');
+    const qSearch = params.get('q') || params.get('search');
 
     if (qCheckIn) setCheckIn(qCheckIn);
     if (qCheckOut) setCheckOut(qCheckOut);
     if (qGuests) setGuests(qGuests);
-
-    const initialPills: PillFilter[] = [];
-    if (qAmenity === 'pileta-climatizada' || qAmenity === 'pileta') {
-      initialPills.push('pileta');
-    }
-    if (qAmenity === 'petFriendly' || params.get('petFriendly') === 'true') {
-      initialPills.push('pet');
-    }
-    if (qZone === 'falda-del-uritorco') {
-      initialPills.push('falda');
-    }
-    if (qZone === 'la-toma') {
-      initialPills.push('rio');
+    if (qSearch) setSearchQuery(qSearch);
+    if (qType && ['all', 'cabin', 'inn', 'hotel', 'apartment'].includes(qType)) {
+      setSelectedType(qType);
     }
 
-    if (initialPills.length > 0) {
-      setSelectedPills(initialPills);
-    }
+    const initialAmenities: AmenityFilter[] = [];
+    if (qAmenity === 'pileta' || qAmenity === 'pileta-climatizada') initialAmenities.push('pileta');
+    if (qAmenity === 'wifi') initialAmenities.push('wifi');
+    if (qAmenity === 'estacionamiento') initialAmenities.push('estacionamiento');
+    if (qAmenity === 'pet' || params.get('petFriendly') === 'true') initialAmenities.push('pet');
+    if (initialAmenities.length > 0) setSelectedAmenities(initialAmenities);
   }, []);
 
-  // Multi-select toggle handler
-  const togglePill = useCallback((pill: PillFilter) => {
-    if (pill === 'all') {
-      setSelectedPills(['all']);
-      return;
+  // Fetch real data from backend API with transparent fallback to mock data
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadApiAccommodations() {
+      try {
+        setIsLoading(true);
+        const data = await api.getAccommodations();
+        if (!isCancelled && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map(mapApiToPlace);
+          setPlaces(mapped);
+        }
+      } catch {
+        // Fallback to MOCK_PLACES silently when backend is unreachable
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
     }
+    loadApiAccommodations();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
-    setSelectedPills((prev) => {
-      const withoutAll = prev.filter((p) => p !== 'all');
-      const exists = withoutAll.includes(pill);
-      const next = exists ? withoutAll.filter((p) => p !== pill) : [...withoutAll, pill];
-      return next.length === 0 ? ['all'] : next;
-    });
+  // Toggle amenity filter (multi-select)
+  const toggleAmenity = useCallback((amenity: AmenityFilter) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity) ? prev.filter((a) => a !== amenity) : [...prev, amenity]
+    );
   }, []);
 
   // Calculate nights count
@@ -71,59 +126,73 @@ export function useAccommodationsFilter() {
     return diffDays > 0 ? diffDays : null;
   }, [checkIn, checkOut]);
 
-  // Filter accommodations
-  const rawAccommodations = useMemo(() => {
-    return MOCK_PLACES.filter((p) => p.type === 'accommodation');
-  }, []);
-
+  // Main filter pipeline
   const filteredAccommodations = useMemo(() => {
-    let list = [...rawAccommodations];
+    let list = [...places];
 
-    // Multi-Pill filters (conjunction/AND logic)
-    if (!selectedPills.includes('all') && selectedPills.length > 0) {
+    // 1. Filter by Accommodation Type
+    if (selectedType !== 'all') {
       list = list.filter((p) => {
-        return selectedPills.every((pill) => {
-          if (pill === 'pileta') {
-            return p.amenities?.some((a) => a.toLowerCase().includes('pileta') || a.toLowerCase().includes('piscina'));
+        const cat = (p.category ?? '').toLowerCase();
+        if (selectedType === 'cabin') return cat.includes('cabaña') || cat.includes('cabin');
+        if (selectedType === 'inn') return cat.includes('hostería') || cat.includes('hostel');
+        if (selectedType === 'hotel') return cat.includes('hotel') || cat.includes('posada') || cat.includes('casona');
+        if (selectedType === 'apartment') return cat.includes('departamento') || cat.includes('suite') || cat.includes('apartment');
+        return true;
+      });
+    }
+
+    // 2. Filter by Guest Count (Capacity)
+    if (guests) {
+      const guestNum = parseInt(guests, 10);
+      if (!isNaN(guestNum) && guestNum > 1) {
+        list = list.filter((p) => parseMaxCapacity(p.capacity) >= guestNum);
+      }
+    }
+
+    // 3. Filter by Selected Amenities (conjunction / AND logic)
+    if (selectedAmenities.length > 0) {
+      list = list.filter((p) => {
+        return selectedAmenities.every((amenity) => {
+          const ams = (p.amenities ?? []).map((a) => a.toLowerCase());
+          if (amenity === 'pileta') {
+            return ams.some((a) => a.includes('pileta') || a.includes('piscina') || a.includes('bio-piscina'));
           }
-          if (pill === 'falda') {
-            return p.zone?.toLowerCase().includes('falda') || p.title.toLowerCase().includes('uritorco');
+          if (amenity === 'wifi') {
+            return ams.some((a) => a.includes('wifi') || a.includes('internet'));
           }
-          if (pill === 'pet') {
+          if (amenity === 'estacionamiento') {
+            return ams.some((a) => a.includes('cochera') || a.includes('estacionamiento'));
+          }
+          if (amenity === 'pet') {
             return (
-              p.amenities?.some((a) => a.toLowerCase().includes('mascota') || a.toLowerCase().includes('parque')) ||
-              p.zone?.toLowerCase().includes('terrones') ||
-              p.zone?.toLowerCase().includes('toma')
+              ams.some((a) => a.includes('mascota') || a.includes('parque')) ||
+              (p.zone?.toLowerCase().includes('toma') ?? false) ||
+              (p.zone?.toLowerCase().includes('terrones') ?? false)
             );
           }
-          if (pill === 'asador') {
-            return p.amenities?.some((a) => a.toLowerCase().includes('asador') || a.toLowerCase().includes('parrilla'));
-          }
-          if (pill === 'rio') {
-            return (
-              p.zone?.toLowerCase().includes('río') ||
-              p.zone?.toLowerCase().includes('toma') ||
-              p.subtitle.toLowerCase().includes('río')
-            );
+          if (amenity === 'asador') {
+            return ams.some((a) => a.includes('asador') || a.includes('parrilla') || a.includes('quincho'));
           }
           return true;
         });
       });
     }
 
-    // Live Text search query
+    // 4. Filter by Text Query (Title, Subtitle, Zone, Category, Amenities)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      list = list.filter((p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.subtitle.toLowerCase().includes(q) ||
-        (p.zone?.toLowerCase().includes(q) ?? false) ||
-        (p.category?.toLowerCase().includes(q) ?? false) ||
-        p.amenities?.some((a) => a.toLowerCase().includes(q))
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.subtitle.toLowerCase().includes(q) ||
+          (p.zone?.toLowerCase().includes(q) ?? false) ||
+          (p.category?.toLowerCase().includes(q) ?? false) ||
+          p.amenities?.some((a) => a.toLowerCase().includes(q))
       );
     }
 
-    // Sorting
+    // 5. Sorting
     if (sortOption === 'price-asc') {
       list.sort((a, b) => (a?.pricePerNight ?? 0) - (b?.pricePerNight ?? 0));
     } else if (sortOption === 'price-desc') {
@@ -133,11 +202,15 @@ export function useAccommodationsFilter() {
     }
 
     return list;
-  }, [rawAccommodations, selectedPills, searchQuery, sortOption]);
+  }, [places, selectedType, guests, selectedAmenities, searchQuery, sortOption]);
 
   const resetFilters = useCallback(() => {
-    setSelectedPills(['all']);
+    setSelectedType('all');
+    setSelectedAmenities([]);
     setSearchQuery('');
+    setGuests('2');
+    setCheckIn('');
+    setCheckOut('');
     setSortOption('recommended');
   }, []);
 
@@ -147,9 +220,10 @@ export function useAccommodationsFilter() {
   return {
     searchQuery,
     setSearchQuery,
-    selectedPills,
-    setSelectedPills,
-    togglePill,
+    selectedType,
+    setSelectedType,
+    selectedAmenities,
+    toggleAmenity,
     sortOption,
     setSortOption,
     checkIn,
@@ -164,6 +238,7 @@ export function useAccommodationsFilter() {
     closeMap,
     filteredAccommodations,
     totalCount: filteredAccommodations.length,
+    isLoading,
     resetFilters,
   };
 }

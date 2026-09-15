@@ -1,80 +1,80 @@
 import React from 'react';
-import { Layers, Waves, Mountain, HeartHandshake, Flame, Droplets, ArrowUpDown } from 'lucide-react';
-import type { PillFilter, SortOption } from '../hooks/useAccommodationsFilter';
+import { Waves, Wifi, Car, HeartHandshake, Flame, ArrowUpDown } from 'lucide-react';
+import type { AmenityFilter, SortOption } from '../hooks/useAccommodationsFilter';
 import { CustomSelect, type Option } from '../../ui/CustomSelect';
 
 interface AccommodationsFilterPillsProps {
-  selectedPills: PillFilter[];
-  onTogglePill: (pill: PillFilter) => void;
+  selectedAmenities: AmenityFilter[];
+  onToggleAmenity: (amenity: AmenityFilter) => void;
   sortOption: SortOption;
   onSortChange: (sort: SortOption) => void;
   totalCount: number;
 }
 
-interface PillItem {
-  id: PillFilter;
+interface AmenityPillItem {
+  id: AmenityFilter;
   label: string;
   icon: React.ReactNode;
 }
 
-const PILLS: PillItem[] = [
-  { id: 'all', label: 'Todos', icon: <Layers className="w-3.5 h-3.5" /> },
-  { id: 'pileta', label: 'Con pileta', icon: <Waves className="w-3.5 h-3.5" /> },
-  { id: 'falda', label: 'Falda del Uritorco', icon: <Mountain className="w-3.5 h-3.5" /> },
+const AMENITY_PILLS: AmenityPillItem[] = [
+  { id: 'pileta', label: 'Pileta', icon: <Waves className="w-3.5 h-3.5" /> },
+  { id: 'wifi', label: 'WiFi', icon: <Wifi className="w-3.5 h-3.5" /> },
+  { id: 'estacionamiento', label: 'Estacionamiento', icon: <Car className="w-3.5 h-3.5" /> },
   { id: 'pet', label: 'Pet-friendly', icon: <HeartHandshake className="w-3.5 h-3.5" /> },
-  { id: 'asador', label: 'Con asador', icon: <Flame className="w-3.5 h-3.5" /> },
-  { id: 'rio', label: 'Cerca del río', icon: <Droplets className="w-3.5 h-3.5" /> },
+  { id: 'asador', label: 'Asador / Parrilla', icon: <Flame className="w-3.5 h-3.5" /> },
 ];
 
 const SORT_OPTIONS: Option[] = [
   { value: 'recommended', label: 'Recomendados' },
   { value: 'price-asc', label: 'Menor precio' },
   { value: 'price-desc', label: 'Mayor precio' },
-  { value: 'rating-desc', label: 'Mejor puntuados' },
+  { value: 'rating-desc', label: 'Mejor valorados' },
 ];
 
 export const AccommodationsFilterPills: React.FC<AccommodationsFilterPillsProps> = ({
-  selectedPills,
-  onTogglePill,
+  selectedAmenities,
+  onToggleAmenity,
   sortOption,
   onSortChange,
   totalCount,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2 border-b border-stone-200/80">
-      {/* Carrusel de Píldoras de Filtro Rápido Multi-selección */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-        {PILLS.map((pill) => {
-          const isActive =
-            pill.id === 'all'
-              ? selectedPills.includes('all') || selectedPills.length === 0
-              : selectedPills.includes(pill.id);
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-stone-200/80">
+      {/* Píldoras de Comodidades Destacadas (Multi-selección) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <span className="text-xs font-bold text-stone-500 uppercase tracking-wider pr-1 shrink-0">
+          Comodidades:
+        </span>
+        {AMENITY_PILLS.map((pill) => {
+          const isActive = selectedAmenities.includes(pill.id);
           return (
             <button
               key={pill.id}
               type="button"
-              onClick={() => onTogglePill(pill.id)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer select-none ${
+              onClick={() => onToggleAmenity(pill.id)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer select-none ${
                 isActive
-                  ? 'bg-stone-900 text-white shadow-md'
+                  ? 'bg-stone-900 text-white shadow-sm'
                   : 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-200/80'
               }`}
             >
-              <span className={isActive ? 'text-terracotta-400' : 'text-stone-500'}>{pill.icon}</span>
+              <span className={isActive ? 'text-terracotta-400' : 'text-stone-500'}>
+                {pill.icon}
+              </span>
               <span>{pill.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Contador y Ordenamiento Custom */}
-      <div className="flex items-center justify-between md:justify-end gap-3 shrink-0">
+      {/* Contador y Ordenamiento */}
+      <div className="flex items-center justify-between md:justify-end gap-4 shrink-0">
         <span className="text-xs font-bold text-stone-500">
           <strong className="text-stone-900 font-extrabold">{totalCount}</strong>{' '}
-          {totalCount === 1 ? 'alojamiento' : 'alojamientos'}
+          {totalCount === 1 ? 'alojamiento disponible' : 'alojamientos disponibles'}
         </span>
 
-        {/* Selector de Orden Custom */}
         <div className="w-44">
           <CustomSelect
             label="Ordenar por"

@@ -4,19 +4,25 @@ interface AttractionsHeaderProps {
   search: string;
   onSearchChange: (val: string) => void;
   totalCount: number;
+  isLoading?: boolean;
 }
 
 export const AttractionsHeader: React.FC<AttractionsHeaderProps> = ({
   search,
   onSearchChange,
   totalCount,
+  isLoading = false,
 }) => {
   return (
     <div className="border-b border-sand-200/80 pb-6 space-y-4">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2 max-w-3xl">
           <span className="text-xs font-bold uppercase tracking-wider text-uritorco-700 block">
-            Portal Oficial · {totalCount} Circuitos del Valle de Punilla
+            {isLoading ? (
+              <span className="animate-pulse">Portal Oficial · Explorando circuitos del Valle de Punilla...</span>
+            ) : (
+              `Portal Oficial · ${totalCount} Circuitos del Valle de Punilla`
+            )}
           </span>
           <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-sand-950 tracking-tight leading-[1.1]">
             Senderos, Cumbres y Balnearios Naturales

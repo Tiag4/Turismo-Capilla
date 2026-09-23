@@ -17,6 +17,7 @@ export const AttractionsCatalogContainer: React.FC = () => {
     setSortBy,
     filteredAttractions,
     totalCount,
+    isLoading,
     resetFilters,
   } = useAttractionsFilter();
 
@@ -27,6 +28,7 @@ export const AttractionsCatalogContainer: React.FC = () => {
         search={search}
         onSearchChange={setSearch}
         totalCount={totalCount}
+        isLoading={isLoading}
       />
 
       {/* Barra de Filtros por Categoría, Dificultad y Orden */}
@@ -38,10 +40,17 @@ export const AttractionsCatalogContainer: React.FC = () => {
         sortBy={sortBy}
         onSortChange={setSortBy}
         totalCount={totalCount}
+        isLoading={isLoading}
       />
 
       {/* Grilla Responsive de Atractivos y Senderos (Mobile 1 col, Tablet 2 col, Desktop 3 col) */}
-      {totalCount > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="h-96 rounded-2xl bg-sand-200/50 animate-pulse border border-sand-200" />
+          ))}
+        </div>
+      ) : totalCount > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
           {filteredAttractions.map((item) => (
             <AttractionCard key={item.id} item={item} />

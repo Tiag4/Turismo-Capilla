@@ -9,6 +9,7 @@ interface AttractionsFilterBarProps {
   sortBy: 'popular' | 'cercania' | 'dificultad';
   onSortChange: (s: 'popular' | 'cercania' | 'dificultad') => void;
   totalCount: number;
+  isLoading?: boolean;
 }
 
 const CATEGORIES: { id: AttractionCategory; label: string }[] = [
@@ -36,6 +37,7 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
   sortBy,
   onSortChange,
   totalCount,
+  isLoading = false,
 }) => {
   return (
     <div className="space-y-4">
@@ -93,7 +95,16 @@ export const AttractionsFilterBar: React.FC<AttractionsFilterBarProps> = ({
 
         <div className="flex items-center gap-3">
           <span className="text-xs text-sand-600 font-medium">
-            <strong>{totalCount}</strong> atractivos
+            {isLoading ? (
+              <span className="inline-flex items-center gap-1.5 text-sand-500 font-semibold animate-pulse">
+                <span className="w-1.5 h-1.5 rounded-full bg-uritorco-600 animate-ping" />
+                Explorando circuitos...
+              </span>
+            ) : (
+              <>
+                <strong>{totalCount}</strong> atractivos
+              </>
+            )}
           </span>
           <div className="flex items-center gap-2 text-xs font-semibold text-sand-700">
             <label htmlFor="sort-attractions" className="text-sand-500 font-normal">

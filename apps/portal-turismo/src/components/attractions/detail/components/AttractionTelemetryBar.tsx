@@ -11,7 +11,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
   isTrekking = false,
 }) => {
   return (
-    <div className="bg-white rounded-2xl border border-sand-200/90 p-5 sm:p-6 shadow-xs space-y-4">
+    <div className="space-y-4 pb-6 border-b border-sand-200/80">
       <h3 className="font-display font-black text-base text-sand-950 flex items-center gap-2">
         <svg className="w-4 h-4 text-terracotta-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -23,7 +23,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
       <div className="grid grid-cols-2 gap-3 pt-1">
         {isTrekking ? (
           <>
-            <div className="border-b border-sand-100 pb-2.5">
+            <div className="border-b border-sand-200/80 pb-2.5">
               <span className="text-[10px] font-bold text-sand-600 uppercase tracking-wider block">
                 Desnivel Positivo
               </span>
@@ -32,7 +32,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
               </span>
             </div>
 
-            <div className="border-b border-sand-100 pb-2.5">
+            <div className="border-b border-sand-200/80 pb-2.5">
               <span className="text-[10px] font-bold text-sand-600 uppercase tracking-wider block">
                 Cota Máxima
               </span>
@@ -43,7 +43,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
           </>
         ) : (
           <>
-            <div className="border-b border-sand-100 pb-2.5">
+            <div className="border-b border-sand-200/80 pb-2.5">
               <span className="text-[10px] font-bold text-sand-600 uppercase tracking-wider block">
                 Modalidad
               </span>
@@ -52,7 +52,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
               </span>
             </div>
 
-            <div className="border-b border-sand-100 pb-2.5">
+            <div className="border-b border-sand-200/80 pb-2.5">
               <span className="text-[10px] font-bold text-sand-600 uppercase tracking-wider block">
                 Guía Requerido
               </span>
@@ -83,7 +83,7 @@ export const AttractionTelemetryBar: React.FC<AttractionTelemetryBarProps> = ({
       </div>
 
       {specs.terrainType && (
-        <div className="pt-3 border-t border-sand-100 text-xs text-sand-700 flex items-start gap-2">
+        <div className="pt-3 border-t border-sand-200/80 text-xs text-sand-700 flex items-start gap-2">
           <span className="font-bold text-sand-900 shrink-0">Terreno:</span>
           <span>{specs.terrainType}</span>
         </div>

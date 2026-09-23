@@ -9,8 +9,8 @@ export function useAttractionsFilter() {
   const [category, setCategory] = useState<AttractionCategory>('todos');
   const [difficulty, setDifficulty] = useState<'todos' | AttractionDifficulty>('todos');
   const [sortBy, setSortBy] = useState<'popular' | 'cercania' | 'dificultad'>('popular');
-  const [attractions, setAttractions] = useState<AttractionItem[]>(() => ATTRACTIONS_DATA);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [attractions, setAttractions] = useState<AttractionItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Sync initial query params from URL if present
   useEffect(() => {
@@ -32,19 +32,26 @@ export function useAttractionsFilter() {
     }
   }, []);
 
-  // Fetch real attractions from backend API with transparent fallback to local data
+  // Fetch real attractions from backend API with transparent fallback to local data only when needed
   useEffect(() => {
     let isCancelled = false;
     async function loadApiAttractions() {
       try {
         setIsLoading(true);
         const data = await api.getAttractions();
-        if (!isCancelled && Array.isArray(data) && data.length > 0) {
-          const mapped = mapApiToAttractionList(data);
-          setAttractions(mapped);
+        if (!isCancelled) {
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped = mapApiToAttractionList(data);
+            setAttractions(mapped);
+          } else {
+            setAttractions(ATTRACTIONS_DATA);
+          }
         }
       } catch {
         // Fallback transparent to local data on offline / server cold boot
+        if (!isCancelled) {
+          setAttractions(ATTRACTIONS_DATA);
+        }
       } finally {
         if (!isCancelled) {
           setIsLoading(false);

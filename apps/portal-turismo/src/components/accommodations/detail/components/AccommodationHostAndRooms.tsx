@@ -10,7 +10,7 @@ export const AccommodationHostAndRooms: React.FC<AccommodationHostAndRoomsProps>
   return (
     <div className="space-y-8">
       {/* Tarjeta del Anfitrión / Prestador Habilitado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white border border-stone-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-sand-50 border border-sand-200">
         <div className="flex items-center gap-4">
           <img
             src={data.host.avatarUrl}
@@ -65,7 +65,7 @@ export const AccommodationHostAndRooms: React.FC<AccommodationHostAndRoomsProps>
           {data.bedrooms.map((room, idx) => (
             <div
               key={room.name + idx}
-              className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-2"
+              className="p-5 rounded-2xl bg-sand-50 border border-sand-300/80 space-y-2"
             >
               <div className="flex items-center gap-2 text-terracotta-600">
                 <Bed className="w-5 h-5" />

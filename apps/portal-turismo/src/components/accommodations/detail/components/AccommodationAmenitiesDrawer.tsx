@@ -1,7 +1,58 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Check } from 'lucide-react';
+import {
+  X,
+  Wifi,
+  Car,
+  Coffee,
+  UtensilsCrossed,
+  Waves,
+  Wind,
+  Flame,
+  Trees,
+  Mountain,
+  Tv,
+  ShieldCheck,
+  Footprints,
+  DoorOpen,
+  Briefcase,
+  Fish,
+  Gamepad2,
+  Luggage,
+  Check,
+  Sparkles,
+} from 'lucide-react';
 import { ACCOMMODATION_SERVICES_CATALOG } from '../data/accommodation-services';
+
+function getAmenityIcon(itemName: string, categoryIcon: string) {
+  const lower = itemName.toLowerCase();
+  if (lower.includes('wi-fi') || lower.includes('internet')) return Wifi;
+  if (lower.includes('parking') || lower.includes('cochera') || lower.includes('aparcamiento')) return Car;
+  if (lower.includes('cafetería') || lower.includes('bar') || lower.includes('café')) return Coffee;
+  if (lower.includes('restaurante') || lower.includes('buffet') || lower.includes('menú') || lower.includes('cocina')) return UtensilsCrossed;
+  if (lower.includes('piscina') || lower.includes('pileta')) return Waves;
+  if (lower.includes('aire') || lower.includes('clima')) return Wind;
+  if (lower.includes('calefacción') || lower.includes('fuego') || lower.includes('leña') || lower.includes('asador')) return Flame;
+  if (lower.includes('terraza') || lower.includes('jardín') || lower.includes('parque')) return Trees;
+  if (lower.includes('senderismo') || lower.includes('trekking') || lower.includes('paseo')) return Footprints;
+  if (lower.includes('pesca')) return Fish;
+  if (lower.includes('sala de juegos')) return Gamepad2;
+  if (lower.includes('tv') || lower.includes('televisión')) return Tv;
+  if (lower.includes('seguridad') || lower.includes('cámara') || lower.includes('extintor') || lower.includes('detector') || lower.includes('llave') || lower.includes('caja fuerte')) return ShieldCheck;
+  if (lower.includes('equipaje') || lower.includes('maleta')) return Luggage;
+  if (lower.includes('reuniones') || lower.includes('negocios')) return Briefcase;
+  if (lower.includes('habitación') || lower.includes('silla de ruedas') || lower.includes('acceso')) return DoorOpen;
+  if (lower.includes('limpieza') || lower.includes('lavandería')) return Sparkles;
+  
+  if (categoryIcon === 'mountain') return Mountain;
+  if (categoryIcon === 'trees') return Trees;
+  if (categoryIcon === 'coffee') return Coffee;
+  if (categoryIcon === 'car') return Car;
+  if (categoryIcon === 'wifi') return Wifi;
+  if (categoryIcon === 'waves') return Waves;
+  if (categoryIcon === 'shield') return ShieldCheck;
+  return Check;
+}
 
 interface AccommodationAmenitiesDrawerProps {
   isOpen: boolean;
@@ -91,9 +142,11 @@ export const AccommodationAmenitiesDrawer: React.FC<AccommodationAmenitiesDrawer
                 {group.category}
               </h4>
               <ul className="space-y-1 text-xs">
-                {group.items.map((item) => (
-                  <li key={item.name} className="py-2 px-2.5 rounded-lg hover:bg-stone-50 transition-colors flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
+                {group.items.map((item) => {
+                  const Icon = getAmenityIcon(item.name, group.iconName);
+                  return (
+                    <li key={item.name} className="py-2 px-2.5 rounded-lg hover:bg-stone-100/50 transition-colors flex items-start gap-2.5">
+                      <Icon className="w-4 h-4 text-uritorco-700 mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-semibold text-stone-900 text-xs sm:text-sm">{item.name}</span>
@@ -110,7 +163,8 @@ export const AccommodationAmenitiesDrawer: React.FC<AccommodationAmenitiesDrawer
                       )}
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </section>
           ))}

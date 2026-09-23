@@ -9,6 +9,7 @@
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
     "dev:portal": "pnpm --filter portal-turismo dev",
+    "dev:dashboard": "pnpm --filter portal-turismo exec vite apps/dashboard --port 5174",
     "dev:frontend": "pnpm --filter portal-turismo dev"
   },
   "packageManager": "pnpm@11.23.0"

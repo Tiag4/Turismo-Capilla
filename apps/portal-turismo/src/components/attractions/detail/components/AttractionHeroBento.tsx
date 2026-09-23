@@ -21,6 +21,7 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
   };
 
   const isUrban = !item.isTrekking && item.category === 'cultura';
+  const isCasonasHeritage = item.slug === 'casonas' || item.slug === 'calle-techada' || item.id === 'att-8';
 
   return (
     <div className="space-y-5">
@@ -36,17 +37,21 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
       {/* Cabecera Editorial con Badges 100% Sólidos (Cero Pasteles Vibecoded) */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-sand-900 text-white">
-            {item.categoryLabel}
-          </span>
-          {!isUrban ? (
-            <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${difficultyColors[item.difficulty]}`}>
-              Dificultad {item.difficulty}
-            </span>
-          ) : (
-            <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-uritorco-700 text-white">
-              Paseo Peatonal Libre
-            </span>
+          {!isCasonasHeritage && (
+            <>
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-sand-900 text-white">
+                {item.categoryLabel}
+              </span>
+              {!isUrban ? (
+                <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${difficultyColors[item.difficulty]}`}>
+                  Dificultad {item.difficulty}
+                </span>
+              ) : (
+                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-uritorco-700 text-white">
+                  Paseo Peatonal Libre
+                </span>
+              )}
+            </>
           )}
           <span className="text-xs text-sand-700 font-bold flex items-center gap-1 ml-1">
             <svg className="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 20 20">

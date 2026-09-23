@@ -29,12 +29,21 @@ export const FinalCtaSection: React.FC = () => {
             <span>Explorar ahora</span>
             <span>→</span>
           </Link>
-          <a
-            href="/#mapa-valle"
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('mapa-valle');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+              if (window.location.hash !== '#mapa-valle') {
+                window.history.pushState(null, '', '/#mapa-valle');
+              }
+            }}
             className="w-full sm:w-auto inline-flex items-center justify-center px-9 py-4 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-bold text-base tracking-wide transition-colors border border-white/30 text-center cursor-pointer"
           >
             Ver el mapa
-          </a>
+          </button>
         </div>
       </div>
     </section>

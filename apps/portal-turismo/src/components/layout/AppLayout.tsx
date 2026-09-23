@@ -8,6 +8,19 @@ export const AppLayout: React.FC = () => {
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
+  const handleMapaClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      const el = document.getElementById('mapa-valle');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (window.location.hash !== '#mapa-valle') {
+        window.history.pushState(null, '', '/#mapa-valle');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
       {/* Navbar Oficial Bespoke */}
@@ -58,27 +71,12 @@ export const AppLayout: React.FC = () => {
             >
               Senderos & Paseos
             </Link>
-            <a
-              href="/#mapa-valle"
+            <Link
+              to="/#mapa-valle"
+              onClick={handleMapaClick}
               className="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
             >
               Mapa del Valle
-            </a>
-            <Link
-              to="/atractivos/casonas"
-              className="text-sm font-semibold text-sand-700 hover:text-primary-600 transition-colors"
-            >
-              Patrimonio
-            </Link>
-            <Link
-              to="/astroturismo"
-              className={`text-sm font-semibold transition-colors ${
-                location.pathname === '/astroturismo'
-                  ? 'text-primary-600'
-                  : 'text-sand-700 hover:text-primary-600'
-              }`}
-            >
-              Astroturismo
             </Link>
             <Link
               to="/reservas/consulta"
@@ -128,14 +126,15 @@ export const AppLayout: React.FC = () => {
             <Link to="/atractivos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Senderos & Paseos
             </Link>
-            <a href="/#mapa-valle" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
+            <Link
+              to="/#mapa-valle"
+              onClick={(e) => {
+                closeMobileMenu();
+                handleMapaClick(e);
+              }}
+              className="block text-sm font-semibold text-sand-700 py-1.5"
+            >
               Mapa del Valle
-            </a>
-            <Link to="/atractivos/casonas" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
-              Patrimonio
-            </Link>
-            <Link to="/astroturismo" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
-              Astroturismo
             </Link>
             <Link to="/reservas/consulta" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Mi Reserva
@@ -175,16 +174,6 @@ export const AppLayout: React.FC = () => {
             <p className="text-sm text-sand-300 max-w-md leading-relaxed">
               Plataforma oficial desarrollada en conjunto con la Comisión de Turismo de Capilla del Monte. Información verificada de circuitos serranos y reservas directas con prestadores habilitados oficialmente, sin comisiones ocultas.
             </p>
-            <div className="pt-2 flex items-center gap-4 text-xs text-sand-400">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-uritorco-500"></span>
-                <span>Prestadores Habilitados</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary-500"></span>
-                <span>Tarifa Transparente</span>
-              </span>
-            </div>
           </div>
 
           <div>
@@ -219,9 +208,16 @@ export const AppLayout: React.FC = () => {
               Experiencias
             </h4>
             <ul className="space-y-2.5 text-sm text-sand-300">
-              <li><Link to="/astroturismo" className="hover:text-primary-400 transition-colors">Astroturismo Bortle 3</Link></li>
               <li><Link to="/atractivos/uritorco" className="hover:text-primary-400 transition-colors">Ascenso nocturno</Link></li>
-              <li><a href="/#mapa-valle" className="hover:text-primary-400 transition-colors">Mapa interactivo</a></li>
+              <li>
+                <Link
+                  to="/#mapa-valle"
+                  onClick={handleMapaClick}
+                  className="hover:text-primary-400 transition-colors"
+                >
+                  Mapa interactivo
+                </Link>
+              </li>
               <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Guías habilitados</Link></li>
             </ul>
           </div>
@@ -243,7 +239,6 @@ export const AppLayout: React.FC = () => {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 mt-12 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-sand-400 gap-4">
           <span>© 2026 Comisión de Turismo de Capilla del Monte. Todos los derechos reservados.</span>
           <div className="flex items-center gap-6">
-            <Link to="/astroturismo" className="hover:text-sand-300 transition-colors">Astroturismo</Link>
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
             <span>Programación III — Cátedra Universitaria</span>

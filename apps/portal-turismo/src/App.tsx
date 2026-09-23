@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 import { HomePage } from './pages/HomePage';
 import { AccommodationsPage } from './pages/AccommodationsPage';
 import { AccommodationDetailPage } from './pages/AccommodationDetailPage';
@@ -13,6 +14,7 @@ import { AccommodationBookingWizardPage } from './pages/AccommodationBookingWiza
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />

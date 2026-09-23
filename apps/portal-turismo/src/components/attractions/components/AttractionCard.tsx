@@ -7,7 +7,7 @@ interface AttractionCardProps {
 
 export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
   const getDifficultyBadge = (diff: AttractionItem['difficulty'], isTrekking: boolean) => {
-    if (!isTrekking && item.category === 'cultura') {
+    if (!isTrekking && (item.category === 'cultura' || item.category === 'nocturno')) {
       return 'bg-sand-900 text-white';
     }
     switch (diff) {
@@ -24,6 +24,8 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
 
   const badgeText = (!item.isTrekking && item.category === 'cultura')
     ? 'Paseo Peatonal'
+    : (!item.isTrekking && item.category === 'nocturno')
+    ? 'Paseo Nocturno'
     : `Dificultad ${item.difficulty}`;
 
   return (

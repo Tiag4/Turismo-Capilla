@@ -1,0 +1,12 @@
+{
+  "name": "dashboard",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "preview": "vite preview --port 5174"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}

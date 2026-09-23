@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from './hooks/useAuth.ts';
 import type { UserRole } from './types/auth.types.ts';
 import { LoginForm } from './components/auth/LoginForm.tsx';
@@ -16,9 +16,11 @@ import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
 
+import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
+
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
-  const [currentTab, setCurrentTab] = useState<DashboardTab>('overview');
+  const { currentTab, setCurrentTab } = useDashboardRouter(user?.role ?? 'HOST');
 
   if (!isAuthenticated || !user) {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;

@@ -4,7 +4,8 @@ export type AttractionCategory =
   | 'balneario'
   | 'rocas'
   | 'mirador'
-  | 'cultura';
+  | 'cultura'
+  | 'nocturno';
 
 export type AttractionDifficulty = 'Baja' | 'Media' | 'Alta';
 

@@ -70,10 +70,17 @@ export const api = {
     return res.json();
   },
 
-  async getAttractions(params?: { category?: string; search?: string }): Promise<Attraction[]> {
+  async getAttractions(params?: {
+    category?: string;
+    search?: string;
+    difficulty?: string;
+    requiresGuide?: boolean;
+  }): Promise<Attraction[]> {
     const query = new URLSearchParams();
     if (params?.category) query.set('category', params.category);
     if (params?.search) query.set('search', params.search);
+    if (params?.difficulty) query.set('difficulty', params.difficulty);
+    if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
 
     const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
     const res = await fetch(url);

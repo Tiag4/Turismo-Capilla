@@ -1,15 +1,65 @@
-import { useState, useMemo, useCallback } from 'react';
-import type { AttractionCategory, AttractionDifficulty } from '../types';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import type { AttractionCategory, AttractionDifficulty, AttractionItem } from '../types';
 import { ATTRACTIONS_DATA } from '../data/attractions-data';
+import { api } from '../../../services/api';
+import { mapApiToAttractionList } from '../mappers/attractionMapper';
 
 export function useAttractionsFilter() {
   const [search, setSearch] = useState<string>('');
   const [category, setCategory] = useState<AttractionCategory>('todos');
   const [difficulty, setDifficulty] = useState<'todos' | AttractionDifficulty>('todos');
   const [sortBy, setSortBy] = useState<'popular' | 'cercania' | 'dificultad'>('popular');
+  const [attractions, setAttractions] = useState<AttractionItem[]>(() => ATTRACTIONS_DATA);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Sync initial query params from URL if present
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const qCat = params.get('category') as AttractionCategory | null;
+    const qSearch = params.get('q') || params.get('search');
+    const qDiff = params.get('difficulty') as ('todos' | AttractionDifficulty) | null;
+
+    if (qSearch) setSearch(qSearch);
+    if (
+      qCat &&
+      ['todos', 'trekking', 'balneario', 'rocas', 'mirador', 'cultura', 'nocturno'].includes(qCat)
+    ) {
+      setCategory(qCat);
+    }
+    if (qDiff && ['todos', 'Baja', 'Media', 'Alta'].includes(qDiff)) {
+      setDifficulty(qDiff);
+    }
+  }, []);
+
+  // Fetch real attractions from backend API with transparent fallback to local data
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadApiAttractions() {
+      try {
+        setIsLoading(true);
+        const data = await api.getAttractions();
+        if (!isCancelled && Array.isArray(data) && data.length > 0) {
+          const mapped = mapApiToAttractionList(data);
+          setAttractions(mapped);
+        }
+      } catch {
+        // Fallback transparent to local data on offline / server cold boot
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadApiAttractions();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const filteredAttractions = useMemo(() => {
-    let list = [...ATTRACTIONS_DATA];
+    let list = [...attractions];
 
     // Category filter
     if (category !== 'todos') {
@@ -53,7 +103,7 @@ export function useAttractionsFilter() {
     });
 
     return list;
-  }, [search, category, difficulty, sortBy]);
+  }, [attractions, search, category, difficulty, sortBy]);
 
   const resetFilters = useCallback(() => {
     setSearch('');
@@ -73,7 +123,8 @@ export function useAttractionsFilter() {
     setSortBy,
     filteredAttractions,
     totalCount: filteredAttractions.length,
-    allCount: ATTRACTIONS_DATA.length,
+    allCount: attractions.length,
+    isLoading,
     resetFilters,
   };
 }

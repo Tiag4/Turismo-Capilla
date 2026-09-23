@@ -18,6 +18,7 @@ const CATEGORIES: { id: AttractionCategory; label: string }[] = [
   { id: 'rocas', label: 'Formaciones Rocosas' },
   { id: 'mirador', label: 'Miradores' },
   { id: 'cultura', label: 'Patrimonio Cultural' },
+  { id: 'nocturno', label: 'Paseos Nocturnos' },
 ];
 
 const DIFFICULTIES: { id: 'todos' | AttractionDifficulty; label: string }[] = [

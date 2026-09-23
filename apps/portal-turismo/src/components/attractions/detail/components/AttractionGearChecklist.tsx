@@ -15,10 +15,10 @@ export const AttractionGearChecklist: React.FC<AttractionGearChecklistProps> = (
   const totalCount = recommendedGear.length;
 
   return (
-    <div className="bg-white rounded-2xl border border-sand-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-      <div className="flex items-center justify-between border-b border-sand-100 pb-3">
+    <section className="space-y-4 pt-8 border-t border-sand-200/80">
+      <div className="flex items-center justify-between border-b border-sand-200/80 pb-3">
         <div>
-          <h3 className="font-display font-black text-lg text-sand-950">
+          <h3 className="font-display font-black text-xl text-sand-950">
             Checklist de Mochila & Equipamiento
           </h3>
           <p className="text-xs text-sand-600">
@@ -30,7 +30,7 @@ export const AttractionGearChecklist: React.FC<AttractionGearChecklistProps> = (
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
         {recommendedGear.map((gear, idx) => {
           const isChecked = !!checkedItems[idx];
           return (
@@ -38,8 +38,8 @@ export const AttractionGearChecklist: React.FC<AttractionGearChecklistProps> = (
               key={idx}
               className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer text-xs sm:text-sm select-none ${
                 isChecked
-                  ? 'bg-sand-100 border-sand-300 text-sand-500 font-normal line-through'
-                  : 'bg-white border-sand-200 text-sand-900 font-semibold hover:bg-sand-50'
+                  ? 'bg-sand-200/50 border-sand-300 text-sand-400 font-normal line-through'
+                  : 'bg-sand-100/50 border-sand-200/90 text-sand-900 font-semibold hover:bg-sand-100'
               }`}
             >
               <input
@@ -53,6 +53,6 @@ export const AttractionGearChecklist: React.FC<AttractionGearChecklistProps> = (
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

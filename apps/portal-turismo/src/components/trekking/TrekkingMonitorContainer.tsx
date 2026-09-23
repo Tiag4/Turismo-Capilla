@@ -20,14 +20,10 @@ export const TrekkingMonitorContainer: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Controles de Ritmo y Telemetría en Tiempo Real */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        <div className="lg:col-span-1">
-          <PaceSelector selectedPace={pace} onSelectPace={setPace} />
-        </div>
-        <div className="lg:col-span-2">
-          <TelemetryPanel telemetry={telemetry} />
-        </div>
+      {/* Controles de Ritmo y Telemetría en Tiempo Real (Vertical para dar ancho completo) */}
+      <div className="space-y-5">
+        <PaceSelector selectedPace={pace} onSelectPace={setPace} />
+        <TelemetryPanel telemetry={telemetry} />
       </div>
 
       {/* Gráfico de Perfil Altimétrico Interactivo */}

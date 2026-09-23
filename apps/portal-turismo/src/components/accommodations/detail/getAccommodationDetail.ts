@@ -22,7 +22,7 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
     host: {
       name: `${place.title} — Anfitrión Verificado`,
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-      badgeText: `Habilitación Municipal N° ${place.id.replace('acc-', '14')}/2024`,
+      badgeText: `Habilitación Municipal N° HAB-${(place.id.replace(/\D/g, '').slice(-4) || place.id.replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase() || '1420')}/2024`,
       responseTime: 'Responde en menos de 2 horas',
       yearsHosting: 5,
       verified: true,

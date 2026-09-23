@@ -22,10 +22,10 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Columna Izquierda: Descripción, Altimetría Interactiva, Protocolo y Equipo */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Descripción General y Destacados sin puntitos naranjas (Anti-Vibecoded) */}
-          <section className="bg-white rounded-2xl border border-sand-200/90 p-6 sm:p-8 shadow-xs space-y-5">
+          {/* Descripción General y Destacados sin cajas rígidas */}
+          <section className="space-y-4">
             <div>
-              <h2 className="font-display font-black text-2xl text-sand-950 mb-3">
+              <h2 className="font-display font-black text-2xl text-sand-950 mb-2">
                 Acerca de este atractivo
               </h2>
               <p className="text-sand-700 leading-relaxed text-base">
@@ -34,8 +34,8 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
             </div>
 
             {item.highlights && item.highlights.length > 0 && (
-              <div className="pt-4 border-t border-sand-100 space-y-3">
-                <h3 className="font-display font-black text-base text-sand-950">
+              <div className="pt-4 border-t border-sand-200/80 space-y-3">
+                <h3 className="font-display font-black text-sm uppercase tracking-wider text-sand-950">
                   Puntos destacados del recorrido
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -52,13 +52,13 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
 
           {/* Monitor Altimétrico Interactivo para Senderos de Trekking */}
           {item.isTrekking && (
-            <section className="bg-white rounded-2xl border border-sand-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-              <div className="border-b border-sand-100 pb-4">
+            <section className="space-y-6 pt-8 border-t border-sand-200/80">
+              <div>
                 <h2 className="font-display font-black text-2xl text-sand-950">
                   Perfil Altimétrico & Telemetría en Vivo
                 </h2>
-                <p className="text-xs sm:text-sm text-sand-600">
-                  Ajustá tu ritmo estimado y hacé clic sobre el trazado o las postas para consultar tiempos, pendiente y recomendaciones de cada tramo.
+                <p className="text-xs sm:text-sm text-sand-600 mt-1 leading-relaxed">
+                  Ajustá tu ritmo estimado y deslizá el cursor o tocá las postas para consultar tiempos, pendiente y recomendaciones de cada tramo.
                 </p>
               </div>
               <TrekkingMonitorContainer />

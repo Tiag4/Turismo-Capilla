@@ -54,10 +54,8 @@ export function useAccommodationsFilter() {
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('2');
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [places, setPlaces] = useState<MapPlace[]>(() =>
-    MOCK_PLACES.filter((p) => p.type === 'accommodation')
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [places, setPlaces] = useState<MapPlace[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Sync initial state from URL query parameters safely
   useEffect(() => {
@@ -86,19 +84,26 @@ export function useAccommodationsFilter() {
     if (initialAmenities.length > 0) setSelectedAmenities(initialAmenities);
   }, []);
 
-  // Fetch real data from backend API with transparent fallback to mock data
+  // Fetch real data from backend API with transparent fallback to mock data only if needed
   useEffect(() => {
     let isCancelled = false;
     async function loadApiAccommodations() {
       try {
         setIsLoading(true);
         const data = await api.getAccommodations();
-        if (!isCancelled && Array.isArray(data) && data.length > 0) {
-          const mapped = data.map(mapApiToPlace);
-          setPlaces(mapped);
+        if (!isCancelled) {
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped = data.map(mapApiToPlace);
+            setPlaces(mapped);
+          } else {
+            setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
+          }
         }
       } catch {
-        // Fallback to MOCK_PLACES silently when backend is unreachable
+        // Fallback to MOCK_PLACES silently when backend is unreachable or errors
+        if (!isCancelled) {
+          setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
+        }
       } finally {
         if (!isCancelled) setIsLoading(false);
       }

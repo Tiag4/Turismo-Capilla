@@ -14,10 +14,10 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
   const secondaryImg1 = images[1] || mainImg;
   const secondaryImg2 = images[2] || mainImg;
 
-  const difficultyColors: Record<AttractionItem['difficulty'], string> = {
-    Alta: 'bg-terracotta-600 text-white',
-    Media: 'bg-amber-600 text-white',
-    Baja: 'bg-uritorco-700 text-white',
+  const difficultyTextColors: Record<AttractionItem['difficulty'], string> = {
+    Alta: 'text-terracotta-600',
+    Media: 'text-amber-700',
+    Baja: 'text-uritorco-700',
   };
 
   const isUrban = !item.isTrekking && item.category === 'cultura';
@@ -34,7 +34,7 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
         <span className="text-sand-950 font-bold">{item.title}</span>
       </nav>
 
-      {/* Cabecera Editorial con Badges 100% Sólidos (Cero Pasteles Vibecoded) */}
+      {/* Cabecera Editorial Limpia */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           {!isCasonasHeritage && (
@@ -42,13 +42,9 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
               <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-sand-900 text-white">
                 {item.categoryLabel}
               </span>
-              {!isUrban ? (
-                <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${difficultyColors[item.difficulty]}`}>
-                  Dificultad {item.difficulty}
-                </span>
-              ) : (
-                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-uritorco-700 text-white">
-                  Paseo Peatonal Libre
+              {!isUrban && (
+                <span className={`text-xs font-extrabold uppercase tracking-wider ${difficultyTextColors[item.difficulty]}`}>
+                  · Dificultad {item.difficulty}
                 </span>
               )}
             </>

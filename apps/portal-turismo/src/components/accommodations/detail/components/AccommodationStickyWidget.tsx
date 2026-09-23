@@ -34,10 +34,10 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
 
   return (
     <aside className="md:sticky md:top-24 w-full bg-white rounded-2xl border border-stone-200 shadow-md p-6 space-y-4">
-      {/* Tarifa / Price per night */}
+      {/* Tarifa / Precio por noche */}
       <div className="space-y-0.5">
         <span className="text-xs font-medium text-stone-500 block">
-          Price per night
+          Precio por noche
         </span>
         <div className="font-display font-extrabold text-3xl text-stone-900 tracking-tight">
           ${price.toLocaleString('es-AR')} ARS
@@ -46,24 +46,24 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
 
       {/* Selectores de Fechas y Ocupación */}
       <div className="space-y-3 pt-1">
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5 items-stretch">
           <CustomDatePicker
-            label="Arrival Date"
+            label="Llegada"
             value={checkIn}
             onChange={(d) => {
               setCheckIn(d);
               if (checkOut && d >= checkOut) setCheckOut('');
             }}
             minDate={todayStr}
-            placeholder="Arrival"
+            placeholder="Llegada"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
           <CustomDatePicker
-            label="Departure Date"
+            label="Salida"
             value={checkOut}
             onChange={setCheckOut}
             minDate={checkIn || todayStr}
-            placeholder="Departure"
+            placeholder="Salida"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
         </div>
@@ -79,12 +79,12 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
       {nightsCount && totalPrice ? (
         <div className="space-y-1.5 pt-2 border-t border-stone-100 text-xs">
           <div className="flex justify-between text-stone-600">
-            <span>${price.toLocaleString('es-AR')} × {nightsCount} nights</span>
+            <span>${price.toLocaleString('es-AR')} × {nightsCount} {nightsCount === 1 ? 'noche' : 'noches'}</span>
             <span className="font-bold text-stone-900">${totalPrice.toLocaleString('es-AR')}</span>
           </div>
           {depositRequired && (
             <div className="flex justify-between text-stone-600">
-              <span>Deposit ({data.depositPercent}%)</span>
+              <span>Seña ({data.depositPercent}%)</span>
               <span className="font-bold text-terracotta-700">${depositRequired.toLocaleString('es-AR')}</span>
             </div>
           )}

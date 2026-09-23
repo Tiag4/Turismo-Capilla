@@ -6,27 +6,18 @@ interface AttractionCardProps {
 }
 
 export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
-  const getDifficultyBadge = (diff: AttractionItem['difficulty'], isTrekking: boolean) => {
-    if (!isTrekking && (item.category === 'cultura' || item.category === 'nocturno')) {
-      return 'bg-sand-900 text-white';
-    }
+  const getDifficultyColor = (diff: AttractionItem['difficulty']) => {
     switch (diff) {
       case 'Alta':
-        return 'bg-terracotta-600 text-white';
+        return 'text-terracotta-600';
       case 'Media':
-        return 'bg-amber-600 text-white';
+        return 'text-amber-700';
       case 'Baja':
-        return 'bg-uritorco-700 text-white';
+        return 'text-uritorco-700';
       default:
-        return 'bg-sand-900 text-white';
+        return 'text-sand-700';
     }
   };
-
-  const badgeText = (!item.isTrekking && item.category === 'cultura')
-    ? 'Paseo Peatonal'
-    : (!item.isTrekking && item.category === 'nocturno')
-    ? 'Paseo Nocturno'
-    : `Dificultad ${item.difficulty}`;
 
   return (
     <article className="group flex flex-col bg-white rounded-2xl border border-sand-200/90 overflow-hidden shadow-xs hover:border-sand-400 hover:shadow-md transition-all duration-200">
@@ -38,27 +29,26 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {/* Único badge 100% sólido y de alto contraste */}
-        <div className="absolute top-3 left-3">
-          <span
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider ${getDifficultyBadge(
-              item.difficulty,
-              item.isTrekking,
-            )}`}
-          >
-            {badgeText}
-          </span>
-        </div>
       </a>
 
       {/* Contenido Editorial de la Ficha */}
       <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
         <div className="space-y-2">
-          {/* Metadatos Superiores: Categoría, Distancia y Calificación */}
+          {/* Metadatos Superiores: Categoría, Distancia, Dificultad Resaltada y Calificación */}
           <div className="flex items-center justify-between gap-2 text-xs">
-            <span className="font-bold text-uritorco-700 uppercase tracking-wider text-[11px]">
-              {item.categoryLabel} · {item.distanceFromCenter}
-            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-bold text-sand-800 uppercase tracking-wider text-[11px]">
+                {item.categoryLabel} · {item.distanceFromCenter}
+              </span>
+              {item.isTrekking && item.difficulty && (
+                <>
+                  <span className="text-sand-400 font-bold">·</span>
+                  <span className={`font-extrabold uppercase tracking-wider text-[11px] ${getDifficultyColor(item.difficulty)}`}>
+                    Dificultad {item.difficulty}
+                  </span>
+                </>
+              )}
+            </div>
             <div className="flex items-center gap-1 font-bold text-sand-900">
               <svg className="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />

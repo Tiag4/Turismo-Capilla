@@ -35,9 +35,9 @@ export const AccommodationCenterCol: React.FC<AccommodationCenterColProps> = ({
         </div>
       )}
 
-      {/* Clean Amenities con grilla fija de 4 columnas */}
+      {/* Servicios destacados con grilla fija de 4 columnas */}
       <div className="space-y-4 pt-1">
-        <h3 className="font-display font-bold text-base text-stone-900">Clean Amenities</h3>
+        <h3 className="font-display font-bold text-base text-stone-900">Servicios destacados</h3>
         <div
           className="gap-y-4 gap-x-2 text-center"
           style={{
@@ -49,56 +49,56 @@ export const AccommodationCenterCol: React.FC<AccommodationCenterColProps> = ({
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <Wifi className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Free Wi-Fi</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Wi-Fi gratis</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <UtensilsCrossed className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Kitchen / BBQ</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Cocina / Asador</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <Bath className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Private Bath</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Baño privado</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <CircleParking className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Free Parking</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Cochera gratis</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <BedDouble className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Bedroom / Rooms</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Dormitorios</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <Sofa className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Living / Fireplace</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Living / Hogar</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <Mountain className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Scenic Views</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Vistas serranas</span>
           </div>
 
           <div className="flex flex-col items-center group">
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 mb-1 group-hover:bg-terracotta-50 group-hover:text-terracotta-700 transition-colors">
               <ShieldCheck className="w-5 h-5" strokeWidth={1.8} />
             </div>
-            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Private Access</span>
+            <span className="text-[11px] font-semibold text-stone-800 leading-tight">Acceso privado</span>
           </div>
         </div>
 

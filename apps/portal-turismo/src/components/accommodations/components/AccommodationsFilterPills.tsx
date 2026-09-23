@@ -9,6 +9,7 @@ interface AccommodationsFilterPillsProps {
   sortOption: SortOption;
   onSortChange: (sort: SortOption) => void;
   totalCount: number;
+  isLoading?: boolean;
 }
 
 interface AmenityPillItem {
@@ -38,6 +39,7 @@ export const AccommodationsFilterPills: React.FC<AccommodationsFilterPillsProps>
   sortOption,
   onSortChange,
   totalCount,
+  isLoading = false,
 }) => {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-stone-200/80">
@@ -71,8 +73,17 @@ export const AccommodationsFilterPills: React.FC<AccommodationsFilterPillsProps>
       {/* Contador y Ordenamiento */}
       <div className="flex items-center justify-between md:justify-end gap-4 shrink-0">
         <span className="text-xs font-bold text-stone-500">
-          <strong className="text-stone-900 font-extrabold">{totalCount}</strong>{' '}
-          {totalCount === 1 ? 'alojamiento disponible' : 'alojamientos disponibles'}
+          {isLoading ? (
+            <span className="inline-flex items-center gap-1.5 text-stone-400 font-semibold animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-terracotta-500 animate-ping" />
+              Buscando alojamientos...
+            </span>
+          ) : (
+            <>
+              <strong className="text-stone-900 font-extrabold">{totalCount}</strong>{' '}
+              {totalCount === 1 ? 'alojamiento disponible' : 'alojamientos disponibles'}
+            </>
+          )}
         </span>
 
         <div className="w-44">

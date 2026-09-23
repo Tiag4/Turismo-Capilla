@@ -20,7 +20,7 @@ export const AccommodationRulesPolicies: React.FC<AccommodationRulesPoliciesProp
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Horarios de Ingreso / Egreso */}
-        <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-2">
+        <div className="p-4 rounded-2xl bg-sand-50 border border-sand-300/80 space-y-2">
           <div className="flex items-center gap-2 text-terracotta-600">
             <Clock className="w-4 h-4" />
             <h3 className="font-display font-bold text-xs uppercase tracking-wider text-stone-900">
@@ -34,7 +34,7 @@ export const AccommodationRulesPolicies: React.FC<AccommodationRulesPoliciesProp
         </div>
 
         {/* Mascotas */}
-        <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-2">
+        <div className="p-4 rounded-2xl bg-sand-50 border border-sand-300/80 space-y-2">
           <div className="flex items-center gap-2 text-primary-600">
             <HeartHandshake className="w-4 h-4" />
             <h3 className="font-display font-bold text-xs uppercase tracking-wider text-stone-900">
@@ -47,7 +47,7 @@ export const AccommodationRulesPolicies: React.FC<AccommodationRulesPoliciesProp
         </div>
 
         {/* Horas de Silencio */}
-        <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-2">
+        <div className="p-4 rounded-2xl bg-sand-50 border border-sand-300/80 space-y-2">
           <div className="flex items-center gap-2 text-stone-600">
             <Volume2 className="w-4 h-4" />
             <h3 className="font-display font-bold text-xs uppercase tracking-wider text-stone-900">
@@ -60,7 +60,7 @@ export const AccommodationRulesPolicies: React.FC<AccommodationRulesPoliciesProp
         </div>
 
         {/* Cancelación */}
-        <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-2">
+        <div className="p-4 rounded-2xl bg-sand-50 border border-sand-300/80 space-y-2">
           <div className="flex items-center gap-2 text-amber-600">
             <CalendarX2 className="w-4 h-4" />
             <h3 className="font-display font-bold text-xs uppercase tracking-wider text-stone-900">

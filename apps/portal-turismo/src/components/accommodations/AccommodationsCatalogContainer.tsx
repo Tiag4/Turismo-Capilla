@@ -30,6 +30,7 @@ export const AccommodationsCatalogContainer: React.FC = () => {
     closeMap,
     filteredAccommodations,
     totalCount,
+    isLoading,
     resetFilters,
   } = useAccommodationsFilter();
 
@@ -61,10 +62,17 @@ export const AccommodationsCatalogContainer: React.FC = () => {
         sortOption={sortOption}
         onSortChange={setSortOption}
         totalCount={totalCount}
+        isLoading={isLoading}
       />
 
       {/* Grilla de Alojamientos Adheridos */}
-      {totalCount > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="h-96 rounded-2xl bg-sand-200/50 animate-pulse border border-sand-200" />
+          ))}
+        </div>
+      ) : totalCount > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
           {filteredAccommodations.map((place) => (
             <AccommodationCard

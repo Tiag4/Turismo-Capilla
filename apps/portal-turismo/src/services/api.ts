@@ -63,9 +63,20 @@ export interface BookingResult {
   accommodation?: Accommodation;
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 export const api = {
   async getHealth() {
-    const res = await fetch(`${API_BASE_URL}/health`);
+    const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
     if (!res.ok) throw new Error('Error de conexión con el servidor');
     return res.json();
   },
@@ -83,13 +94,13 @@ export const api = {
     if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
 
     const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
     if (!res.ok) throw new Error('Error al obtener los atractivos');
     return res.json();
   },
 
   async getAttractionById(id: string): Promise<Attraction> {
-    const res = await fetch(`${API_BASE_URL}/attractions/${id}`);
+    const res = await fetchWithTimeout(`${API_BASE_URL}/attractions/${id}`);
     if (!res.ok) throw new Error('Atractivo no encontrado');
     return res.json();
   },
@@ -109,13 +120,13 @@ export const api = {
     if (params?.search) query.set('search', params.search);
 
     const url = `${API_BASE_URL}/accommodations${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
     if (!res.ok) throw new Error('Error al consultar alojamientos');
     return res.json();
   },
 
   async getAccommodationById(id: string): Promise<Accommodation> {
-    const res = await fetch(`${API_BASE_URL}/accommodations/${id}`);
+    const res = await fetchWithTimeout(`${API_BASE_URL}/accommodations/${id}`);
     if (!res.ok) throw new Error('Alojamiento no encontrado');
     return res.json();
   },

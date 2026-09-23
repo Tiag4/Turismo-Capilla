@@ -63,17 +63,17 @@ export const ElevationProfileChart: React.FC<ElevationProfileChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-sand-200 p-4 sm:p-6 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sand-100 pb-3">
+    <div className="space-y-4 pt-4 border-t border-sand-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
         <div>
-          <h4 className="font-display font-bold text-lg text-sand-900">
+          <h4 className="font-display font-black text-lg text-sand-950">
             Perfil Altimétrico Interactivo (5.8 km)
           </h4>
-          <p className="text-xs text-sand-500 font-normal">
+          <p className="text-xs text-sand-600 font-normal">
             Deslizá el cursor o tocá cualquier posta para simular el trayecto de ascenso.
           </p>
         </div>
-        <div className="text-xs font-semibold text-primary-600 bg-primary-50 px-3 py-1.5 rounded-xl self-start sm:self-auto border border-primary-100">
+        <div className="text-xs font-bold text-sand-800 bg-sand-200/70 px-3 py-1.5 rounded-lg self-start sm:self-auto border border-sand-300/80">
           Desnivel Total: +979m
         </div>
       </div>

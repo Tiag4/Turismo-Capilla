@@ -9,7 +9,7 @@ export const AttractionLocationCard: React.FC<AttractionLocationCardProps> = ({ 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.coordinates.lat},${item.coordinates.lng}`;
 
   return (
-    <div className="bg-white rounded-2xl border border-sand-200/90 p-5 sm:p-6 shadow-xs space-y-4">
+    <div className="space-y-4 pb-6 border-b border-sand-200/80">
       <h3 className="font-display font-black text-base text-sand-950 flex items-center gap-2">
         <svg className="w-4 h-4 text-terracotta-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

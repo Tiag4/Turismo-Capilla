@@ -1,0 +1,72 @@
+import React, { useState } from 'react';
+import { useAuth } from './hooks/useAuth.ts';
+import type { UserRole } from './types/auth.types.ts';
+import { LoginForm } from './components/auth/LoginForm.tsx';
+import { DashboardLayout } from './components/layout/DashboardLayout.tsx';
+import { type DashboardTab } from './components/layout/DashboardNav.tsx';
+import { BookingList } from './components/bookings/BookingList.tsx';
+import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
+import { InvitationManager } from './components/invitations/InvitationManager.tsx';
+import { AdminOverview } from './components/overview/AdminOverview.tsx';
+import { BookingCalendar } from './components/calendar/BookingCalendar.tsx';
+import { SeasonalRatesManager } from './components/pricing/SeasonalRatesManager.tsx';
+import { HostPerformanceView } from './components/analytics/HostPerformanceView.tsx';
+import { OccupancyReportView } from './components/reports/OccupancyReportView.tsx';
+import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
+import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
+import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
+
+export const App: React.FC = () => {
+  const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
+  const [currentTab, setCurrentTab] = useState<DashboardTab>('overview');
+
+  if (!isAuthenticated || !user) {
+    return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
+  }
+
+  const handleSwitchRole = (role: UserRole) => {
+    switchRole(role);
+    if (role === 'HOST') {
+      const adminOnlyTabs: DashboardTab[] = [
+        'overview',
+        'invitations',
+        'reports',
+        'audit',
+        'moderation',
+        'settings',
+      ];
+      if (adminOnlyTabs.includes(currentTab)) {
+        setCurrentTab('bookings');
+      }
+    } else {
+      const hostOnlyTabs: DashboardTab[] = ['calendar', 'pricing', 'performance'];
+      if (hostOnlyTabs.includes(currentTab)) {
+        setCurrentTab('overview');
+      }
+    }
+  };
+
+  return (
+    <DashboardLayout
+      user={user}
+      currentTab={currentTab}
+      onTabChange={setCurrentTab}
+      onLogout={logout}
+      onSwitchRole={handleSwitchRole}
+    >
+      {currentTab === 'overview' && user.role === 'ADMIN' && (
+        <AdminOverview onNavigateTab={setCurrentTab} />
+      )}
+      {currentTab === 'bookings' && <BookingList />}
+      {currentTab === 'accommodations' && <AccommodationList />}
+      {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
+      {currentTab === 'reports' && user.role === 'ADMIN' && <OccupancyReportView />}
+      {currentTab === 'audit' && user.role === 'ADMIN' && <ActivityLogView />}
+      {currentTab === 'moderation' && user.role === 'ADMIN' && <ContentModerationView />}
+      {currentTab === 'settings' && user.role === 'ADMIN' && <TourismCalendarSettings />}
+      {currentTab === 'calendar' && <BookingCalendar />}
+      {currentTab === 'pricing' && <SeasonalRatesManager />}
+      {currentTab === 'performance' && <HostPerformanceView />}
+    </DashboardLayout>
+  );
+};

@@ -288,6 +288,7 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <aside
+          aria-expanded={isHovered}
           className={`fixed top-0 bottom-0 left-0 h-screen transition-all duration-300 ease-in-out bg-white ${
             isHovered ? 'w-72 shadow-2xl' : 'w-[72px] shadow-sm'
           }`}

@@ -70,11 +70,20 @@ let localAccommodations = [...MOCK_ACCOMMODATIONS];
 export const accommodationsService = {
   async getAll(): Promise<Accommodation[]> {
     try {
-      const response = await apiClient.get<any>('/accommodations');
+      const token = localStorage.getItem('turismo_capilla_token');
+      const endpoint = token ? '/accommodations/my-accommodations' : '/accommodations';
+      const response = await apiClient.get<any>(endpoint);
       const items = Array.isArray(response) ? response : response.data || [];
       if (items.length > 0) return items;
       return localAccommodations;
     } catch {
+      try {
+        const publicResp = await apiClient.get<any>('/accommodations');
+        const publicItems = Array.isArray(publicResp) ? publicResp : publicResp.data || [];
+        if (publicItems.length > 0) return publicItems;
+      } catch {
+        // Ignorar y caer a fallback local
+      }
       return localAccommodations;
     }
   },

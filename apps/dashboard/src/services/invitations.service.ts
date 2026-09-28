@@ -66,4 +66,36 @@ export const invitationsService = {
       return newInv;
     }
   },
+
+  async revoke(id: string, reason: string): Promise<InvitationToken> {
+    try {
+      await apiClient.delete(`/invitations/${id}`);
+      const index = localInvitations.findIndex((inv) => inv.id === id);
+      const existing = index !== -1 ? localInvitations[index] : null;
+      const updated: InvitationToken = {
+        id,
+        token: existing?.token || '',
+        email: existing?.email || '',
+        expiresAt: existing?.expiresAt || new Date().toISOString(),
+        usedAt: null,
+        isRevoked: true,
+        revokedAt: new Date().toISOString(),
+        revokedReason: reason,
+        createdAt: existing?.createdAt || new Date().toISOString(),
+      };
+      if (index !== -1) localInvitations.splice(index, 1);
+      return updated;
+    } catch {
+      const index = localInvitations.findIndex((inv) => inv.id === id);
+      if (index === -1) throw new Error('Invitación no encontrada');
+      const updated: InvitationToken = {
+        ...localInvitations[index],
+        isRevoked: true,
+        revokedAt: new Date().toISOString(),
+        revokedReason: reason,
+      };
+      localInvitations[index] = updated;
+      return updated;
+    }
+  },
 };

@@ -23,6 +23,8 @@ export interface LoginCredentials {
 }
 
 export interface AuthResponse {
+  token: string;
   accessToken: string;
+  type?: string;
   user: User;
 }

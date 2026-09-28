@@ -8,9 +8,14 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
       const data = await apiClient.post<AuthResponse>('/auth/login', credentials);
-      localStorage.setItem(TOKEN_KEY, data.accessToken);
+      const jwt = data.token || data.accessToken || '';
+      localStorage.setItem(TOKEN_KEY, jwt);
       localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      return data;
+      return {
+        ...data,
+        accessToken: jwt,
+        token: jwt,
+      };
     } catch {
       // Offline / Local fallback demo users for instant preview
       if (credentials.email === 'admin@capilladelmonte.gov.ar') {
@@ -24,6 +29,7 @@ export const authService = {
         };
         const demoResponse: AuthResponse = {
           accessToken: 'demo-admin-token',
+          token: 'demo-admin-token',
           user: demoUser,
         };
         localStorage.setItem(TOKEN_KEY, demoResponse.accessToken);
@@ -42,6 +48,7 @@ export const authService = {
       };
       const demoResponse: AuthResponse = {
         accessToken: 'demo-host-token',
+        token: 'demo-host-token',
         user: demoHost,
       };
       localStorage.setItem(TOKEN_KEY, demoResponse.accessToken);

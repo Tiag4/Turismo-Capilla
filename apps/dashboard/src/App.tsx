@@ -6,6 +6,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout.tsx';
 import { type DashboardTab } from './components/layout/DashboardNav.tsx';
 import { BookingList } from './components/bookings/BookingList.tsx';
 import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
+import { AccommodationEditorPage } from './components/accommodations/editor/AccommodationEditorPage.tsx';
 import { InvitationManager } from './components/invitations/InvitationManager.tsx';
 import { AdminOverview } from './components/overview/AdminOverview.tsx';
 import { BookingCalendar } from './components/calendar/BookingCalendar.tsx';
@@ -20,7 +21,15 @@ import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
-  const { currentTab, setCurrentTab } = useDashboardRouter(user?.role ?? 'HOST');
+  const {
+    currentTab,
+    setCurrentTab,
+    accommodationView,
+    accommodationEditId,
+    navigateToAccommodationCreate,
+    navigateToAccommodationEdit,
+    navigateToAccommodationList,
+  } = useDashboardRouter(user?.role ?? 'HOST');
 
   if (!isAuthenticated || !user) {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
@@ -60,7 +69,21 @@ export const App: React.FC = () => {
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
       {currentTab === 'bookings' && <BookingList />}
-      {currentTab === 'accommodations' && <AccommodationList />}
+      {currentTab === 'accommodations' && (
+        accommodationView === 'list' ? (
+          <AccommodationList
+            onNavigateCreate={navigateToAccommodationCreate}
+            onNavigateEdit={navigateToAccommodationEdit}
+          />
+        ) : (
+          <AccommodationEditorPage
+            mode={accommodationView}
+            accommodationId={accommodationEditId}
+            onBack={navigateToAccommodationList}
+            onSuccess={navigateToAccommodationList}
+          />
+        )
+      )}
       {currentTab === 'invitations' && user.role === 'ADMIN' && <InvitationManager />}
       {currentTab === 'reports' && user.role === 'ADMIN' && <OccupancyReportView />}
       {currentTab === 'audit' && user.role === 'ADMIN' && <ActivityLogView />}

@@ -3,6 +3,7 @@ import { ShieldCheck } from 'lucide-react';
 import { usePhotoModeration } from '../../hooks/usePhotoModeration.ts';
 import { ModerationCard } from './ModerationCard.tsx';
 import { ObservationModal } from './ObservationModal.tsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { ModerationItem, ModerationStatus } from '../../types/moderation.types.ts';
 
 export const ContentModerationView: React.FC = () => {
@@ -16,6 +17,7 @@ export const ContentModerationView: React.FC = () => {
   } = usePhotoModeration();
 
   const [selectedItem, setSelectedItem] = useState<ModerationItem | null>(null);
+  const [photoToApprove, setPhotoToApprove] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -91,12 +93,28 @@ export const ContentModerationView: React.FC = () => {
             <ModerationCard
               key={item.id}
               item={item}
-              onApprove={approvePhoto}
+              onApprove={(id) => setPhotoToApprove(id)}
               onRequestObservation={handleOpenObservation}
             />
           ))}
         </div>
       )}
+
+      {/* Approve Photo Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(photoToApprove)}
+        onClose={() => setPhotoToApprove(null)}
+        onConfirm={() => {
+          if (photoToApprove) {
+            approvePhoto(photoToApprove);
+            setPhotoToApprove(null);
+          }
+        }}
+        variant="emerald"
+        title="Aprobar Fotografía para el Portal"
+        description="¿Confirmás la aprobación de esta fotografía? Pasará a ser visible públicamente de inmediato en la ficha del alojamiento en el portal turístico."
+        confirmLabel="Aprobar Fotografía"
+      />
 
       {/* Observation Modal */}
       <ObservationModal

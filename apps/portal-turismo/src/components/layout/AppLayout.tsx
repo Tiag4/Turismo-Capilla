@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { DASHBOARD_URL } from '../../config/navigation';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -93,7 +94,7 @@ export const AppLayout: React.FC = () => {
           {/* CTA Panel Prestador & Menú Móvil */}
           <div className="flex items-center gap-3">
             <a
-              href="/admin"
+              href={DASHBOARD_URL}
               className="hidden sm:inline-flex items-center justify-center text-xs font-semibold px-4 py-2.5 rounded-xl bg-sand-900 hover:bg-sand-800 text-white transition-colors cursor-pointer"
             >
               Acceso Prestadores
@@ -140,7 +141,11 @@ export const AppLayout: React.FC = () => {
               Mi Reserva
             </Link>
             <div className="pt-2 border-t border-sand-200">
-              <a href="/admin" className="block w-full text-center text-xs font-semibold py-2.5 rounded-xl bg-sand-900 text-white">
+              <a
+                href={DASHBOARD_URL}
+                onClick={closeMobileMenu}
+                className="block w-full text-center text-xs font-semibold py-2.5 rounded-xl bg-sand-900 text-white"
+              >
                 Acceso Prestadores
               </a>
             </div>
@@ -241,6 +246,7 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
+            <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>
           </div>
         </div>
       </footer>

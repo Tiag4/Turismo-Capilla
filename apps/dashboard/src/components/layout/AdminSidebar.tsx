@@ -10,7 +10,9 @@ import {
   X,
   LogOut,
   Shield,
+  ExternalLink,
 } from 'lucide-react';
+import { PORTAL_URL } from '../../config/navigation.ts';
 import type { User, UserRole } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
 
@@ -168,8 +170,27 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
       </div>
 
-      {/* 4. Operator Profile & Logout */}
+      {/* 4. Operator Profile, External Link & Logout */}
       <div className="pt-3 border-t border-[var(--color-sand-200)] mt-auto space-y-2">
+        {/* Link al Portal Público */}
+        <a
+          href={PORTAL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={!expanded ? 'Ver Portal Turístico' : undefined}
+          className={`w-full flex items-center gap-2.5 py-2 rounded-xl text-xs font-semibold text-[var(--color-sand-700)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer group ${
+            expanded ? 'px-3' : 'justify-center px-1'
+          }`}
+        >
+          <ExternalLink className="w-4 h-4 shrink-0 text-[var(--color-sand-500)] group-hover:text-[var(--color-sand-800)]" />
+          {expanded && (
+            <div className="flex items-center justify-between flex-1 min-w-0">
+              <span className="truncate">Ver Portal Público</span>
+              <span className="text-[10px] text-[var(--color-sand-400)] font-normal uppercase tracking-wider ml-1">Sitio</span>
+            </div>
+          )}
+        </a>
+
         {expanded ? (
           <div className="bg-[var(--color-sand-50)] p-2.5 rounded-xl border border-[var(--color-sand-200)] animate-in fade-in duration-200">
             <div className="flex items-center gap-2.5">

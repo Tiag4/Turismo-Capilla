@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, ExternalLink } from 'lucide-react';
+import { PORTAL_URL } from '../../config/navigation.ts';
 import { HostSidebar } from './HostSidebar.tsx';
 import { AdminSidebar } from './AdminSidebar.tsx';
 import type { DashboardTab } from './DashboardNav.tsx';
@@ -76,12 +77,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
 
-          <div
-            className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center ${
-              isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-uritorco-500)]'
-            }`}
-          >
-            {user.name.charAt(0)}{user.lastName.charAt(0)}
+          <div className="flex items-center gap-2">
+            <a
+              href={PORTAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver Portal Turístico"
+              aria-label="Ver Portal Turístico"
+              className="p-1.5 rounded-lg text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)] transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
+            <div
+              className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center ${
+                isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-uritorco-500)]'
+              }`}
+            >
+              {user.name.charAt(0)}{user.lastName.charAt(0)}
+            </div>
           </div>
         </header>
 

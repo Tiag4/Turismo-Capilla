@@ -15,6 +15,14 @@ Plataforma web oficial para la promoción turística, catálogo de atractivos y 
 
 ## 1. Arquitectura Multirepo del Proyecto
 
+A continuación, se detalla el flujo de interacción de los distintos actores con las aplicaciones de la plataforma y su conexión unificada al cerebro central de datos.
+
+![Diagrama de Arquitectura de Sistema y Flujo de Datos](./docs/architecture.png)
+
+* **Actores (El "Quién"):** Se diferencian tres perfiles clave. El **Turista** (usuario final público), el **Cabañero** (administrador de su oferta), y la **Comisión de Turismo** (ente regulador y aprobador).
+* **Frontend (El "Dónde"):** La capa de presentación está dividida en dos aplicaciones. Un **Portal Turístico** público (Vite + React) orientado a conversión, y un **Dashboard de Gestión** privado (React + Tailwind).
+* **Backend (El "Cerebro"):** Ambas aplicaciones consumen la misma **API REST Central** y base de datos, garantizando que cuando la Comisión aprueba una cabaña en el Dashboard, esta impacte instantáneamente en el Portal público.
+
 El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacoplada en dos repositorios independientes:
 
 1. **Frontend (Este Repositorio — `Turismo-Capilla`):**

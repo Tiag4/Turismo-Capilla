@@ -24,11 +24,21 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   const [isVoucherOpen, setIsVoucherOpen] = useState(false);
   const [confirmStatus, setConfirmStatus] = useState<BookingStatus | null>(null);
 
-  if (!booking) return null;
+  // Preserve booking data while closing to avoid abrupt unmount during exit transition
+  const [cachedBooking, setCachedBooking] = useState<Booking | null>(booking);
+
+  React.useEffect(() => {
+    if (booking) {
+      setCachedBooking(booking);
+    }
+  }, [booking]);
+
+  const activeBooking = booking || cachedBooking;
+  if (!activeBooking) return null;
 
   const handleConfirmAction = () => {
     if (!confirmStatus) return;
-    onUpdateStatus(booking.id, confirmStatus);
+    onUpdateStatus(activeBooking.id, confirmStatus);
     setConfirmStatus(null);
     onClose();
   };
@@ -38,8 +48,8 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        title={`Reserva ${booking.bookingCode}`}
-        subtitle={`Establecimiento: ${booking.accommodation?.name || 'Alojamiento'}`}
+        title={`Reserva ${activeBooking.bookingCode}`}
+        subtitle={`Establecimiento: ${activeBooking.accommodation?.name || 'Alojamiento'}`}
         maxWidth="lg"
       >
         <div className="flex flex-col gap-6">
@@ -49,14 +59,14 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
               <span className="block text-xs uppercase font-bold text-[var(--color-sand-500)] mb-1">
                 Estado Actual
               </span>
-              <BookingStatusBadge status={booking.status} />
+              <BookingStatusBadge status={activeBooking.status} />
             </div>
             <div className="text-right">
               <span className="block text-xs uppercase font-bold text-[var(--color-sand-500)] mb-1">
-                Total Estadía ({booking.totalNights} noches)
+                Total Estadía ({activeBooking.totalNights} noches)
               </span>
               <span className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
-                ${(booking.totalAmount ?? 0).toLocaleString('es-AR')}
+                ${(activeBooking.totalAmount ?? 0).toLocaleString('es-AR')}
               </span>
             </div>
           </div>
@@ -68,20 +78,20 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
             </span>
             <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
               <User className="w-4 h-4 text-[var(--color-sand-500)]" />
-              <span className="font-semibold">{booking.guestName}</span>
+              <span className="font-semibold">{activeBooking.guestName}</span>
             </div>
             <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
               <Phone className="w-4 h-4 text-[var(--color-sand-500)]" />
-              <span>{booking.guestPhone}</span>
+              <span>{activeBooking.guestPhone}</span>
             </div>
             <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
               <Mail className="w-4 h-4 text-[var(--color-sand-500)]" />
-              <span>{booking.guestEmail}</span>
+              <span>{activeBooking.guestEmail}</span>
             </div>
             <div className="pt-2 border-t border-[var(--color-sand-200)] flex items-center justify-between">
               <span className="text-xs text-[var(--color-sand-500)]">Acciones rápidas de contacto:</span>
               <GuestContactActions
-                booking={booking}
+                booking={activeBooking}
                 onOpenVoucher={() => setIsVoucherOpen(true)}
               />
             </div>
@@ -95,12 +105,12 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
             <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
               <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
               <span>
-                Ingreso: <strong>{booking.checkIn}</strong> — Salida: <strong>{booking.checkOut}</strong>
+                Ingreso: <strong>{activeBooking.checkIn}</strong> — Salida: <strong>{activeBooking.checkOut}</strong>
               </span>
             </div>
             <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
               <MapPin className="w-4 h-4 text-[var(--color-sand-500)]" />
-              <span>{booking.accommodation?.locality || 'Capilla del Monte, Córdoba'}</span>
+              <span>{activeBooking.accommodation?.locality || 'Capilla del Monte, Córdoba'}</span>
             </div>
           </div>
 
@@ -116,7 +126,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
             </Button>
 
             <div className="flex items-center gap-2">
-              {booking.status === 'PENDING' && (
+              {activeBooking.status === 'PENDING' && (
                 <>
                   <Button
                     variant="danger"
@@ -136,7 +146,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                   </Button>
                 </>
               )}
-              {booking.status === 'CONFIRMED' && (
+              {activeBooking.status === 'CONFIRMED' && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -154,7 +164,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
 
         {/* Printable Voucher Modal */}
         <BookingVoucherPrint
-          booking={booking}
+          booking={activeBooking}
           isOpen={isVoucherOpen}
           onClose={() => setIsVoucherOpen(false)}
         />
@@ -168,16 +178,16 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
         variant={confirmStatus === 'CANCELLED' ? 'danger' : 'emerald'}
         title={
           confirmStatus === 'CANCELLED'
-            ? `¿Rechazar reserva ${booking.bookingCode}?`
+            ? `¿Rechazar reserva ${activeBooking.bookingCode}?`
             : confirmStatus === 'CONFIRMED'
-            ? `¿Confirmar reserva ${booking.bookingCode}?`
-            : `¿Marcar reserva ${booking.bookingCode} como finalizada?`
+            ? `¿Confirmar reserva ${activeBooking.bookingCode}?`
+            : `¿Marcar reserva ${activeBooking.bookingCode} como finalizada?`
         }
         description={
           confirmStatus === 'CANCELLED'
-            ? `Esta acción cancelará la reserva de ${booking.guestName}. Las fechas quedarán disponibles en el calendario para otros turistas.`
+            ? `Esta acción cancelará la reserva de ${activeBooking.guestName}. Las fechas quedarán disponibles en el calendario para otros turistas.`
             : confirmStatus === 'CONFIRMED'
-            ? `Se confirmará la solicitud de ${booking.guestName} (${booking.checkIn} al ${booking.checkOut}). El turista recibirá la confirmación oficial.`
+            ? `Se confirmará la solicitud de ${activeBooking.guestName} (${activeBooking.checkIn} al ${activeBooking.checkOut}). El turista recibirá la confirmación oficial.`
             : `Se registrará que los huéspedes han completado su estadía en el establecimiento.`
         }
         confirmLabel={

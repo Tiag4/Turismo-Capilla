@@ -1,6 +1,7 @@
 import React from 'react';
 import { DollarSign } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
+import { CustomTimePicker } from '../../../ui/CustomTimePicker.tsx';
 
 export interface PricingCapacitySectionProps {
   pricePerNight: string;
@@ -26,11 +27,10 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
   const numericPrice = Number(pricePerNight) || 0;
 
   return (
-    <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs">
+    <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
+      {/* Header without pastel container */}
       <div className="flex items-center gap-2.5 pb-3 border-b border-[var(--color-sand-200)]">
-        <div className="p-2 rounded-xl bg-[var(--color-sand-100)] text-[var(--color-terracotta-600)]">
-          <DollarSign className="w-5 h-5" />
-        </div>
+        <DollarSign className="w-5 h-5 text-[var(--color-terracotta-500)] shrink-0" />
         <div>
           <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
             Tarifas, Capacidad y Horarios de Estadía
@@ -44,7 +44,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
           <Input
-            label="Tarifa Base por Noche (ARS)"
+            label="Tarifa base por noche (ARS)"
             type="number"
             min="0"
             step="1000"
@@ -53,14 +53,16 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             placeholder="85000"
             required
           />
-          <span className="text-[11px] text-[var(--color-terracotta-600)] font-bold block mt-1">
-            Visualización: ${numericPrice.toLocaleString('es-AR')} / noche
-          </span>
+          {numericPrice > 0 && (
+            <span className="text-[11px] text-[var(--color-sand-500)] font-medium block mt-1">
+              Equivale a <strong className="text-[var(--color-sand-900)]">${numericPrice.toLocaleString('es-AR')}</strong> por noche
+            </span>
+          )}
         </div>
 
         <div>
           <Input
-            label="Capacidad Máxima (Huéspedes)"
+            label="Capacidad máxima (huéspedes)"
             type="number"
             min="1"
             max="30"
@@ -75,26 +77,24 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
         </div>
 
         <div>
-          <Input
+          <CustomTimePicker
             label="Horario de Check-in"
-            value={checkIn}
-            onChange={(e) => setCheckIn(e.target.value)}
-            placeholder="14:00 hs"
+            value={checkIn || '14:00 hs'}
+            onChange={(val) => setCheckIn(val)}
           />
           <span className="text-[11px] text-[var(--color-sand-400)] block mt-1">
-            Horario a partir del cual puede ingresar.
+            Horario de ingreso al complejo.
           </span>
         </div>
 
         <div>
-          <Input
+          <CustomTimePicker
             label="Horario de Check-out"
-            value={checkOut}
-            onChange={(e) => setCheckOut(e.target.value)}
-            placeholder="10:00 hs"
+            value={checkOut || '10:00 hs'}
+            onChange={(val) => setCheckOut(val)}
           />
           <span className="text-[11px] text-[var(--color-sand-400)] block mt-1">
-            Horario límite de salida del complejo.
+            Horario límite de salida.
           </span>
         </div>
       </div>

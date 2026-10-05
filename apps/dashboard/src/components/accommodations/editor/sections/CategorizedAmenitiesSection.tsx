@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Flame, Trees, Wifi, Shield } from 'lucide-react';
+import { BedDouble, Flame, Trees, Wifi, Shield, Check, Plus } from 'lucide-react';
 
 export interface CategorizedAmenitiesSectionProps {
   selectedAmenities: string[];
@@ -14,7 +14,7 @@ interface AmenityCategoryDefinition {
 
 const AMENITY_CATEGORIES: AmenityCategoryDefinition[] = [
   {
-    title: 'Climatización & Calidez',
+    title: 'Climatización y Confort Térmico',
     icon: Flame,
     items: [
       'Hogar a leña / Salamandra nórdica',
@@ -24,7 +24,7 @@ const AMENITY_CATEGORIES: AmenityCategoryDefinition[] = [
     ],
   },
   {
-    title: 'Exteriores & Vistas Serranas',
+    title: 'Exteriores y Vistas Serranas',
     icon: Trees,
     items: [
       'Vista al Cerro Uritorco',
@@ -36,7 +36,7 @@ const AMENITY_CATEGORIES: AmenityCategoryDefinition[] = [
     ],
   },
   {
-    title: 'Conectividad & Cocina',
+    title: 'Conectividad y Cocina',
     icon: Wifi,
     items: [
       'Wi-Fi Starlink / Fibra óptica',
@@ -47,7 +47,7 @@ const AMENITY_CATEGORIES: AmenityCategoryDefinition[] = [
     ],
   },
   {
-    title: 'Seguridad & Comodidad',
+    title: 'Seguridad y Servicios',
     icon: Shield,
     items: [
       'Cochera individual cubierta',
@@ -63,35 +63,32 @@ export const CategorizedAmenitiesSection: React.FC<CategorizedAmenitiesSectionPr
   onToggleAmenity,
 }) => {
   return (
-    <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
+    <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-6 shadow-xs">
+      {/* Header with bare semantic icon, no sparkles */}
       <div className="flex items-center gap-2.5 pb-3 border-b border-[var(--color-sand-200)]">
-        <div className="p-2 rounded-xl bg-[var(--color-sand-100)] text-[var(--color-terracotta-600)]">
-          <Sparkles className="w-5 h-5" />
-        </div>
+        <BedDouble className="w-5 h-5 text-[var(--color-terracotta-500)] shrink-0" />
         <div>
           <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
             Comodidades y Servicios del Establecimiento
           </h3>
           <p className="text-xs text-[var(--color-sand-500)]">
-            Organizadas en categorías temáticas para que el turista las identifique rápidamente
+            Seleccioná los servicios confirmados para que los turistas los filtren en el catálogo
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Flat Categories Grid: No box-in-a-box nesting */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {AMENITY_CATEGORIES.map((category) => {
           const CategoryIcon = category.icon;
           return (
-            <div
-              key={category.title}
-              className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] flex flex-col gap-2.5"
-            >
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-sand-800)] uppercase tracking-wider">
-                <CategoryIcon className="w-4 h-4 text-[var(--color-terracotta-500)]" />
+            <div key={category.title} className="flex flex-col gap-2.5">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-sand-800)]">
+                <CategoryIcon className="w-4 h-4 text-[var(--color-terracotta-500)] shrink-0" />
                 <span>{category.title}</span>
               </div>
 
-              <div className="flex flex-col gap-1.5 pt-1">
+              <div className="flex flex-wrap gap-2">
                 {category.items.map((item) => {
                   const isChecked = selectedAmenities.includes(item);
                   return (
@@ -99,22 +96,18 @@ export const CategorizedAmenitiesSection: React.FC<CategorizedAmenitiesSectionPr
                       key={item}
                       type="button"
                       onClick={() => onToggleAmenity(item)}
-                      className={`text-xs px-3 py-2 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
+                      className={`text-xs px-3 py-2 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 font-medium ${
                         isChecked
-                          ? 'border-[var(--color-terracotta-500)] bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-700)] font-bold'
-                          : 'border-[var(--color-sand-300)] bg-white text-[var(--color-sand-700)] hover:bg-[var(--color-sand-100)]'
+                          ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs'
+                          : 'bg-[var(--color-sand-100)] text-[var(--color-sand-800)] hover:bg-[var(--color-sand-200)]'
                       }`}
                     >
+                      {isChecked ? (
+                        <Check className="w-3.5 h-3.5 text-white shrink-0" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5 text-[var(--color-sand-500)] shrink-0" />
+                      )}
                       <span>{item}</span>
-                      <span
-                        className={`text-xs font-bold px-1.5 py-0.5 rounded-md ${
-                          isChecked
-                            ? 'bg-[var(--color-terracotta-600)] text-white'
-                            : 'text-[var(--color-sand-400)]'
-                        }`}
-                      >
-                        {isChecked ? '✓' : '+'}
-                      </span>
                     </button>
                   );
                 })}

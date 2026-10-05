@@ -70,17 +70,23 @@ let localAccommodations = [...MOCK_ACCOMMODATIONS];
 export const accommodationsService = {
   async getAll(): Promise<Accommodation[]> {
     try {
+      const userRaw = localStorage.getItem('turismo_capilla_user');
+      const user = userRaw ? JSON.parse(userRaw) : null;
       const token = localStorage.getItem('turismo_capilla_token');
-      const endpoint = token ? '/accommodations/my-accommodations' : '/accommodations';
+      // ADMIN consulta todo el catálogo municipal; HOST consulta sus propios establecimientos
+      const isHost = user?.role === 'HOST';
+      const endpoint = (token && isHost) ? '/accommodations/my-accommodations' : '/accommodations';
       const response = await apiClient.get<any>(endpoint);
       const items = Array.isArray(response) ? response : response.data || [];
-      if (items.length > 0) return items;
+      if (Array.isArray(items)) {
+        return items;
+      }
       return localAccommodations;
     } catch {
       try {
         const publicResp = await apiClient.get<any>('/accommodations');
         const publicItems = Array.isArray(publicResp) ? publicResp : publicResp.data || [];
-        if (publicItems.length > 0) return publicItems;
+        if (Array.isArray(publicItems)) return publicItems;
       } catch {
         // Ignorar y caer a fallback local
       }
@@ -97,10 +103,96 @@ export const accommodationsService = {
   },
 
   async create(dto: CreateAccommodationDto): Promise<Accommodation> {
+    const formattedImages = (dto.images || []).map((img, index) => {
+      if (typeof img === 'string') {
+        return {
+          url: img,
+          isMain: index === 0,
+        };
+      }
+      return {
+        url: img.url,
+        isMain: Boolean(img.isMain) || index === 0,
+      };
+    });
+
+    if (formattedImages.length > 0 && !formattedImages.some((i) => i.isMain)) {
+      formattedImages[0].isMain = true;
+    }
+
+    const payload = {
+      name: dto.name,
+      description: dto.description || '',
+      type: dto.type,
+      address: dto.address,
+      locality: dto.locality || 'Capilla del Monte',
+      latitude: dto.latitude ?? -30.857,
+      longitude: dto.longitude ?? -64.515,
+      pricePerNight: Number(dto.pricePerNight),
+      maxGuests: Number(dto.maxGuests),
+      amenities: dto.amenities || [],
+      images: formattedImages,
+    };
+
     try {
-      return await apiClient.post<Accommodation>('/accommodations', dto);
-    } catch {
-      const parsedImages = (dto.images || []).map((img, index) => {
+      const created = await apiClient.post<Accommodation>('/accommodations', payload);
+      if (created) return created;
+    } catch (err) {
+      console.warn('Fallo guardado en backend, usando fallback local:', err);
+    }
+
+    const newAcc: Accommodation = {
+      id: `acc-${Date.now()}`,
+      name: dto.name,
+      description: dto.description,
+      type: dto.type,
+      address: dto.address,
+      locality: dto.locality || 'Capilla del Monte',
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      pricePerNight: Number(dto.pricePerNight),
+      maxGuests: Number(dto.maxGuests),
+      amenities: dto.amenities,
+      isActive: true,
+      hostId: 'host-01',
+      images: formattedImages.map((img, i) => ({ id: `img-${Date.now()}-${i}`, ...img })),
+      createdAt: new Date().toISOString(),
+    };
+    localAccommodations = [newAcc, ...localAccommodations];
+    return newAcc;
+  },
+
+  async update(id: string, dto: Partial<CreateAccommodationDto>): Promise<Accommodation> {
+    const payload: any = { ...dto };
+    if (dto.images) {
+      payload.images = dto.images.map((img, index) => {
+        if (typeof img === 'string') {
+          return { url: img, isMain: index === 0 };
+        }
+        return { url: img.url, isMain: Boolean(img.isMain) };
+      });
+    }
+    if (dto.pricePerNight !== undefined) {
+      payload.pricePerNight = Number(dto.pricePerNight);
+    }
+    if (dto.maxGuests !== undefined) {
+      payload.maxGuests = Number(dto.maxGuests);
+    }
+
+    try {
+      const updated = await apiClient.put<Accommodation>(`/accommodations/${id}`, payload);
+      if (updated) return updated;
+    } catch (err) {
+      console.warn('Fallo actualizacion en backend, usando fallback local:', err);
+    }
+
+    const index = localAccommodations.findIndex((a) => a.id === id);
+    if (index === -1) throw new Error('Alojamiento no encontrado');
+    const existing = localAccommodations[index];
+
+    let updatedImages = existing.images;
+    if (dto.images) {
+      updatedImages = dto.images.map((img, index) => {
         if (typeof img === 'string') {
           return {
             id: `img-${Date.now()}-${index}`,
@@ -111,76 +203,41 @@ export const accommodationsService = {
         return img;
       });
 
-      // Garantizar que al menos una tenga isMain
-      if (parsedImages.length > 0 && !parsedImages.some((i) => i.isMain)) {
-        parsedImages[0].isMain = true;
+      if (updatedImages.length > 0 && !updatedImages.some((i) => i.isMain)) {
+        updatedImages[0].isMain = true;
       }
-
-      const newAcc: Accommodation = {
-        id: `acc-${Date.now()}`,
-        name: dto.name,
-        description: dto.description,
-        type: dto.type,
-        address: dto.address,
-        locality: dto.locality || 'Capilla del Monte',
-        latitude: dto.latitude,
-        longitude: dto.longitude,
-        pricePerNight: Number(dto.pricePerNight),
-        maxGuests: Number(dto.maxGuests),
-        amenities: dto.amenities,
-        isActive: true,
-        hostId: 'host-01',
-        images: parsedImages,
-        createdAt: new Date().toISOString(),
-      };
-      localAccommodations = [newAcc, ...localAccommodations];
-      return newAcc;
     }
+
+    const updated: Accommodation = {
+      ...existing,
+      ...dto,
+      images: updatedImages,
+      pricePerNight: dto.pricePerNight ? Number(dto.pricePerNight) : existing.pricePerNight,
+      maxGuests: dto.maxGuests ? Number(dto.maxGuests) : existing.maxGuests,
+      updatedAt: new Date().toISOString(),
+    };
+    localAccommodations[index] = updated;
+    return updated;
   },
 
-  async update(id: string, dto: Partial<CreateAccommodationDto>): Promise<Accommodation> {
+  async delete(id: string): Promise<void> {
     try {
-      return await apiClient.put<Accommodation>(`/accommodations/${id}`, dto);
-    } catch {
-      const index = localAccommodations.findIndex((a) => a.id === id);
-      if (index === -1) throw new Error('Alojamiento no encontrado');
-      const existing = localAccommodations[index];
-
-      let updatedImages = existing.images;
-      if (dto.images) {
-        updatedImages = dto.images.map((img, index) => {
-          if (typeof img === 'string') {
-            return {
-              id: `img-${Date.now()}-${index}`,
-              url: img,
-              isMain: index === 0,
-            };
-          }
-          return img;
-        });
-
-        if (updatedImages.length > 0 && !updatedImages.some((i) => i.isMain)) {
-          updatedImages[0].isMain = true;
-        }
-      }
-
-      const updated: Accommodation = {
-        ...existing,
-        ...dto,
-        images: updatedImages,
-        pricePerNight: dto.pricePerNight ? Number(dto.pricePerNight) : existing.pricePerNight,
-        maxGuests: dto.maxGuests ? Number(dto.maxGuests) : existing.maxGuests,
-        updatedAt: new Date().toISOString(),
-      };
-      localAccommodations[index] = updated;
-      return updated;
+      await apiClient.delete(`/accommodations/${id}`);
+    } catch (err) {
+      console.warn('Fallo eliminacion en backend, usando fallback local:', err);
     }
+    localAccommodations = localAccommodations.filter((a) => a.id !== id);
   },
 
   async toggleActive(id: string): Promise<Accommodation> {
     const acc = localAccommodations.find((a) => a.id === id);
     if (!acc) throw new Error('Alojamiento no encontrado');
     acc.isActive = !acc.isActive;
+    try {
+      await apiClient.put(`/accommodations/${id}`, { isActive: acc.isActive });
+    } catch {
+      // Ignorar
+    }
     return { ...acc };
   },
 };

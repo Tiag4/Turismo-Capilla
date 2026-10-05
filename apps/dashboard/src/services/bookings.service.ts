@@ -80,7 +80,7 @@ export const bookingsService = {
     try {
       const response = await apiClient.get<any>('/bookings/my-bookings');
       const items = Array.isArray(response) ? response : response.data || [];
-      if (items.length > 0) return items;
+      if (Array.isArray(items)) return items;
       return localBookings;
     } catch {
       return localBookings;

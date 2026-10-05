@@ -33,6 +33,12 @@ El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacop
    * **Tecnologías Objetivo:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 16.
    * **Responsabilidad:** Lógica de negocio, autenticación JWT con Spring Security, prevención transaccional de overbooking y persistencia relacional estricta.
 
+### 1.1 Prevención de Solapamiento (Flujo de Reserva)
+
+Para garantizar la fiabilidad del sistema y evitar cualquier riesgo de sobreventa (doble reserva para las mismas fechas), la plataforma implementa una verificación estricta a nivel de la API y la Base de Datos antes de confirmar cualquier solicitud del turista.
+
+![Diagrama de Secuencia de Reserva](./docs/sequence-booking.jpg)
+
 ---
 
 ## 2. Estructura de Carpetas

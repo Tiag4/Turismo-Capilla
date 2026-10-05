@@ -241,7 +241,6 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
-            <span>Programación III — Cátedra Universitaria</span>
           </div>
         </div>
       </footer>

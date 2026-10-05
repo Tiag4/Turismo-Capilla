@@ -14,6 +14,7 @@ export interface CustomSelectProps {
   options: CustomSelectOption[];
   placeholder?: string;
   error?: string;
+  helperText?: string;
   className?: string;
   disabled?: boolean;
 }
@@ -25,6 +26,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder = 'Seleccionar...',
   error,
+  helperText,
   className = '',
   disabled = false,
 }) => {
@@ -56,7 +58,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   return (
     <div className={`flex flex-col gap-1.5 w-full relative ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-xs font-semibold text-[var(--color-sand-800)]">
+        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
           {label}
         </label>
       )}
@@ -67,7 +69,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className={`w-full flex items-center justify-between rounded-xl border bg-white px-3.5 py-2.5 text-sm text-left transition-all cursor-pointer ${
+        className={`w-full min-h-[42px] flex items-center justify-between rounded-xl border bg-white px-3.5 py-2.5 text-sm text-left transition-all cursor-pointer ${
           disabled
             ? 'opacity-60 cursor-not-allowed bg-[var(--color-sand-50)] border-[var(--color-sand-200)]'
             : error
@@ -77,7 +79,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             : 'border-[var(--color-sand-300)] hover:border-[var(--color-sand-400)]'
         }`}
       >
-        <span className={`truncate ${selectedOption ? 'text-[var(--color-sand-900)] font-medium' : 'text-[var(--color-sand-400)]'}`}>
+        <span className={`truncate ${selectedOption ? 'text-[var(--color-sand-900)]' : 'text-[var(--color-sand-400)]'}`}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <ChevronDown
@@ -86,6 +88,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           }`}
         />
       </button>
+
+      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
+      {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
 
       {/* Popover Dropdown */}
       {isOpen && (
@@ -122,8 +127,6 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           })}
         </div>
       )}
-
-      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
     </div>
   );
 };

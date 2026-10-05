@@ -41,7 +41,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
         <div>
           <Input
             label="Tarifa base por noche (ARS)"
@@ -52,12 +52,8 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             onChange={(e) => setPricePerNight(e.target.value)}
             placeholder="85000"
             required
+            helperText={numericPrice > 0 ? `Equivale a $${numericPrice.toLocaleString('es-AR')} por noche` : undefined}
           />
-          {numericPrice > 0 && (
-            <span className="text-[11px] text-[var(--color-sand-500)] font-medium block mt-1">
-              Equivale a <strong className="text-[var(--color-sand-900)]">${numericPrice.toLocaleString('es-AR')}</strong> por noche
-            </span>
-          )}
         </div>
 
         <div>
@@ -70,10 +66,8 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             onChange={(e) => setMaxGuests(e.target.value)}
             placeholder="4"
             required
+            helperText="Total de plazas y camas habilitadas."
           />
-          <span className="text-[11px] text-[var(--color-sand-400)] block mt-1">
-            Total de plazas y camas habilitadas.
-          </span>
         </div>
 
         <div>
@@ -81,10 +75,8 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             label="Horario de Check-in"
             value={checkIn || '14:00 hs'}
             onChange={(val) => setCheckIn(val)}
+            helperText="Horario de ingreso al complejo."
           />
-          <span className="text-[11px] text-[var(--color-sand-400)] block mt-1">
-            Horario de ingreso al complejo.
-          </span>
         </div>
 
         <div>
@@ -92,10 +84,8 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             label="Horario de Check-out"
             value={checkOut || '10:00 hs'}
             onChange={(val) => setCheckOut(val)}
+            helperText="Horario límite de salida."
           />
-          <span className="text-[11px] text-[var(--color-sand-400)] block mt-1">
-            Horario límite de salida.
-          </span>
         </div>
       </div>
     </div>

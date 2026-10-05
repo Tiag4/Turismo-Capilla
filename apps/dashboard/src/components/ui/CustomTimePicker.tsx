@@ -6,6 +6,7 @@ export interface CustomTimePickerProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  helperText?: string;
   className?: string;
   disabled?: boolean;
 }
@@ -18,6 +19,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   value,
   onChange,
   error,
+  helperText,
   className = '',
   disabled = false,
 }) => {
@@ -63,7 +65,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   return (
     <div className={`flex flex-col gap-1.5 w-full relative ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-xs font-semibold text-[var(--color-sand-800)]">
+        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
           {label}
         </label>
       )}
@@ -72,7 +74,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between rounded-xl border bg-white px-3.5 py-2.5 text-sm transition-all cursor-pointer ${
+        className={`w-full min-h-[42px] flex items-center justify-between rounded-xl border bg-white px-3.5 py-2.5 text-sm transition-all cursor-pointer ${
           disabled
             ? 'opacity-60 cursor-not-allowed bg-[var(--color-sand-50)] border-[var(--color-sand-200)]'
             : error
@@ -82,11 +84,14 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
             : 'border-[var(--color-sand-300)] hover:border-[var(--color-sand-400)]'
         }`}
       >
-        <span className={`font-mono text-xs ${value ? 'text-[var(--color-sand-900)] font-bold' : 'text-[var(--color-sand-400)]'}`}>
+        <span className={`text-sm ${value ? 'text-[var(--color-sand-900)]' : 'text-[var(--color-sand-400)]'}`}>
           {formattedDisplay}
         </span>
-        <Clock className={`w-4 h-4 text-[var(--color-sand-500)] ${isOpen ? 'text-[var(--color-terracotta-500)]' : ''}`} />
+        <Clock className={`w-4 h-4 text-[var(--color-sand-500)] shrink-0 ${isOpen ? 'text-[var(--color-terracotta-500)]' : ''}`} />
       </button>
+
+      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
+      {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
 
       {/* Popover Dropdown */}
       {isOpen && (
@@ -109,7 +114,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
                       key={h}
                       type="button"
                       onClick={() => handleHourSelect(h)}
-                      className={`px-2 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer text-left ${
+                      className={`px-2 py-1 text-xs rounded-lg transition-colors cursor-pointer text-left ${
                         isSelected
                           ? 'bg-[var(--color-terracotta-500)] text-white font-bold'
                           : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)]'
@@ -135,7 +140,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
                       key={m}
                       type="button"
                       onClick={() => handleMinuteSelect(m)}
-                      className={`px-2 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer text-left ${
+                      className={`px-2 py-1 text-xs rounded-lg transition-colors cursor-pointer text-left ${
                         isSelected
                           ? 'bg-[var(--color-terracotta-500)] text-white font-bold'
                           : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)]'
@@ -175,8 +180,6 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
           </div>
         </div>
       )}
-
-      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
     </div>
   );
 };

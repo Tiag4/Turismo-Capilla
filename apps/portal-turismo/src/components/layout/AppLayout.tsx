@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { DASHBOARD_URL } from '../../config/navigation';
 import { OfflineBanner } from '../emergencies/OfflineBanner';
 import { EmergencyModal } from '../emergencies/EmergencyModal';
+import { EmergencyFloatingButton } from '../emergencies/EmergencyFloatingButton';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -304,7 +305,8 @@ export const AppLayout: React.FC = () => {
         </div>
       </footer>
 
-      {/* Modal de Emergencias (accesible desde Navbar, OfflineBanner y Footer) */}
+      {/* Acceso Rápido Flotante & Modal de Emergencias (HU-25) */}
+      <EmergencyFloatingButton onOpen={() => setEmergencyModalOpen(true)} />
       <EmergencyModal isOpen={emergencyModalOpen} onClose={() => setEmergencyModalOpen(false)} />
     </div>
   );

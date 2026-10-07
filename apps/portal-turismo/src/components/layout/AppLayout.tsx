@@ -73,6 +73,16 @@ export const AppLayout: React.FC = () => {
               Senderos & Paseos
             </Link>
             <Link
+              to="/circuitos"
+              className={`text-sm font-semibold transition-colors ${
+                location.pathname.startsWith('/circuitos')
+                  ? 'text-primary-600'
+                  : 'text-sand-700 hover:text-primary-600'
+              }`}
+            >
+              Circuitos
+            </Link>
+            <Link
               to="/como-llegar"
               className={`text-sm font-semibold transition-colors ${
                 location.pathname.startsWith('/como-llegar')
@@ -136,6 +146,9 @@ export const AppLayout: React.FC = () => {
             </Link>
             <Link to="/atractivos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Senderos & Paseos
+            </Link>
+            <Link to="/circuitos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
+              Circuitos Temáticos
             </Link>
             <Link to="/como-llegar" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Cómo Llegar
@@ -237,6 +250,7 @@ export const AppLayout: React.FC = () => {
                 </Link>
               </li>
               <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Guías habilitados</Link></li>
+              <li><Link to="/circuitos" className="hover:text-primary-400 transition-colors">Circuitos Temáticos</Link></li>
               <li><Link to="/como-llegar" className="hover:text-primary-400 transition-colors">Cómo llegar & Peajes</Link></li>
             </ul>
           </div>
@@ -260,6 +274,7 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
+            <Link to="/circuitos" className="hover:text-sand-300 transition-colors">Circuitos</Link>
             <Link to="/como-llegar" className="hover:text-sand-300 transition-colors">Cómo Llegar</Link>
             <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>
           </div>

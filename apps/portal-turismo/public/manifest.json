@@ -1,0 +1,24 @@
+{
+  "name": "Turismo Capilla del Monte - Pueblo Uritorco",
+  "short_name": "Turismo Capilla",
+  "description": "Portal oficial de turismo, senderos serranos, alojamientos y emergencias de Capilla del Monte.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#e06d39",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/cropped-logo-capilla-del-monte-2024.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

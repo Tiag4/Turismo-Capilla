@@ -51,4 +51,5 @@ export interface MobilityPoint {
   description: string;
   address?: string;
   badgeText: string;
+  routeOrigin?: string;
 }

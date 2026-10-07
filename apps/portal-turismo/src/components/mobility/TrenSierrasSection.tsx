@@ -33,12 +33,12 @@ export const TrenSierrasSection: React.FC = () => {
             $250 - $400 <span className="text-xs font-normal text-sand-300">ARS</span>
           </div>
           <a
-            href="https://www.argentina.gob.ar/transporte/trenes-argentinos/horarios-tarifas-y-recorridos/servicios-regionales/cordoba"
+            href="https://webventas.sofse.gob.ar/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer"
           >
-            <span>Reservar Pasajes Oficiales</span>
+            <span>Comprar Pasajes en SOFSE Oficial</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>

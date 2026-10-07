@@ -254,7 +254,8 @@ export const MOBILITY_MAP_POINTS: MobilityPoint[] = [
     lng: -64.5262,
     description: 'Punto de arribo del Tren de las Sierras. Ubicada en pleno centro cívico, junto al predio del ferrocarril y la Secretaría de Turismo.',
     address: 'Av. Pueyrredón e Hipólito Yrigoyen',
-    badgeText: 'Tren de las Sierras'
+    badgeText: 'Tren de las Sierras',
+    routeOrigin: 'Capilla del Monte'
   },
   {
     id: 'terminal-omnibus',
@@ -264,7 +265,8 @@ export const MOBILITY_MAP_POINTS: MobilityPoint[] = [
     lng: -64.5284,
     description: 'Llegada y salida de colectivos interurbanos (Sarmiento, Lumasa, Ersa) y larga distancia (Chevallier, Urquiza). Servicios cada 35 minutos a Córdoba Capital.',
     address: 'Diagonal Buenos Aires s/n',
-    badgeText: 'Ómnibus & Micros'
+    badgeText: 'Ómnibus & Micros',
+    routeOrigin: 'Capilla del Monte'
   },
   {
     id: 'acceso-rn38',
@@ -274,16 +276,73 @@ export const MOBILITY_MAP_POINTS: MobilityPoint[] = [
     lng: -64.5320,
     description: 'Rotonda de acceso principal desde La Cumbre, La Falda y Córdoba Capital.',
     address: 'RN 38 y Av. Las Américas',
-    badgeText: 'Ruta Nacional 38'
+    badgeText: 'Ruta Nacional 38',
+    routeOrigin: 'Capilla del Monte'
   },
   {
     id: 'peaje-costa-azul',
-    title: 'Peaje Variante Costa Azul (RAC)',
+    title: 'Peaje Variante Costa Azul (Autovía Punilla)',
     category: 'peaje',
-    lat: -31.3780,
-    lng: -64.4750,
-    description: 'Puesto de cobro troncal para el ingreso a la Autovía de Punilla desde Córdoba Capital. TelePASE habilitado.',
-    address: 'RP E-55 Km 8',
-    badgeText: 'Peaje RAC $1.000'
+    lat: -31.3917,
+    lng: -64.4428,
+    description: 'Puesto de cobro troncal sobre RP E-55 (al este del Lago San Roque). Cruce fundamental para ingresar a la Autovía de Punilla hacia Capilla del Monte sin cruzar el centro urbano.',
+    address: 'Autovía Variante Costa Azul (RP E-55)',
+    badgeText: 'RAC Punilla · $1.000',
+    routeOrigin: 'Acceso Punilla / Córdoba'
+  },
+  {
+    id: 'peaje-cba-carlos-paz',
+    title: 'Peaje Autopista Córdoba - Carlos Paz (RN 20)',
+    category: 'peaje',
+    lat: -31.4552,
+    lng: -64.3400,
+    description: 'Estación troncal en Malagueño sobre la Autopista RN 20. Paso obligado para quienes ingresan a las sierras desde la Circunvalación de Córdoba, Santa Fe y Buenos Aires.',
+    address: 'Autopista Justiniano Posse (RN 20 Km 15)',
+    badgeText: 'RAC RN 20 · $1.000',
+    routeOrigin: 'Córdoba / BsAs / Santa Fe'
+  },
+  {
+    id: 'peaje-falda-canete',
+    title: 'Peaje Falda del Cañete (Altas Cumbres)',
+    category: 'peaje',
+    lat: -31.5458,
+    lng: -64.4285,
+    description: 'Puesto en el enlace entre el Camino de las Altas Cumbres (RP 34) y la autopista a Carlos Paz. Cruce directo para turistas procedentes de Mendoza, San Luis y Cuyo.',
+    address: 'RP 34 / Conexión Altas Cumbres',
+    badgeText: 'Cuyo & Cumbres · $1.000',
+    routeOrigin: 'Mendoza / San Juan / Cuyo'
+  },
+  {
+    id: 'peaje-james-craik',
+    title: 'Peaje James Craik (Autopista RN 9)',
+    category: 'peaje',
+    lat: -32.1611,
+    lng: -63.4680,
+    description: 'Cabinas troncales sobre la Autopista Rosario - Córdoba (RN 9 Km 588) entre Villa María y James Craik. Corredor directo hacia Córdoba para quienes vienen desde Santa Fe y Buenos Aires.',
+    address: 'Autopista RN 9 Km 588 (Córdoba)',
+    badgeText: 'Autopista RN 9 · $1.200',
+    routeOrigin: 'Santa Fe / Rosario / BsAs'
+  },
+  {
+    id: 'peaje-carcarana',
+    title: 'Peaje Carcarañá (Santa Fe - RN 9)',
+    category: 'peaje',
+    lat: -32.8592,
+    lng: -61.1681,
+    description: 'Estación de peaje sobre la Autopista RN 9 Km 340 en la provincia de Santa Fe. Primer peaje saliendo desde Rosario y el Litoral rumbo a las Sierras de Córdoba.',
+    address: 'Autopista Rosario - Córdoba Km 340 (Santa Fe)',
+    badgeText: 'Santa Fe · $1.100',
+    routeOrigin: 'Santa Fe / Rosario'
+  },
+  {
+    id: 'peaje-e53-aeropuerto',
+    title: 'Peaje Ruta E-53 (Aeropuerto / Camino del Cuadrado)',
+    category: 'peaje',
+    lat: -31.2950,
+    lng: -64.2480,
+    description: 'Puesto de cobro sobre RP E-53 a la salida norte de Córdoba, antes del desvío por Camino del Cuadrado (RP E-57) hacia La Falda y Capilla del Monte.',
+    address: 'RP E-53 Km 12 (Río Ceballos)',
+    badgeText: 'RAC E-53 · $1.000',
+    routeOrigin: 'Aeropuerto / Sierras Chicas'
   }
 ];

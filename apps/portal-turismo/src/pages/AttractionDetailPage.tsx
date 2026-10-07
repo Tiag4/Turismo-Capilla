@@ -17,14 +17,17 @@ export const AttractionDetailPage: React.FC = () => {
     if (item || !id) return;
     let active = true;
 
+    const currentId = id;
+    if (!currentId) return;
+
     async function fetchFromApi() {
       try {
         setLoading(true);
         let apiItem;
         try {
-          apiItem = await api.getAttractionById(id);
+          apiItem = await api.getAttractionById(currentId);
         } catch {
-          const list = await api.getAttractions({ search: id.replace(/-/g, ' ') });
+          const list = await api.getAttractions({ search: currentId.replace(/-/g, ' ') });
           apiItem = list?.[0];
         }
 

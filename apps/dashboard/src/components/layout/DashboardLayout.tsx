@@ -102,11 +102,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <main className="flex-1 min-w-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto">
           {children}
         </main>
-
-        {/* Minimal Institutional Footer */}
-        <footer className="bg-white border-t border-[var(--color-sand-200)] py-3 text-center text-xs text-[var(--color-sand-400)]">
-          Secretaría y Comisión de Turismo de Capilla del Monte — OTA Oficial
-        </footer>
       </div>
     </div>
   );

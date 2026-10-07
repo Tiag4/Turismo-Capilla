@@ -2,6 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import type { DashboardTab } from '../components/layout/DashboardNav.tsx';
 import type { UserRole } from '../types/auth.types.ts';
 
+export type AccommodationViewMode = 'list' | 'create' | 'edit';
+
+export interface RouteDetail {
+  tab: DashboardTab;
+  accommodationView: AccommodationViewMode;
+  accommodationEditId?: string;
+}
+
 export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   overview: '/panel-general',
   bookings: '/reservas',
@@ -43,56 +51,127 @@ const ROUTE_ALIASES: Record<string, DashboardTab> = {
   '/configuración': 'settings',
 };
 
-export const getTabFromPath = (pathname: string, role: UserRole): DashboardTab => {
+export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetail => {
   const normalized = decodeURIComponent(pathname.toLowerCase()).replace(/\/+$/, '');
 
+  // Sub-route: /mis-cabanas/nuevo or /alojamientos/nuevo
+  if (normalized === '/mis-cabanas/nuevo' || normalized === '/alojamientos/nuevo') {
+    return {
+      tab: 'accommodations',
+      accommodationView: 'create',
+    };
+  }
+
+  // Sub-route: /mis-cabanas/:id/editar or /alojamientos/:id/editar
+  const editMatch = normalized.match(/^\/(?:mis-cabanas|mis-cabañas|alojamientos)\/([^/]+)\/editar$/i);
+  if (editMatch && editMatch[1]) {
+    return {
+      tab: 'accommodations',
+      accommodationView: 'edit',
+      accommodationEditId: editMatch[1],
+    };
+  }
+
+  // Standard tab matching
   if (ROUTE_ALIASES[normalized]) {
-    return ROUTE_ALIASES[normalized];
+    return {
+      tab: ROUTE_ALIASES[normalized],
+      accommodationView: 'list',
+    };
   }
 
   // Fallback default per role
-  return role === 'ADMIN' ? 'overview' : 'accommodations';
+  return {
+    tab: role === 'ADMIN' ? 'overview' : 'accommodations',
+    accommodationView: 'list',
+  };
+};
+
+export const getTabFromPath = (pathname: string, role: UserRole): DashboardTab => {
+  return parseRouteFromPath(pathname, role).tab;
 };
 
 export const useDashboardRouter = (role: UserRole) => {
-  const [currentTab, setCurrentTabState] = useState<DashboardTab>(() => {
-    return getTabFromPath(window.location.pathname, role);
+  const [routeState, setRouteState] = useState<RouteDetail>(() => {
+    return parseRouteFromPath(window.location.pathname, role);
   });
 
   const navigateToTab = useCallback((tab: DashboardTab, replace = false) => {
-    setCurrentTabState(tab);
+    setRouteState({
+      tab,
+      accommodationView: 'list',
+    });
     const targetRoute = TAB_ROUTE_MAP[tab] || '/reservas';
     if (window.location.pathname !== targetRoute) {
       if (replace) {
-        window.history.replaceState({ tab }, '', targetRoute);
+        window.history.replaceState({ tab, view: 'list' }, '', targetRoute);
       } else {
-        window.history.pushState({ tab }, '', targetRoute);
+        window.history.pushState({ tab, view: 'list' }, '', targetRoute);
       }
+    }
+  }, []);
+
+  const navigateToAccommodationCreate = useCallback(() => {
+    setRouteState({
+      tab: 'accommodations',
+      accommodationView: 'create',
+    });
+    const targetRoute = '/mis-cabanas/nuevo';
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'accommodations', view: 'create' }, '', targetRoute);
+    }
+  }, []);
+
+  const navigateToAccommodationEdit = useCallback((id: string) => {
+    setRouteState({
+      tab: 'accommodations',
+      accommodationView: 'edit',
+      accommodationEditId: id,
+    });
+    const targetRoute = `/mis-cabanas/${id}/editar`;
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'accommodations', view: 'edit', id }, '', targetRoute);
+    }
+  }, []);
+
+  const navigateToAccommodationList = useCallback(() => {
+    setRouteState({
+      tab: 'accommodations',
+      accommodationView: 'list',
+    });
+    const targetRoute = '/mis-cabanas';
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'accommodations', view: 'list' }, '', targetRoute);
     }
   }, []);
 
   // Sync with browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const tab = getTabFromPath(window.location.pathname, role);
-      setCurrentTabState(tab);
+      const parsed = parseRouteFromPath(window.location.pathname, role);
+      setRouteState(parsed);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [role]);
 
-  // Sync initial URL on mount if at root or non-matching path
+  // Sync initial URL on mount if at root
   useEffect(() => {
     const currentPath = window.location.pathname.replace(/\/+$/, '');
     if (!currentPath || currentPath === '' || currentPath === '/') {
-      const defaultRoute = TAB_ROUTE_MAP[currentTab];
-      window.history.replaceState({ tab: currentTab }, '', defaultRoute);
+      const defaultRoute = TAB_ROUTE_MAP[routeState.tab];
+      window.history.replaceState({ tab: routeState.tab, view: routeState.accommodationView }, '', defaultRoute);
     }
-  }, [currentTab]);
+  }, [routeState.tab, routeState.accommodationView]);
 
   return {
-    currentTab,
+    currentTab: routeState.tab,
     setCurrentTab: navigateToTab,
+    accommodationView: routeState.accommodationView,
+    accommodationEditId: routeState.accommodationEditId,
+    navigateToAccommodationCreate,
+    navigateToAccommodationEdit,
+    navigateToAccommodationList,
   };
 };

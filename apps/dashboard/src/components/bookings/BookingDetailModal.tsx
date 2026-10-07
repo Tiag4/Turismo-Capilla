@@ -3,6 +3,7 @@ import { Calendar, User, Phone, Mail, MapPin, CheckCircle, XCircle } from 'lucid
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 import { Modal } from '../ui/Modal.tsx';
 import { Button } from '../ui/Button.tsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import { BookingStatusBadge } from './BookingStatusBadge.tsx';
 import { GuestContactActions } from './GuestContactActions.tsx';
 import { BookingVoucherPrint } from './BookingVoucherPrint.tsx';
@@ -21,152 +22,183 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   onUpdateStatus,
 }) => {
   const [isVoucherOpen, setIsVoucherOpen] = useState(false);
+  const [confirmStatus, setConfirmStatus] = useState<BookingStatus | null>(null);
 
-  if (!booking) return null;
+  // Preserve booking data while closing to avoid abrupt unmount during exit transition
+  const [cachedBooking, setCachedBooking] = useState<Booking | null>(booking);
+
+  React.useEffect(() => {
+    if (booking) {
+      setCachedBooking(booking);
+    }
+  }, [booking]);
+
+  const activeBooking = booking || cachedBooking;
+  if (!activeBooking) return null;
+
+  const handleConfirmAction = () => {
+    if (!confirmStatus) return;
+    onUpdateStatus(activeBooking.id, confirmStatus);
+    setConfirmStatus(null);
+    onClose();
+  };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={`Reserva ${booking.bookingCode}`}
-      subtitle={`Establecimiento: ${booking.accommodation?.name || 'Alojamiento'}`}
-      maxWidth="lg"
-    >
-      <div className="flex flex-col gap-6">
-        {/* Status and Total header */}
-        <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[var(--color-sand-200)]">
-          <div>
-            <span className="block text-xs uppercase font-bold text-[var(--color-sand-400)] mb-1">
-              Estado Actual
-            </span>
-            <BookingStatusBadge status={booking.status} />
-          </div>
-          <div className="text-right">
-            <span className="block text-xs uppercase font-bold text-[var(--color-sand-400)] mb-1">
-              Total Estadía ({booking.totalNights} noches)
-            </span>
-            <span className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
-              ${(booking.totalAmount ?? 0).toLocaleString('es-AR')}
-            </span>
-          </div>
-        </div>
-
-        {/* Guest Details */}
-        <div className="bg-white p-4 rounded-2xl border border-[var(--color-sand-200)] flex flex-col gap-3 text-sm">
-          <span className="text-xs uppercase font-bold text-[var(--color-sand-400)] tracking-wider">
-            Datos del Huésped Titular
-          </span>
-          <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
-            <User className="w-4 h-4 text-[var(--color-sand-400)]" />
-            <span className="font-semibold">{booking.guestName}</span>
-            <span className="text-xs text-[var(--color-sand-400)]">({booking.guestCount} personas)</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-[var(--color-sand-800)]">
-            <Mail className="w-4 h-4 text-[var(--color-sand-400)]" />
-            <span>{booking.guestEmail}</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-[var(--color-sand-800)]">
-            <Phone className="w-4 h-4 text-[var(--color-sand-400)]" />
-            <span>{booking.guestPhone}</span>
-          </div>
-          {booking.guestOrigin && (
-            <div className="flex items-center gap-2.5 text-[var(--color-sand-800)]">
-              <MapPin className="w-4 h-4 text-[var(--color-sand-400)]" />
-              <span>Procedencia: {booking.guestOrigin}</span>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={`Reserva ${activeBooking.bookingCode}`}
+        subtitle={`Establecimiento: ${activeBooking.accommodation?.name || 'Alojamiento'}`}
+        maxWidth="lg"
+      >
+        <div className="flex flex-col gap-6">
+          {/* Status and Total header */}
+          <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[var(--color-sand-200)]">
+            <div>
+              <span className="block text-xs uppercase font-bold text-[var(--color-sand-500)] mb-1">
+                Estado Actual
+              </span>
+              <BookingStatusBadge status={activeBooking.status} />
             </div>
-          )}
-        </div>
+            <div className="text-right">
+              <span className="block text-xs uppercase font-bold text-[var(--color-sand-500)] mb-1">
+                Total Estadía ({activeBooking.totalNights} noches)
+              </span>
+              <span className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+                ${(activeBooking.totalAmount ?? 0).toLocaleString('es-AR')}
+              </span>
+            </div>
+          </div>
 
-        {/* Quick Contact and Reception Actions (WhatsApp & Voucher) */}
-        <GuestContactActions
-          booking={booking}
-          onOpenVoucher={() => setIsVoucherOpen(true)}
-        />
-
-        {/* Dates Breakdown */}
-        <div className="grid grid-cols-2 gap-3 p-4 bg-white rounded-2xl border border-[var(--color-sand-200)] text-sm">
-          <div>
-            <span className="block text-xs uppercase font-bold text-[var(--color-sand-400)] mb-1">
-              Check-In (Ingreso)
+          {/* Guest Details */}
+          <div className="bg-white p-4 rounded-2xl border border-[var(--color-sand-200)] flex flex-col gap-3 text-sm">
+            <span className="text-xs uppercase font-bold text-[var(--color-sand-500)] tracking-wider">
+              Datos del Huésped Titular
             </span>
-            <div className="flex items-center gap-2 font-semibold text-[var(--color-sand-900)]">
+            <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
+              <User className="w-4 h-4 text-[var(--color-sand-500)]" />
+              <span className="font-semibold">{activeBooking.guestName}</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
+              <Phone className="w-4 h-4 text-[var(--color-sand-500)]" />
+              <span>{activeBooking.guestPhone}</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
+              <Mail className="w-4 h-4 text-[var(--color-sand-500)]" />
+              <span>{activeBooking.guestEmail}</span>
+            </div>
+            <div className="pt-2 border-t border-[var(--color-sand-200)] flex items-center justify-between">
+              <span className="text-xs text-[var(--color-sand-500)]">Acciones rápidas de contacto:</span>
+              <GuestContactActions
+                booking={activeBooking}
+                onOpenVoucher={() => setIsVoucherOpen(true)}
+              />
+            </div>
+          </div>
+
+          {/* Booking dates and stay info */}
+          <div className="bg-white p-4 rounded-2xl border border-[var(--color-sand-200)] flex flex-col gap-3 text-sm">
+            <span className="text-xs uppercase font-bold text-[var(--color-sand-500)] tracking-wider">
+              Detalle de la Estadía
+            </span>
+            <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
               <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
-              <span>{booking.checkIn}</span>
+              <span>
+                Ingreso: <strong>{activeBooking.checkIn}</strong> — Salida: <strong>{activeBooking.checkOut}</strong>
+              </span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">
+              <MapPin className="w-4 h-4 text-[var(--color-sand-500)]" />
+              <span>{activeBooking.accommodation?.locality || 'Capilla del Monte, Córdoba'}</span>
             </div>
           </div>
-          <div>
-            <span className="block text-xs uppercase font-bold text-[var(--color-sand-400)] mb-1">
-              Check-Out (Salida)
-            </span>
-            <div className="flex items-center gap-2 font-semibold text-[var(--color-sand-900)]">
-              <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
-              <span>{booking.checkOut}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Guest Notes if any */}
-        {booking.notes && (
-          <div className="p-4 bg-[var(--color-sand-100)] rounded-2xl border border-[var(--color-sand-200)] text-xs text-[var(--color-sand-800)]">
-            <span className="block font-bold text-[var(--color-sand-900)] mb-1 uppercase tracking-wider">
-              Observaciones / Solicitud del Turista:
-            </span>
-            <p className="italic">{booking.notes}</p>
-          </div>
-        )}
-
-        {/* Actions for Host */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--color-sand-200)]">
-          {booking.status === 'PENDING' && (
-            <>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => {
-                  onUpdateStatus(booking.id, 'CANCELLED');
-                  onClose();
-                }}
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Rechazar Reserva</span>
-              </Button>
-              <Button
-                variant="emerald"
-                size="sm"
-                onClick={() => {
-                  onUpdateStatus(booking.id, 'CONFIRMED');
-                  onClose();
-                }}
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Confirmar Reserva</span>
-              </Button>
-            </>
-          )}
-          {booking.status === 'CONFIRMED' && (
+          {/* Action buttons */}
+          <div className="flex items-center justify-between pt-4 border-t border-[var(--color-sand-200)]">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                onUpdateStatus(booking.id, 'COMPLETED');
-                onClose();
-              }}
+              onClick={() => setIsVoucherOpen(true)}
+              className="text-xs"
             >
-              <span>Marcar Estadía Finalizada</span>
+              Imprimir Voucher
             </Button>
-          )}
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            Cerrar
-          </Button>
-        </div>
-      </div>
 
-      {/* Printable Voucher Modal */}
-      <BookingVoucherPrint
-        booking={booking}
-        isOpen={isVoucherOpen}
-        onClose={() => setIsVoucherOpen(false)}
+            <div className="flex items-center gap-2">
+              {activeBooking.status === 'PENDING' && (
+                <>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => setConfirmStatus('CANCELLED')}
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span>Rechazar Reserva</span>
+                  </Button>
+                  <Button
+                    variant="emerald"
+                    size="sm"
+                    onClick={() => setConfirmStatus('CONFIRMED')}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Confirmar Reserva</span>
+                  </Button>
+                </>
+              )}
+              {activeBooking.status === 'CONFIRMED' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfirmStatus('COMPLETED')}
+                >
+                  <span>Marcar Estadía Finalizada</span>
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                Cerrar
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Printable Voucher Modal */}
+        <BookingVoucherPrint
+          booking={activeBooking}
+          isOpen={isVoucherOpen}
+          onClose={() => setIsVoucherOpen(false)}
+        />
+      </Modal>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(confirmStatus)}
+        onClose={() => setConfirmStatus(null)}
+        onConfirm={handleConfirmAction}
+        variant={confirmStatus === 'CANCELLED' ? 'danger' : 'emerald'}
+        title={
+          confirmStatus === 'CANCELLED'
+            ? `¿Rechazar reserva ${activeBooking.bookingCode}?`
+            : confirmStatus === 'CONFIRMED'
+            ? `¿Confirmar reserva ${activeBooking.bookingCode}?`
+            : `¿Marcar reserva ${activeBooking.bookingCode} como finalizada?`
+        }
+        description={
+          confirmStatus === 'CANCELLED'
+            ? `Esta acción cancelará la reserva de ${activeBooking.guestName}. Las fechas quedarán disponibles en el calendario para otros turistas.`
+            : confirmStatus === 'CONFIRMED'
+            ? `Se confirmará la solicitud de ${activeBooking.guestName} (${activeBooking.checkIn} al ${activeBooking.checkOut}). El turista recibirá la confirmación oficial.`
+            : `Se registrará que los huéspedes han completado su estadía en el establecimiento.`
+        }
+        confirmLabel={
+          confirmStatus === 'CANCELLED'
+            ? 'Rechazar Reserva'
+            : confirmStatus === 'CONFIRMED'
+            ? 'Confirmar Reserva'
+            : 'Marcar Finalizada'
+        }
+        cancelLabel="Volver"
       />
-    </Modal>
+    </>
   );
 };

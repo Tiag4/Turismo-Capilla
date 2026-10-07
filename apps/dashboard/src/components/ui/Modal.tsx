@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export interface ModalProps {
@@ -19,43 +20,58 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = 'lg',
 }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
-  const [isClosing, setIsClosing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsClosing(false);
+  const startClose = useCallback(() => {
+    setIsVisible(false);
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
       setShouldRender(false);
       onClose();
-    }, 200); // 200ms transition time for smooth fade/slide out
+    }, 200);
   }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
       setShouldRender(true);
-      setIsClosing(false);
-      // Mandatory scroll lock
+      // Double frame to guarantee initial opacity-0 is rendered before transitioning
+      const rAF = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+
       const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+
       return () => {
+        cancelAnimationFrame(rAF);
         document.body.style.overflow = prevOverflow;
       };
-    } else if (shouldRender && !isClosing) {
-      handleClose();
+    } else if (shouldRender && isVisible) {
+      startClose();
     }
-  }, [isOpen, shouldRender, isClosing, handleClose]);
+  }, [isOpen, shouldRender, isVisible, startClose]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && shouldRender) {
-        handleClose();
+      if (e.key === 'Escape' && shouldRender && isVisible) {
+        startClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [shouldRender, handleClose]);
+  }, [shouldRender, isVisible, startClose]);
 
-  if (!shouldRender) return null;
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
+  if (!shouldRender || typeof document === 'undefined') return null;
 
   const maxWidthStyles = {
     sm: 'max-w-md',
@@ -65,24 +81,26 @@ export const Modal: React.FC<ModalProps> = ({
     '2xl': 'max-w-4xl',
   }[maxWidth];
 
-  return (
+  return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity duration-200 ${
-        isClosing ? 'opacity-0' : 'opacity-100'
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity duration-200 ease-out ${
+        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       role="dialog"
       aria-modal="true"
     >
-      {/* Backdrop with real overlay layer */}
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#22201E]/60 backdrop-blur-xs transition-opacity"
-        onClick={handleClose}
+        className={`fixed inset-0 bg-[#22201E]/60 backdrop-blur-xs transition-opacity duration-200 ease-out ${
+          isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={startClose}
       />
 
-      {/* Modal Surface with animated slide-in and slide-out */}
+      {/* Modal Surface */}
       <div
-        className={`relative w-full ${maxWidthStyles} bg-[#FAF8F5] border border-[var(--color-sand-300)] rounded-2xl shadow-xl overflow-hidden z-10 transition-all duration-200 transform ${
-          isClosing ? 'scale-95 translate-y-2 opacity-0' : 'scale-100 translate-y-0 opacity-100'
+        className={`relative w-full ${maxWidthStyles} bg-[#FAF8F5] border border-[var(--color-sand-300)] rounded-2xl shadow-2xl overflow-hidden z-10 transition-all duration-200 ease-out transform ${
+          isVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-2 opacity-0'
         }`}
       >
         {/* Modal Header */}
@@ -92,13 +110,13 @@ export const Modal: React.FC<ModalProps> = ({
               {title}
             </h3>
             {subtitle && (
-              <p className="mt-1 text-xs text-[var(--color-sand-400)] font-medium">
+              <p className="mt-1 text-xs text-[var(--color-sand-500)] font-medium">
                 {subtitle}
               </p>
             )}
           </div>
           <button
-            onClick={handleClose}
+            onClick={startClose}
             aria-label="Cerrar modal"
             className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer"
           >
@@ -111,6 +129,7 @@ export const Modal: React.FC<ModalProps> = ({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

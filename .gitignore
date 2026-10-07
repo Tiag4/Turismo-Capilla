@@ -36,6 +36,7 @@ Thumbs.db
 
 # Temporary files
 tmp/
+scratch/
 *.tmp
 
 # Coverage

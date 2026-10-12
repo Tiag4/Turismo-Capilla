@@ -29,6 +29,69 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Multi-room inventory selection state: roomId -> quantity
+  const [roomQuantities, setRoomQuantities] = useState<Record<string, number>>(() => {
+    const firstRoom = data.roomTypes?.[0];
+    if (firstRoom) {
+      return { [firstRoom.id]: 1 };
+    }
+    return {};
+  });
+
+  useEffect(() => {
+    const firstRoom = data.roomTypes?.[0];
+    if (firstRoom) {
+      setRoomQuantities({ [firstRoom.id]: 1 });
+    }
+  }, [data.id, data.roomTypes]);
+
+  const setRoomQuantity = useCallback(
+    (roomId: string, qty: number) => {
+      const room = data.roomTypes?.find((r) => r.id === roomId);
+      const maxStock = room?.availableStock ?? 1;
+      const clamped = Math.max(0, Math.min(maxStock, qty));
+
+      setRoomQuantities((prev) => {
+        const next = { ...prev };
+        if (clamped <= 0) {
+          delete next[roomId];
+        } else {
+          next[roomId] = clamped;
+        }
+        return next;
+      });
+    },
+    [data.roomTypes]
+  );
+
+  const selectedRoomsList = useMemo(() => {
+    if (!data.roomTypes) return [];
+    return data.roomTypes
+      .map((room) => ({
+        room,
+        quantity: roomQuantities[room.id] ?? 0,
+      }))
+      .filter((item) => item.quantity > 0);
+  }, [data.roomTypes, roomQuantities]);
+
+  const totalSelectedRooms = useMemo(
+    () => selectedRoomsList.reduce((acc, item) => acc + item.quantity, 0),
+    [selectedRoomsList]
+  );
+
+  const totalSelectedCapacity = useMemo(
+    () => selectedRoomsList.reduce((acc, item) => acc + item.room.maxGuests * item.quantity, 0),
+    [selectedRoomsList]
+  );
+
+  const totalRequestedGuests = guestsSelection.adults + guestsSelection.childrenCount;
+  const isCapacitySufficient = totalSelectedRooms > 0 && totalSelectedCapacity >= totalRequestedGuests;
+
+  const nightlyRateFromRooms = useMemo(() => {
+    if (selectedRoomsList.length === 0) return data?.pricePerNight ?? 0;
+    return selectedRoomsList.reduce((acc, item) => acc + item.room.pricePerNight * item.quantity, 0);
+  }, [selectedRoomsList, data?.pricePerNight]);
+
   // Calculate nights count
   const nightsCount = useMemo(() => {
     if (!checkIn || !checkOut) return null;
@@ -40,11 +103,12 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
   }, [checkIn, checkOut]);
 
   // Calculate total price and deposit
-  const baseRate = data?.pricePerNight ?? 0;
+  const effectiveNightlyRate = nightlyRateFromRooms || (data?.pricePerNight ?? 0);
   const totalPrice = useMemo(() => {
-    if (!nightsCount || nightsCount <= 0) return null;
-    return nightsCount * baseRate;
-  }, [nightsCount, baseRate]);
+    const nights = nightsCount && nightsCount > 0 ? nightsCount : 1;
+    if (selectedRoomsList.length === 0 && !nightsCount) return null;
+    return nights * effectiveNightlyRate;
+  }, [nightsCount, effectiveNightlyRate, selectedRoomsList.length]);
 
   const depositRequired = useMemo(() => {
     if (!totalPrice) return null;
@@ -85,10 +149,14 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
 
   // WhatsApp link generation
   const whatsappUrl = useMemo(() => {
-    const datesText = checkIn && checkOut ? ` del ${checkIn} al ${checkOut} (${nightsCount ?? 0} noches)` : '';
-    const msg = `Hola! Vengo desde Turismo Capilla del Monte oficial. Me gustaría consultar disponibilidad para *${data.title}*${datesText} para *${guests} personas*.`;
+    const datesText = checkIn && checkOut ? ` del ${checkIn} al ${checkOut} (${nightsCount ?? 1} noches)` : '';
+    const roomsText =
+      selectedRoomsList.length > 0
+        ? ` (${selectedRoomsList.map((i) => `${i.quantity}x ${i.room.name}`).join(', ')})`
+        : '';
+    const msg = `Hola! Vengo desde Turismo Capilla del Monte oficial. Me gustaría consultar disponibilidad para *${data.title}*${roomsText}${datesText} para *${guests} personas*.`;
     return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
-  }, [data.title, checkIn, checkOut, nightsCount, guests]);
+  }, [data.title, checkIn, checkOut, nightsCount, guests, selectedRoomsList]);
 
   // Booking Wizard URL generation
   const wizardUrl = useMemo(() => {
@@ -100,9 +168,16 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     if (guestsSelection.childAges.length > 0) {
       params.set('childAges', guestsSelection.childAges.map((a) => (a === null ? '' : a)).join(','));
     }
-    params.set('rooms', String(guestsSelection.rooms));
+    params.set('rooms', String(Math.max(1, totalSelectedRooms)));
+    if (selectedRoomsList.length > 0) {
+      params.set(
+        'roomSelection',
+        selectedRoomsList.map((i) => `${i.room.id}:${i.quantity}`).join(',')
+      );
+      params.set('nightlyRate', String(effectiveNightlyRate));
+    }
     return `/alojamientos/${data.id}/reservar?${params.toString()}`;
-  }, [data.id, checkIn, checkOut, guestsSelection]);
+  }, [data.id, checkIn, checkOut, guestsSelection, totalSelectedRooms, selectedRoomsList, effectiveNightlyRate]);
 
   // Form submission
   const handleSubmitBooking = useCallback(
@@ -111,7 +186,6 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
       if (!guestName || !guestPhone) return;
 
       setIsSubmitting(true);
-      // Simulate direct booking request dispatch
       await new Promise((resolve) => setTimeout(resolve, 800));
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -146,6 +220,14 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     guests,
     guestsSelection,
     setGuestsSelection,
+    roomQuantities,
+    setRoomQuantity,
+    selectedRoomsList,
+    totalSelectedRooms,
+    totalSelectedCapacity,
+    totalRequestedGuests,
+    isCapacitySufficient,
+    effectiveNightlyRate,
     wizardUrl,
     nightsCount,
     totalPrice,
@@ -178,3 +260,4 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
 }
 
 export type UseAccommodationBookingReturn = ReturnType<typeof useAccommodationBooking>;
+

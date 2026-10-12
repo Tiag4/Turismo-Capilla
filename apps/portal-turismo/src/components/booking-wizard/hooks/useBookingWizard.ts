@@ -29,6 +29,8 @@ export function useBookingWizard(data: AccommodationDetailData) {
     children: 0,
     childAges: [] as (number | null)[],
     rooms: 1,
+    roomSelection: '',
+    nightlyRate: 0,
   });
 
   useEffect(() => {
@@ -42,7 +44,9 @@ export function useBookingWizard(data: AccommodationDetailData) {
       ? params.get('childAges')!.split(',').map((s) => (s ? Number(s) : null))
       : [];
     const rooms = Math.max(1, Number(params.get('rooms')) || 1);
-    setInitialParams({ checkIn, checkOut, adults, children, childAges, rooms });
+    const roomSelection = params.get('roomSelection') || '';
+    const nightlyRate = Math.max(0, Number(params.get('nightlyRate')) || 0);
+    setInitialParams({ checkIn, checkOut, adults, children, childAges, rooms, roomSelection, nightlyRate });
   }, []);
 
   const [step, setStep] = useState<2 | 3 | 'success'>(2);
@@ -74,7 +78,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
   }, []);
 
   // Pricing calculations
-  const baseRate = data.pricePerNight ?? 0;
+  const baseRate = initialParams.nightlyRate > 0 ? initialParams.nightlyRate : (data.pricePerNight ?? 0);
   const nightsCount = useMemo(() => {
     if (!initialParams.checkIn || !initialParams.checkOut) return 1;
     const diff = new Date(initialParams.checkOut).getTime() - new Date(initialParams.checkIn).getTime();

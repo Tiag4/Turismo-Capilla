@@ -12,6 +12,7 @@ import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitie
 import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
 import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
 import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
+import { AccommodationMultiRoomSelector } from './components/AccommodationMultiRoomSelector';
 
 interface AccommodationDetailContainerProps {
   place: MapPlace;
@@ -22,7 +23,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
   const booking = useAccommodationBooking({ data });
 
   return (
-    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-24 lg:pb-16">
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-28">
       {/* Mobile Title */}
       <div className="md:hidden">
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-stone-900 tracking-tight leading-tight">
@@ -54,6 +55,18 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
+      {/* Selector de Habitaciones Múltiples e Inventario (Issue #82) */}
+      <AccommodationMultiRoomSelector
+        inventoryMode={data.inventoryMode}
+        roomTypes={data.roomTypes}
+        roomQuantities={booking.roomQuantities}
+        onChangeQuantity={booking.setRoomQuantity}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
+      />
+
       {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación y Normas */}
       <div className="space-y-10 pt-6 border-t border-stone-200/80">
         <AccommodationHostAndRooms data={data} />
@@ -61,13 +74,17 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationRulesPolicies rules={data.rules} />
       </div>
 
-      {/* Bottom Dock Móvil */}
+      {/* Sticky Checkout Bar (Resumen en Tiempo Real) */}
       <AccommodationMobileBottomDock
         data={data}
         nightsCount={booking.nightsCount}
         totalPrice={booking.totalPrice}
         wizardUrl={booking.wizardUrl}
-        isVisible={!booking.isReservationCardVisible}
+        isVisible={true}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
       />
 
       {/* Modals & Drawers */}
@@ -94,3 +111,4 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
     </div>
   );
 };
+

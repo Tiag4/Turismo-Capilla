@@ -22,10 +22,17 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   audit: '/auditoria',
   moderation: '/moderacion',
   settings: '/configuracion',
+  events: '/agenda-cultural',
+  portal_cms: '/personalizador-portal',
 };
 
 // Friendly aliases and accented URL matching
 const ROUTE_ALIASES: Record<string, DashboardTab> = {
+  '/agenda-cultural': 'events',
+  '/eventos': 'events',
+  '/personalizador-portal': 'portal_cms',
+  '/cms': 'portal_cms',
+  '/personalizador': 'portal_cms',
   '/mis-cabanas': 'accommodations',
   '/mis-cabañas': 'accommodations',
   '/alojamientos': 'accommodations',

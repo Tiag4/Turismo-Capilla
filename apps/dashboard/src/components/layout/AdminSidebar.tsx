@@ -11,6 +11,8 @@ import {
   LogOut,
   Shield,
   ExternalLink,
+  CalendarDays,
+  LayoutTemplate,
 } from 'lucide-react';
 import { PORTAL_URL } from '../../config/navigation.ts';
 import type { User, UserRole } from '../../types/auth.types.ts';
@@ -34,6 +36,8 @@ interface NavItem {
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'overview', label: 'Centro de Control', icon: BarChart3 },
+  { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
+  { id: 'events', label: 'Agenda Cultural (#76)', icon: CalendarDays },
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
   { id: 'invitations', label: 'Tokens de Invitación', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },

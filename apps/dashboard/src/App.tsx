@@ -16,6 +16,8 @@ import { OccupancyReportView } from './components/reports/OccupancyReportView.ts
 import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
+import { CulturalAgendaManager } from './components/cms/CulturalAgendaManager.tsx';
+import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
@@ -45,6 +47,8 @@ export const App: React.FC = () => {
         'audit',
         'moderation',
         'settings',
+        'events',
+        'portal_cms',
       ];
       if (adminOnlyTabs.includes(currentTab)) {
         setCurrentTab('bookings');
@@ -67,6 +71,12 @@ export const App: React.FC = () => {
     >
       {currentTab === 'overview' && user.role === 'ADMIN' && (
         <AdminOverview onNavigateTab={setCurrentTab} />
+      )}
+      {currentTab === 'portal_cms' && user.role === 'ADMIN' && (
+        <PortalCustomizerPage onNavigateToEvents={() => setCurrentTab('events')} />
+      )}
+      {currentTab === 'events' && user.role === 'ADMIN' && (
+        <CulturalAgendaManager />
       )}
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (

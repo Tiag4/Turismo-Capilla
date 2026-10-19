@@ -17,6 +17,7 @@ import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
+import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
@@ -74,10 +75,17 @@ export const App: React.FC = () => {
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (
         accommodationView === 'list' ? (
-          <AccommodationList
-            onNavigateCreate={navigateToAccommodationCreate}
-            onNavigateEdit={navigateToAccommodationEdit}
-          />
+          user.role === 'ADMIN' ? (
+            <ProvidersDirectoryView
+              onNavigateCreate={navigateToAccommodationCreate}
+              onNavigateEdit={navigateToAccommodationEdit}
+            />
+          ) : (
+            <AccommodationList
+              onNavigateCreate={navigateToAccommodationCreate}
+              onNavigateEdit={navigateToAccommodationEdit}
+            />
+          )
         ) : (
           <AccommodationEditorPage
             mode={accommodationView}

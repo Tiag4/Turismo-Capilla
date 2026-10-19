@@ -38,6 +38,11 @@ export interface Accommodation {
   maxGuests: number;
   amenities: string[];
   isActive: boolean;
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   complianceStatus?: ComplianceStatus;
   auditRecord?: AccommodationAuditRecord;
   images: AccommodationImage[];
@@ -57,5 +62,10 @@ export interface CreateAccommodationDto {
   pricePerNight: number;
   maxGuests: number;
   amenities: string[];
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   images?: string[] | AccommodationImage[];
 }

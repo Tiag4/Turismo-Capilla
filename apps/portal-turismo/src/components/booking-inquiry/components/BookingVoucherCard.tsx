@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { BookingVoucherRecord } from '../types';
 
 interface BookingVoucherCardProps {
@@ -8,6 +8,24 @@ interface BookingVoucherCardProps {
 
 export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher, onPrint }) => {
   const isConfirmed = voucher.status === 'CONFIRMED';
+  const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
+
+  const downPaymentPercentage = voucher.downPaymentPercentage ?? 50;
+  const downPaymentAmount =
+    voucher.downPaymentAmount ??
+    Math.round((voucher.finalPrice ?? 0) * (downPaymentPercentage / 100));
+  const remainingBalance =
+    voucher.remainingBalance ??
+    Math.max(0, (voucher.finalPrice ?? 0) - downPaymentAmount);
+
+  const handleCopy = (text: string, field: 'cbu' | 'alias') => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    }
+  };
+
   const whatsappUrl = `https://wa.me/${(voucher.hostPhone || '5493548401122').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
     `Hola! Me comunico respecto a mi reserva oficial *${voucher.code}* en *${voucher.accommodationTitle}* a nombre de *${voucher.firstName} ${voucher.lastName}*.`,
   )}`;
@@ -111,23 +129,85 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
         </div>
       </div>
 
-      {/* Desglose Tarifario y Condiciones */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-sand-200">
-        <div className="text-xs text-sand-600 space-y-0.5">
-          <p className="font-semibold text-sand-900">
-            Abonás directamente en el alojamiento al ingresar.
-          </p>
-          <p className="text-sand-500">
-            Reserva directa oficial sin comisiones de intermediarios ni recargos adicionales.
-          </p>
+      {/* Desglose Tarifario y Condiciones de Pago */}
+      <div className="pt-2 border-t border-sand-200 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-amber-50/50 border border-amber-200/80">
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Total Estadía Pactada</span>
+            <span className="font-display font-black text-xl text-sand-900">
+              ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-sand-600">ARS</span>
+            </span>
+          </div>
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Seña Requerida ({downPaymentPercentage}%)</span>
+            <span className="font-display font-black text-xl text-amber-900">
+              ${downPaymentAmount.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-amber-800">ARS</span>
+            </span>
+          </div>
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Saldo al Check-In</span>
+            <span className="font-display font-black text-xl text-emerald-800">
+              ${remainingBalance.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-emerald-700">ARS</span>
+            </span>
+          </div>
         </div>
 
-        <div className="text-right shrink-0">
-          <span className="text-xs text-sand-500 uppercase font-semibold block">Total pactado</span>
-          <span className="font-display font-black text-2xl sm:text-3xl text-sand-950">
-            ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')}{' '}
-            <span className="text-xs font-bold text-sand-600 font-sans">ARS</span>
-          </span>
+        {/* Datos Bancarios para la Seña */}
+        <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 space-y-3">
+          <div className="border-b border-sand-200 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <h4 className="font-display font-bold text-sm text-sand-900">
+              Datos para el Depósito de la Seña Bancaria
+            </h4>
+            <span className="text-[11px] text-sand-500 font-medium">
+              Transferencia directa al anfitrión prestador
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-[10px] text-sand-500 uppercase font-bold block">Titular de la Cuenta</span>
+              <span className="font-semibold text-sand-900 block">{voucher.bankAccountHolder || 'Administración Cabañas Capilla'}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-sand-500 uppercase font-bold block">Entidad Bancaria</span>
+              <span className="font-semibold text-sand-900 block">{voucher.bankName || 'Banco de la Nación Argentina'}</span>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[10px] text-sand-500 uppercase font-bold block">CBU / CVU</span>
+                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+                  {voucher.bankCbu || '0110485530048500123456'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(voucher.bankCbu || '0110485530048500123456', 'cbu')}
+                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
+              >
+                {copied === 'cbu' ? '¡Copiado!' : 'Copiar'}
+              </button>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[10px] text-sand-500 uppercase font-bold block">Alias Bancario</span>
+                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+                  {voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL', 'alias')}
+                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
+              >
+                {copied === 'alias' ? '¡Copiado!' : 'Copiar'}
+              </button>
+            </div>
+          </div>
+          <p className="text-[11px] text-sand-500 italic pt-1">
+            Una vez realizada la transferencia de la seña, enviá el comprobante al anfitrión para validar y garantizar tu lugar.
+          </p>
         </div>
       </div>
 

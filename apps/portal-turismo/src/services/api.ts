@@ -35,6 +35,11 @@ export interface Accommodation {
   amenities: string[];
   isActive: boolean;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string | null;
+  bankCbu?: string | null;
+  bankAlias?: string | null;
+  bankName?: string | null;
   host?: {
     id: string;
     name: string;
@@ -63,6 +68,13 @@ export interface BookingResult {
   checkOut: string;
   totalNights: number;
   totalAmount: number | string;
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number | string;
+  remainingBalance?: number | string;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   guestName: string;
   accommodation?: Accommodation;

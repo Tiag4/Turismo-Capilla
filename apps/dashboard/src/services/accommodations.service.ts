@@ -131,6 +131,11 @@ export const accommodationsService = {
       pricePerNight: Number(dto.pricePerNight),
       maxGuests: Number(dto.maxGuests),
       amenities: dto.amenities || [],
+      downPaymentPercentage: dto.downPaymentPercentage ?? 50,
+      bankAccountHolder: dto.bankAccountHolder,
+      bankCbu: dto.bankCbu,
+      bankAlias: dto.bankAlias,
+      bankName: dto.bankName,
       images: formattedImages,
     };
 
@@ -153,6 +158,11 @@ export const accommodationsService = {
       pricePerNight: Number(dto.pricePerNight),
       maxGuests: Number(dto.maxGuests),
       amenities: dto.amenities,
+      downPaymentPercentage: dto.downPaymentPercentage ?? 50,
+      bankAccountHolder: dto.bankAccountHolder,
+      bankCbu: dto.bankCbu,
+      bankAlias: dto.bankAlias,
+      bankName: dto.bankName,
       isActive: true,
       hostId: 'host-01',
       images: formattedImages.map((img, i) => ({ id: `img-${Date.now()}-${i}`, ...img })),

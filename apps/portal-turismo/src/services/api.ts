@@ -3,6 +3,8 @@ const API_BASE_URL =
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
   'https://turismo-capilla-backend.onrender.com/api/v1';
 
+export type AttractionStatus = 'OPEN' | 'WEATHER_RESTRICTED' | 'CLOSED';
+
 export interface Attraction {
   id: string;
   name: string;
@@ -15,7 +17,10 @@ export interface Attraction {
   admissionFee?: number | string | null;
   latitude?: number | null;
   longitude?: number | null;
-  images: { id: string; url: string; publicId: string }[];
+  images: { id?: string; url: string; publicId?: string }[];
+  status?: AttractionStatus;
+  statusNotice?: string | null;
+  isFeatured?: boolean;
 }
 
 export interface Accommodation {

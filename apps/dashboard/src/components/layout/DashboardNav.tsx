@@ -1,11 +1,12 @@
 import React from 'react';
-import { CalendarCheck, Home, KeyRound, BarChart3 } from 'lucide-react';
+import { CalendarCheck, Home, KeyRound, BarChart3, Compass } from 'lucide-react';
 import type { UserRole } from '../../types/auth.types.ts';
 
 export type DashboardTab =
   | 'overview'
   | 'bookings'
   | 'accommodations'
+  | 'attractions'
   | 'calendar'
   | 'pricing'
   | 'performance'
@@ -30,6 +31,7 @@ export const DashboardNav: React.FC<DashboardNavProps> = ({
     ...(role === 'ADMIN'
       ? [
           { id: 'overview' as DashboardTab, label: 'Panel General', icon: BarChart3 },
+          { id: 'attractions' as DashboardTab, label: 'Atractivos y Senderos', icon: Compass },
           { id: 'invitations' as DashboardTab, label: 'Tokens de Invitación', icon: KeyRound },
         ]
       : []),

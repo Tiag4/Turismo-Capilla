@@ -18,6 +18,7 @@ import { ContentModerationView } from './components/moderation/ContentModeration
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
+import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
       const adminOnlyTabs: DashboardTab[] = [
         'overview',
         'attractions',
+        'alerts',
         'invitations',
         'reports',
         'audit',
@@ -72,6 +74,7 @@ export const App: React.FC = () => {
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
       {currentTab === 'attractions' && user.role === 'ADMIN' && <AttractionsManager />}
+      {currentTab === 'alerts' && user.role === 'ADMIN' && <AlertsManagerView />}
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (
         accommodationView === 'list' ? (

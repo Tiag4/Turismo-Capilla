@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { DASHBOARD_URL } from '../../config/navigation';
+import { PublicAlertBanner } from './PublicAlertBanner';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,6 +25,9 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
+      {/* Alerta meteorológica y de seguridad en tiempo real */}
+      <PublicAlertBanner />
+
       {/* Navbar Oficial Bespoke */}
       <header className="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md border-b border-sand-200/80">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-17 flex items-center justify-between">

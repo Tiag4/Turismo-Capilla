@@ -1,5 +1,5 @@
 import React from 'react';
-import { CalendarCheck, Home, KeyRound, BarChart3, Compass, Users } from 'lucide-react';
+import { CalendarCheck, Home, KeyRound, BarChart3, Compass, Users, AlertTriangle } from 'lucide-react';
 import type { UserRole } from '../../types/auth.types.ts';
 
 export type DashboardTab =
@@ -7,6 +7,7 @@ export type DashboardTab =
   | 'bookings'
   | 'accommodations'
   | 'attractions'
+  | 'alerts'
   | 'calendar'
   | 'pricing'
   | 'performance'
@@ -32,6 +33,7 @@ export const DashboardNav: React.FC<DashboardNavProps> = ({
       ? [
           { id: 'overview' as DashboardTab, label: 'Panel General', icon: BarChart3 },
           { id: 'attractions' as DashboardTab, label: 'Atractivos y Senderos', icon: Compass },
+          { id: 'alerts' as DashboardTab, label: 'Alertas y Seguridad', icon: AlertTriangle },
           { id: 'invitations' as DashboardTab, label: 'Tokens de Invitación', icon: KeyRound },
         ]
       : []),

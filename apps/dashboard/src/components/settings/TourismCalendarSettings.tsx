@@ -11,6 +11,7 @@ import {
 import { useTourismCalendar } from '../../hooks/useTourismCalendar.ts';
 import { SeasonModal } from './SeasonModal.tsx';
 import { Button } from '../ui/Button.tsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { TourismSeason, CreateSeasonDto, SeasonType } from '../../types/season.types.ts';
 
 export const TourismCalendarSettings: React.FC = () => {
@@ -24,6 +25,7 @@ export const TourismCalendarSettings: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSeason, setEditingSeason] = useState<TourismSeason | null>(null);
+  const [seasonToToggle, setSeasonToToggle] = useState<TourismSeason | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenCreate = () => {
@@ -172,7 +174,7 @@ export const TourismCalendarSettings: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toggleSeasonActive(season.id)}
+                    onClick={() => setSeasonToToggle(season)}
                     className="text-xs"
                     title={season.isActive ? 'Desactivar temporada' : 'Activar temporada'}
                   >
@@ -195,6 +197,26 @@ export const TourismCalendarSettings: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Confirm Season Toggle Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(seasonToToggle)}
+        onClose={() => setSeasonToToggle(null)}
+        onConfirm={() => {
+          if (seasonToToggle) {
+            toggleSeasonActive(seasonToToggle.id);
+            setSeasonToToggle(null);
+          }
+        }}
+        variant={seasonToToggle?.isActive ? 'warning' : 'emerald'}
+        title={seasonToToggle?.isActive ? 'Pausar Período Turístico' : 'Activar Período Turístico'}
+        description={
+          seasonToToggle?.isActive
+            ? `¿Estás seguro de que deseas pausar el período "${seasonToToggle.name}"? Los multiplicadores tarifarios sugeridos dejarán de aplicarse a los alojamientos.`
+            : `¿Estás seguro de que deseas activar el período "${seasonToToggle?.name}"? Se reanudarán las sugerencias tarifarias asociadas a estas fechas en el portal.`
+        }
+        confirmLabel={seasonToToggle?.isActive ? 'Pausar Período' : 'Activar Período'}
+      />
 
       {/* Season Modal */}
       <SeasonModal

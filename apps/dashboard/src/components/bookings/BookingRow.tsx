@@ -7,7 +7,7 @@ import { Button } from '../ui/Button.tsx';
 export interface BookingRowProps {
   booking: Booking;
   onViewDetail: (booking: Booking) => void;
-  onQuickStatusChange: (id: string, status: BookingStatus) => void;
+  onQuickStatusChange: (booking: Booking, status: BookingStatus) => void;
 }
 
 export const BookingRow: React.FC<BookingRowProps> = ({
@@ -65,7 +65,7 @@ export const BookingRow: React.FC<BookingRowProps> = ({
               <Button
                 variant="emerald"
                 size="sm"
-                onClick={() => onQuickStatusChange(booking.id, 'CONFIRMED')}
+                onClick={() => onQuickStatusChange(booking, 'CONFIRMED')}
                 title="Confirmar reserva"
                 className="p-1.5"
               >
@@ -74,7 +74,7 @@ export const BookingRow: React.FC<BookingRowProps> = ({
               <Button
                 variant="danger"
                 size="sm"
-                onClick={() => onQuickStatusChange(booking.id, 'CANCELLED')}
+                onClick={() => onQuickStatusChange(booking, 'CANCELLED')}
                 title="Rechazar reserva"
                 className="p-1.5"
               >

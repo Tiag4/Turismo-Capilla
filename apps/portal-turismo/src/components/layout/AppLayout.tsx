@@ -4,6 +4,7 @@ import { DASHBOARD_URL } from '../../config/navigation';
 import { OfflineBanner } from '../emergencies/OfflineBanner';
 import { EmergencyModal } from '../emergencies/EmergencyModal';
 import { EmergencyFloatingButton } from '../emergencies/EmergencyFloatingButton';
+import { PublicAlertBanner } from './PublicAlertBanner';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,6 +30,8 @@ export const AppLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
       <OfflineBanner onOpenEmergencies={() => setEmergencyModalOpen(true)} />
+      {/* Alerta meteorológica y de seguridad en tiempo real */}
+      <PublicAlertBanner />
 
       {/* Navbar Oficial Bespoke */}
       <header className="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md border-b border-sand-200/80">
@@ -77,6 +80,16 @@ export const AppLayout: React.FC = () => {
               }`}
             >
               Senderos & Paseos
+            </Link>
+            <Link
+              to="/circuitos"
+              className={`text-sm font-semibold transition-colors ${
+                location.pathname.startsWith('/circuitos')
+                  ? 'text-primary-600'
+                  : 'text-sand-700 hover:text-primary-600'
+              }`}
+            >
+              Circuitos
             </Link>
             <Link
               to="/como-llegar"
@@ -153,6 +166,9 @@ export const AppLayout: React.FC = () => {
             </Link>
             <Link to="/atractivos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Senderos & Paseos
+            </Link>
+            <Link to="/circuitos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
+              Circuitos Temáticos
             </Link>
             <Link to="/como-llegar" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Cómo Llegar
@@ -265,6 +281,7 @@ export const AppLayout: React.FC = () => {
                 </Link>
               </li>
               <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Guías habilitados</Link></li>
+              <li><Link to="/circuitos" className="hover:text-primary-400 transition-colors">Circuitos Temáticos</Link></li>
               <li><Link to="/como-llegar" className="hover:text-primary-400 transition-colors">Cómo llegar & Peajes</Link></li>
             </ul>
           </div>
@@ -298,6 +315,7 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
+            <Link to="/circuitos" className="hover:text-sand-300 transition-colors">Circuitos</Link>
             <Link to="/como-llegar" className="hover:text-sand-300 transition-colors">Cómo Llegar</Link>
             <Link to="/emergencias" className="hover:text-red-300 text-red-400 font-semibold transition-colors">Emergencias</Link>
             <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>

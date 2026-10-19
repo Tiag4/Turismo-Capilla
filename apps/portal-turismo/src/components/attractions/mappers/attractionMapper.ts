@@ -145,6 +145,9 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
     },
     isTrekking: categoryMeta.isTrekking,
     ctaUrl: `/atractivos/${slug}`,
+    status: apiItem.status ?? 'OPEN',
+    statusNotice: apiItem.statusNotice,
+    isFeatured: apiItem.isFeatured ?? false,
   };
 
   return mappedItem;

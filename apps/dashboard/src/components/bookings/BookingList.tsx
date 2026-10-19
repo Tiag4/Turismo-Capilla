@@ -4,7 +4,8 @@ import { useHostBookings } from '../../hooks/useHostBookings.ts';
 import { BookingRow } from './BookingRow.tsx';
 import { BookingDetailModal } from './BookingDetailModal.tsx';
 import { StatCard } from '../ui/StatCard.tsx';
-import type { Booking } from '../../types/booking.types.ts';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
+import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 
 export const BookingList: React.FC = () => {
   const {
@@ -19,6 +20,10 @@ export const BookingList: React.FC = () => {
   } = useHostBookings();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [pendingStatusChange, setPendingStatusChange] = useState<{
+    booking: Booking;
+    status: BookingStatus;
+  } | null>(null);
 
   const statusFilterButtons = [
     { id: 'ALL', label: 'Todas' },
@@ -126,7 +131,7 @@ export const BookingList: React.FC = () => {
                     key={booking.id}
                     booking={booking}
                     onViewDetail={(b) => setSelectedBooking(b)}
-                    onQuickStatusChange={updateBookingStatus}
+                    onQuickStatusChange={(b, s) => setPendingStatusChange({ booking: b, status: s })}
                   />
                 ))
               )}
@@ -134,6 +139,34 @@ export const BookingList: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Quick Status Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(pendingStatusChange)}
+        onClose={() => setPendingStatusChange(null)}
+        onConfirm={() => {
+          if (pendingStatusChange) {
+            updateBookingStatus(pendingStatusChange.booking.id, pendingStatusChange.status);
+            setPendingStatusChange(null);
+          }
+        }}
+        variant={pendingStatusChange?.status === 'CONFIRMED' ? 'emerald' : 'danger'}
+        title={
+          pendingStatusChange?.status === 'CONFIRMED'
+            ? 'Confirmar Reserva'
+            : 'Rechazar Reserva'
+        }
+        description={
+          pendingStatusChange?.status === 'CONFIRMED'
+            ? `¿Estás seguro de que deseas confirmar la reserva ${pendingStatusChange.booking.bookingCode} de ${pendingStatusChange.booking.guestName}? Se reservará el período del ${pendingStatusChange.booking.checkIn} al ${pendingStatusChange.booking.checkOut}.`
+            : `¿Estás seguro de que deseas rechazar la reserva ${pendingStatusChange?.booking.bookingCode} de ${pendingStatusChange?.booking.guestName}? Esta acción liberará las fechas en el calendario.`
+        }
+        confirmLabel={
+          pendingStatusChange?.status === 'CONFIRMED'
+            ? 'Confirmar Reserva'
+            : 'Rechazar Reserva'
+        }
+      />
 
       {/* Detail Modal */}
       <BookingDetailModal

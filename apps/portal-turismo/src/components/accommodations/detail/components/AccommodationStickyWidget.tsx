@@ -22,6 +22,12 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
     setCheckOut,
     guestsSelection,
     setGuestsSelection,
+    selectedRoomsList,
+    totalSelectedRooms,
+    totalSelectedCapacity,
+    totalRequestedGuests,
+    isCapacitySufficient,
+    effectiveNightlyRate,
     wizardUrl,
     nightsCount,
     totalPrice,
@@ -30,14 +36,18 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
   } = booking;
 
   const todayStr = new Date().toISOString().split('T')[0];
-  const price = data.pricePerNight ?? 0;
+  const price = effectiveNightlyRate ?? data.pricePerNight ?? 0;
+  const displayNights = nightsCount && nightsCount > 0 ? nightsCount : 1;
+  const displayTotal = totalPrice ?? price * displayNights;
 
   return (
     <aside className="md:sticky md:top-24 w-full bg-white rounded-2xl border border-stone-200 shadow-md p-6 space-y-4">
-      {/* Tarifa / Precio por noche */}
+      {/* Tarifa / Precio por noche acumulado */}
       <div className="space-y-0.5">
         <span className="text-xs font-medium text-stone-500 block">
-          Precio por noche
+          {totalSelectedRooms > 1
+            ? `Tarifa por noche (${totalSelectedRooms} unidades)`
+            : 'Precio por noche'}
         </span>
         <div className="font-display font-extrabold text-3xl text-stone-900 tracking-tight">
           ${price.toLocaleString('es-AR')} ARS
@@ -75,35 +85,90 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
         />
       </div>
 
-      {/* Desglose de Precios cuando hay fechas seleccionadas */}
-      {nightsCount && totalPrice ? (
-        <div className="space-y-1.5 pt-2 border-t border-stone-100 text-xs">
-          <div className="flex justify-between text-stone-600">
-            <span>${price.toLocaleString('es-AR')} × {nightsCount} {nightsCount === 1 ? 'noche' : 'noches'}</span>
-            <span className="font-bold text-stone-900">${totalPrice.toLocaleString('es-AR')}</span>
+      {/* Desglose de Inventario y Tarifas en Tiempo Real */}
+      <div className="space-y-1.5 pt-2 border-t border-stone-100 text-xs">
+        {selectedRoomsList && selectedRoomsList.length > 0 ? (
+          <div className="space-y-1 pb-1.5 border-b border-stone-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 block">
+              Inventario seleccionado
+            </span>
+            {selectedRoomsList.map(({ room, quantity }) => (
+              <div key={room.id} className="flex justify-between text-stone-700">
+                <span className="truncate pr-2">
+                  {quantity}× {room.name}
+                </span>
+                <span className="font-bold text-stone-900 shrink-0">
+                  ${(room.pricePerNight * quantity).toLocaleString('es-AR')}/noche
+                </span>
+              </div>
+            ))}
           </div>
-          {depositRequired && (
-            <div className="flex justify-between text-stone-600">
-              <span>Seña ({data.depositPercent}%)</span>
-              <span className="font-bold text-terracotta-700">${depositRequired.toLocaleString('es-AR')}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-sm font-black text-stone-900 pt-1.5 border-t border-stone-100">
-            <span>Total</span>
-            <span className="text-base text-terracotta-700">${totalPrice.toLocaleString('es-AR')}</span>
+        ) : (
+          <div className="text-amber-700 font-bold py-1">
+            Seleccioná al menos 1 unidad en el listado inferior.
           </div>
+        )}
+
+        <div className="flex justify-between text-stone-600 pt-1">
+          <span>
+            ${price.toLocaleString('es-AR')} × {displayNights}{' '}
+            {displayNights === 1 ? 'noche' : 'noches'}
+          </span>
+          <span className="font-bold text-stone-900">
+            ${displayTotal.toLocaleString('es-AR')}
+          </span>
         </div>
-      ) : null}
+
+        {depositRequired && (
+          <div className="flex justify-between text-stone-600">
+            <span>Seña ({data.depositPercent}%)</span>
+            <span className="font-bold text-terracotta-700">
+              ${depositRequired.toLocaleString('es-AR')}
+            </span>
+          </div>
+        )}
+
+        <div className="flex justify-between text-sm font-black text-stone-900 pt-1.5 border-t border-stone-100">
+          <span>Total estimado</span>
+          <span className="text-base text-terracotta-700">
+            ${displayTotal.toLocaleString('es-AR')} ARS
+          </span>
+        </div>
+      </div>
+
+      {/* Validación de Capacidad Previa al Checkout */}
+      {!isCapacitySufficient && (
+        <div className="p-2.5 rounded-xl bg-sand-100 border border-sand-300 text-[11px] text-stone-800 font-semibold flex items-center justify-between gap-2">
+          <span>
+            Capacidad cubierta: {totalSelectedCapacity}/{totalRequestedGuests} huéspedes.
+          </span>
+          <a
+            href="#inventario-habitaciones"
+            className="text-terracotta-700 font-extrabold underline shrink-0"
+          >
+            Sumar unidad
+          </a>
+        </div>
+      )}
 
       {/* Botón Solicitar reserva directo al Wizard */}
-      <div className="space-y-2 pt-2">
-        <Link
-          to={wizardUrl}
-          style={{ backgroundColor: '#C95627', color: '#ffffff' }}
-          className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center block"
-        >
-          Solicitar reserva
-        </Link>
+      <div className="space-y-2 pt-1">
+        {totalSelectedRooms > 0 && isCapacitySufficient ? (
+          <Link
+            to={wizardUrl}
+            style={{ backgroundColor: '#C95627', color: '#ffffff' }}
+            className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-base shadow-sm hover:brightness-95 active:brightness-90 transition-all cursor-pointer select-none text-center block"
+          >
+            Solicitar reserva
+          </Link>
+        ) : (
+          <a
+            href="#inventario-habitaciones"
+            className="w-full py-3.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-900 text-white font-display font-bold text-sm transition-colors cursor-pointer select-none text-center block"
+          >
+            Ajustar habitaciones para {totalRequestedGuests} huéspedes
+          </a>
+        )}
 
         <a
           href={whatsappUrl}
@@ -118,3 +183,4 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
     </aside>
   );
 };
+

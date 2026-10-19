@@ -25,11 +25,25 @@ export interface AccommodationAuditRecord {
   auditedBy?: string;
 }
 
+export type InventoryMode = 'SINGLE_UNIT' | 'MULTI_ROOM';
+
+export interface RoomTypeConfig {
+  id: string;
+  name: string;
+  maxGuests: number;
+  bedsSummary: string;
+  pricePerNight: number;
+  totalStock: number;
+  breakfastIncluded: boolean;
+}
+
 export interface Accommodation {
   id: string;
   name: string;
   description: string;
   type: AccommodationType;
+  inventoryMode?: InventoryMode;
+  roomTypes?: RoomTypeConfig[];
   address: string;
   locality: string;
   latitude?: number | null;
@@ -55,6 +69,8 @@ export interface CreateAccommodationDto {
   name: string;
   description: string;
   type: AccommodationType;
+  inventoryMode?: InventoryMode;
+  roomTypes?: RoomTypeConfig[];
   address: string;
   locality?: string;
   latitude?: number | null;
@@ -69,3 +85,4 @@ export interface CreateAccommodationDto {
   bankName?: string;
   images?: string[] | AccommodationImage[];
 }
+

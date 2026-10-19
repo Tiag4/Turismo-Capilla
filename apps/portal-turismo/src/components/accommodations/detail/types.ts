@@ -29,7 +29,28 @@ export interface UnitDetails {
   features: string[];
 }
 
+export type InventoryMode = 'SINGLE_UNIT' | 'MULTI_ROOM';
+
+export interface RoomTypeInventoryItem {
+  id: string;
+  name: string;
+  description: string;
+  capacityAdults: number;
+  capacityChildren: number;
+  maxGuests: number;
+  bedsSummary: string;
+  sizeSqm: number;
+  pricePerNight: number;
+  totalStock: number;
+  availableStock: number;
+  breakfastIncluded: boolean;
+  amenities: string[];
+  imageUrl: string;
+}
+
 export interface AccommodationDetailData extends MapPlace {
+  inventoryMode: InventoryMode;
+  roomTypes: RoomTypeInventoryItem[];
   gallery: string[];
   fullDescription: string[];
   host: {

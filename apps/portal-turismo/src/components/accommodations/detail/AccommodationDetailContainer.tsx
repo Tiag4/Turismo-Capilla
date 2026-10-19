@@ -14,6 +14,7 @@ import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitie
 import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
 import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
 import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
+import { AccommodationMultiRoomSelector } from './components/AccommodationMultiRoomSelector';
 import { AccommodationReviewsSection } from './components/AccommodationReviewsSection';
 import { AccommodationReviewModal } from './components/AccommodationReviewModal';
 
@@ -27,7 +28,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
   const reviewsCtrl = useAccommodationReviews(data.id, data.title, data.rating, data.reviewCount);
 
   return (
-    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-24 lg:pb-16">
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-28">
       {/* Mobile Title & Rating */}
       <div className="md:hidden space-y-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -73,6 +74,18 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
+      {/* Selector de Habitaciones Múltiples e Inventario (Issue #82) */}
+      <AccommodationMultiRoomSelector
+        inventoryMode={data.inventoryMode}
+        roomTypes={data.roomTypes}
+        roomQuantities={booking.roomQuantities}
+        onChangeQuantity={booking.setRoomQuantity}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
+      />
+
       {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación, Normas y Opiniones */}
       <div className="space-y-10 pt-6 border-t border-stone-200/80">
         <AccommodationHostAndRooms data={data} />
@@ -87,13 +100,17 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         />
       </div>
 
-      {/* Bottom Dock Móvil */}
+      {/* Sticky Checkout Bar (Resumen en Tiempo Real) */}
       <AccommodationMobileBottomDock
         data={data}
         nightsCount={booking.nightsCount}
         totalPrice={booking.totalPrice}
         wizardUrl={booking.wizardUrl}
-        isVisible={!booking.isReservationCardVisible}
+        isVisible={true}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
       />
 
       {/* Modals & Drawers */}

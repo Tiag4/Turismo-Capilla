@@ -6,10 +6,13 @@ import type {
   AccommodationType,
   CreateAccommodationDto,
   AccommodationImage,
+  InventoryMode,
+  RoomTypeConfig,
 } from '../../../types/accommodation.types.ts';
 import { GeneralInfoSection } from './sections/GeneralInfoSection.tsx';
 import { LocationSection } from './sections/LocationSection.tsx';
 import { PricingCapacitySection } from './sections/PricingCapacitySection.tsx';
+import { RoomTypesInventorySection } from './sections/RoomTypesInventorySection.tsx';
 import { PaymentBankSection } from './sections/PaymentBankSection.tsx';
 import { CategorizedAmenitiesSection } from './sections/CategorizedAmenitiesSection.tsx';
 import { PhotoGalleryDropzone } from './PhotoGalleryDropzone.tsx';
@@ -32,6 +35,34 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [type, setType] = useState<AccommodationType>(initialData?.type || 'CABIN');
+  const [inventoryMode, setInventoryMode] = useState<InventoryMode>(
+    initialData?.inventoryMode ||
+      (initialData?.type === 'HOTEL' || initialData?.type === 'HOSTEL' ? 'MULTI_ROOM' : 'SINGLE_UNIT')
+  );
+  const [roomTypes, setRoomTypes] = useState<RoomTypeConfig[]>(
+    initialData?.roomTypes && initialData.roomTypes.length > 0
+      ? initialData.roomTypes
+      : [
+          {
+            id: 'rt-default-1',
+            name: 'Doble Serrano Standard',
+            maxGuests: 2,
+            bedsSummary: '1 Cama Queen Size',
+            pricePerNight: initialData?.pricePerNight || 85000,
+            totalStock: 4,
+            breakfastIncluded: true,
+          },
+          {
+            id: 'rt-default-2',
+            name: 'Superior Familiar Vista al Cerro',
+            maxGuests: 4,
+            bedsSummary: '1 King + 2 Individuales',
+            pricePerNight: Math.round((initialData?.pricePerNight || 85000) * 1.3),
+            totalStock: 2,
+            breakfastIncluded: true,
+          },
+        ]
+  );
   const [address, setAddress] = useState(initialData?.address || '');
   const [locality, setLocality] = useState(initialData?.locality || 'Barrio La Banda');
   const [latitude, setLatitude] = useState(
@@ -97,6 +128,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       name,
       description,
       type,
+      inventoryMode,
+      roomTypes: inventoryMode === 'MULTI_ROOM' ? roomTypes : undefined,
       address,
       locality,
       latitude: latitude ? parseFloat(latitude) : null,
@@ -189,6 +222,13 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setCheckIn={setCheckIn}
           checkOut={checkOut}
           setCheckOut={setCheckOut}
+        />
+
+        <RoomTypesInventorySection
+          inventoryMode={inventoryMode}
+          setInventoryMode={setInventoryMode}
+          roomTypes={roomTypes}
+          onChangeRoomTypes={setRoomTypes}
         />
 
         <PaymentBankSection

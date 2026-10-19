@@ -153,7 +153,13 @@ let localAttractions: Attraction[] = (() => {
     const saved = localStorage.getItem('turismo_capilla_admin_attractions');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Combinar con los mocks por si falta alguno
+        const missing = MOCK_ATTRACTIONS.filter(
+          (m) => !parsed.some((p: Attraction) => p.id === m.id || p.name === m.name)
+        );
+        return [...parsed, ...missing];
+      }
     }
   } catch {
     // Ignore error
@@ -174,17 +180,23 @@ export const attractionsService = {
     try {
       const remote = await apiClient.get<Attraction[]>('/attractions');
       if (Array.isArray(remote) && remote.length > 0) {
-        // Combinar datos remotos preservando metadatos locales si existen
-        const remoteWithStatus = remote.map((item) => {
+        // Mapear elementos remotos preservando metadatos locales si no vinieron
+        const remoteWithStatus: Attraction[] = remote.map((item) => {
           const localMatch = localAttractions.find((l) => l.id === item.id || l.name === item.name);
           return {
             ...item,
             status: item.status || localMatch?.status || 'OPEN',
-            statusNotice: item.statusNotice || localMatch?.statusNotice || null,
-            isFeatured: item.isFeatured ?? localMatch?.isFeatured ?? false,
+            statusNotice: item.statusNotice !== undefined ? item.statusNotice : (localMatch?.statusNotice || null),
+            isFeatured: item.isFeatured !== undefined ? item.isFeatured : (localMatch?.isFeatured ?? false),
           };
         });
-        localAttractions = remoteWithStatus;
+
+        // Asegurar que los atractivos locales (mocks o creados localmente) que no estén en remote se conserven
+        const remainingLocal = localAttractions.filter(
+          (loc) => !remoteWithStatus.some((rem) => rem.name.toLowerCase() === loc.name.toLowerCase() || rem.id === loc.id)
+        );
+
+        localAttractions = [...remoteWithStatus, ...remainingLocal];
         saveToLocalStorage();
         return localAttractions;
       }

@@ -19,20 +19,38 @@ export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps>
 
   return (
     <div className="space-y-4 text-stone-800 text-xs sm:text-sm">
-      {/* Bloque: No se necesita tarjeta de crédito */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-5 sm:p-6 space-y-3 shadow-xs">
+      {/* Bloque: Condiciones de Pago y Seña */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-5 sm:p-6 space-y-4 shadow-xs">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+              Anticipo del {wizard.downPaymentPercentage}% requerido
+            </div>
             <h3 className="font-display font-black text-base sm:text-lg text-stone-900">
-              No se necesita tarjeta de crédito
+              Condiciones de Pago & Seña Requerida
             </h3>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              Tu estadía la gestionará <strong className="text-stone-900">{data.title}</strong> directamente en Capilla del Monte.
-              No necesitás ingresar datos bancarios ni números de tarjeta para confirmar tu solicitud oficial.
+              Para garantizar tu reserva en <strong className="text-stone-900">{data.title}</strong> se requiere una seña del <strong>{wizard.downPaymentPercentage}%</strong> mediante transferencia bancaria directa al anfitrión. El saldo restante se cancela al momento del check-in.
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0 text-amber-600">
             <Coins className="w-6 h-6" />
+          </div>
+        </div>
+
+        {/* Resumen de cálculo de anticipo */}
+        <div className="bg-stone-50 rounded-xl p-3.5 border border-stone-200 space-y-2 text-xs">
+          <div className="flex justify-between text-stone-600 font-medium">
+            <span>Total de la estadía ({wizard.nightsCount} {wizard.nightsCount === 1 ? 'noche' : 'noches'}):</span>
+            <span className="font-bold text-stone-900">${wizard.finalPrice.toLocaleString('es-AR')} ARS</span>
+          </div>
+          <div className="flex justify-between items-center text-amber-900 font-bold bg-amber-100/70 p-2 rounded-lg border border-amber-200">
+            <span>Monto a pagar como seña ({wizard.downPaymentPercentage}%):</span>
+            <span className="text-sm font-black text-amber-950">${wizard.downPaymentAmount.toLocaleString('es-AR')} ARS</span>
+          </div>
+          <div className="flex justify-between text-stone-600 font-medium px-2 py-0.5">
+            <span>Saldo a abonar en el check-in:</span>
+            <span className="font-bold text-stone-800">${wizard.remainingBalance.toLocaleString('es-AR')} ARS</span>
           </div>
         </div>
       </div>

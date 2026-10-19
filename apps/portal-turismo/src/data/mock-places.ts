@@ -19,6 +19,11 @@ export interface MapPlace {
   capacity?: string;
   zone?: string;
   ctaUrl: string;
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string | null;
+  bankCbu?: string | null;
+  bankAlias?: string | null;
+  bankName?: string | null;
 }
 
 export const MOCK_PLACES: MapPlace[] = [

@@ -177,7 +177,7 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
       quietHours: 'Horas de descanso de 23:00 a 08:00 hs',
       cancellation: 'Cancelación flexible hasta 7 días antes de la fecha de ingreso',
     },
-    depositPercent: 50,
+    depositPercent: place.downPaymentPercentage ?? 50,
     unitDetails: {
       title: 'Chalet de 2 dormitorios',
       capacityText: 'Capacidad: 2 a 5 personas (2 adultos base)',

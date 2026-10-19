@@ -90,6 +90,10 @@ export function useBookingWizard(data: AccommodationDetailData) {
   const discountAmount = Math.round(rawTotal * (form.discountPercent / 100));
   const finalPrice = Math.max(0, rawTotal - discountAmount);
 
+  const downPaymentPercentage = data.downPaymentPercentage ?? data.depositPercent ?? 50;
+  const downPaymentAmount = Math.round(finalPrice * (downPaymentPercentage / 100));
+  const remainingBalance = Math.max(0, finalPrice - downPaymentAmount);
+
   // Apply promo code
   const applyPromoCode = useCallback(() => {
     if (form.promoCode.trim().toUpperCase() === 'CAPILLA10') {
@@ -176,6 +180,13 @@ export function useBookingWizard(data: AccommodationDetailData) {
           childAges: initialParams.childAges,
           rooms: initialParams.rooms,
           finalPrice,
+          downPaymentPercentage,
+          downPaymentAmount,
+          remainingBalance,
+          bankAccountHolder: data.bankAccountHolder || 'Administración Cabañas Capilla',
+          bankCbu: data.bankCbu || '0110485530048500123456',
+          bankAlias: data.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
+          bankName: data.bankName || 'Banco de la Nación Argentina',
           status: 'PENDING_CONFIRMATION',
           createdAt: new Date().toISOString(),
         };
@@ -188,12 +199,12 @@ export function useBookingWizard(data: AccommodationDetailData) {
     setIsSubmitting(false);
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [form, data, initialParams, nightsCount, finalPrice]);
+  }, [form, data, initialParams, nightsCount, finalPrice, downPaymentPercentage, downPaymentAmount, remainingBalance]);
 
   const whatsappUrl = useMemo(() => {
-    const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS.`;
+    const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS (Seña: $${downPaymentAmount.toLocaleString('es-AR')} ARS).`;
     return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
-  }, [bookingCode, data.title, form.firstName, form.lastName, finalPrice]);
+  }, [bookingCode, data.title, form.firstName, form.lastName, finalPrice, downPaymentAmount]);
 
   return {
     step,
@@ -204,6 +215,9 @@ export function useBookingWizard(data: AccommodationDetailData) {
     nightsCount,
     rawTotal,
     finalPrice,
+    downPaymentPercentage,
+    downPaymentAmount,
+    remainingBalance,
     discountAmount,
     applyPromoCode,
     goToStep3,

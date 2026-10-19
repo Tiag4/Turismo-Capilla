@@ -74,3 +74,25 @@ export interface AccommodationDetailData extends MapPlace {
   unitDetails: UnitDetails;
 }
 
+export type ReviewAspect =
+  | 'Limpieza impecable'
+  | 'Atención del anfitrión'
+  | 'Tranquilidad serrana'
+  | 'Comodidades y equipamiento'
+  | 'Ubicación y vistas'
+  | 'Relación precio-calidad';
+
+export interface ReviewItem {
+  id: string;
+  accommodationId: string;
+  authorName: string;
+  authorOrigin?: string;
+  stayDate: string;
+  rating: number;
+  comment: string;
+  aspects: ReviewAspect[];
+  verifiedBooking: boolean;
+  bookingCode?: string;
+  createdAt: string;
+}
+

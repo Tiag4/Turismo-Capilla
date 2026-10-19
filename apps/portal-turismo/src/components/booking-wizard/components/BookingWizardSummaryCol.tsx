@@ -87,7 +87,18 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
           )}
           <div className="flex justify-between items-baseline pt-2 border-t border-stone-100 font-black text-stone-900">
             <span className="text-sm">Precio Total</span>
-            <span className="text-lg text-terracotta-700">${finalPrice.toLocaleString('es-AR')} ARS</span>
+            <span className="text-base text-stone-900">${finalPrice.toLocaleString('es-AR')} ARS</span>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-dashed border-stone-200 space-y-1.5">
+            <div className="flex justify-between items-center text-terracotta-700 font-bold bg-amber-50/60 p-2 rounded-lg border border-amber-200/50">
+              <span>Seña requerida ({wizard.downPaymentPercentage}%)</span>
+              <span className="text-sm">${wizard.downPaymentAmount.toLocaleString('es-AR')} ARS</span>
+            </div>
+            <div className="flex justify-between items-center text-stone-600 font-medium px-2 py-1 text-[11px]">
+              <span>Saldo a abonar en el check-in</span>
+              <span className="font-bold text-stone-800">${wizard.remainingBalance.toLocaleString('es-AR')} ARS</span>
+            </div>
           </div>
         </div>
         <p className="text-[10px] text-stone-500 pt-1 leading-snug">
@@ -99,8 +110,8 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
       <div className="bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5 shadow-xs text-xs">
         <div>
           <h5 className="font-bold text-stone-900">Calendario de pago</h5>
-          <p className="text-emerald-700 font-semibold text-[11px]">Sin pago por adelantado obligatorio.</p>
-          <p className="text-stone-500 text-[11px]">Coordinás la seña o el pago al ingresar directamente con el anfitrión.</p>
+          <p className="text-amber-800 font-semibold text-[11px]">Seña del {wizard.downPaymentPercentage}% vía transferencia bancaria.</p>
+          <p className="text-stone-500 text-[11px]">El saldo restante (${wizard.remainingBalance.toLocaleString('es-AR')} ARS) se cancela directamente al ingresar al alojamiento.</p>
         </div>
         <div className="pt-2 border-t border-stone-100">
           <h5 className="font-bold text-stone-900">¿Cuánto cuesta cancelar?</h5>

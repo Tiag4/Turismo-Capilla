@@ -13,6 +13,7 @@ import { GeneralInfoSection } from './sections/GeneralInfoSection.tsx';
 import { LocationSection } from './sections/LocationSection.tsx';
 import { PricingCapacitySection } from './sections/PricingCapacitySection.tsx';
 import { RoomTypesInventorySection } from './sections/RoomTypesInventorySection.tsx';
+import { PaymentBankSection } from './sections/PaymentBankSection.tsx';
 import { CategorizedAmenitiesSection } from './sections/CategorizedAmenitiesSection.tsx';
 import { PhotoGalleryDropzone } from './PhotoGalleryDropzone.tsx';
 
@@ -78,6 +79,15 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   );
   const [checkIn, setCheckIn] = useState('14:00 hs');
   const [checkOut, setCheckOut] = useState('10:00 hs');
+  const [downPaymentPercentage, setDownPaymentPercentage] = useState<number>(
+    initialData?.downPaymentPercentage ?? 50
+  );
+  const [bankAccountHolder, setBankAccountHolder] = useState(
+    initialData?.bankAccountHolder || ''
+  );
+  const [bankCbu, setBankCbu] = useState(initialData?.bankCbu || '');
+  const [bankAlias, setBankAlias] = useState(initialData?.bankAlias || '');
+  const [bankName, setBankName] = useState(initialData?.bankName || '');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
     initialData?.amenities && initialData.amenities.length > 0
       ? initialData.amenities
@@ -127,6 +137,11 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       pricePerNight: Number(pricePerNight),
       maxGuests: Number(maxGuests),
       amenities: selectedAmenities,
+      downPaymentPercentage,
+      bankAccountHolder: bankAccountHolder.trim() || undefined,
+      bankCbu: bankCbu.trim() || undefined,
+      bankAlias: bankAlias.trim() || undefined,
+      bankName: bankName.trim() || undefined,
       images,
     });
   };
@@ -214,6 +229,19 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setInventoryMode={setInventoryMode}
           roomTypes={roomTypes}
           onChangeRoomTypes={setRoomTypes}
+        />
+
+        <PaymentBankSection
+          downPaymentPercentage={downPaymentPercentage}
+          setDownPaymentPercentage={setDownPaymentPercentage}
+          bankAccountHolder={bankAccountHolder}
+          setBankAccountHolder={setBankAccountHolder}
+          bankCbu={bankCbu}
+          setBankCbu={setBankCbu}
+          bankAlias={bankAlias}
+          setBankAlias={setBankAlias}
+          bankName={bankName}
+          setBankName={setBankName}
         />
 
         <CategorizedAmenitiesSection

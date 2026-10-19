@@ -14,3 +14,18 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Registro de Service Worker para soporte Offline y PWA (HU-25)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('[PWA] Service Worker registrado exitosamente con scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.warn('[PWA] Error al registrar Service Worker:', error);
+      });
+  });
+}
+

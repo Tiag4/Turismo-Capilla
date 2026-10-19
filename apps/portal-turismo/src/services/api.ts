@@ -3,6 +3,8 @@ const API_BASE_URL =
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
   'https://turismo-capilla-backend.onrender.com/api/v1';
 
+export type AttractionStatus = 'OPEN' | 'WEATHER_RESTRICTED' | 'CLOSED';
+
 export interface Attraction {
   id: string;
   name: string;
@@ -15,7 +17,10 @@ export interface Attraction {
   admissionFee?: number | string | null;
   latitude?: number | null;
   longitude?: number | null;
-  images: { id: string; url: string; publicId: string }[];
+  images: { id?: string; url: string; publicId?: string }[];
+  status?: AttractionStatus;
+  statusNotice?: string | null;
+  isFeatured?: boolean;
 }
 
 export interface Accommodation {
@@ -30,6 +35,11 @@ export interface Accommodation {
   amenities: string[];
   isActive: boolean;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string | null;
+  bankCbu?: string | null;
+  bankAlias?: string | null;
+  bankName?: string | null;
   host?: {
     id: string;
     name: string;
@@ -58,6 +68,13 @@ export interface BookingResult {
   checkOut: string;
   totalNights: number;
   totalAmount: number | string;
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number | string;
+  remainingBalance?: number | string;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   guestName: string;
   accommodation?: Accommodation;
@@ -151,4 +168,29 @@ export const api = {
     if (!res.ok) throw new Error('Reserva no encontrada');
     return res.json();
   },
+
+  async getActiveAlert(): Promise<PublicAlert | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
+      if (res.status === 204 || res.status === 404) return null;
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };
+
+export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
+
+export interface PublicAlert {
+  id: string;
+  title: string;
+  message: string;
+  severity: AlertSeverity;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  isActive: boolean;
+  expiresAt?: string | null;
+  createdAt: string;
+}

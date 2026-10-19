@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { DASHBOARD_URL } from '../../config/navigation';
+import { OfflineBanner } from '../emergencies/OfflineBanner';
+import { EmergencyModal } from '../emergencies/EmergencyModal';
+import { EmergencyFloatingButton } from '../emergencies/EmergencyFloatingButton';
+import { PublicAlertBanner } from './PublicAlertBanner';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
   const location = useLocation();
 
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
@@ -24,6 +29,10 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-sand-50 text-sand-900 font-sans antialiased">
+      <OfflineBanner onOpenEmergencies={() => setEmergencyModalOpen(true)} />
+      {/* Alerta meteorológica y de seguridad en tiempo real */}
+      <PublicAlertBanner />
+
       {/* Navbar Oficial Bespoke */}
       <header className="sticky top-0 z-40 bg-sand-50/95 backdrop-blur-md border-b border-sand-200/80">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-17 flex items-center justify-between">
@@ -73,6 +82,16 @@ export const AppLayout: React.FC = () => {
               Senderos & Paseos
             </Link>
             <Link
+              to="/circuitos"
+              className={`text-sm font-semibold transition-colors ${
+                location.pathname.startsWith('/circuitos')
+                  ? 'text-primary-600'
+                  : 'text-sand-700 hover:text-primary-600'
+              }`}
+            >
+              Circuitos
+            </Link>
+            <Link
               to="/como-llegar"
               className={`text-sm font-semibold transition-colors ${
                 location.pathname.startsWith('/como-llegar')
@@ -102,7 +121,18 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* CTA Panel Prestador & Menú Móvil */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Botón SOS Emergencias Rápido */}
+            <button
+              type="button"
+              onClick={() => setEmergencyModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold transition-colors cursor-pointer border border-red-200"
+              aria-label="Emergencias y auxilio"
+            >
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0" />
+              <span>SOS 100/107</span>
+            </button>
+
             <a
               href={DASHBOARD_URL}
               className="hidden sm:inline-flex items-center justify-center text-xs font-semibold px-4 py-2.5 rounded-xl bg-sand-900 hover:bg-sand-800 text-white transition-colors cursor-pointer"
@@ -137,6 +167,9 @@ export const AppLayout: React.FC = () => {
             <Link to="/atractivos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Senderos & Paseos
             </Link>
+            <Link to="/circuitos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
+              Circuitos Temáticos
+            </Link>
             <Link to="/como-llegar" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Cómo Llegar
             </Link>
@@ -153,6 +186,17 @@ export const AppLayout: React.FC = () => {
             <Link to="/reservas/consulta" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Mi Reserva
             </Link>
+            <button
+              type="button"
+              onClick={() => {
+                closeMobileMenu();
+                setEmergencyModalOpen(true);
+              }}
+              className="w-full text-left flex items-center justify-between text-sm font-bold text-red-700 py-2 border-t border-sand-200"
+            >
+              <span>SOS Emergencias & Rescate</span>
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+            </button>
             <div className="pt-2 border-t border-sand-200">
               <a
                 href={DASHBOARD_URL}
@@ -237,6 +281,7 @@ export const AppLayout: React.FC = () => {
                 </Link>
               </li>
               <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Guías habilitados</Link></li>
+              <li><Link to="/circuitos" className="hover:text-primary-400 transition-colors">Circuitos Temáticos</Link></li>
               <li><Link to="/como-llegar" className="hover:text-primary-400 transition-colors">Cómo llegar & Peajes</Link></li>
             </ul>
           </div>
@@ -250,6 +295,16 @@ export const AppLayout: React.FC = () => {
               <li>Predio Estación Ferrocarril</li>
               <li>Tel: +54 3548 481903</li>
               <li>Guardia Turística: 103</li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setEmergencyModalOpen(true)}
+                  className="text-red-400 hover:text-red-300 font-bold transition-colors cursor-pointer text-left flex items-center gap-1.5"
+                >
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span>SOS Emergencias 24hs (100 / 107)</span>
+                </button>
+              </li>
               <li className="pt-1 text-xs text-sand-400">Capilla del Monte, Valle de Punilla, Córdoba</li>
             </ul>
           </div>
@@ -260,11 +315,17 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
             <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
+            <Link to="/circuitos" className="hover:text-sand-300 transition-colors">Circuitos</Link>
             <Link to="/como-llegar" className="hover:text-sand-300 transition-colors">Cómo Llegar</Link>
+            <Link to="/emergencias" className="hover:text-red-300 text-red-400 font-semibold transition-colors">Emergencias</Link>
             <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>
           </div>
         </div>
       </footer>
+
+      {/* Acceso Rápido Flotante & Modal de Emergencias (HU-25) */}
+      <EmergencyFloatingButton onOpen={() => setEmergencyModalOpen(true)} />
+      <EmergencyModal isOpen={emergencyModalOpen} onClose={() => setEmergencyModalOpen(false)} />
     </div>
   );
 };

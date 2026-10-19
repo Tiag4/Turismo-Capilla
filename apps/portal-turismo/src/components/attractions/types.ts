@@ -54,6 +54,9 @@ export interface AttractionItem {
   practicalInfo: AttractionPracticalInfo;
   isTrekking: boolean;
   ctaUrl: string;
+  status?: 'OPEN' | 'WEATHER_RESTRICTED' | 'CLOSED';
+  statusNotice?: string | null;
+  isFeatured?: boolean;
 }
 
 export interface AttractionFilterState {

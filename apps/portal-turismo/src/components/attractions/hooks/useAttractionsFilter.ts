@@ -95,6 +95,9 @@ export function useAttractionsFilter() {
     // Sorting
     list.sort((a, b) => {
       if (sortBy === 'popular') {
+        if (Boolean(b.isFeatured) !== Boolean(a.isFeatured)) {
+          return b.isFeatured ? 1 : -1;
+        }
         return b.rating * b.reviewCount - a.rating * a.reviewCount;
       }
       if (sortBy === 'cercania') {

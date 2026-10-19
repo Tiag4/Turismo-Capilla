@@ -37,6 +37,11 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     capacity: `Hasta ${item.maxGuests} personas`,
     zone: item.locality || 'Capilla del Monte',
     ctaUrl: `/alojamientos/${item.id}`,
+    downPaymentPercentage: item.downPaymentPercentage ?? 50,
+    bankAccountHolder: item.bankAccountHolder || 'Administración Cabañas Capilla',
+    bankCbu: item.bankCbu || '0110485530048500123456',
+    bankAlias: item.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
+    bankName: item.bankName || 'Banco de la Nación Argentina',
   };
 }
 

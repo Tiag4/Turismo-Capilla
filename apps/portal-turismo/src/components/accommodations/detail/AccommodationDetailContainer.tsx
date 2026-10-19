@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
+import { Star } from 'lucide-react';
 import type { MapPlace } from '../../../data/mock-places';
 import { getAccommodationDetail } from './getAccommodationDetail';
 import { useAccommodationBooking } from './hooks/useAccommodationBooking';
+import { useAccommodationReviews } from './hooks/useAccommodationReviews';
 import { AccommodationGalleryBento } from './components/AccommodationGalleryBento';
 import { AccommodationLeftCol, AccommodationDescription } from './components/AccommodationLeftCol';
 import { AccommodationCenterCol } from './components/AccommodationCenterCol';
@@ -12,6 +14,8 @@ import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitie
 import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
 import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
 import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
+import { AccommodationReviewsSection } from './components/AccommodationReviewsSection';
+import { AccommodationReviewModal } from './components/AccommodationReviewModal';
 
 interface AccommodationDetailContainerProps {
   place: MapPlace;
@@ -20,11 +24,22 @@ interface AccommodationDetailContainerProps {
 export const AccommodationDetailContainer: React.FC<AccommodationDetailContainerProps> = ({ place }) => {
   const data = useMemo(() => getAccommodationDetail(place), [place]);
   const booking = useAccommodationBooking({ data });
+  const reviewsCtrl = useAccommodationReviews(data.id, data.title, data.rating, data.reviewCount);
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-24 lg:pb-16">
-      {/* Mobile Title */}
-      <div className="md:hidden">
+      {/* Mobile Title & Rating */}
+      <div className="md:hidden space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="#opiniones-huespedes"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-900 text-white text-xs font-extrabold"
+          >
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            <span>{reviewsCtrl.stats.averageRating.toFixed(1)}</span>
+            <span className="text-stone-300 font-medium">({reviewsCtrl.stats.totalReviews} reseñas)</span>
+          </a>
+        </div>
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-stone-900 tracking-tight leading-tight">
           {data.title}
         </h1>
@@ -49,16 +64,27 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
 
       {/* Desktop (>= 768px): Grilla Fija 3 Columnas Top */}
       <div className="hidden md:grid detail-bento-grid pt-2">
-        <AccommodationLeftCol data={data} />
+        <AccommodationLeftCol
+          data={data}
+          averageRating={reviewsCtrl.stats.averageRating}
+          totalReviews={reviewsCtrl.stats.totalReviews}
+        />
         <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
-      {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación y Normas */}
+      {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación, Normas y Opiniones */}
       <div className="space-y-10 pt-6 border-t border-stone-200/80">
         <AccommodationHostAndRooms data={data} />
         <AccommodationLocationSnippet data={data} />
         <AccommodationRulesPolicies rules={data.rules} />
+        <AccommodationReviewsSection
+          reviews={reviewsCtrl.reviews}
+          stats={reviewsCtrl.stats}
+          isLoading={reviewsCtrl.isLoading}
+          submitSuccess={reviewsCtrl.submitSuccess}
+          onOpenReviewModal={reviewsCtrl.openModal}
+        />
       </div>
 
       {/* Bottom Dock Móvil */}
@@ -91,6 +117,14 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           title={data.title}
         />
       )}
+
+      <AccommodationReviewModal
+        isOpen={reviewsCtrl.isModalOpen}
+        onClose={reviewsCtrl.closeModal}
+        accommodationTitle={data.title}
+        onSubmitReview={reviewsCtrl.addReview}
+      />
     </div>
   );
 };
+

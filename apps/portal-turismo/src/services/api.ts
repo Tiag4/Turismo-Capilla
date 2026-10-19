@@ -156,4 +156,29 @@ export const api = {
     if (!res.ok) throw new Error('Reserva no encontrada');
     return res.json();
   },
+
+  async getActiveAlert(): Promise<PublicAlert | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
+      if (res.status === 204 || res.status === 404) return null;
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };
+
+export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
+
+export interface PublicAlert {
+  id: string;
+  title: string;
+  message: string;
+  severity: AlertSeverity;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  isActive: boolean;
+  expiresAt?: string | null;
+  createdAt: string;
+}

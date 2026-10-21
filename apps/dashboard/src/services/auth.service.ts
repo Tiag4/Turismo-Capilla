@@ -1,5 +1,5 @@
 import { apiClient } from './api.client.ts';
-import type { AuthResponse, LoginCredentials, User } from '../types/auth.types.ts';
+import type { AuthResponse, LoginCredentials, User, UpdateProfilePayload, ChangePasswordPayload } from '../types/auth.types.ts';
 
 const TOKEN_KEY = 'turismo_capilla_token';
 const USER_KEY = 'turismo_capilla_user';
@@ -69,6 +69,31 @@ export const authService = {
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  },
+
+  async updateProfile(payload: UpdateProfilePayload): Promise<User> {
+    try {
+      const updatedUser = await apiClient.put<User>('/auth/profile', payload);
+      localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+      return updatedUser;
+    } catch (err) {
+      const current = this.getCurrentUser();
+      if (current) {
+        const merged: User = {
+          ...current,
+          name: payload.name,
+          lastName: payload.lastName,
+          phone: payload.phone ?? current.phone,
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(merged));
+        return merged;
+      }
+      throw err;
+    }
+  },
+
+  async changePassword(payload: ChangePasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/change-password', payload);
   },
 
   logout(): void {

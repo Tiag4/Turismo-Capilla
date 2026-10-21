@@ -28,3 +28,14 @@ export interface AuthResponse {
   type?: string;
   user: User;
 }
+
+export interface UpdateProfilePayload {
+  name: string;
+  lastName: string;
+  phone?: string | null;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}

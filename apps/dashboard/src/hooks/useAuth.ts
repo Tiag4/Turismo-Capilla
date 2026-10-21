@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/auth.service.ts';
-import type { LoginCredentials, User, UserRole } from '../types/auth.types.ts';
+import type {
+  LoginCredentials,
+  User,
+  UpdateProfilePayload,
+  ChangePasswordPayload,
+} from '../types/auth.types.ts';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(() => authService.getCurrentUser());
@@ -40,17 +45,36 @@ export function useAuth() {
     setToken(null);
   }, []);
 
-  const switchRole = useCallback((newRole: UserRole) => {
-    if (!user) return;
-    const updatedUser: User = {
-      ...user,
-      role: newRole,
-      name: newRole === 'ADMIN' ? 'Comisión' : 'Roberto',
-      lastName: newRole === 'ADMIN' ? 'Turismo' : 'Gómez (Cabañas)',
-    };
-    setUser(updatedUser);
-    localStorage.setItem('turismo_capilla_user', JSON.stringify(updatedUser));
-  }, [user]);
+  const updateProfile = useCallback(async (payload: UpdateProfilePayload) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const updated = await authService.updateProfile(payload);
+      setUser(updated);
+      return updated;
+    } catch (err: any) {
+      const msg = err.message || 'Error al actualizar el perfil';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const changePassword = useCallback(async (payload: ChangePasswordPayload) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await authService.changePassword(payload);
+      return res;
+    } catch (err: any) {
+      const msg = err.message || 'Error al cambiar la contraseña';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   return {
     user,
@@ -62,6 +86,7 @@ export function useAuth() {
     error,
     login,
     logout,
-    switchRole,
+    updateProfile,
+    changePassword,
   };
 }

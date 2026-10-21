@@ -1,9 +1,7 @@
 import React from 'react';
 import { useAuth } from './hooks/useAuth.ts';
-import type { UserRole } from './types/auth.types.ts';
 import { LoginForm } from './components/auth/LoginForm.tsx';
 import { DashboardLayout } from './components/layout/DashboardLayout.tsx';
-import { type DashboardTab } from './components/layout/DashboardNav.tsx';
 import { BookingList } from './components/bookings/BookingList.tsx';
 import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
 import { AccommodationEditorPage } from './components/accommodations/editor/AccommodationEditorPage.tsx';
@@ -24,12 +22,22 @@ import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx'
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
-
+import { ProfileView } from './components/profile/ProfileView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
 export const App: React.FC = () => {
-  const { user, isAuthenticated, isLoading, error, login, logout, switchRole } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    login,
+    logout,
+    updateProfile,
+    changePassword,
+  } = useAuth();
+
   const {
     currentTab,
     setCurrentTab,
@@ -49,39 +57,12 @@ export const App: React.FC = () => {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
   }
 
-  const handleSwitchRole = (role: UserRole) => {
-    switchRole(role);
-    if (role === 'HOST') {
-      const adminOnlyTabs: DashboardTab[] = [
-        'overview',
-        'attractions',
-        'alerts',
-        'invitations',
-        'reports',
-        'audit',
-        'moderation',
-        'settings',
-        'events',
-        'portal_cms',
-      ];
-      if (adminOnlyTabs.includes(currentTab)) {
-        setCurrentTab('bookings');
-      }
-    } else {
-      const hostOnlyTabs: DashboardTab[] = ['calendar', 'pricing', 'performance'];
-      if (hostOnlyTabs.includes(currentTab)) {
-        setCurrentTab('overview');
-      }
-    }
-  };
-
   return (
     <DashboardLayout
       user={user}
       currentTab={currentTab}
       onTabChange={setCurrentTab}
       onLogout={logout}
-      onSwitchRole={handleSwitchRole}
     >
       {currentTab === 'overview' && user.role === 'ADMIN' && (
         <AdminOverview onNavigateTab={setCurrentTab} />
@@ -143,6 +124,13 @@ export const App: React.FC = () => {
       {currentTab === 'calendar' && <BookingCalendar />}
       {currentTab === 'pricing' && <SeasonalRatesManager />}
       {currentTab === 'performance' && <HostPerformanceView />}
+      {currentTab === 'profile' && (
+        <ProfileView
+          user={user}
+          onUpdateProfile={updateProfile}
+          onChangePassword={changePassword}
+        />
+      )}
     </DashboardLayout>
   );
 };

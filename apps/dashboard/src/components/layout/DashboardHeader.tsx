@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, LogIn, ChevronDown } from 'lucide-react';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
 import { UserMenuDropdown } from './UserMenuDropdown.tsx';
 import { Button } from '../ui/Button.tsx';
@@ -10,7 +10,6 @@ export interface DashboardHeaderProps {
   isAuthenticated?: boolean;
   onLogin?: () => void;
   onLogout: () => void;
-  onSwitchRole: (role: UserRole) => void;
   onOpenMobileMenu?: () => void;
   onToggleMobileMenu?: () => void;
   hideBrandOnDesktop?: boolean;
@@ -23,7 +22,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   isAuthenticated = true,
   onLogin,
   onLogout,
-  onSwitchRole,
   onOpenMobileMenu,
   onToggleMobileMenu,
   hideBrandOnDesktop = false,
@@ -128,7 +126,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 user={user}
                 currentTab={currentTab}
                 onTabChange={onTabChange}
-                onSwitchRole={onSwitchRole}
                 onLogout={onLogout}
                 isOpen={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}

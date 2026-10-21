@@ -45,7 +45,45 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     }
   }
 
-  // 3. Notificar a componentes reactivos si hay actualización de eventos
+  // 3. Actualizar Final CTA en vivo si hay textos personalizados
+  if (payload.finalCtaConfig) {
+    if (payload.finalCtaConfig.title) {
+      const titleEl = document.querySelector('[data-cta-title]');
+      if (titleEl) {
+        titleEl.textContent = payload.finalCtaConfig.title;
+      }
+    }
+    if (payload.finalCtaConfig.subtitle) {
+      const descEl = document.querySelector('[data-cta-subtitle]');
+      if (descEl) {
+        descEl.textContent = payload.finalCtaConfig.subtitle;
+      }
+    }
+    if (payload.finalCtaConfig.buttonText) {
+      const btnEl = document.querySelector('[data-cta-button]');
+      if (btnEl) {
+        btnEl.textContent = payload.finalCtaConfig.buttonText;
+      }
+    }
+  }
+
+  // 4. Actualizar Bloque Uritorco en vivo si hay textos personalizados
+  if (payload.uritorcoConfig) {
+    if (payload.uritorcoConfig.title) {
+      const titleEl = document.querySelector('[data-uritorco-title]');
+      if (titleEl) {
+        titleEl.textContent = payload.uritorcoConfig.title;
+      }
+    }
+    if (payload.uritorcoConfig.subtitle) {
+      const descEl = document.querySelector('[data-uritorco-desc]');
+      if (descEl) {
+        descEl.textContent = payload.uritorcoConfig.subtitle;
+      }
+    }
+  }
+
+  // 5. Notificar a componentes reactivos si hay actualización de eventos
   if (payload.events && window.__portalEventUpdateCallback) {
     window.__portalEventUpdateCallback(payload.events);
   }

@@ -12,6 +12,15 @@ export interface PortalCMSConfig {
     title: string;
     subtitle: string;
   };
+  finalCtaConfig?: {
+    title: string;
+    subtitle: string;
+    buttonText: string;
+  };
+  uritorcoConfig?: {
+    title: string;
+    subtitle: string;
+  };
 }
 
 export const CANONICAL_HOME_SECTIONS: HomeSectionItem[] = [
@@ -97,5 +106,14 @@ export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
   heroConfig: {
     title: 'El valle del Uritorco, directo y sin intermediarios.',
     subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+  },
+  finalCtaConfig: {
+    title: '¿Listo para descubrir Capilla del Monte?',
+    subtitle: 'Encontrá tu próximo lugar favorito y empezá a planificar tu visita.',
+    buttonText: 'Explorar ahora',
+  },
+  uritorcoConfig: {
+    title: 'Cerro Uritorco',
+    subtitle: 'El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.',
   },
 };

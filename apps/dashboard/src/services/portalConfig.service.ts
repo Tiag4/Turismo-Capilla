@@ -19,6 +19,14 @@ export const portalConfigService = {
             ...DEFAULT_PORTAL_CONFIG.heroConfig,
             ...(parsed.heroConfig || {}),
           },
+          finalCtaConfig: {
+            ...DEFAULT_PORTAL_CONFIG.finalCtaConfig,
+            ...(parsed.finalCtaConfig || {}),
+          },
+          uritorcoConfig: {
+            ...DEFAULT_PORTAL_CONFIG.uritorcoConfig,
+            ...(parsed.uritorcoConfig || {}),
+          },
         };
       }
     } catch {

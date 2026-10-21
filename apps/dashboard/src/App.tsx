@@ -79,7 +79,10 @@ export const App: React.FC = () => {
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
       {currentTab === 'portal_cms' && user.role === 'ADMIN' && (
-        <PortalCustomizerPage onNavigateToEvents={() => setCurrentTab('events')} />
+        <PortalCustomizerPage
+          onNavigateToEvents={() => setCurrentTab('events')}
+          onNavigateToAccommodations={() => setCurrentTab('accommodations')}
+        />
       )}
       {currentTab === 'events' && user.role === 'ADMIN' && (
         eventView === 'list' ? (

@@ -22,6 +22,8 @@ export function usePreviewCommunication({
         sectionsOrder: config.sectionsOrder,
         sectionsVisibility: config.sectionsVisibility,
         heroConfig: config.heroConfig,
+        finalCtaConfig: config.finalCtaConfig,
+        uritorcoConfig: config.uritorcoConfig,
         events: events,
       };
       iframeRef.current.contentWindow.postMessage(payload, '*');

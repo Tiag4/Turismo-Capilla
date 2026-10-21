@@ -9,6 +9,15 @@ export interface PortalCMSPreviewPayload {
     title?: string;
     subtitle?: string;
   };
+  finalCtaConfig?: {
+    title?: string;
+    subtitle?: string;
+    buttonText?: string;
+  };
+  uritorcoConfig?: {
+    title?: string;
+    subtitle?: string;
+  };
   events?: CulturalEvent[];
 }
 

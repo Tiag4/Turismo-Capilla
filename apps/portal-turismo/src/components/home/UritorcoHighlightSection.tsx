@@ -19,10 +19,16 @@ export const UritorcoHighlightSection: React.FC = () => {
       <div className="w-full bg-[#0e261d] -mt-16 sm:-mt-28 relative z-10 rounded-t-[32px] sm:rounded-t-[48px] border-t border-white/10 pt-12 sm:pt-16 pb-16 sm:pb-24">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
           <div className="max-w-4xl space-y-4">
-            <h2 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.05]">
+            <h2
+              data-uritorco-title
+              className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.05]"
+            >
               Cerro Uritorco
             </h2>
-            <p className="text-base sm:text-xl text-sand-100/90 leading-relaxed font-normal max-w-3xl">
+            <p
+              data-uritorco-desc
+              className="text-base sm:text-xl text-sand-100/90 leading-relaxed font-normal max-w-3xl"
+            >
               El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.
             </p>
           </div>
@@ -51,27 +57,21 @@ export const UritorcoHighlightSection: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-primary-400">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
-                <span className="text-[11px] font-bold tracking-widest uppercase text-sand-300">Acceso</span>
+                <span className="text-[11px] font-bold tracking-widest uppercase text-sand-300">Ingreso</span>
               </div>
-              <p className="font-display font-bold text-xl sm:text-2xl text-white tracking-tight">Camino al Cerro, 4 km</p>
+              <p className="font-display font-bold text-xl sm:text-2xl text-white tracking-tight">Arancelado</p>
             </div>
           </div>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="pt-2">
             <Link
               to="/atractivos/uritorco"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-xs tracking-wide transition-colors shadow-xl shadow-primary-500/25 cursor-pointer"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-sand-900 font-bold text-sm tracking-wide hover:bg-sand-100 transition-colors cursor-pointer"
             >
-              <span>Descubrir destino</span>
+              <span>Ver detalles y recomendaciones de ascenso</span>
               <span>→</span>
-            </Link>
-            <Link
-              to="/alojamientos?zone=la-toma"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white/10 hover:bg-white/15 active:bg-white/20 text-white font-bold text-xs tracking-wide transition-colors border border-white/20 text-center cursor-pointer"
-            >
-              Dormir cerca del cerro
             </Link>
           </div>
         </div>

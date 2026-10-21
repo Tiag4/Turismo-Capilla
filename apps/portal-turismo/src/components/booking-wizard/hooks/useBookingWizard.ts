@@ -29,6 +29,8 @@ export function useBookingWizard(data: AccommodationDetailData) {
     children: 0,
     childAges: [] as (number | null)[],
     rooms: 1,
+    roomSelection: '',
+    nightlyRate: 0,
   });
 
   useEffect(() => {
@@ -42,7 +44,9 @@ export function useBookingWizard(data: AccommodationDetailData) {
       ? params.get('childAges')!.split(',').map((s) => (s ? Number(s) : null))
       : [];
     const rooms = Math.max(1, Number(params.get('rooms')) || 1);
-    setInitialParams({ checkIn, checkOut, adults, children, childAges, rooms });
+    const roomSelection = params.get('roomSelection') || '';
+    const nightlyRate = Math.max(0, Number(params.get('nightlyRate')) || 0);
+    setInitialParams({ checkIn, checkOut, adults, children, childAges, rooms, roomSelection, nightlyRate });
   }, []);
 
   const [step, setStep] = useState<2 | 3 | 'success'>(2);
@@ -74,7 +78,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
   }, []);
 
   // Pricing calculations
-  const baseRate = data.pricePerNight ?? 0;
+  const baseRate = initialParams.nightlyRate > 0 ? initialParams.nightlyRate : (data.pricePerNight ?? 0);
   const nightsCount = useMemo(() => {
     if (!initialParams.checkIn || !initialParams.checkOut) return 1;
     const diff = new Date(initialParams.checkOut).getTime() - new Date(initialParams.checkIn).getTime();
@@ -85,6 +89,10 @@ export function useBookingWizard(data: AccommodationDetailData) {
   const rawTotal = nightsCount * baseRate;
   const discountAmount = Math.round(rawTotal * (form.discountPercent / 100));
   const finalPrice = Math.max(0, rawTotal - discountAmount);
+
+  const downPaymentPercentage = data.downPaymentPercentage ?? data.depositPercent ?? 50;
+  const downPaymentAmount = Math.round(finalPrice * (downPaymentPercentage / 100));
+  const remainingBalance = Math.max(0, finalPrice - downPaymentAmount);
 
   // Apply promo code
   const applyPromoCode = useCallback(() => {
@@ -172,6 +180,13 @@ export function useBookingWizard(data: AccommodationDetailData) {
           childAges: initialParams.childAges,
           rooms: initialParams.rooms,
           finalPrice,
+          downPaymentPercentage,
+          downPaymentAmount,
+          remainingBalance,
+          bankAccountHolder: data.bankAccountHolder || 'Administración Cabañas Capilla',
+          bankCbu: data.bankCbu || '0110485530048500123456',
+          bankAlias: data.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
+          bankName: data.bankName || 'Banco de la Nación Argentina',
           status: 'PENDING_CONFIRMATION',
           createdAt: new Date().toISOString(),
         };
@@ -184,12 +199,12 @@ export function useBookingWizard(data: AccommodationDetailData) {
     setIsSubmitting(false);
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [form, data, initialParams, nightsCount, finalPrice]);
+  }, [form, data, initialParams, nightsCount, finalPrice, downPaymentPercentage, downPaymentAmount, remainingBalance]);
 
   const whatsappUrl = useMemo(() => {
-    const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS.`;
+    const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS (Seña: $${downPaymentAmount.toLocaleString('es-AR')} ARS).`;
     return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
-  }, [bookingCode, data.title, form.firstName, form.lastName, finalPrice]);
+  }, [bookingCode, data.title, form.firstName, form.lastName, finalPrice, downPaymentAmount]);
 
   return {
     step,
@@ -200,6 +215,9 @@ export function useBookingWizard(data: AccommodationDetailData) {
     nightsCount,
     rawTotal,
     finalPrice,
+    downPaymentPercentage,
+    downPaymentAmount,
+    remainingBalance,
     discountAmount,
     applyPromoCode,
     goToStep3,

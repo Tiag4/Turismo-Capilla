@@ -16,9 +16,15 @@ import { OccupancyReportView } from './components/reports/OccupancyReportView.ts
 import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
+
 import { CulturalAgendaManager } from './components/cms/CulturalAgendaManager.tsx';
 import { EventEditorPage } from './components/cms/EventEditorPage.tsx';
 import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx';
+
+import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
+import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
+import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
+
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
@@ -48,6 +54,8 @@ export const App: React.FC = () => {
     if (role === 'HOST') {
       const adminOnlyTabs: DashboardTab[] = [
         'overview',
+        'attractions',
+        'alerts',
         'invitations',
         'reports',
         'audit',
@@ -78,6 +86,7 @@ export const App: React.FC = () => {
       {currentTab === 'overview' && user.role === 'ADMIN' && (
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
+
       {currentTab === 'portal_cms' && user.role === 'ADMIN' && (
         <PortalCustomizerPage
           onNavigateToEvents={() => setCurrentTab('events')}
@@ -99,13 +108,24 @@ export const App: React.FC = () => {
           />
         )
       )}
+
+      {currentTab === 'attractions' && user.role === 'ADMIN' && <AttractionsManager />}
+      {currentTab === 'alerts' && user.role === 'ADMIN' && <AlertsManagerView />}
+
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (
         accommodationView === 'list' ? (
-          <AccommodationList
-            onNavigateCreate={navigateToAccommodationCreate}
-            onNavigateEdit={navigateToAccommodationEdit}
-          />
+          user.role === 'ADMIN' ? (
+            <ProvidersDirectoryView
+              onNavigateCreate={navigateToAccommodationCreate}
+              onNavigateEdit={navigateToAccommodationEdit}
+            />
+          ) : (
+            <AccommodationList
+              onNavigateCreate={navigateToAccommodationCreate}
+              onNavigateEdit={navigateToAccommodationEdit}
+            />
+          )
         ) : (
           <AccommodationEditorPage
             mode={accommodationView}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   BarChart3,
   Home,
+  Compass,
   KeyRound,
   FileSpreadsheet,
   ShieldCheck,
@@ -36,8 +37,12 @@ interface NavItem {
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'overview', label: 'Centro de Control', icon: BarChart3 },
+
   { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
   { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
+
+  { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
+
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
   { id: 'invitations', label: 'Tokens de Invitación', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },

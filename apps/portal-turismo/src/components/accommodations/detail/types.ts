@@ -29,7 +29,28 @@ export interface UnitDetails {
   features: string[];
 }
 
+export type InventoryMode = 'SINGLE_UNIT' | 'MULTI_ROOM';
+
+export interface RoomTypeInventoryItem {
+  id: string;
+  name: string;
+  description: string;
+  capacityAdults: number;
+  capacityChildren: number;
+  maxGuests: number;
+  bedsSummary: string;
+  sizeSqm: number;
+  pricePerNight: number;
+  totalStock: number;
+  availableStock: number;
+  breakfastIncluded: boolean;
+  amenities: string[];
+  imageUrl: string;
+}
+
 export interface AccommodationDetailData extends MapPlace {
+  inventoryMode: InventoryMode;
+  roomTypes: RoomTypeInventoryItem[];
   gallery: string[];
   fullDescription: string[];
   host: {
@@ -52,3 +73,26 @@ export interface AccommodationDetailData extends MapPlace {
   depositPercent: number;
   unitDetails: UnitDetails;
 }
+
+export type ReviewAspect =
+  | 'Limpieza impecable'
+  | 'Atención del anfitrión'
+  | 'Tranquilidad serrana'
+  | 'Comodidades y equipamiento'
+  | 'Ubicación y vistas'
+  | 'Relación precio-calidad';
+
+export interface ReviewItem {
+  id: string;
+  accommodationId: string;
+  authorName: string;
+  authorOrigin?: string;
+  stayDate: string;
+  rating: number;
+  comment: string;
+  aspects: ReviewAspect[];
+  verifiedBooking: boolean;
+  bookingCode?: string;
+  createdAt: string;
+}
+

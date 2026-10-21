@@ -1,5 +1,98 @@
 import type { MapPlace } from '../../../data/mock-places';
-import type { AccommodationDetailData } from './types';
+import type { AccommodationDetailData, InventoryMode, RoomTypeInventoryItem } from './types';
+
+function inferInventoryMode(place: MapPlace): InventoryMode {
+  const cat = (place.category || '').toLowerCase();
+  const title = (place.title || '').toLowerCase();
+  if (
+    cat.includes('hotel') ||
+    cat.includes('hostería') ||
+    cat.includes('hosteria') ||
+    cat.includes('casona') ||
+    cat.includes('complejo') ||
+    title.includes('hostería') ||
+    title.includes('hotel') ||
+    title.includes('casona') ||
+    title.includes('cabañas')
+  ) {
+    return 'MULTI_ROOM';
+  }
+  return 'SINGLE_UNIT';
+}
+
+function buildRoomTypes(place: MapPlace, basePrice: number, mode: InventoryMode): RoomTypeInventoryItem[] {
+  if (mode === 'SINGLE_UNIT') {
+    return [
+      {
+        id: `${place.id}-unit-main`,
+        name: `Unidad Completa — ${place.title}`,
+        description: 'Alquiler exclusivo de la propiedad completa con privacidad total y parque propio.',
+        capacityAdults: 4,
+        capacityChildren: 2,
+        maxGuests: 5,
+        bedsSummary: '1 Cama King Size + 2 Camas Individuales',
+        sizeSqm: 62,
+        pricePerNight: basePrice,
+        totalStock: 1,
+        availableStock: 1,
+        breakfastIncluded: Boolean(place.amenities?.some((a) => a.toLowerCase().includes('desayuno'))),
+        amenities: ['Cocina equipada', 'Parrilla individual', 'Cochera techada', 'WiFi Fibra'],
+        imageUrl: place.imageUrl || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80',
+      },
+    ];
+  }
+
+  return [
+    {
+      id: `${place.id}-room-std`,
+      name: 'Doble Serrano Standard',
+      description: 'Unidad luminosa con vista al jardín autóctono, calefacción central y baño privado.',
+      capacityAdults: 2,
+      capacityChildren: 1,
+      maxGuests: 2,
+      bedsSummary: '1 Cama Queen Size (o 2 Twin)',
+      sizeSqm: 28,
+      pricePerNight: basePrice,
+      totalStock: 5,
+      availableStock: 4,
+      breakfastIncluded: true,
+      amenities: ['Desayuno serrano', 'WiFi alta velocidad', 'Aire frío/calor', 'Baño privado'],
+      imageUrl: place.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      id: `${place.id}-room-sup`,
+      name: 'Superior Vista al Cerro Uritorco',
+      description: 'Balcón o deck privado orientado a las sierras, frigobar, ropa blanca premium y cochera.',
+      capacityAdults: 3,
+      capacityChildren: 1,
+      maxGuests: 3,
+      bedsSummary: '1 Cama King Size + 1 Individual',
+      sizeSqm: 38,
+      pricePerNight: Math.round(basePrice * 1.25),
+      totalStock: 4,
+      availableStock: 3,
+      breakfastIncluded: true,
+      amenities: ['Vista al Uritorco', 'Deck privado', 'Desayuno incluido', 'Frigobar', 'Cochera cubierta'],
+      imageUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      id: `${place.id}-room-fam`,
+      name: 'Suite / Cabaña Familiar 2 Ambientes',
+      description: 'Dos dormitorios independientes, estar con hogar a leña, cocina completa y asador propio.',
+      capacityAdults: 4,
+      capacityChildren: 2,
+      maxGuests: 5,
+      bedsSummary: '1 Cama King Size + 3 Camas Individuales',
+      sizeSqm: 56,
+      pricePerNight: Math.round(basePrice * 1.55),
+      totalStock: 3,
+      availableStock: 2,
+      breakfastIncluded: true,
+      amenities: ['2 Dormitorios', 'Cocina completa', 'Hogar a leña', 'Asador individual', 'Cochera doble'],
+      imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    },
+  ];
+}
 
 export function getAccommodationDetail(place: MapPlace): AccommodationDetailData {
   // Use place image as hero and complementary high-res mountain hospitality photos
@@ -11,8 +104,14 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
   ];
 
+  const basePrice = place.pricePerNight ?? 95000;
+  const inventoryMode = inferInventoryMode(place);
+  const roomTypes = buildRoomTypes(place, basePrice, inventoryMode);
+
   return {
     ...place,
+    inventoryMode,
+    roomTypes,
     gallery,
     fullDescription: [
       `${place.title} es un establecimiento habilitado oficialmente en la zona de ${place.zone || 'Capilla del Monte'}. ${place.subtitle}.`,
@@ -78,7 +177,7 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
       quietHours: 'Horas de descanso de 23:00 a 08:00 hs',
       cancellation: 'Cancelación flexible hasta 7 días antes de la fecha de ingreso',
     },
-    depositPercent: 50,
+    depositPercent: place.downPaymentPercentage ?? 50,
     unitDetails: {
       title: 'Chalet de 2 dormitorios',
       capacityText: 'Capacidad: 2 a 5 personas (2 adultos base)',

@@ -50,6 +50,8 @@ export interface Accommodation {
   longitude?: number | null;
   pricePerNight: number;
   maxGuests: number;
+  hasBreakfast?: boolean;
+  breakfastType?: string;
   amenities: string[];
   isActive: boolean;
   downPaymentPercentage?: number;
@@ -77,6 +79,8 @@ export interface CreateAccommodationDto {
   longitude?: number | null;
   pricePerNight: number;
   maxGuests: number;
+  hasBreakfast?: boolean;
+  breakfastType?: string;
   amenities: string[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string;
@@ -85,4 +89,3 @@ export interface CreateAccommodationDto {
   bankName?: string;
   images?: string[] | AccommodationImage[];
 }
-

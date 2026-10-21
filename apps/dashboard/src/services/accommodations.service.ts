@@ -4,6 +4,7 @@ import type { Accommodation, CreateAccommodationDto } from '../types/accommodati
 const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
     id: 'acc-1',
+    hasBreakfast: false,
     name: 'Cabañas Pircas del Uritorco',
     description: 'Cabaña serrana de piedra y tronco al pie del cerro con vistas panorámicas únicas y piscina climatizada.',
     type: 'CABIN',
@@ -25,6 +26,8 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
   },
   {
     id: 'acc-2',
+    hasBreakfast: true,
+    breakfastType: 'Desayuno serrano casero',
     name: 'Casona Histórica San Esteban',
     description: 'Hostería colonial restaurada en el casco histórico, a 4 cuadras de la Calle Techada.',
     type: 'HOTEL',
@@ -45,6 +48,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
   },
   {
     id: 'acc-3',
+    hasBreakfast: false,
     name: 'Refugio Los Alazanes',
     description: 'Monoambiente de montaña con deck privado con vista al atardecer sobre el Dique El Cajón.',
     type: 'APARTMENT',
@@ -130,6 +134,8 @@ export const accommodationsService = {
       longitude: dto.longitude ?? -64.515,
       pricePerNight: Number(dto.pricePerNight),
       maxGuests: Number(dto.maxGuests),
+      hasBreakfast: Boolean(dto.hasBreakfast),
+      breakfastType: dto.hasBreakfast ? dto.breakfastType : undefined,
       amenities: dto.amenities || [],
       downPaymentPercentage: dto.downPaymentPercentage ?? 50,
       bankAccountHolder: dto.bankAccountHolder,
@@ -157,6 +163,8 @@ export const accommodationsService = {
       longitude: dto.longitude,
       pricePerNight: Number(dto.pricePerNight),
       maxGuests: Number(dto.maxGuests),
+      hasBreakfast: Boolean(dto.hasBreakfast),
+      breakfastType: dto.hasBreakfast ? dto.breakfastType : undefined,
       amenities: dto.amenities,
       downPaymentPercentage: dto.downPaymentPercentage ?? 50,
       bankAccountHolder: dto.bankAccountHolder,

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calendar, MapPin, Clock, Ticket, ArrowRight, X, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, MapPin, Clock, Ticket, ArrowRight, X } from 'lucide-react';
 import { culturalEventsService } from '../../services/culturalEvents.service';
 import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types';
 
@@ -13,12 +13,12 @@ const CATEGORY_LABELS: Record<EventCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<EventCategory, string> = {
-  FESTIVAL: 'bg-amber-100 text-amber-900 border-amber-200',
-  THEATER: 'bg-purple-100 text-purple-900 border-purple-200',
-  MUSIC: 'bg-rose-100 text-rose-900 border-rose-200',
-  FAIR: 'bg-emerald-100 text-emerald-900 border-emerald-200',
-  WORKSHOP: 'bg-sky-100 text-sky-900 border-sky-200',
-  COMMUNITY: 'bg-stone-100 text-stone-900 border-stone-200',
+  FESTIVAL: 'bg-[#C95627] text-white font-bold',
+  THEATER: 'bg-[#5C7E30] text-white font-bold',
+  MUSIC: 'bg-[#1C8B68] text-white font-bold',
+  FAIR: 'bg-[#8C4A2F] text-white font-bold',
+  WORKSHOP: 'bg-[#2E4A3E] text-white font-bold',
+  COMMUNITY: 'bg-[#3A352F] text-white font-bold',
 };
 
 const MONTH_NAMES = [
@@ -31,8 +31,22 @@ interface CulturalAgendaSectionProps {
 }
 
 export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ eventsOverride }) => {
-  const events = eventsOverride ?? culturalEventsService.getActiveEvents();
+  const [events, setEvents] = useState<CulturalEvent[]>(
+    () => eventsOverride ?? culturalEventsService.getActiveEvents()
+  );
   const [selectedEvent, setSelectedEvent] = useState<CulturalEvent | null>(null);
+
+  useEffect(() => {
+    if (eventsOverride) {
+      setEvents(eventsOverride);
+      return;
+    }
+    culturalEventsService.fetchActiveEvents().then((remoteEvents) => {
+      if (remoteEvents && remoteEvents.length > 0) {
+        setEvents(remoteEvents);
+      }
+    });
+  }, [eventsOverride]);
 
   const formatDateParts = (dateStr: string) => {
     try {
@@ -57,7 +71,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
         {/* Encabezado de Sección */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-terracotta-100,#FCECE6)] text-[var(--color-terracotta-600,#C95627)] text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#C95627] text-white text-xs font-bold uppercase tracking-wider shadow-xs">
               <Calendar className="w-3.5 h-3.5" />
               <span>Agenda Cultural y Eventos</span>
             </div>
@@ -97,7 +111,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
 
                   {/* Badge de Categoría */}
                   <div className="absolute top-3 left-3 z-10">
-                    <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide border shadow-xs ${CATEGORY_COLORS[evt.category]}`}>
+                    <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[evt.category]}`}>
                       {CATEGORY_LABELS[evt.category]}
                     </span>
                   </div>
@@ -105,8 +119,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
                   {/* Badge de Entrada Gratuita o Costo */}
                   <div className="absolute top-3 right-3 z-10">
                     {evt.isFree ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase tracking-wide bg-emerald-600 text-white shadow-xs">
-                        <Sparkles className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide bg-[#005530] text-white shadow-xs">
                         Gratuito
                       </span>
                     ) : (
@@ -191,7 +204,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
                 <X className="w-5 h-5" />
               </button>
               <div className="absolute bottom-3 left-3">
-                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide border shadow-xs ${CATEGORY_COLORS[selectedEvent.category]}`}>
+                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[selectedEvent.category]}`}>
                   {CATEGORY_LABELS[selectedEvent.category]}
                 </span>
               </div>

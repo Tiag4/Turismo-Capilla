@@ -1,7 +1,11 @@
 const API_BASE_URL =
   (typeof import.meta !== 'undefined' &&
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
-  'https://turismo-capilla-backend.onrender.com/api/v1';
+  (import.meta.env?.DEV
+    ? 'http://localhost:8080/api/v1'
+    : 'https://turismo-capilla-backend.onrender.com/api/v1');
+
+const DEFAULT_TIMEOUT_MS = 6000;
 
 class ApiClient {
   private getHeaders(): HeadersInit {
@@ -28,6 +32,7 @@ class ApiClient {
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'GET',
       headers: this.getHeaders(),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
     });
     if (!response.ok) {
       this.handleAuthError(response.status);
@@ -42,6 +47,7 @@ class ApiClient {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
     });
     if (!response.ok) {
       this.handleAuthError(response.status);
@@ -56,6 +62,7 @@ class ApiClient {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
     });
     if (!response.ok) {
       this.handleAuthError(response.status);
@@ -70,6 +77,7 @@ class ApiClient {
       method: 'PATCH',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
     });
     if (!response.ok) {
       this.handleAuthError(response.status);
@@ -83,6 +91,7 @@ class ApiClient {
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'DELETE',
       headers: this.getHeaders(),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
     });
     if (!response.ok) {
       this.handleAuthError(response.status);

@@ -75,17 +75,29 @@ const INITIAL_EVENTS: CulturalEvent[] = [
 
 const STORAGE_KEY = 'turismo_capilla_cultural_events';
 
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' &&
+    (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
+  (import.meta.env?.DEV
+    ? 'http://localhost:8080/api/v1'
+    : 'https://turismo-capilla-backend.onrender.com/api/v1');
+
+function getStoredEvents(): CulturalEvent[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {
+    // Fallback on error
+  }
+  return INITIAL_EVENTS;
+}
+
 export const culturalEventsService = {
   getEvents: (): CulturalEvent[] => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // Fallback on error
-    }
-    return INITIAL_EVENTS;
+    return getStoredEvents();
   },
 
   getActiveEvents: (): CulturalEvent[] => {
@@ -94,5 +106,27 @@ export const culturalEventsService = {
 
   getFeaturedEvents: (): CulturalEvent[] => {
     return culturalEventsService.getActiveEvents().filter((event) => event.isFeatured);
+  },
+
+  fetchActiveEvents: async (): Promise<CulturalEvent[]> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/events?activeOnly=true`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch {
+            // Ignore storage quota error
+          }
+          return data;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+    return culturalEventsService.getActiveEvents();
   },
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   Plus,
@@ -35,18 +35,26 @@ const CATEGORY_LABELS: Record<EventCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<EventCategory, string> = {
-  FESTIVAL: 'bg-amber-100 text-amber-900 border-amber-200',
-  THEATER: 'bg-purple-100 text-purple-900 border-purple-200',
-  MUSIC: 'bg-rose-100 text-rose-900 border-rose-200',
-  FAIR: 'bg-emerald-100 text-emerald-900 border-emerald-200',
-  WORKSHOP: 'bg-sky-100 text-sky-900 border-sky-200',
-  COMMUNITY: 'bg-stone-100 text-stone-900 border-stone-200',
+  FESTIVAL: 'bg-[#C95627] text-white font-bold',
+  THEATER: 'bg-[#5C7E30] text-white font-bold',
+  MUSIC: 'bg-[#1C8B68] text-white font-bold',
+  FAIR: 'bg-[#8C4A2F] text-white font-bold',
+  WORKSHOP: 'bg-[#2E4A3E] text-white font-bold',
+  COMMUNITY: 'bg-[#3A352F] text-white font-bold',
 };
 
 export const CulturalAgendaManager: React.FC = () => {
   const [events, setEvents] = useState<CulturalEvent[]>(() => culturalEventsService.getEvents());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
+
+  useEffect(() => {
+    culturalEventsService.fetchEvents().then((fetched) => {
+      if (fetched && fetched.length > 0) {
+        setEvents(fetched);
+      }
+    });
+  }, []);
 
   // Modal de Creación / Edición
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,7 +115,7 @@ export const CulturalAgendaManager: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !startDate) return;
 
@@ -127,23 +135,23 @@ export const CulturalAgendaManager: React.FC = () => {
     };
 
     if (editingEvent) {
-      culturalEventsService.updateEvent(editingEvent.id, dto);
+      await culturalEventsService.updateEvent(editingEvent.id, dto);
     } else {
-      culturalEventsService.createEvent(dto);
+      await culturalEventsService.createEvent(dto);
     }
 
     setIsModalOpen(false);
     refreshEvents();
   };
 
-  const handleToggleActive = (id: string) => {
-    culturalEventsService.toggleEventActive(id);
+  const handleToggleActive = async (id: string) => {
+    await culturalEventsService.toggleEventActive(id);
     refreshEvents();
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deletingId) {
-      culturalEventsService.deleteEvent(deletingId);
+      await culturalEventsService.deleteEvent(deletingId);
       setDeletingId(null);
       refreshEvents();
     }

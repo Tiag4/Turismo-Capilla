@@ -1,3 +1,4 @@
+import { apiClient } from './api.client';
 import type { CulturalEvent, CreateCulturalEventDTO } from '../types/culturalEvent.types';
 
 const INITIAL_EVENTS: CulturalEvent[] = [
@@ -75,67 +76,122 @@ const INITIAL_EVENTS: CulturalEvent[] = [
 
 const STORAGE_KEY = 'turismo_capilla_cultural_events';
 
+function getStoredEvents(): CulturalEvent[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {
+    // Fallback
+  }
+  return INITIAL_EVENTS;
+}
+
+function persistLocally(events: CulturalEvent[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+  } catch (err) {
+    console.error('Error saving cultural events to localStorage:', err);
+  }
+}
+
 export const culturalEventsService = {
   getEvents: (): CulturalEvent[] => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // Fallback
-    }
-    return INITIAL_EVENTS;
+    return getStoredEvents();
   },
 
   getActiveEvents: (): CulturalEvent[] => {
     return culturalEventsService.getEvents().filter((e) => e.isActive);
   },
 
-  saveEvents: (events: CulturalEvent[]): void => {
+  fetchEvents: async (): Promise<CulturalEvent[]> => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      const remote = await apiClient.get<CulturalEvent[]>('/events');
+      if (Array.isArray(remote) && remote.length > 0) {
+        persistLocally(remote);
+        return remote;
+      }
     } catch (err) {
-      console.error('Error saving events to storage:', err);
+      console.warn('API local de eventos no disponible, utilizando almacenamiento local/fallback:', err);
     }
+    return getStoredEvents();
   },
 
-  createEvent: (dto: CreateCulturalEventDTO): CulturalEvent => {
-    const events = culturalEventsService.getEvents();
-    const newEvent: CulturalEvent = {
+  saveEvents: (events: CulturalEvent[]): void => {
+    persistLocally(events);
+  },
+
+  createEvent: async (dto: CreateCulturalEventDTO): Promise<CulturalEvent> => {
+    try {
+      const created = await apiClient.post<CulturalEvent>('/events', dto);
+      if (created && created.id) {
+        const events = getStoredEvents();
+        const updated = [created, ...events.filter((e) => e.id !== created.id)];
+        persistLocally(updated);
+        return created;
+      }
+    } catch (err) {
+      console.warn('Error al persistir evento en API remota, guardando localmente:', err);
+    }
+
+    const localNewEvent: CulturalEvent = {
       ...dto,
       id: `evt-${Date.now()}`,
     };
-    events.unshift(newEvent);
-    culturalEventsService.saveEvents(events);
-    return newEvent;
+    const events = getStoredEvents();
+    events.unshift(localNewEvent);
+    persistLocally(events);
+    return localNewEvent;
   },
 
-  updateEvent: (id: string, dto: Partial<CreateCulturalEventDTO>): CulturalEvent => {
-    const events = culturalEventsService.getEvents();
+  updateEvent: async (id: string, dto: Partial<CreateCulturalEventDTO>): Promise<CulturalEvent> => {
+    try {
+      const updated = await apiClient.put<CulturalEvent>(`/events/${id}`, dto);
+      if (updated && updated.id) {
+        const events = getStoredEvents();
+        const idx = events.findIndex((e) => e.id === id);
+        if (idx !== -1) {
+          events[idx] = updated;
+        } else {
+          events.unshift(updated);
+        }
+        persistLocally(events);
+        return updated;
+      }
+    } catch (err) {
+      console.warn('Error al actualizar evento en API remota, aplicando actualización local:', err);
+    }
+
+    const events = getStoredEvents();
     const index = events.findIndex((e) => e.id === id);
     if (index === -1) {
       throw new Error(`Event with id ${id} not found`);
     }
     const updated = { ...events[index], ...dto };
     events[index] = updated;
-    culturalEventsService.saveEvents(events);
+    persistLocally(events);
     return updated;
   },
 
-  deleteEvent: (id: string): void => {
-    const events = culturalEventsService.getEvents().filter((e) => e.id !== id);
-    culturalEventsService.saveEvents(events);
+  deleteEvent: async (id: string): Promise<void> => {
+    try {
+      await apiClient.delete(`/events/${id}`);
+    } catch (err) {
+      console.warn('Error al eliminar evento en API remota, purgando localmente:', err);
+    }
+    const events = getStoredEvents().filter((e) => e.id !== id);
+    persistLocally(events);
   },
 
-  toggleEventActive: (id: string): CulturalEvent => {
-    const events = culturalEventsService.getEvents();
+  toggleEventActive: async (id: string): Promise<CulturalEvent> => {
+    const events = getStoredEvents();
     const index = events.findIndex((e) => e.id === id);
     if (index === -1) {
       throw new Error(`Event with id ${id} not found`);
     }
-    events[index].isActive = !events[index].isActive;
-    culturalEventsService.saveEvents(events);
-    return events[index];
+    const nextState = !events[index].isActive;
+    return culturalEventsService.updateEvent(id, { isActive: nextState });
   },
 };

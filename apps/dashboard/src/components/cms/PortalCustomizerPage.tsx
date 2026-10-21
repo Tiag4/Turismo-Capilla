@@ -24,7 +24,7 @@ import {
   Layers,
   Type,
   Calendar,
-  Sparkles,
+  LayoutGrid,
   Loader,
 } from 'lucide-react';
 import { PORTAL_URL } from '../../config/navigation';
@@ -157,7 +157,7 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
       <div className="flex items-center justify-between px-5 py-3.5 bg-white border-b border-[var(--color-sand-200)] shrink-0 z-20">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[var(--color-emerald-portal-600)] flex items-center justify-center text-white font-bold text-xs">
-            <Sparkles className="w-4 h-4" />
+            <LayoutGrid className="w-4 h-4" />
           </div>
           <div>
             <h1 className="font-display font-black text-sm text-[var(--color-sand-900)] leading-tight">
@@ -170,10 +170,9 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Indicador de Estado en Vivo */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            <span>Vista previa sincronizada</span>
+          {/* Indicador de Estado en Vivo (Badge Sólido) */}
+          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#005530] text-white text-[11px] font-bold shadow-xs">
+            <span>Vista previa activa</span>
           </div>
 
           <button
@@ -341,21 +340,21 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
 
             {activeTab === 'events' && (
               <div className="space-y-4">
-                <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 space-y-2">
+                <div className="p-3.5 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] text-[var(--color-sand-900)] space-y-2">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-purple-700" />
-                    <span className="text-xs font-extrabold uppercase">
+                    <Calendar className="w-4 h-4 text-[var(--color-terracotta-600)]" />
+                    <span className="text-xs font-bold text-[var(--color-sand-900)]">
                       Agenda Cultural Activa
                     </span>
                   </div>
-                  <p className="text-[11px] text-purple-800 leading-relaxed">
-                    Esta sección reemplazó el antiguo bloque de casonas históricas. Muestra eventos en tiempo real con badges de categoría y fecha destacada.
+                  <p className="text-[11px] text-[var(--color-sand-600)] leading-relaxed">
+                    Eventos sincronizados en tiempo real con el catálogo municipal de Capilla del Monte.
                   </p>
                   {onNavigateToEvents && (
                     <button
                       type="button"
                       onClick={onNavigateToEvents}
-                      className="w-full mt-2 py-2 px-3 rounded-lg bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold transition-colors cursor-pointer"
+                      className="w-full mt-2 py-2 px-3 rounded-lg bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] text-white text-xs font-bold transition-colors cursor-pointer"
                     >
                       Abrir Administrador de Eventos →
                     </button>

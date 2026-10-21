@@ -29,6 +29,7 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   settings: '/configuracion',
   events: '/agenda-cultural',
   portal_cms: '/personalizador-portal',
+  profile: '/perfil',
 };
 
 // Friendly aliases and accented URL matching
@@ -65,7 +66,39 @@ const ROUTE_ALIASES: Record<string, DashboardTab> = {
   '/moderacion': 'moderation',
   '/moderación': 'moderation',
   '/configuracion': 'settings',
+  '/perfil': 'profile',
+  '/mi-perfil': 'profile',
+  '/profile': 'profile',
   '/configuración': 'settings',
+};
+
+export const ADMIN_ONLY_TABS: DashboardTab[] = [
+  'overview',
+  'portal_cms',
+  'events',
+  'attractions',
+  'alerts',
+  'invitations',
+  'reports',
+  'audit',
+  'moderation',
+  'settings',
+];
+
+export const HOST_ONLY_TABS: DashboardTab[] = [
+  'calendar',
+  'pricing',
+  'performance',
+];
+
+export const sanitizeTabForRole = (tab: DashboardTab, role: UserRole): DashboardTab => {
+  if (role === 'HOST' && ADMIN_ONLY_TABS.includes(tab)) {
+    return 'bookings';
+  }
+  if (role === 'ADMIN' && HOST_ONLY_TABS.includes(tab)) {
+    return 'overview';
+  }
+  return tab;
 };
 
 export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetail => {
@@ -114,7 +147,7 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
   // Standard tab matching
   if (ROUTE_ALIASES[normalized]) {
     return {
-      tab: ROUTE_ALIASES[normalized],
+      tab: sanitizeTabForRole(ROUTE_ALIASES[normalized], role),
       accommodationView: 'list',
       eventView: 'list',
     };
@@ -122,7 +155,7 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
 
   // Fallback default per role
   return {
-    tab: role === 'ADMIN' ? 'overview' : 'accommodations',
+    tab: role === 'ADMIN' ? 'overview' : 'bookings',
     accommodationView: 'list',
     eventView: 'list',
   };
@@ -138,22 +171,25 @@ export const useDashboardRouter = (role: UserRole) => {
   });
 
   const navigateToTab = useCallback((tab: DashboardTab, replace = false) => {
+
     setRouteState({
-      tab,
+      tab: sanitizeTabForRole(tab, role),
       accommodationView: 'list',
       eventView: 'list',
     });
-    const targetRoute = TAB_ROUTE_MAP[tab] || '/reservas';
+    const safeTab = sanitizeTabForRole(tab, role);
+    const targetRoute = TAB_ROUTE_MAP[safeTab] || (role === 'ADMIN' ? '/panel-general' : '/reservas');
     if (window.location.pathname !== targetRoute) {
       if (replace) {
-        window.history.replaceState({ tab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
+        window.history.replaceState({ tab: safeTab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
       } else {
-        window.history.pushState({ tab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
+        window.history.pushState({ tab: safeTab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
       }
     }
-  }, []);
+  }, [role]);
 
   const navigateToAccommodationCreate = useCallback(() => {
+
     setRouteState({
       tab: 'accommodations',
       accommodationView: 'create',
@@ -163,9 +199,10 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'accommodations', view: 'create' }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   const navigateToAccommodationEdit = useCallback((id: string) => {
+
     setRouteState({
       tab: 'accommodations',
       accommodationView: 'edit',
@@ -176,9 +213,10 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'accommodations', view: 'edit', id }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   const navigateToAccommodationList = useCallback(() => {
+
     setRouteState({
       tab: 'accommodations',
       accommodationView: 'list',
@@ -188,9 +226,10 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'accommodations', view: 'list' }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   const navigateToEventCreate = useCallback(() => {
+
     setRouteState({
       tab: 'events',
       accommodationView: 'list',
@@ -200,9 +239,10 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'events', view: 'create' }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   const navigateToEventEdit = useCallback((id: string) => {
+
     setRouteState({
       tab: 'events',
       accommodationView: 'list',
@@ -213,9 +253,10 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'events', view: 'edit', id }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   const navigateToEventList = useCallback(() => {
+
     setRouteState({
       tab: 'events',
       accommodationView: 'list',
@@ -225,7 +266,7 @@ export const useDashboardRouter = (role: UserRole) => {
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'events', view: 'list' }, '', targetRoute);
     }
-  }, []);
+  }, [role]);
 
   // Sync with browser back/forward buttons
   useEffect(() => {

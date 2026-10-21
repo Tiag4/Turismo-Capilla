@@ -7,12 +7,11 @@ import {
   BarChart3,
   X,
   LogOut,
-  Shield,
   LogIn,
   ExternalLink,
 } from 'lucide-react';
 import { PORTAL_URL } from '../../config/navigation.ts';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
 
 export interface HostSidebarProps {
@@ -22,7 +21,6 @@ export interface HostSidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   onLogout?: () => void;
-  onSwitchRole?: (role: UserRole) => void;
   isAuthenticated?: boolean;
   onLogin?: () => void;
 }
@@ -74,7 +72,6 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
   onLogout,
-  onSwitchRole,
   isAuthenticated = true,
   onLogin,
 }) => {
@@ -145,39 +142,7 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
           )}
         </div>
 
-        {/* 2. Role Switcher (Cabañero / Comisión) inside collapsible sidebar */}
-        {expanded && onSwitchRole && (
-          <div className="bg-[var(--color-sand-100)] p-1 rounded-xl border border-[var(--color-sand-200)] animate-in fade-in duration-200">
-            <div className="grid grid-cols-2 gap-1 text-[11px] font-bold">
-              <button
-                type="button"
-                onClick={() => onSwitchRole('HOST')}
-                className={`py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  user.role === 'HOST'
-                    ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                    : 'text-[var(--color-sand-500)] hover:text-[var(--color-sand-800)]'
-                }`}
-              >
-                <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)]" />
-                <span className="truncate">Cabañero</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('ADMIN')}
-                className={`py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  user.role === 'ADMIN'
-                    ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                    : 'text-[var(--color-sand-500)] hover:text-[var(--color-sand-800)]'
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)]" />
-                <span className="truncate">Comisión</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 3. Navigation Items (Reservas, Mis Cabañas, etc.) */}
+        {/* 2. Navigation Items (Reservas, Mis Cabañas, etc.) */}
         <nav className="space-y-1" aria-label="Menú principal del prestador">
           {HOST_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -191,7 +156,7 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
                   expanded ? 'px-3 py-2.5 text-left' : 'p-2.5 justify-center'
                 } ${
                   isActive
-                    ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs'
+                    ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs font-bold'
                     : 'text-[var(--color-sand-700)] hover:bg-[var(--color-sand-100)] hover:text-[var(--color-sand-900)]'
                 }`}
               >
@@ -220,7 +185,7 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
         </nav>
       </div>
 
-      {/* 4. Host Profile Card, External Link & Dynamic Logout / Login */}
+      {/* 3. Host Profile Card, External Link & Dynamic Logout / Login */}
       <div className="pt-3 border-t border-[var(--color-sand-200)] mt-auto space-y-2">
         {/* Link al Portal Público */}
         <a
@@ -241,32 +206,42 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
           )}
         </a>
 
-        {expanded ? (
-          <div className="bg-[var(--color-sand-50)] p-2.5 rounded-xl border border-[var(--color-sand-200)] animate-in fade-in duration-200">
+        {/* User Card with click to Profile */}
+        <button
+          type="button"
+          onClick={() => handleSelectTab('profile')}
+          title={!expanded ? 'Ver Mi Perfil y Seguridad' : undefined}
+          className={`w-full text-left transition-colors cursor-pointer rounded-xl ${
+            currentTab === 'profile'
+              ? 'bg-[var(--color-sand-200)] ring-1 ring-[var(--color-terracotta-500)]'
+              : 'hover:bg-[var(--color-sand-100)]'
+          } ${expanded ? 'p-2' : 'p-1'}`}
+        >
+          {expanded ? (
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-uritorco-500)] text-white font-bold flex items-center justify-center text-xs shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-terracotta-500)] text-white font-bold flex items-center justify-center text-xs shrink-0">
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-[var(--color-sand-900)] truncate">
                   {user.name} {user.lastName}
                 </p>
-                <p className="text-[10px] text-[var(--color-sand-400)] truncate">
-                  {user.email}
+                <p className="text-[10px] text-[var(--color-terracotta-600)] font-semibold truncate">
+                  Mi Perfil & Seguridad
                 </p>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <div
-              title={`${user.name} ${user.lastName}`}
-              className="w-9 h-9 rounded-lg bg-[var(--color-uritorco-500)] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs cursor-default"
-            >
-              {initials}
+          ) : (
+            <div className="flex justify-center">
+              <div
+                title={`${user.name} ${user.lastName} — Mi Perfil`}
+                className="w-9 h-9 rounded-lg bg-[var(--color-terracotta-500)] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs"
+              >
+                {initials}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </button>
 
         {/* Dynamic Action: Salir o Iniciar Sesión */}
         {isAuthenticated ? (

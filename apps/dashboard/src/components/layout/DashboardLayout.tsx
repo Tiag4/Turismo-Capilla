@@ -4,14 +4,13 @@ import { PORTAL_URL } from '../../config/navigation.ts';
 import { HostSidebar } from './HostSidebar.tsx';
 import { AdminSidebar } from './AdminSidebar.tsx';
 import type { DashboardTab } from './DashboardNav.tsx';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 
 export interface DashboardLayoutProps {
   currentTab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
   user: User;
   onLogout: () => void;
-  onSwitchRole: (role: UserRole) => void;
   children: React.ReactNode;
 }
 
@@ -20,7 +19,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onTabChange,
   user,
   onLogout,
-  onSwitchRole,
   children,
 }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -38,7 +36,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
-          onSwitchRole={onSwitchRole}
         />
       ) : (
         <HostSidebar
@@ -48,7 +45,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
-          onSwitchRole={onSwitchRole}
         />
       )}
 
@@ -89,13 +85,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             >
               <ExternalLink className="w-4 h-4" />
             </a>
-            <div
-              className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center ${
-                isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-uritorco-500)]'
+            <button
+              type="button"
+              onClick={() => onTabChange('profile')}
+              title="Ver Mi Perfil y Seguridad"
+              className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center cursor-pointer transition-transform active:scale-95 ${
+                isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
               }`}
             >
               {user.name.charAt(0)}{user.lastName.charAt(0)}
-            </div>
+            </button>
           </div>
         </header>
 

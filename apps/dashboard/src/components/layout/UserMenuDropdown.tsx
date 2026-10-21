@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import {
   LogOut,
   Home,
-  Shield,
+  User as UserIcon,
   CalendarCheck,
   Calendar,
   Tag,
@@ -14,14 +14,13 @@ import {
   CalendarRange,
   ChevronRight,
 } from 'lucide-react';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
 
 export interface UserMenuDropdownProps {
   user: User;
   currentTab?: DashboardTab;
   onTabChange?: (tab: DashboardTab) => void;
-  onSwitchRole: (role: UserRole) => void;
   onLogout: () => void;
   isOpen: boolean;
   onClose: () => void;
@@ -57,14 +56,12 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
   user,
   currentTab,
   onTabChange,
-  onSwitchRole,
   onLogout,
   isOpen,
   onClose,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Click outside and escape key handling
   useEffect(() => {
     if (!isOpen) return;
 
@@ -98,11 +95,6 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
     if (onTabChange) {
       onTabChange(tabId);
     }
-    onClose();
-  };
-
-  const handleRoleChange = (role: UserRole) => {
-    onSwitchRole(role);
     onClose();
   };
 
@@ -141,40 +133,31 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
         </div>
       </div>
 
-      {/* 2. Fast Role Switcher */}
-      <div className="p-3 border-b border-[var(--color-sand-200)]">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block px-1 mb-1.5">
-          Modo de Gestión
-        </span>
-        <div className="grid grid-cols-2 gap-1.5 bg-[var(--color-sand-100)] p-1 rounded-xl border border-[var(--color-sand-200)]">
-          <button
-            type="button"
-            onClick={() => handleRoleChange('HOST')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              user.role === 'HOST'
-                ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)]'
-            }`}
-          >
-            <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)] shrink-0" />
-            <span>Cabañero</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleRoleChange('ADMIN')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              user.role === 'ADMIN'
-                ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)]'
-            }`}
-          >
-            <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)] shrink-0" />
-            <span>Comisión</span>
-          </button>
-        </div>
+      {/* 2. Profile & Security Action */}
+      <div className="p-2 border-b border-[var(--color-sand-200)]">
+        <button
+          type="button"
+          onClick={() => handleSelectNav('profile')}
+          className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+            currentTab === 'profile'
+              ? 'bg-[var(--color-sand-100)] text-[var(--color-sand-900)] font-bold'
+              : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-50)]'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-sand-100)] text-[var(--color-sand-700)] flex items-center justify-center">
+              <UserIcon className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold block leading-tight">Mi Perfil y Seguridad</span>
+              <span className="text-[10px] text-[var(--color-sand-500)] block leading-tight">Datos personales y clave</span>
+            </div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
+        </button>
       </div>
 
-      {/* 3. Navigation Shortcuts (Reservas, Mis Cabañas, etc.) */}
+      {/* 3. Navigation Shortcuts */}
       <div className="p-2 border-b border-[var(--color-sand-200)] max-h-56 overflow-y-auto">
         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block px-2 py-1">
           Módulos de Gestión

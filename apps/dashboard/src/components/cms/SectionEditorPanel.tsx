@@ -60,22 +60,22 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Cabecera de la sección seleccionada */}
+      {/* Cabecera de la sección seleccionada con badges de alto contraste */}
       <div className="pb-3 border-b border-[var(--color-sand-200)] flex items-start justify-between gap-2">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--color-sand-100)] text-[var(--color-sand-700)]">
+          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--color-sand-800)] text-white shadow-2xs">
             {sectionMeta.category}
           </span>
-          <h3 className="font-display font-extrabold text-sm text-[var(--color-sand-900)] mt-1">
+          <h3 className="font-display font-extrabold text-sm text-[var(--color-sand-900)] mt-1.5">
             {sectionMeta.name}
           </h3>
-          <p className="text-[11px] text-[var(--color-sand-500)] leading-tight mt-0.5">
+          <p className="text-[11px] text-[var(--color-sand-600)] leading-tight mt-0.5">
             {sectionMeta.description}
           </p>
         </div>
         <span
-          className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${
-            isVisible ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'
+          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-md shrink-0 shadow-2xs ${
+            isVisible ? 'bg-[#1C8B68] text-white' : 'bg-stone-700 text-white'
           }`}
         >
           {isVisible ? 'Visible' : 'Oculto'}
@@ -187,29 +187,41 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
       )}
 
       {selectedSectionId === 'culturalAgenda' && (
-        <div className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] space-y-3">
-          <div className="flex items-center gap-2 text-[var(--color-emerald-portal-600)] font-bold text-xs">
-            <Calendar className="w-4 h-4" />
-            <span>Módulo Autónomo: Agenda Cultural</span>
+        <div className="space-y-3">
+          <div className="p-4 rounded-xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-3">
+            <div className="flex items-center gap-2 text-[var(--color-emerald-portal-600)] font-bold text-xs">
+              <Calendar className="w-4 h-4" />
+              <span>Módulo Autónomo: Agenda Cultural</span>
+            </div>
+            <p className="text-[11px] text-[var(--color-sand-600)] leading-relaxed">
+              Los eventos y festivales exhibidos en este bloque se gestionan de forma centralizada con imágenes, fechas y aranceles oficiales.
+            </p>
+            {onNavigateToEvents && (
+              <button
+                type="button"
+                onClick={onNavigateToEvents}
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] active:bg-[var(--color-emerald-portal-900)] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+              >
+                <span>Ir a Gestionar Eventos</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
-          <p className="text-[11px] text-[var(--color-sand-600)] leading-relaxed">
-            Los eventos y festivales exhibidos en este bloque se gestionan de forma centralizada con imágenes, fechas y aranceles oficiales.
-          </p>
-          {onNavigateToEvents && (
-            <button
-              type="button"
-              onClick={onNavigateToEvents}
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold transition-colors cursor-pointer"
-            >
-              <span>Ir a Gestionar Eventos</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
+
+          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 space-y-1.5 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-[11px] text-amber-950 uppercase tracking-wide">
+              <Info className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+              <span>Regla de Publicación Automática</span>
+            </div>
+            <p className="text-[11px] text-amber-900/90 leading-relaxed font-medium">
+              Si no hay eventos activos programados, esta sección se <strong>oculta automáticamente en el portal público</strong> para no exhibir un bloque vacío a los turistas. En la vista previa siempre permanecerá visible para que puedas reordenarla.
+            </p>
+          </div>
         </div>
       )}
 
       {selectedSectionId === 'featuredCabins' && (
-        <div className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] space-y-3">
+        <div className="p-4 rounded-xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-[var(--color-terracotta-600)] font-bold text-xs">
             <Home className="w-4 h-4" />
             <span>Módulo Autónomo: Alojamientos</span>
@@ -221,7 +233,7 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
             <button
               type="button"
               onClick={onNavigateToAccommodations}
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] text-white text-xs font-bold transition-colors cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] active:bg-[var(--color-terracotta-700)] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
             >
               <span>Ir a Prestadores Adheridos</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -231,13 +243,13 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
       )}
 
       {['duoAccess', 'featuredAttractions', 'astrotourismTeaser', 'valleyMap'].includes(selectedSectionId) && (
-        <div className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] space-y-2">
+        <div className="p-4 rounded-xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-2">
           <div className="flex items-center gap-2 text-[var(--color-sand-700)] font-bold text-xs">
             <Info className="w-4 h-4" />
             <span>Bloque Estructural del Portal</span>
           </div>
           <p className="text-[11px] text-[var(--color-sand-600)] leading-relaxed">
-            Esta sección opera con contenido geográfico y de catálogo turístico oficial. Podés alternar su visibilidad u ordenarla en la portada desde la pestaña de Secciones.
+            Esta sección opera con contenido geográfico y de catálogo turístico oficial. Podés alternar su visibilidad u ordenarla en la portada desde la pestaña de Estructura.
           </p>
         </div>
       )}

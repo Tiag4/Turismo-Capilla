@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Ticket, ArrowRight, X } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, X, AlertCircle } from 'lucide-react';
 import { culturalEventsService } from '../../services/culturalEvents.service';
 import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types';
 
@@ -48,6 +48,15 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
     });
   }, [eventsOverride]);
 
+  const isPreview = typeof window !== 'undefined' && window.location.search.includes('preview=true');
+
+  // Si no hay eventos activos y estamos en el portal público de turistas, no mostramos la sección
+  if (!events || events.length === 0) {
+    if (!isPreview) {
+      return null;
+    }
+  }
+
   const formatDateParts = (dateStr: string) => {
     try {
       const [year, month, day] = dateStr.split('-').map(Number);
@@ -84,99 +93,102 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-[var(--color-sand-600)] uppercase tracking-wider">
-              {events.length} Eventos Programados
-            </span>
+            {events.length === 0 ? (
+              <span className="text-xs font-bold text-amber-800 bg-amber-100 border border-amber-300 px-3 py-1 rounded-lg uppercase tracking-wider">
+                Oculta en público (0 Eventos)
+              </span>
+            ) : (
+              <span className="text-xs font-bold text-[var(--color-sand-600)] uppercase tracking-wider">
+                {events.length} Eventos Programados
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Grilla de Eventos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {events.map((evt) => {
-            const date = formatDateParts(evt.startDate);
-            return (
-              <article
-                key={evt.id}
-                className="group flex flex-col bg-white rounded-2xl border border-[var(--color-sand-200)] shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden"
-              >
-                {/* Imagen del Evento / Flyer */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-stone-900">
-                  <img
-                    src={evt.imageUrl}
-                    alt={evt.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        {/* Grilla o Cartel de Estado Vacío para Previsualización */}
+        {events.length === 0 ? (
+          <div className="py-12 px-6 rounded-2xl border-2 border-dashed border-[var(--color-sand-300)] bg-[var(--color-sand-100)] text-center max-w-xl mx-auto space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-white text-[var(--color-terracotta-600)] flex items-center justify-center mx-auto shadow-2xs">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="font-display font-bold text-base text-[var(--color-sand-900)]">
+              Sin eventos programados (Vista Previa CMS)
+            </h3>
+            <p className="text-xs text-[var(--color-sand-600)] leading-relaxed">
+              En el portal público para turistas esta sección permanecerá <strong>oculta automáticamente</strong> hasta que se publique al menos un evento en la Agenda Cultural Municipal.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {events.map((evt) => {
+              const date = formatDateParts(evt.startDate);
+              return (
+                <article
+                  key={evt.id}
+                  className="group flex flex-col bg-white rounded-2xl border border-[var(--color-sand-200)] shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden"
+                >
+                  {/* Imagen del Evento / Flyer */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-stone-900">
+                    <img
+                      src={evt.imageUrl}
+                      alt={evt.title}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                  {/* Badge de Categoría */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[evt.category]}`}>
-                      {CATEGORY_LABELS[evt.category]}
-                    </span>
-                  </div>
-
-                  {/* Badge de Entrada Gratuita o Costo */}
-                  <div className="absolute top-3 right-3 z-10">
-                    {evt.isFree ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide bg-[#005530] text-white shadow-xs">
-                        Gratuito
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-extrabold tracking-wide bg-stone-900/90 text-white border border-white/20 shadow-xs">
-                        <Ticket className="w-3 h-3 text-[var(--color-terracotta-400)]" />
-                        ${(evt.price ?? 0).toLocaleString('es-AR')}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Fecha Estilo Calendario sobre la foto */}
-                  <div className="absolute bottom-3 left-3 flex items-center gap-3">
-                    <div className="flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-white/95 text-[var(--color-sand-900)] shadow-lg backdrop-blur-xs">
-                      <span className="text-[10px] font-black uppercase text-[var(--color-terracotta-600)] leading-none">
-                        {date.month}
-                      </span>
-                      <span className="text-lg font-black leading-tight">
-                        {date.day}
+                    {/* Badge de Categoría */}
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[evt.category]}`}>
+                        {CATEGORY_LABELS[evt.category]}
                       </span>
                     </div>
-                    <div className="text-white text-xs font-semibold flex items-center gap-1.5 drop-shadow-sm">
-                      <Clock className="w-3.5 h-3.5 text-white/80" />
-                      <span>{evt.timeString}</span>
+
+                    {/* Fecha Destacada */}
+                    <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+                      <div className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-xs text-white text-center border border-white/10">
+                        <span className="block text-sm font-black leading-none">{date.day}</span>
+                        <span className="block text-[9px] font-bold uppercase tracking-wider text-sand-300">
+                          {date.month}
+                        </span>
+                      </div>
+                      <div className="text-white text-xs drop-shadow-sm font-medium">
+                        {evt.timeString}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Contenido */}
-                <div className="flex flex-col flex-1 p-5 sm:p-6 justify-between space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5 text-xs text-[var(--color-sand-500)] font-medium">
-                      <MapPin className="w-3.5 h-3.5 text-[var(--color-terracotta-500)] shrink-0" />
-                      <span className="truncate">{evt.location}</span>
+                  {/* Contenido */}
+                  <div className="flex flex-col flex-1 p-5 sm:p-6 justify-between space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-1.5 text-xs text-[var(--color-sand-500)] font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-[var(--color-terracotta-500)] shrink-0" />
+                        <span className="truncate">{evt.location}</span>
+                      </div>
+                      <h3 className="font-display font-extrabold text-xl text-[var(--color-sand-900)] line-clamp-2 group-hover:text-[var(--color-terracotta-600)] transition-colors">
+                        {evt.title}
+                      </h3>
+                      <p className="text-sm text-[var(--color-sand-600)] line-clamp-2 leading-relaxed">
+                        {evt.description}
+                      </p>
                     </div>
-                    <h3 className="font-display font-extrabold text-xl text-[var(--color-sand-900)] line-clamp-2 group-hover:text-[var(--color-terracotta-600)] transition-colors">
-                      {evt.title}
-                    </h3>
-                    <p className="text-sm text-[var(--color-sand-600)] line-clamp-2 leading-relaxed">
-                      {evt.description}
-                    </p>
-                  </div>
 
-                  <div className="pt-3 border-t border-[var(--color-sand-100)] flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedEvent(evt)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--color-terracotta-600)] hover:text-[var(--color-terracotta-700)] transition-colors cursor-pointer"
-                    >
-                      <span>Ver detalles completos</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    <div className="pt-3 border-t border-[var(--color-sand-100)] flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedEvent(evt)}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--color-terracotta-600)] hover:text-[var(--color-terracotta-700)] transition-colors cursor-pointer"
+                      >
+                        <span>Ver detalles completos</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Modal de Detalle de Evento */}

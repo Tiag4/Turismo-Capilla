@@ -32,7 +32,7 @@ export const GuestContactActions: React.FC<GuestContactActionsProps> = ({
   const whatsappUrl = useMemo(() => {
     const phone = cleanPhoneForWhatsApp(booking.guestPhone);
     const accName = booking.accommodation?.name || 'nuestro alojamiento';
-    const message = `¡Hola ${booking.guestName}! Te contacto desde ${accName} por tu reserva oficial ${booking.bookingCode} en Capilla del Monte (Check-in: ${booking.checkIn} | Check-out: ${booking.checkOut}). ¿Cómo estás? Te escribo para coordinar los detalles de tu llegada.`;
+    const message = `¡Hola ${booking.guestName}! Te contacto desde ${accName} por tu reserva oficial ${booking.bookingCode} en Capilla del Monte (Ingreso: ${booking.checkIn} | Egreso: ${booking.checkOut}). ¿Cómo estás? Te escribo para coordinar los detalles de tu llegada.`;
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   }, [
     booking.guestPhone,

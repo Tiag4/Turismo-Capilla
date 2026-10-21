@@ -79,7 +79,7 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
               to={wizardUrl}
               className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer select-none block text-center"
             >
-              Continuar al Checkout
+              Continuar con la Reserva
             </Link>
           ) : (
             <a

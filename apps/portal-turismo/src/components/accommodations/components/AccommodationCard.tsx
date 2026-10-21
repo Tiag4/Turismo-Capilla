@@ -35,6 +35,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
   const price = place?.pricePerNight ?? 0;
   const formattedPrice = price.toLocaleString('es-AR');
   const totalPrice = nightsCount && nightsCount > 0 ? (price * nightsCount).toLocaleString('es-AR') : null;
+  const hasBreakfast = Boolean(place?.hasBreakfast || place?.amenities?.some((a) => a.toLowerCase().includes('desayuno')));
 
   return (
     <article className="group bg-white rounded-3xl border border-stone-200/90 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-[460px] overflow-hidden">
@@ -48,6 +49,14 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
           style={{ viewTransitionName: place?.id ? `accommodation-hero-${place.id}` : undefined }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/20 to-transparent" />
+
+        {/* Badge de Desayuno Incluido (Anti-vibecoded sólido) */}
+        {hasBreakfast && (
+          <div className="absolute top-3 left-3 bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+            <Coffee className="w-3.5 h-3.5 text-white" />
+            <span>Desayuno</span>
+          </div>
+        )}
 
         {/* Badge de Puntuación */}
         <div className="absolute top-3 right-3 bg-stone-900/85 backdrop-blur-xs px-2.5 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1 shadow-sm">

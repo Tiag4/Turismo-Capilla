@@ -1,35 +1,22 @@
 import React from 'react';
-import { Star, MapPin, ShieldCheck, Share2, ArrowLeft } from 'lucide-react';
+import { Star, MapPin, ShieldCheck, ArrowLeft, Coffee, UtensilsCrossed } from 'lucide-react';
 import type { AccommodationDetailData } from '../types';
+import { AccommodationShareMenu } from './AccommodationShareMenu';
 
 interface AccommodationHeaderInfoProps {
   data: AccommodationDetailData;
 }
 
 export const AccommodationHeaderInfo: React.FC<AccommodationHeaderInfoProps> = ({ data }) => {
-  const [copied, setCopied] = React.useState(false);
-
-  const handleShare = async () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: data.title,
-          text: data.subtitle,
-          url: window.location.href,
-        });
-      } catch {
-        // Fallback or cancel
-      }
-    } else if (typeof navigator !== 'undefined') {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const hasBreakfast = Boolean(
+    data.hasBreakfast ||
+    data.amenities?.some((a) => a.toLowerCase().includes('desayuno')) ||
+    data.roomTypes?.some((r) => r.breakfastIncluded)
+  );
 
   return (
     <header className="space-y-4 pb-2">
-      {/* Navegación Breadcrumb Superior */}
+      {/* Navegación Breadcrumb Superior y Botón de Compartir */}
       <div className="flex items-center justify-between">
         <a
           href="/alojamientos"
@@ -39,15 +26,7 @@ export const AccommodationHeaderInfo: React.FC<AccommodationHeaderInfoProps> = (
           <span>Volver al Catálogo</span>
         </a>
 
-        <button
-          type="button"
-          onClick={handleShare}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-semibold text-stone-700 transition-colors cursor-pointer shadow-2xs"
-          aria-label="Compartir alojamiento"
-        >
-          <Share2 className="w-3.5 h-3.5 text-stone-500" />
-          <span>{copied ? '¡Enlace copiado!' : 'Compartir'}</span>
-        </button>
+        <AccommodationShareMenu data={data} />
       </div>
 
       {/* Título Principal */}
@@ -66,6 +45,23 @@ export const AccommodationHeaderInfo: React.FC<AccommodationHeaderInfoProps> = (
         <p className="text-sm sm:text-base text-stone-600 font-medium">
           {data.subtitle}
         </p>
+      </div>
+
+      {/* Indicador de Desayuno (HU-19) */}
+      <div className="flex flex-wrap items-center gap-3 pt-1">
+        {hasBreakfast ? (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#005530] text-white text-xs font-bold shadow-xs">
+            <Coffee className="w-4 h-4 text-white" />
+            <span>Tarifa con Desayuno Incluido</span>
+            <span className="text-[10px] font-normal opacity-90">(Serrano artesanal)</span>
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-800 text-stone-200 text-xs font-medium shadow-xs">
+            <UtensilsCrossed className="w-3.5 h-3.5 text-stone-300" />
+            <span>Sin Desayuno</span>
+            <span className="text-[10px] text-stone-300">(Cocina y asador equipados)</span>
+          </div>
+        )}
       </div>
 
       {/* Métricas y Datos Clave */}

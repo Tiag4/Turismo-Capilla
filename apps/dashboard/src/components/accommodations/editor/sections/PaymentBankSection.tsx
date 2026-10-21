@@ -103,7 +103,7 @@ export const PaymentBankSection: React.FC<PaymentBankSectionProps> = ({
         <div className="p-3 bg-sand-50/80 rounded-xl border border-sand-200 text-xs text-sand-600 flex items-start gap-2">
           <CreditCard className="w-4 h-4 text-terracotta-600 shrink-0 mt-0.5" />
           <p>
-            Al solicitar una reserva, el turista deberá transferir el <strong className="text-sand-900">{downPaymentPercentage}%</strong> del total para que puedas confirmarla. El <strong className="text-sand-900">{100 - downPaymentPercentage}%</strong> restante lo liquidará en efectivo o medios acordados al momento del check-in.
+            Al solicitar una reserva, el turista deberá transferir el <strong className="text-sand-900">{downPaymentPercentage}%</strong> del total para que puedas confirmarla. El <strong className="text-sand-900">{100 - downPaymentPercentage}%</strong> restante lo liquidará en efectivo o medios acordados al momento del ingreso.
           </p>
         </div>
       </div>

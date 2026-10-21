@@ -3,27 +3,27 @@ import { MOCK_PLACES, type MapPlace } from '../../../data/mock-places';
 import { api, type Accommodation } from '../../../services/api';
 
 export type AccommodationTypeFilter = 'all' | 'cabin' | 'inn' | 'hotel' | 'apartment';
-export type AmenityFilter = 'pileta' | 'wifi' | 'estacionamiento' | 'pet' | 'asador';
+export type AmenityFilter = 'pileta' | 'wifi' | 'estacionamiento' | 'pet' | 'asador' | 'desayuno';
 export type SortOption = 'recommended' | 'price-asc' | 'price-desc' | 'rating-desc';
+
+const TYPE_MAP: Record<string, string> = {
+  CABIN: 'Cabaña de Montaña',
+  HOTEL: 'Hotel Serrano',
+  APARTMENT: 'Departamento',
+  HOSTEL: 'Hostería',
+  CAMPING: 'Camping & Glamping',
+};
 
 function mapApiToPlace(item: Accommodation): MapPlace {
   const price = typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
   const mainImage = item.images?.find((img) => img.isMain)?.url || item.images?.[0]?.url || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80';
-  
-  const typeMap: Record<string, string> = {
-    CABIN: 'Cabaña de Montaña',
-    HOTEL: 'Hotel Serrano',
-    APARTMENT: 'Departamento',
-    HOSTEL: 'Hostería',
-    CAMPING: 'Camping & Glamping',
-  };
 
   return {
     id: item.id,
     type: 'accommodation',
     title: item.name,
     subtitle: item.description,
-    category: typeMap[item.type] || 'Alojamiento',
+    category: TYPE_MAP[item.type] || 'Alojamiento',
     lat: -30.857,
     lng: -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
@@ -32,6 +32,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     imageUrl: mainImage,
     address: item.address,
     verified: item.isActive,
+    hasBreakfast: item.hasBreakfast ?? item.amenities?.some((a) => a.toLowerCase().includes('desayuno')),
     amenities: item.amenities ?? [],
     capacity: `Hasta ${item.maxGuests} personas`,
     zone: item.locality || 'Capilla del Monte',
@@ -81,6 +82,8 @@ export function useAccommodationsFilter() {
     if (qAmenity === 'wifi') initialAmenities.push('wifi');
     if (qAmenity === 'estacionamiento') initialAmenities.push('estacionamiento');
     if (qAmenity === 'pet' || params.get('petFriendly') === 'true') initialAmenities.push('pet');
+    if (qAmenity === 'asador') initialAmenities.push('asador');
+    if (qAmenity === 'desayuno' || params.get('hasBreakfast') === 'true') initialAmenities.push('desayuno');
     if (initialAmenities.length > 0) setSelectedAmenities(initialAmenities);
   }, []);
 
@@ -93,17 +96,13 @@ export function useAccommodationsFilter() {
         const data = await api.getAccommodations();
         if (!isCancelled) {
           if (Array.isArray(data) && data.length > 0) {
-            const mapped = data.map(mapApiToPlace);
-            setPlaces(mapped);
+            setPlaces(data.map(mapApiToPlace));
           } else {
             setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
           }
         }
       } catch {
-        // Fallback to MOCK_PLACES silently when backend is unreachable or errors
-        if (!isCancelled) {
-          setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
-        }
+        if (!isCancelled) setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
       } finally {
         if (!isCancelled) setIsLoading(false);
       }
@@ -124,9 +123,7 @@ export function useAccommodationsFilter() {
   // Calculate nights count
   const nightsCount = useMemo(() => {
     if (!checkIn || !checkOut) return null;
-    const d1 = new Date(checkIn);
-    const d2 = new Date(checkOut);
-    const diffTime = d2.getTime() - d1.getTime();
+    const diffTime = new Date(checkOut).getTime() - new Date(checkIn).getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : null;
   }, [checkIn, checkOut]);
@@ -160,25 +157,16 @@ export function useAccommodationsFilter() {
       list = list.filter((p) => {
         return selectedAmenities.every((amenity) => {
           const ams = (p.amenities ?? []).map((a) => a.toLowerCase());
-          if (amenity === 'pileta') {
-            return ams.some((a) => a.includes('pileta') || a.includes('piscina') || a.includes('bio-piscina'));
-          }
-          if (amenity === 'wifi') {
-            return ams.some((a) => a.includes('wifi') || a.includes('internet'));
-          }
-          if (amenity === 'estacionamiento') {
-            return ams.some((a) => a.includes('cochera') || a.includes('estacionamiento'));
-          }
+          if (amenity === 'pileta') return ams.some((a) => a.includes('pileta') || a.includes('piscina') || a.includes('bio-piscina'));
+          if (amenity === 'wifi') return ams.some((a) => a.includes('wifi') || a.includes('internet'));
+          if (amenity === 'estacionamiento') return ams.some((a) => a.includes('cochera') || a.includes('estacionamiento'));
           if (amenity === 'pet') {
-            return (
-              ams.some((a) => a.includes('mascota') || a.includes('parque')) ||
+            return ams.some((a) => a.includes('mascota') || a.includes('parque')) ||
               (p.zone?.toLowerCase().includes('toma') ?? false) ||
-              (p.zone?.toLowerCase().includes('terrones') ?? false)
-            );
+              (p.zone?.toLowerCase().includes('terrones') ?? false);
           }
-          if (amenity === 'asador') {
-            return ams.some((a) => a.includes('asador') || a.includes('parrilla') || a.includes('quincho'));
-          }
+          if (amenity === 'asador') return ams.some((a) => a.includes('asador') || a.includes('parrilla') || a.includes('quincho'));
+          if (amenity === 'desayuno') return Boolean(p.hasBreakfast || ams.some((a) => a.includes('desayuno')));
           return true;
         });
       });
@@ -198,13 +186,9 @@ export function useAccommodationsFilter() {
     }
 
     // 5. Sorting
-    if (sortOption === 'price-asc') {
-      list.sort((a, b) => (a?.pricePerNight ?? 0) - (b?.pricePerNight ?? 0));
-    } else if (sortOption === 'price-desc') {
-      list.sort((a, b) => (b?.pricePerNight ?? 0) - (a?.pricePerNight ?? 0));
-    } else if (sortOption === 'rating-desc') {
-      list.sort((a, b) => (b?.rating ?? 0) - (a?.rating ?? 0));
-    }
+    if (sortOption === 'price-asc') list.sort((a, b) => (a?.pricePerNight ?? 0) - (b?.pricePerNight ?? 0));
+    else if (sortOption === 'price-desc') list.sort((a, b) => (b?.pricePerNight ?? 0) - (a?.pricePerNight ?? 0));
+    else if (sortOption === 'rating-desc') list.sort((a, b) => (b?.rating ?? 0) - (a?.rating ?? 0));
 
     return list;
   }, [places, selectedType, guests, selectedAmenities, searchQuery, sortOption]);

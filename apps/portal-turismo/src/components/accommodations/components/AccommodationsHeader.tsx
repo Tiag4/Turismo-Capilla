@@ -11,16 +11,17 @@ interface AccommodationsHeaderProps {
   checkOut: string;
   onCheckOutChange: (date: string) => void;
   guests: string;
-  onGuestsChange: (g: string) => void;
+  onGuestsChange: (guests: string) => void;
   nightsCount: number | null;
 }
 
 const GUEST_OPTIONS: Option[] = [
-  { value: '1', label: '1 persona' },
-  { value: '2', label: '2 personas' },
-  { value: '3', label: '3 personas' },
-  { value: '4', label: '4 personas' },
-  { value: '5', label: '5+ personas' },
+  { value: '', label: 'Cualquier capacidad' },
+  { value: '1', label: '1 persona (individual)' },
+  { value: '2', label: '2 personas (pareja)' },
+  { value: '3', label: '3 personas (triple)' },
+  { value: '4', label: '4 personas (familia)' },
+  { value: '5', label: '5+ personas (grupo)' },
 ];
 
 export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
@@ -65,9 +66,9 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
           />
         </div>
 
-        {/* Check-In */}
+        {/* Ingreso */}
         <CustomDatePicker
-          label="Check-in"
+          label="Ingreso"
           value={checkIn}
           onChange={(date) => {
             onCheckInChange(date);
@@ -76,18 +77,18 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
             }
           }}
           minDate={todayStr}
-          placeholder="Llegada"
+          placeholder="Ingreso"
           icon={<Calendar className="w-3.5 h-3.5" />}
         />
 
-        {/* Check-Out con Badge de Noches */}
+        {/* Egreso con Badge de Noches */}
         <div className="relative">
           <CustomDatePicker
-            label="Check-out"
+            label="Egreso"
             value={checkOut}
             onChange={onCheckOutChange}
             minDate={checkIn || todayStr}
-            placeholder="Salida"
+            placeholder="Egreso"
             icon={<Calendar className="w-3.5 h-3.5" />}
           />
           {nightsCount !== null && (

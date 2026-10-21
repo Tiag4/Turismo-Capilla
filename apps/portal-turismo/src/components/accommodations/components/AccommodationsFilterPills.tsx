@@ -1,5 +1,5 @@
 import React from 'react';
-import { Waves, Wifi, Car, HeartHandshake, Flame, ArrowUpDown } from 'lucide-react';
+import { Waves, Wifi, Car, HeartHandshake, Flame, ArrowUpDown, Coffee } from 'lucide-react';
 import type { AmenityFilter, SortOption } from '../hooks/useAccommodationsFilter';
 import { CustomSelect, type Option } from '../../ui/CustomSelect';
 
@@ -24,6 +24,7 @@ const AMENITY_PILLS: AmenityPillItem[] = [
   { id: 'estacionamiento', label: 'Estacionamiento', icon: <Car className="w-3.5 h-3.5" /> },
   { id: 'pet', label: 'Pet-friendly', icon: <HeartHandshake className="w-3.5 h-3.5" /> },
   { id: 'asador', label: 'Asador / Parrilla', icon: <Flame className="w-3.5 h-3.5" /> },
+  { id: 'desayuno', label: 'Desayuno', icon: <Coffee className="w-3.5 h-3.5" /> },
 ];
 
 const SORT_OPTIONS: Option[] = [

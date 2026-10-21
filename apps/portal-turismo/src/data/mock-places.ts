@@ -15,6 +15,7 @@ export interface MapPlace {
   imageUrl: string;
   address: string;
   verified?: boolean;
+  hasBreakfast?: boolean;
   amenities?: string[];
   capacity?: string;
   zone?: string;
@@ -30,6 +31,7 @@ export const MOCK_PLACES: MapPlace[] = [
   // Alojamientos (12 establecimientos para alta densidad de datos)
   {
     id: 'acc-1',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Cabañas Valle del Sol',
     subtitle: 'Al pie del Uritorco con piscina climatizada y asador individual',
@@ -49,6 +51,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-2',
+    hasBreakfast: true,
     type: 'accommodation',
     title: 'Hostería Los Portales',
     subtitle: 'Arquitectura casona clásica de 1920 en el centro histórico',
@@ -68,6 +71,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-3',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Refugio Serrano Altas Cumbres',
     subtitle: 'Vistas panorámicas de 360° al valle y Cerro Uritorco',
@@ -87,6 +91,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-4',
+    hasBreakfast: true,
     type: 'accommodation',
     title: 'Casona Uritorco Boutique',
     subtitle: 'Espacio de desconexión, yoga y descanso serrano',
@@ -106,6 +111,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-5',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Cabañas Los Molles del Valle',
     subtitle: 'Casas de campo inmersas en bosque autóctono de chañares',
@@ -125,6 +131,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-6',
+    hasBreakfast: true,
     type: 'accommodation',
     title: 'Posada del Árbol Centenario',
     subtitle: 'Muros de adobe original y patio de glicinas centenarias',
@@ -144,6 +151,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-7',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Serranías de Calabalumba',
     subtitle: 'Complejo ribereño con bajada privada al río de aguas cristalinas',
@@ -163,6 +171,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-8',
+    hasBreakfast: true,
     type: 'accommodation',
     title: 'Hostería Balneario Águila Blanca',
     subtitle: 'Construcción en granito macizo con biblioteca andina y mirador',
@@ -182,6 +191,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-9',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Aldea Las Gemelas',
     subtitle: 'Cabañas alpinas de quebracho con vista al atardecer de Punilla',
@@ -201,6 +211,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-10',
+    hasBreakfast: true,
     type: 'accommodation',
     title: 'Posada Solar Villa Cielo',
     subtitle: 'Diseño bioclimático con amplios ventanales frente al paredón',
@@ -220,6 +231,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-11',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Chacra Los Olivos & Suites',
     subtitle: 'Finca agroecológica con tinas de agua caliente bajo las estrellas',
@@ -239,6 +251,7 @@ export const MOCK_PLACES: MapPlace[] = [
   },
   {
     id: 'acc-12',
+    hasBreakfast: false,
     type: 'accommodation',
     title: 'Cabañas Rincón La Banda',
     subtitle: 'Predio arbolado cerrado para familias con pileta y solárium',

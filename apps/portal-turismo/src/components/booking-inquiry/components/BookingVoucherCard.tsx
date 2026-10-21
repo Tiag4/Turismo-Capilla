@@ -104,12 +104,12 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
       {/* Cuadrícula de Datos de Estadía y Pasajeros */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-sand-50/70 border border-sand-200/80 text-xs">
         <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Check-In</span>
+          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Ingreso</span>
           <span className="font-bold text-sand-900 text-sm">{voucher.checkIn || 'A coordinar'}</span>
           <span className="text-sand-500 text-[11px]">Desde las 14:00 hs</span>
         </div>
         <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Check-Out</span>
+          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Egreso</span>
           <span className="font-bold text-sand-900 text-sm">{voucher.checkOut || 'A coordinar'}</span>
           <span className="text-sand-500 text-[11px]">Hasta las 10:00 hs</span>
         </div>
@@ -145,7 +145,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
             </span>
           </div>
           <div>
-            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Saldo al Check-In</span>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Saldo al Ingreso</span>
             <span className="font-display font-black text-xl text-emerald-800">
               ${remainingBalance.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-emerald-700">ARS</span>
             </span>

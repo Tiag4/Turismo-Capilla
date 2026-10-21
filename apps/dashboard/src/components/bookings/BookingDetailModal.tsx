@@ -105,7 +105,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
             <div className="flex items-center gap-2.5 text-[var(--color-sand-900)]">
               <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
               <span>
-                Ingreso: <strong>{activeBooking.checkIn}</strong> — Salida: <strong>{activeBooking.checkOut}</strong>
+                Ingreso: <strong>{activeBooking.checkIn}</strong> — Egreso: <strong>{activeBooking.checkOut}</strong>
               </span>
             </div>
             <div className="flex items-center gap-2.5 text-[var(--color-sand-700)]">

@@ -46,22 +46,22 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
 
         <div className="grid grid-cols-2 gap-2.5">
           <CustomDatePicker
-            label="Llegada"
+            label="Ingreso"
             value={checkIn}
             onChange={(d) => {
               setCheckIn(d);
               if (checkOut && d >= checkOut) setCheckOut('');
             }}
             minDate={todayStr}
-            placeholder="Llegada"
+            placeholder="Ingreso"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
           <CustomDatePicker
-            label="Salida"
+            label="Egreso"
             value={checkOut}
             onChange={setCheckOut}
             minDate={checkIn || todayStr}
-            placeholder="Salida"
+            placeholder="Egreso"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
         </div>
@@ -90,7 +90,7 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
           </div>
         ) : (
           <p className="text-[11px] text-stone-500 text-center pt-1">
-            Seleccioná tus fechas de llegada y salida para calcular la tarifa total.
+            Seleccioná tus fechas de ingreso y egreso para calcular la tarifa total.
           </p>
         )}
       </div>

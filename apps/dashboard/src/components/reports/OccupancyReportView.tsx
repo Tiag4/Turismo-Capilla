@@ -117,7 +117,7 @@ export const OccupancyReportView: React.FC = () => {
                     <div key={i} className="flex flex-col gap-1">
                       <div className="flex justify-between text-xs font-semibold text-[var(--color-sand-800)]">
                         <span>{orig.origin}</span>
-                        <span className="font-mono text-[var(--color-sand-900)]">{orig.percentage}%</span>
+                        <span className="font-['Outfit'] font-bold tabular-nums text-[var(--color-sand-900)]">{orig.percentage}%</span>
                       </div>
                       <div className="w-full h-2 bg-[var(--color-sand-100)] rounded-full overflow-hidden">
                         <div
@@ -130,7 +130,7 @@ export const OccupancyReportView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-6 pt-3 border-t border-[var(--color-sand-200)] text-[11px] text-[var(--color-sand-400)]">
+              <div className="mt-6 pt-3 border-t border-[var(--color-sand-200)] text-[11px] text-[var(--color-sand-600)]">
                 Datos calculados en base a registros de ingreso y fichas de huéspedes de la Comisión.
               </div>
             </div>
@@ -154,18 +154,18 @@ export const OccupancyReportView: React.FC = () => {
                       className="p-3 bg-[var(--color-sand-50)] rounded-xl border border-[var(--color-sand-200)] flex items-center justify-between text-xs"
                     >
                       <div>
-                        <span className="font-mono font-bold text-[var(--color-sand-900)] block">
+                        <span className="font-['Outfit'] font-bold tabular-nums tracking-wide text-xs text-[var(--color-sand-900)] block">
                           {b.bookingCode}
                         </span>
-                        <span className="text-[11px] text-[var(--color-sand-400)]">
+                        <span className="text-[11px] text-[var(--color-sand-600)]">
                           {b.accommodation?.name || 'Alojamiento'} • {b.guestName}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="font-bold text-[var(--color-terracotta-500)] block font-['Outfit']">
+                        <span className="font-bold text-[var(--color-terracotta-600)] block font-['Outfit'] tabular-nums">
                           ${b.totalAmount.toLocaleString('es-AR')}
                         </span>
-                        <span className="text-[10px] text-[var(--color-sand-400)]">
+                        <span className="text-[10px] text-[var(--color-sand-600)] tabular-nums">
                           {b.totalNights} noches ({b.checkIn})
                         </span>
                       </div>
@@ -175,7 +175,7 @@ export const OccupancyReportView: React.FC = () => {
               </div>
 
               <div className="mt-4 pt-3 border-t border-[var(--color-sand-200)] flex items-center justify-between">
-                <span className="text-[11px] text-[var(--color-sand-400)]">
+                <span className="text-[11px] text-[var(--color-sand-600)]">
                   Archivo listo para presentación ministerial
                 </span>
                 <Button variant="outline" size="sm" onClick={exportCsv} className="text-xs">

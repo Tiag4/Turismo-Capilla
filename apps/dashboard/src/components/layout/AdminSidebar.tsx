@@ -6,7 +6,7 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   Image,
-  Settings,
+  CalendarRange,
   X,
   LogOut,
   Shield,
@@ -43,7 +43,7 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría de Actividad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', icon: Image },
-  { id: 'settings', label: 'Configuración Oficial', icon: Settings },
+  { id: 'settings', label: 'Temporadas Oficiales', icon: CalendarRange },
 ];
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({

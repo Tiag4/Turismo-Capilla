@@ -19,7 +19,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 shadow-xs transition-shadow hover:shadow-sm">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-400)]">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-600)]">
           {label}
         </span>
         {/* Anti-vibecoded: direct semantic icon without artificial pastel background pill */}
@@ -27,11 +27,11 @@ export const StatCard: React.FC<StatCardProps> = ({
       </div>
       <div className="mt-3">
         {/* Anti-vibecoded: solid text color, strictly no gradient text */}
-        <div className="text-2xl sm:text-3xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+        <div className="text-2xl sm:text-3xl font-bold text-[var(--color-sand-900)] font-['Outfit'] tabular-nums">
           {value}
         </div>
         {helperText && (
-          <p className="mt-1 text-xs text-[var(--color-sand-400)] font-medium">
+          <p className="mt-1 text-xs text-[var(--color-sand-600)] font-medium">
             {helperText}
           </p>
         )}

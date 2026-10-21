@@ -11,7 +11,7 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   Image,
-  Settings,
+  CalendarRange,
   ChevronRight,
 } from 'lucide-react';
 import type { User, UserRole } from '../../types/auth.types.ts';
@@ -50,7 +50,7 @@ const ADMIN_SHORTCUTS: NavShortcut[] = [
   { id: 'reports', label: 'Reportes Turísticos', desc: 'Estadísticas oficiales', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría', desc: 'Trazabilidad y seguridad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', desc: 'Revisión visual', icon: Image },
-  { id: 'settings', label: 'Configuración Oficial', desc: 'Parámetros del sistema', icon: Settings },
+  { id: 'settings', label: 'Temporadas Oficiales', desc: 'Calendario y tarifas sugeridas', icon: CalendarRange },
 ];
 
 export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({

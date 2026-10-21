@@ -79,6 +79,13 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   );
   const [checkIn, setCheckIn] = useState('14:00 hs');
   const [checkOut, setCheckOut] = useState('10:00 hs');
+  const [hasBreakfast, setHasBreakfast] = useState<boolean>(
+    initialData?.hasBreakfast ??
+      (initialData?.amenities?.some((a) => a.toLowerCase().includes('desayuno')) || false)
+  );
+  const [breakfastType, setBreakfastType] = useState<string>(
+    initialData?.breakfastType || 'Desayuno serrano casero'
+  );
   const [downPaymentPercentage, setDownPaymentPercentage] = useState<number>(
     initialData?.downPaymentPercentage ?? 50
   );
@@ -136,6 +143,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       longitude: longitude ? parseFloat(longitude) : null,
       pricePerNight: Number(pricePerNight),
       maxGuests: Number(maxGuests),
+      hasBreakfast,
+      breakfastType: hasBreakfast ? breakfastType : undefined,
       amenities: selectedAmenities,
       downPaymentPercentage,
       bankAccountHolder: bankAccountHolder.trim() || undefined,
@@ -222,6 +231,10 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setCheckIn={setCheckIn}
           checkOut={checkOut}
           setCheckOut={setCheckOut}
+          hasBreakfast={hasBreakfast}
+          setHasBreakfast={setHasBreakfast}
+          breakfastType={breakfastType}
+          setBreakfastType={setBreakfastType}
         />
 
         <RoomTypesInventorySection

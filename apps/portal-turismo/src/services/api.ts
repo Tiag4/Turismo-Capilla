@@ -34,6 +34,7 @@ export interface Accommodation {
   maxGuests: number;
   amenities: string[];
   isActive: boolean;
+  hasBreakfast?: boolean;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string | null;

@@ -133,7 +133,7 @@ export const AccommodationGuestsPicker: React.FC<AccommodationGuestsPickerProps>
                 ))}
               </div>
               <p className="text-[10px] text-stone-500 leading-tight">
-                Ingresá las edades para calcular el alojamiento y camas exactas al momento del check-out.
+                Ingresá las edades para calcular el alojamiento y camas exactas para tu estadía.
               </p>
             </div>
           )}

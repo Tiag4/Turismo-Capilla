@@ -113,7 +113,7 @@ export const SeasonalRatesManager: React.FC = () => {
       <div className="p-3.5 bg-white rounded-2xl border border-[var(--color-sand-200)] flex items-start gap-3">
         <AlertCircle className="w-4 h-4 text-[var(--color-terracotta-500)] shrink-0 mt-0.5" />
         <p className="text-xs text-[var(--color-sand-800)] leading-relaxed">
-          Las tarifas se aplican automáticamente en el motor de reservas según la fecha de check-in del turista. 
+          Las tarifas se aplican automáticamente en el motor de reservas según la fecha de ingreso del turista. 
           Las reglas de noches mínimas evitan que entren solicitudes fragmentadas que dejen días vacíos sin ocupar.
         </p>
       </div>

@@ -30,7 +30,7 @@ export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps>
               Condiciones de Pago & Seña Requerida
             </h3>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              Para garantizar tu reserva en <strong className="text-stone-900">{data.title}</strong> se requiere una seña del <strong>{wizard.downPaymentPercentage}%</strong> mediante transferencia bancaria directa al anfitrión. El saldo restante se cancela al momento del check-in.
+              Para garantizar tu reserva en <strong className="text-stone-900">{data.title}</strong> se requiere una seña del <strong>{wizard.downPaymentPercentage}%</strong> mediante transferencia bancaria directa al anfitrión. El saldo restante se cancela al momento del ingreso.
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0 text-amber-600">
@@ -49,7 +49,7 @@ export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps>
             <span className="text-sm font-black text-amber-950">${wizard.downPaymentAmount.toLocaleString('es-AR')} ARS</span>
           </div>
           <div className="flex justify-between text-stone-600 font-medium px-2 py-0.5">
-            <span>Saldo a abonar en el check-in:</span>
+            <span>Saldo a abonar en el ingreso:</span>
             <span className="font-bold text-stone-800">${wizard.remainingBalance.toLocaleString('es-AR')} ARS</span>
           </div>
         </div>

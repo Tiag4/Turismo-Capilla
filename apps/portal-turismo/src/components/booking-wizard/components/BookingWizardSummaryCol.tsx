@@ -46,12 +46,12 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
         <h4 className="font-display font-bold text-sm text-stone-900 border-b border-stone-100 pb-2">Los datos de tu reserva</h4>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span className="text-stone-500 font-medium block">Entrada</span>
+            <span className="text-stone-500 font-medium block">Ingreso</span>
             <span className="font-bold text-stone-900 block">{formatDate(initialParams.checkIn)}</span>
             <span className="text-[11px] text-stone-500">14:00 – 21:00</span>
           </div>
           <div>
-            <span className="text-stone-500 font-medium block">Salida</span>
+            <span className="text-stone-500 font-medium block">Egreso</span>
             <span className="font-bold text-stone-900 block">{formatDate(initialParams.checkOut)}</span>
             <span className="text-[11px] text-stone-500">10:00 – 11:00</span>
           </div>
@@ -96,7 +96,7 @@ export const BookingWizardSummaryCol: React.FC<BookingWizardSummaryColProps> = (
               <span className="text-sm">${wizard.downPaymentAmount.toLocaleString('es-AR')} ARS</span>
             </div>
             <div className="flex justify-between items-center text-stone-600 font-medium px-2 py-1 text-[11px]">
-              <span>Saldo a abonar en el check-in</span>
+              <span>Saldo a abonar en el ingreso</span>
               <span className="font-bold text-stone-800">${wizard.remainingBalance.toLocaleString('es-AR')} ARS</span>
             </div>
           </div>

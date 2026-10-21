@@ -72,7 +72,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
 
         <div>
           <CustomTimePicker
-            label="Horario de Check-in"
+            label="Horario de Ingreso"
             value={checkIn || '14:00 hs'}
             onChange={(val) => setCheckIn(val)}
             helperText="Horario de ingreso al complejo."
@@ -81,10 +81,10 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
 
         <div>
           <CustomTimePicker
-            label="Horario de Check-out"
+            label="Horario de Egreso"
             value={checkOut || '10:00 hs'}
             onChange={(val) => setCheckOut(val)}
-            helperText="Horario límite de salida."
+            helperText="Horario límite de egreso."
           />
         </div>
       </div>

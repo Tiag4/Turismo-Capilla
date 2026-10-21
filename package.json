@@ -4,13 +4,13 @@
   "private": true,
   "description": "Monorepo para la plataforma de turismo y reservas de Capilla del Monte",
   "scripts": {
-    "dev": "pnpm --filter portal-turismo dev",
-    "build": "pnpm --filter portal-turismo build",
-    "test": "pnpm -r run test",
-    "lint": "pnpm -r run lint",
+    "dev": "pnpm --parallel --filter portal-turismo --filter dashboard dev",
     "dev:portal": "pnpm --filter portal-turismo dev",
-    "dev:dashboard": "pnpm --filter portal-turismo exec vite apps/dashboard --port 5174",
-    "dev:frontend": "pnpm --filter portal-turismo dev"
+    "dev:dashboard": "pnpm --filter dashboard dev",
+    "dev:all": "pnpm --parallel --filter portal-turismo --filter dashboard dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint"
   },
   "packageManager": "pnpm@11.23.0"
 }

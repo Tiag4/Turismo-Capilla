@@ -68,10 +68,10 @@ export const BookingVoucherPrint: React.FC<BookingVoucherPrintProps> = ({
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-600)] block">
                 Código de Reserva
               </span>
-              <span className="text-xl font-black font-['Outfit'] text-[var(--color-terracotta-600)] tracking-tight block">
+              <span className="text-xl font-black font-['Outfit'] tabular-nums text-[var(--color-terracotta-600)] tracking-tight block">
                 {booking.bookingCode}
               </span>
               <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-[var(--color-sand-100)] text-[var(--color-sand-800)] border border-[var(--color-sand-200)]">

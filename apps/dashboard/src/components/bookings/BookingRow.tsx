@@ -18,10 +18,10 @@ export const BookingRow: React.FC<BookingRowProps> = ({
   return (
     <tr className="border-b border-[var(--color-sand-200)] hover:bg-[var(--color-sand-50)] transition-colors">
       <td className="py-3.5 px-4">
-        <span className="font-mono text-xs font-bold text-[var(--color-sand-900)] block">
+        <span className="font-['Outfit'] font-bold tabular-nums tracking-wide text-xs text-[var(--color-sand-900)] block">
           {booking.bookingCode}
         </span>
-        <span className="text-[11px] text-[var(--color-sand-400)] block">
+        <span className="text-[11px] text-[var(--color-sand-600)] block">
           {booking.accommodation?.name || 'Alojamiento'}
         </span>
       </td>
@@ -29,7 +29,7 @@ export const BookingRow: React.FC<BookingRowProps> = ({
         <span className="font-semibold text-[var(--color-sand-900)] block">
           {booking.guestName}
         </span>
-        <span className="text-[11px] text-[var(--color-sand-400)] block">
+        <span className="text-[11px] text-[var(--color-sand-600)] block">
           {booking.guestPhone}
         </span>
       </td>
@@ -38,11 +38,11 @@ export const BookingRow: React.FC<BookingRowProps> = ({
           <span className="font-medium text-[var(--color-sand-900)]">{booking.checkIn}</span> al{' '}
           <span className="font-medium text-[var(--color-sand-900)]">{booking.checkOut}</span>
         </div>
-        <span className="text-[11px] text-[var(--color-sand-400)]">
+        <span className="text-[11px] text-[var(--color-sand-600)] tabular-nums">
           {booking.totalNights} {booking.totalNights === 1 ? 'noche' : 'noches'} · {booking.guestCount} pers.
         </span>
       </td>
-      <td className="py-3.5 px-4 text-sm font-bold text-[var(--color-sand-900)] font-['Outfit']">
+      <td className="py-3.5 px-4 text-sm font-bold text-[var(--color-sand-900)] font-['Outfit'] tabular-nums">
         ${(booking.totalAmount ?? 0).toLocaleString('es-AR')}
       </td>
       <td className="py-3.5 px-4">

@@ -76,9 +76,9 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
           className="w-full rounded-xl border border-[var(--color-sand-300)] bg-white px-3.5 py-2.5 text-sm text-[var(--color-sand-900)] placeholder:text-[var(--color-sand-400)] focus:outline-none focus:border-[var(--color-terracotta-500)] transition-colors"
           required
         />
-        <div className="flex justify-between items-center mt-1 text-[11px] text-[var(--color-sand-400)]">
+        <div className="flex justify-between items-center mt-1 text-[11px] text-[var(--color-sand-600)]">
           <span>Recomendación: mínimo 100 caracteres para un buen posicionamiento en búsquedas.</span>
-          <span className="font-mono">{description.length} caracteres</span>
+          <span className="font-['Outfit'] font-bold tabular-nums text-[var(--color-sand-800)]">{description.length} caracteres</span>
         </div>
       </div>
     </div>

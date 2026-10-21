@@ -66,7 +66,7 @@ export const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         </button>
 
         {/* Index Pill */}
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-mono font-bold">
+        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-['Outfit'] font-bold tabular-nums">
           #{index + 1}
         </div>
 

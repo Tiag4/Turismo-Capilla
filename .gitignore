@@ -35,9 +35,11 @@ lerna-debug.log*
 Thumbs.db
 
 # Temporary files
+.atl/
 tmp/
 scratch/
 *.tmp
+
 
 # Coverage
 coverage/

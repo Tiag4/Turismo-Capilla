@@ -1,6 +1,6 @@
 import React from 'react';
 import type { DashboardTab } from './DashboardNav.tsx';
-import { FileSpreadsheet, ShieldCheck, Image, Settings } from 'lucide-react';
+import { FileSpreadsheet, ShieldCheck, Image, CalendarRange } from 'lucide-react';
 
 export interface AdminSectionPlaceholderProps {
   tab: DashboardTab;
@@ -31,10 +31,10 @@ const SECTION_DATA: Partial<
     icon: Image,
   },
   settings: {
-    title: 'Configuración Oficial del Calendario Turístico',
+    title: 'Temporadas Oficiales del Calendario Turístico',
     subtitle: 'Parametrización de temporadas altas, bajas y festividades de Capilla del Monte.',
     issue: 'TDR-18',
-    icon: Settings,
+    icon: CalendarRange,
   },
 };
 
@@ -43,7 +43,7 @@ export const AdminSectionPlaceholder: React.FC<AdminSectionPlaceholderProps> = (
     title: 'Módulo Municipal',
     subtitle: 'Sección del panel institucional.',
     issue: 'TDR',
-    icon: Settings,
+    icon: CalendarRange,
   };
   const Icon = data.icon;
 

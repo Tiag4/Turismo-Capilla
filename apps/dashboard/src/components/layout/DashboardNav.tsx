@@ -15,7 +15,9 @@ export type DashboardTab =
   | 'reports'
   | 'audit'
   | 'moderation'
-  | 'settings';
+  | 'settings'
+  | 'events'
+  | 'portal_cms';
 
 export interface DashboardNavProps {
   currentTab: DashboardTab;

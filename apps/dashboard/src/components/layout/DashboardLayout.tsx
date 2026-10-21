@@ -25,6 +25,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isAdmin = user.role === 'ADMIN';
+  const isCmsMode = currentTab === 'portal_cms';
 
   return (
     <div className="min-h-screen bg-[var(--color-sand-50)] flex">
@@ -99,7 +100,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </header>
 
         {/* Main Section */}
-        <main className="flex-1 min-w-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto">
+        <main
+          className={
+            isCmsMode
+              ? 'flex-1 min-w-0 w-full h-[calc(100vh-56px)] md:h-screen overflow-hidden flex flex-col p-0'
+              : 'flex-1 min-w-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto'
+          }
+        >
           {children}
         </main>
       </div>

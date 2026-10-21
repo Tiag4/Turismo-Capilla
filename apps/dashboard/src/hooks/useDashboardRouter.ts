@@ -3,11 +3,14 @@ import type { DashboardTab } from '../components/layout/DashboardNav.tsx';
 import type { UserRole } from '../types/auth.types.ts';
 
 export type AccommodationViewMode = 'list' | 'create' | 'edit';
+export type EventViewMode = 'list' | 'create' | 'edit';
 
 export interface RouteDetail {
   tab: DashboardTab;
   accommodationView: AccommodationViewMode;
   accommodationEditId?: string;
+  eventView: EventViewMode;
+  eventEditId?: string;
 }
 
 export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
@@ -24,10 +27,17 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   audit: '/auditoria',
   moderation: '/moderacion',
   settings: '/configuracion',
+  events: '/agenda-cultural',
+  portal_cms: '/personalizador-portal',
 };
 
 // Friendly aliases and accented URL matching
 const ROUTE_ALIASES: Record<string, DashboardTab> = {
+  '/agenda-cultural': 'events',
+  '/eventos': 'events',
+  '/personalizador-portal': 'portal_cms',
+  '/cms': 'portal_cms',
+  '/personalizador': 'portal_cms',
   '/mis-cabanas': 'accommodations',
   '/mis-cabañas': 'accommodations',
   '/alojamientos': 'accommodations',
@@ -66,6 +76,7 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
     return {
       tab: 'accommodations',
       accommodationView: 'create',
+      eventView: 'list',
     };
   }
 
@@ -76,6 +87,27 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
       tab: 'accommodations',
       accommodationView: 'edit',
       accommodationEditId: editMatch[1],
+      eventView: 'list',
+    };
+  }
+
+  // Sub-route: /agenda-cultural/nuevo or /eventos/nuevo
+  if (normalized === '/agenda-cultural/nuevo' || normalized === '/eventos/nuevo') {
+    return {
+      tab: 'events',
+      accommodationView: 'list',
+      eventView: 'create',
+    };
+  }
+
+  // Sub-route: /agenda-cultural/:id/editar or /eventos/:id/editar
+  const eventEditMatch = normalized.match(/^\/(?:agenda-cultural|eventos)\/([^/]+)\/editar$/i);
+  if (eventEditMatch && eventEditMatch[1]) {
+    return {
+      tab: 'events',
+      accommodationView: 'list',
+      eventView: 'edit',
+      eventEditId: eventEditMatch[1],
     };
   }
 
@@ -84,6 +116,7 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
     return {
       tab: ROUTE_ALIASES[normalized],
       accommodationView: 'list',
+      eventView: 'list',
     };
   }
 
@@ -91,6 +124,7 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
   return {
     tab: role === 'ADMIN' ? 'overview' : 'accommodations',
     accommodationView: 'list',
+    eventView: 'list',
   };
 };
 
@@ -107,13 +141,14 @@ export const useDashboardRouter = (role: UserRole) => {
     setRouteState({
       tab,
       accommodationView: 'list',
+      eventView: 'list',
     });
     const targetRoute = TAB_ROUTE_MAP[tab] || '/reservas';
     if (window.location.pathname !== targetRoute) {
       if (replace) {
-        window.history.replaceState({ tab, view: 'list' }, '', targetRoute);
+        window.history.replaceState({ tab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
       } else {
-        window.history.pushState({ tab, view: 'list' }, '', targetRoute);
+        window.history.pushState({ tab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
       }
     }
   }, []);
@@ -122,6 +157,7 @@ export const useDashboardRouter = (role: UserRole) => {
     setRouteState({
       tab: 'accommodations',
       accommodationView: 'create',
+      eventView: 'list',
     });
     const targetRoute = '/mis-cabanas/nuevo';
     if (window.location.pathname !== targetRoute) {
@@ -134,6 +170,7 @@ export const useDashboardRouter = (role: UserRole) => {
       tab: 'accommodations',
       accommodationView: 'edit',
       accommodationEditId: id,
+      eventView: 'list',
     });
     const targetRoute = `/mis-cabanas/${id}/editar`;
     if (window.location.pathname !== targetRoute) {
@@ -145,10 +182,48 @@ export const useDashboardRouter = (role: UserRole) => {
     setRouteState({
       tab: 'accommodations',
       accommodationView: 'list',
+      eventView: 'list',
     });
     const targetRoute = '/mis-cabanas';
     if (window.location.pathname !== targetRoute) {
       window.history.pushState({ tab: 'accommodations', view: 'list' }, '', targetRoute);
+    }
+  }, []);
+
+  const navigateToEventCreate = useCallback(() => {
+    setRouteState({
+      tab: 'events',
+      accommodationView: 'list',
+      eventView: 'create',
+    });
+    const targetRoute = '/agenda-cultural/nuevo';
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'events', view: 'create' }, '', targetRoute);
+    }
+  }, []);
+
+  const navigateToEventEdit = useCallback((id: string) => {
+    setRouteState({
+      tab: 'events',
+      accommodationView: 'list',
+      eventView: 'edit',
+      eventEditId: id,
+    });
+    const targetRoute = `/agenda-cultural/${id}/editar`;
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'events', view: 'edit', id }, '', targetRoute);
+    }
+  }, []);
+
+  const navigateToEventList = useCallback(() => {
+    setRouteState({
+      tab: 'events',
+      accommodationView: 'list',
+      eventView: 'list',
+    });
+    const targetRoute = '/agenda-cultural';
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState({ tab: 'events', view: 'list' }, '', targetRoute);
     }
   }, []);
 
@@ -168,9 +243,13 @@ export const useDashboardRouter = (role: UserRole) => {
     const currentPath = window.location.pathname.replace(/\/+$/, '');
     if (!currentPath || currentPath === '' || currentPath === '/') {
       const defaultRoute = TAB_ROUTE_MAP[routeState.tab];
-      window.history.replaceState({ tab: routeState.tab, view: routeState.accommodationView }, '', defaultRoute);
+      window.history.replaceState(
+        { tab: routeState.tab, view: routeState.accommodationView, eventView: routeState.eventView },
+        '',
+        defaultRoute
+      );
     }
-  }, [routeState.tab, routeState.accommodationView]);
+  }, [routeState.tab, routeState.accommodationView, routeState.eventView]);
 
   return {
     currentTab: routeState.tab,
@@ -180,5 +259,10 @@ export const useDashboardRouter = (role: UserRole) => {
     navigateToAccommodationCreate,
     navigateToAccommodationEdit,
     navigateToAccommodationList,
+    eventView: routeState.eventView,
+    eventEditId: routeState.eventEditId,
+    navigateToEventCreate,
+    navigateToEventEdit,
+    navigateToEventList,
   };
 };

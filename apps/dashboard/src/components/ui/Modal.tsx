@@ -21,7 +21,7 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(false);
-  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startClose = useCallback(() => {
     setIsVisible(false);

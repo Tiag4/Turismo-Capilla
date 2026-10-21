@@ -16,9 +16,15 @@ import { OccupancyReportView } from './components/reports/OccupancyReportView.ts
 import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
+
+import { CulturalAgendaManager } from './components/cms/CulturalAgendaManager.tsx';
+import { EventEditorPage } from './components/cms/EventEditorPage.tsx';
+import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx';
+
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
+
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
@@ -32,6 +38,11 @@ export const App: React.FC = () => {
     navigateToAccommodationCreate,
     navigateToAccommodationEdit,
     navigateToAccommodationList,
+    eventView,
+    eventEditId,
+    navigateToEventCreate,
+    navigateToEventEdit,
+    navigateToEventList,
   } = useDashboardRouter(user?.role ?? 'HOST');
 
   if (!isAuthenticated || !user) {
@@ -50,6 +61,8 @@ export const App: React.FC = () => {
         'audit',
         'moderation',
         'settings',
+        'events',
+        'portal_cms',
       ];
       if (adminOnlyTabs.includes(currentTab)) {
         setCurrentTab('bookings');
@@ -73,8 +86,32 @@ export const App: React.FC = () => {
       {currentTab === 'overview' && user.role === 'ADMIN' && (
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
+
+      {currentTab === 'portal_cms' && user.role === 'ADMIN' && (
+        <PortalCustomizerPage
+          onNavigateToEvents={() => setCurrentTab('events')}
+          onNavigateToAccommodations={() => setCurrentTab('accommodations')}
+        />
+      )}
+      {currentTab === 'events' && user.role === 'ADMIN' && (
+        eventView === 'list' ? (
+          <CulturalAgendaManager
+            onNavigateCreate={navigateToEventCreate}
+            onNavigateEdit={navigateToEventEdit}
+          />
+        ) : (
+          <EventEditorPage
+            mode={eventView}
+            eventId={eventEditId}
+            onBack={navigateToEventList}
+            onSuccess={navigateToEventList}
+          />
+        )
+      )}
+
       {currentTab === 'attractions' && user.role === 'ADMIN' && <AttractionsManager />}
       {currentTab === 'alerts' && user.role === 'ADMIN' && <AlertsManagerView />}
+
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (
         accommodationView === 'list' ? (

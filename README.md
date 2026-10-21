@@ -27,10 +27,10 @@ El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacop
 
 1. **Frontend (Este Repositorio — `Turismo-Capilla`):**
    * **Tecnologías:** React 19.3, Vite 8 (Rolldown), React Router v7, Tailwind CSS v4, Lucide React, GSAP.
-   * **Puerto por defecto:** `http://localhost:5173`
-   * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas y asistente multi-paso de reserva.
-2. **Backend (`Turismo-Capilla-Backend` — En Construcción):**
-   * **Tecnologías Objetivo:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 16.
+   * **Puertos por defecto:** Portal `http://localhost:5173` | Dashboard `http://localhost:5174`
+   * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas, motor de reservas y dashboards protegidos por rol.
+2. **Backend (`backend-capilla-turismo`):**
+   * **Tecnologías:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 18.
    * **Responsabilidad:** Lógica de negocio, autenticación JWT con Spring Security, prevención transaccional de overbooking y persistencia relacional estricta.
 
 ### 1.1 Prevención de Solapamiento (Flujo de Reserva)
@@ -49,28 +49,24 @@ Turismo-Capilla/
 │   ├── AGENTS.md                  # Reglas maestras para agentes y programadores
 │   └── skills/                    # Principios SOLID, reglas de React, commits y UI
 ├── apps/
-│   └── portal-turismo/            # Aplicación SPA React 19 + Vite
-│       ├── public/                # Assets estáticos y favicons
+│   ├── portal-turismo/            # Aplicación SPA React 19 + Vite (Portal Turístico Público)
+│   │   ├── src/
+│   │   │   ├── components/        # Componentes desacoplados (Container-Presentational)
+│   │   │   ├── pages/             # Vistas montadas por React Router v7
+│   │   │   └── services/          # Cliente HTTP API REST
+│   │   └── vite.config.ts         # Puerto 5173
+│   └── dashboard/                 # Panel de Control Oficial (Admin Comisión & Cabañeros)
 │       ├── src/
-│       │   ├── components/        # Componentes desacoplados (Container-Presentational)
-│       │   │   ├── accommodations/ # Catálogo de alojamientos, tabs, pills y cards (HU-04)
-│       │   │   ├── home/          # Secciones modulares de la Landing Page (HU-01)
-│       │   │   ├── layout/        # AppLayout, navbar responsive y footer
-│       │   │   └── ui/            # DatePickers, CustomSelects y modales accesibles
-│       │   ├── data/              # Mock data con tipado estricto (mock-places.ts)
-│       │   ├── pages/             # Vistas principales montadas por React Router v7
-│       │   ├── services/          # Cliente HTTP para comunicación con el backend (api.ts)
-│       │   ├── styles/            # Tokens visuales y configuración Tailwind v4
-│       │   ├── App.tsx            # Árbol central de rutas SPA
-│       │   └── main.tsx           # Entry point de React 19
-│       ├── index.html             # HTML con OpenGraph y marcado Schema.org JSON-LD
-│       └── vite.config.ts         # Configuración de Vite con code-splitting funcional
+│       │   ├── components/        # Vistas de gestión, perfil, reservas, tarifas y CMS
+│       │   ├── hooks/             # useAuth, useDashboardRouter (RBAC estricto)
+│       │   └── services/          # Clientes de API autenticados con JWT
+│       └── vite.config.ts         # Puerto 5174
 ├── docs/                          # Documentación arquitectónica, técnica y de QA
 │   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
 │   ├── architecture.md            # Blueprint del ecosistema (Frontend React + Backend Java)
 │   ├── api-reference.md           # Referencia de contratos de la API REST
 │   └── manual-testing-guide.md    # Guías de testing manual de integración
-├── package.json                   # Scripts unificados de ejecución
+├── package.json                   # Scripts unificados de ejecución monorepo
 └── pnpm-workspace.yaml            # Configuración de workspaces
 ```
 
@@ -122,15 +118,31 @@ cd Turismo-Capilla
 # 2. Instalar dependencias
 pnpm install
 
-# 3. Iniciar el portal en modo desarrollo
+# 3. Iniciar ambas aplicaciones en modo desarrollo (paralelo)
 pnpm dev
+
+# O iniciar individualmente cada aplicación:
+pnpm dev:portal      # Portal Turístico (Turistas) -> http://localhost:5173
+pnpm dev:dashboard   # Dashboard de Gestión (Admin / Host) -> http://localhost:5174
 ```
 
-* **Portal Web:** [http://localhost:5173](http://localhost:5173)
+* **Portal Turístico Público:** [http://localhost:5173](http://localhost:5173)
+* **Dashboard de Gestión Oficial:** [http://localhost:5174](http://localhost:5174)
 * **Compilación de Producción:**
   ```bash
   pnpm build
   ```
+
+### 5.3 Credenciales de Acceso Oficial y Demostración (Dashboard)
+
+El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al autenticarse, la plataforma inspecciona el claim `role` del token JWT y redirige automáticamente al usuario a su panel correspondiente:
+
+| Rol | Correo Electrónico | Contraseña | Panel Destino (RBAC) | Funcionalidad Principal |
+| :--- | :--- | :--- | :--- | :--- |
+| **Comisión de Turismo (`ADMIN`)** | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | `/overview` *(Centro de Control)* | Gestión de prestadores, tokens de invitación, agenda cultural, auditoría y calendario de temporadas. |
+| **Cabañero / Prestador (`HOST`)** | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Administración del establecimiento (*"Cabañas Pircas del Uritorco"*), fotos, tarifas por noche y reservas recibidas. |
+
+> **Nota:** La pantalla de inicio de sesión (`/login`) cuenta con botones de *Acceso Rápido de Demostración* para autocompletar estas credenciales con un solo clic.
 
 ---
 
@@ -145,6 +157,8 @@ pnpm dev
 | `HU-05` | Ficha de Detalle de Alojamiento y Comodidades | ✅ Implementado |
 | `HU-06` | Motor y Asistente de Reserva de Alojamiento | ✅ Implementado |
 | `HU-08` | Ubicación y Mapa Interactivo de Capilla del Monte | ✅ Implementado |
+| `HU-27` | RBAC & Seguridad: Separación estricta de paneles y Módulo de Perfil | ✅ Implementado |
+| `HU-29` | Elaboración del Manual de Usuario Oficial (Prestadores y Comisión) | 📋 Backlog Activo |
 
 ---
 

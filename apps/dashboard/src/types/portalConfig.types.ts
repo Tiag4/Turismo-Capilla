@@ -29,7 +29,7 @@ export const CANONICAL_HOME_SECTIONS: HomeSectionItem[] = [
   },
   {
     id: 'culturalAgenda',
-    name: 'Agenda Cultural y Eventos (#76)',
+    name: 'Agenda Cultural y Eventos',
     description: 'Festivales, peñas, teatro y ferias comunitarias de Capilla del Monte.',
     category: 'content',
   },

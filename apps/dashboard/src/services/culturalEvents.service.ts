@@ -106,6 +106,19 @@ export const culturalEventsService = {
     return culturalEventsService.getEvents().filter((e) => e.isActive);
   },
 
+  getEventById: async (id: string): Promise<CulturalEvent | undefined> => {
+    try {
+      const remote = await apiClient.get<CulturalEvent>(`/events/${id}`);
+      if (remote && remote.id) {
+        return remote;
+      }
+    } catch {
+      // Fallback to local storage if API is offline
+    }
+    const events = getStoredEvents();
+    return events.find((e) => e.id === id);
+  },
+
   fetchEvents: async (): Promise<CulturalEvent[]> => {
     try {
       const remote = await apiClient.get<CulturalEvent[]>('/events');

@@ -17,6 +17,7 @@ import { ActivityLogView } from './components/audit/ActivityLogView.tsx';
 import { ContentModerationView } from './components/moderation/ContentModerationView.tsx';
 import { TourismCalendarSettings } from './components/settings/TourismCalendarSettings.tsx';
 import { CulturalAgendaManager } from './components/cms/CulturalAgendaManager.tsx';
+import { EventEditorPage } from './components/cms/EventEditorPage.tsx';
 import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
@@ -31,6 +32,11 @@ export const App: React.FC = () => {
     navigateToAccommodationCreate,
     navigateToAccommodationEdit,
     navigateToAccommodationList,
+    eventView,
+    eventEditId,
+    navigateToEventCreate,
+    navigateToEventEdit,
+    navigateToEventList,
   } = useDashboardRouter(user?.role ?? 'HOST');
 
   if (!isAuthenticated || !user) {
@@ -76,7 +82,19 @@ export const App: React.FC = () => {
         <PortalCustomizerPage onNavigateToEvents={() => setCurrentTab('events')} />
       )}
       {currentTab === 'events' && user.role === 'ADMIN' && (
-        <CulturalAgendaManager />
+        eventView === 'list' ? (
+          <CulturalAgendaManager
+            onNavigateCreate={navigateToEventCreate}
+            onNavigateEdit={navigateToEventEdit}
+          />
+        ) : (
+          <EventEditorPage
+            mode={eventView}
+            eventId={eventEditId}
+            onBack={navigateToEventList}
+            onSuccess={navigateToEventList}
+          />
+        )
       )}
       {currentTab === 'bookings' && <BookingList />}
       {currentTab === 'accommodations' && (

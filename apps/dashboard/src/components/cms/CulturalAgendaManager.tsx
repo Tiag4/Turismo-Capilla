@@ -8,22 +8,10 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  X,
-  CheckCircle2,
 } from 'lucide-react';
 import { culturalEventsService } from '../../services/culturalEvents.service';
-import type { CulturalEvent, CreateCulturalEventDTO, EventCategory } from '../../types/culturalEvent.types';
+import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
-
-const VENUE_PRESETS = [
-  'Predio Gabriel Suárez & Calle Techada',
-  'Calle Techada',
-  'Cine Teatro Enrique Muiño',
-  'Base del Cerro Uritorco',
-  'Balneario Municipal Calabalumba',
-  'Plaza San Martín',
-  'Parque Recreativo Los Terrones',
-];
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
   FESTIVAL: 'Festival',
@@ -43,10 +31,19 @@ const CATEGORY_COLORS: Record<EventCategory, string> = {
   COMMUNITY: 'bg-[#3A352F] text-white font-bold',
 };
 
-export const CulturalAgendaManager: React.FC = () => {
+export interface CulturalAgendaManagerProps {
+  onNavigateCreate: () => void;
+  onNavigateEdit: (id: string) => void;
+}
+
+export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const [events, setEvents] = useState<CulturalEvent[]>(() => culturalEventsService.getEvents());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     culturalEventsService.fetchEvents().then((fetched) => {
@@ -56,92 +53,8 @@ export const CulturalAgendaManager: React.FC = () => {
     });
   }, []);
 
-  // Modal de Creación / Edición
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<CulturalEvent | null>(null);
-
-  // Form State
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<EventCategory>('FESTIVAL');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [timeString, setTimeString] = useState('20:00 hs');
-  const [location, setLocation] = useState('');
-  const [isFree, setIsFree] = useState(true);
-  const [price, setPrice] = useState<number | undefined>(undefined);
-  const [imageUrl, setImageUrl] = useState('');
-  const [isActive, setIsActive] = useState(true);
-  const [isFeatured, setIsFeatured] = useState(false);
-
-  // ConfirmDialog Deletion
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
   const refreshEvents = () => {
     setEvents(culturalEventsService.getEvents());
-  };
-
-  const handleOpenCreate = () => {
-    setEditingEvent(null);
-    setTitle('');
-    setDescription('');
-    setCategory('FESTIVAL');
-    setStartDate(new Date().toISOString().split('T')[0]);
-    setEndDate('');
-    setTimeString('20:00 hs');
-    setLocation('Predio Gabriel Suárez & Calle Techada');
-    setIsFree(true);
-    setPrice(undefined);
-    setImageUrl('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80');
-    setIsActive(true);
-    setIsFeatured(false);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (evt: CulturalEvent) => {
-    setEditingEvent(evt);
-    setTitle(evt.title);
-    setDescription(evt.description);
-    setCategory(evt.category);
-    setStartDate(evt.startDate);
-    setEndDate(evt.endDate || '');
-    setTimeString(evt.timeString);
-    setLocation(evt.location);
-    setIsFree(evt.isFree);
-    setPrice(evt.price);
-    setImageUrl(evt.imageUrl);
-    setIsActive(evt.isActive);
-    setIsFeatured(Boolean(evt.isFeatured));
-    setIsModalOpen(true);
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !startDate) return;
-
-    const dto: CreateCulturalEventDTO = {
-      title: title.trim(),
-      description: description.trim(),
-      category,
-      startDate,
-      endDate: endDate || undefined,
-      timeString: timeString.trim(),
-      location: location.trim(),
-      isFree,
-      price: isFree ? undefined : Number(price) || 0,
-      imageUrl: imageUrl.trim() || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
-      isActive,
-      isFeatured,
-    };
-
-    if (editingEvent) {
-      await culturalEventsService.updateEvent(editingEvent.id, dto);
-    } else {
-      await culturalEventsService.createEvent(dto);
-    }
-
-    setIsModalOpen(false);
-    refreshEvents();
   };
 
   const handleToggleActive = async (id: string) => {
@@ -157,7 +70,6 @@ export const CulturalAgendaManager: React.FC = () => {
     }
   };
 
-  // Filtrado
   const filteredEvents = events.filter((evt) => {
     const matchesSearch =
       evt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -176,7 +88,7 @@ export const CulturalAgendaManager: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-emerald-portal-600)] mb-1">
             <Calendar className="w-4 h-4" />
-            <span>Gestión Municipal — Agenda Cultural (#76)</span>
+            <span>Gestión Municipal — Agenda Cultural</span>
           </div>
           <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
             Eventos y Actividades
@@ -188,7 +100,7 @@ export const CulturalAgendaManager: React.FC = () => {
 
         <button
           type="button"
-          onClick={handleOpenCreate}
+          onClick={onNavigateCreate}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold tracking-wide shadow-sm transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
@@ -196,7 +108,7 @@ export const CulturalAgendaManager: React.FC = () => {
         </button>
       </div>
 
-      {/* 2. Metricas Rápidas */}
+      {/* 2. Métricas Rápidas */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs">
           <span className="text-xs font-bold text-[var(--color-sand-500)] uppercase tracking-wider">
@@ -249,54 +161,49 @@ export const CulturalAgendaManager: React.FC = () => {
           >
             Todos ({events.length})
           </button>
-          {Object.entries(CATEGORY_LABELS).map(([catKey, catLabel]) => (
-            <button
-              key={catKey}
-              type="button"
-              onClick={() => setFilterCategory(catKey)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                filterCategory === catKey
-                  ? 'bg-[var(--color-emerald-portal-600)] text-white'
-                  : 'text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)]'
-              }`}
-            >
-              {catLabel}
-            </button>
-          ))}
+          {Object.entries(CATEGORY_LABELS).map(([catKey, catLabel]) => {
+            const count = events.filter((e) => e.category === catKey).length;
+            const isSelected = filterCategory === catKey;
+            return (
+              <button
+                key={catKey}
+                type="button"
+                onClick={() => setFilterCategory(catKey)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  isSelected
+                    ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-2xs'
+                    : 'text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)]'
+                }`}
+              >
+                {catLabel} ({count})
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* 4. Lista de Eventos */}
+      {/* 4. Listado de Eventos (Cards de Catálogo) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredEvents.map((evt) => (
           <div
             key={evt.id}
-            className={`flex flex-col bg-white rounded-2xl border transition-all overflow-hidden shadow-2xs ${
-              evt.isActive
-                ? 'border-[var(--color-sand-200)] hover:border-[var(--color-sand-300)]'
-                : 'border-dashed border-[var(--color-sand-300)] opacity-65 bg-[var(--color-sand-50)]'
+            className={`flex flex-col bg-white rounded-2xl border transition-all overflow-hidden shadow-2xs hover:shadow-md ${
+              evt.isActive ? 'border-[var(--color-sand-200)]' : 'border-dashed border-[var(--color-sand-300)] opacity-75'
             }`}
           >
-            {/* Imagen & Badges */}
-            <div className="relative aspect-[16/9] bg-stone-900 overflow-hidden">
+            {/* Imagen de Cabecera con Badge de Categoría */}
+            <div className="relative aspect-16/9 w-full bg-[var(--color-sand-100)] overflow-hidden">
               <img
                 src={evt.imageUrl}
                 alt={evt.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
-              <div className="absolute top-2.5 left-2.5">
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wide border shadow-2xs ${CATEGORY_COLORS[evt.category]}`}>
+              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md shadow-xs ${CATEGORY_COLORS[evt.category]}`}>
                   {CATEGORY_LABELS[evt.category]}
                 </span>
-              </div>
-              <div className="absolute top-2.5 right-2.5">
-                {evt.isActive ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-600 text-white shadow-xs">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Publicado
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-stone-700 text-white shadow-xs">
+                {!evt.isActive && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-stone-800 text-stone-200 shadow-xs">
                     Pausado
                   </span>
                 )}
@@ -346,7 +253,7 @@ export const CulturalAgendaManager: React.FC = () => {
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => handleOpenEdit(evt)}
+                    onClick={() => onNavigateEdit(evt.id)}
                     className="p-1.5 rounded-lg text-xs font-semibold text-[var(--color-sand-700)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer"
                     title="Editar evento"
                   >
@@ -366,217 +273,6 @@ export const CulturalAgendaManager: React.FC = () => {
           </div>
         ))}
       </div>
-
-      {/* 5. Modal Crear / Editar */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[var(--color-sand-200)] animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-[var(--color-sand-200)] flex items-center justify-between sticky top-0 bg-white z-10">
-              <h2 className="font-display font-extrabold text-xl text-[var(--color-sand-900)]">
-                {editingEvent ? 'Editar Evento Cultural' : 'Nuevo Evento Cultural'}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSave} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Título del Evento *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="ej. 12° Festival Alienígena"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                    Categoría *
-                  </label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value as EventCategory)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)] cursor-pointer"
-                  >
-                    {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                    Horario Habitual
-                  </label>
-                  <input
-                    type="text"
-                    value={timeString}
-                    onChange={(e) => setTimeString(e.target.value)}
-                    placeholder="ej. 20:30 hs"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                    Fecha de Inicio *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                    Fecha de Fin (Opcional)
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Sede / Ubicación *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="ej. Cine Teatro Enrique Muiño"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {VENUE_PRESETS.map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setLocation(preset)}
-                      className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--color-sand-100)] text-[var(--color-sand-700)] hover:bg-[var(--color-sand-200)] transition-colors cursor-pointer"
-                    >
-                      {preset}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-[var(--color-sand-900)]">Acceso Gratuito</span>
-                    <p className="text-[11px] text-[var(--color-sand-600)]">¿El evento es libre y sin costo?</p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={isFree}
-                    onChange={(e) => setIsFree(e.target.checked)}
-                    className="w-4 h-4 rounded text-[var(--color-emerald-portal-600)] cursor-pointer"
-                  />
-                </div>
-
-                {!isFree && (
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                      Precio de Entrada (ARS)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={price ?? ''}
-                      onChange={(e) => setPrice(Number(e.target.value) || undefined)}
-                      placeholder="ej. 5000"
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--color-sand-200)] bg-white text-[var(--color-sand-900)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  URL del Flyer / Fotografía
-                </label>
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Descripción Detallada
-                </label>
-                <textarea
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Detalles sobre las actividades, artistas, recomendaciones para el público..."
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)] resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={(e) => setIsActive(e.target.checked)}
-                    className="w-4 h-4 rounded text-[var(--color-emerald-portal-600)]"
-                  />
-                  <span className="text-xs font-bold text-[var(--color-sand-900)]">
-                    Publicar de inmediato en el portal
-                  </span>
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-[var(--color-sand-200)] flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-[var(--color-sand-200)] text-xs font-bold text-[var(--color-sand-700)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold tracking-wide shadow-sm transition-all cursor-pointer"
-                >
-                  Guardar Evento
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* ConfirmDialog de Eliminación */}
       <ConfirmDialog

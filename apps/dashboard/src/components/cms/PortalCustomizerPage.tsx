@@ -250,7 +250,7 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
               }`}
             >
               <Calendar className="w-3.5 h-3.5 text-purple-600" />
-              <span>Agenda #76</span>
+              <span>Agenda Cultural</span>
             </button>
           </div>
 

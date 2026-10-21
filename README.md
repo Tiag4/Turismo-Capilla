@@ -158,7 +158,7 @@ El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al 
 | `HU-06` | Motor y Asistente de Reserva de Alojamiento | ✅ Implementado |
 | `HU-08` | Ubicación y Mapa Interactivo de Capilla del Monte | ✅ Implementado |
 | `HU-27` | RBAC & Seguridad: Separación estricta de paneles y Módulo de Perfil | ✅ Implementado |
-| `HU-29` | Elaboración del Manual de Usuario Oficial (Prestadores y Comisión) | 📋 Backlog Activo |
+| `HU-29` | Elaboración del Manual de Usuario Oficial (Prestadores y Comisión) | ✅ Implementado |
 
 ---
 
@@ -175,6 +175,7 @@ El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al 
 
 ## 8. 📚 Documentación y Recursos
 
+* **Manual de Usuario Oficial (Prestadores y Comisión):** [`docs/user-manual.md`](./docs/user-manual.md)
 * **Documento de Arquitectura Frontend:** [`docs/frontend-architecture.md`](./docs/frontend-architecture.md)
 * **Blueprint del Sistema:** [`docs/architecture.md`](./docs/architecture.md)
 * **Google Drive:** Almacena la documentación académica y entregables formales.  

@@ -2,6 +2,7 @@ import React from 'react';
 import { DollarSign, Coffee } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomTimePicker } from '../../../ui/CustomTimePicker.tsx';
+import { CustomSelect } from '../../../ui/CustomSelect.tsx';
 
 export interface PricingCapacitySectionProps {
   pricePerNight: string;
@@ -109,15 +110,11 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
         {hasBreakfast && (
           <div className="p-3.5 bg-amber-50/60 border border-amber-200/80 rounded-xl space-y-2">
             <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-950">Modalidad de Desayuno</label>
-            <select
+            <CustomSelect
               value={breakfastType}
-              onChange={(e) => setBreakfastType(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-amber-300 rounded-lg text-xs font-medium text-[var(--color-sand-900)] focus:outline-none focus:ring-2 focus:ring-amber-500"
-            >
-              {BREAKFAST_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
+              onChange={(val) => setBreakfastType(val)}
+              options={BREAKFAST_OPTIONS.map((opt) => ({ value: opt, label: opt }))}
+            />
             <p className="text-[11px] text-amber-900 font-medium">
               ℹ️ Se mostrará el badge "Tarifa con Desayuno Incluido" en la tarjeta del portal y responderá al filtro rápido de Desayuno.
             </p>

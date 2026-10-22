@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Calendar, CheckCircle2, Clock, DollarSign } from 'lucide-react';
 import { useHostBookings } from '../../hooks/useHostBookings.ts';
 import { BookingRow } from './BookingRow.tsx';
 import { BookingDetailModal } from './BookingDetailModal.tsx';
-import { StatCard } from '../ui/StatCard.tsx';
+import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 
@@ -32,52 +32,53 @@ export const BookingList: React.FC = () => {
     { id: 'COMPLETED', label: 'Finalizadas' },
   ];
 
+  const statItems: StatItem[] = useMemo(() => [
+    {
+      label: 'Total Reservas',
+      value: stats.total,
+      icon: Calendar,
+      iconColor: 'text-[var(--color-sand-600)]',
+      helperText: 'Histórico de solicitudes',
+    },
+    {
+      label: 'Pendientes de Respuesta',
+      value: stats.pending,
+      icon: Clock,
+      iconColor: 'text-amber-600',
+      helperText: 'Requieren confirmación',
+    },
+    {
+      label: 'Reservas Confirmadas',
+      value: stats.confirmed,
+      icon: CheckCircle2,
+      iconColor: 'text-[var(--color-emerald-portal-600)]',
+      helperText: 'Estadías activas/próximas',
+    },
+    {
+      label: 'Ingresos Proyectados',
+      value: `$${stats.totalRevenue.toLocaleString('es-AR')}`,
+      icon: DollarSign,
+      iconColor: 'text-[var(--color-terracotta-500)]',
+      helperText: 'Confirmadas y completadas',
+    },
+  ], [stats]);
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Stats Summary Bento */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Total Reservas"
-          value={stats.total}
-          icon={Calendar}
-          iconColor="text-[var(--color-sand-800)]"
-          helperText="Histórico de solicitudes"
-        />
-        <StatCard
-          label="Pendientes de Respuesta"
-          value={stats.pending}
-          icon={Clock}
-          iconColor="text-amber-600"
-          helperText="Requieren confirmación"
-        />
-        <StatCard
-          label="Reservas Confirmadas"
-          value={stats.confirmed}
-          icon={CheckCircle2}
-          iconColor="text-[var(--color-emerald-portal-600)]"
-          helperText="Estadías activas/próximas"
-        />
-        <StatCard
-          label="Ingresos Proyectados"
-          value={`$${stats.totalRevenue.toLocaleString('es-AR')}`}
-          icon={DollarSign}
-          iconColor="text-[var(--color-terracotta-500)]"
-          helperText="Confirmadas y completadas"
-        />
-      </div>
+      {/* High-density metrics strip (Flat, zero floating card) */}
+      <InlineStatStrip stats={statItems} />
 
-      {/* Filter and Search Controls */}
-      <div className="bg-white p-4 rounded-2xl border border-[var(--color-sand-200)] flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Anti-vibecoded: Flat tabs without arbitrary card borders or decorative dots */}
+      {/* Filter and Search Controls (Direct on canvas) */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-1">
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
           {statusFilterButtons.map((btn) => (
             <button
               key={btn.id}
               onClick={() => setFilterStatus(btn.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap ${
                 filterStatus === btn.id
-                  ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs'
-                  : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)]'
+                  ? 'bg-[var(--color-sand-900)] text-white shadow-xs'
+                  : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)]'
               }`}
             >
               {btn.label}
@@ -98,46 +99,44 @@ export const BookingList: React.FC = () => {
         </div>
       </div>
 
-      {/* Bookings Table */}
-      <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-[var(--color-sand-200)] bg-[var(--color-sand-100)] text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
-                <th className="py-3 px-4">Código / Cabaña</th>
-                <th className="py-3 px-4">Huésped</th>
-                <th className="py-3 px-4">Fechas y Ocupación</th>
-                <th className="py-3 px-4">Total</th>
-                <th className="py-3 px-4">Estado</th>
-                <th className="py-3 px-4 text-right">Acciones</th>
+      {/* Bookings Table (Direct on canvas, zero floating white card) */}
+      <div className="overflow-x-auto border-y border-[var(--color-sand-300)]">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-[var(--color-sand-300)] text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-500)]">
+              <th className="py-3 px-3 sm:px-4">Código / Cabaña</th>
+              <th className="py-3 px-3 sm:px-4">Huésped</th>
+              <th className="py-3 px-3 sm:px-4">Fechas y Ocupación</th>
+              <th className="py-3 px-3 sm:px-4">Total</th>
+              <th className="py-3 px-3 sm:px-4">Estado</th>
+              <th className="py-3 px-3 sm:px-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--color-sand-200)]">
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-xs text-[var(--color-sand-400)]">
+                  Cargando reservas del sistema...
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-xs text-[var(--color-sand-400)]">
-                    Cargando reservas del sistema...
-                  </td>
-                </tr>
-              ) : bookings.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-xs text-[var(--color-sand-400)]">
-                    No se encontraron reservas con los filtros seleccionados.
-                  </td>
-                </tr>
-              ) : (
-                bookings.map((booking) => (
-                  <BookingRow
-                    key={booking.id}
-                    booking={booking}
-                    onViewDetail={(b) => setSelectedBooking(b)}
-                    onQuickStatusChange={(b, s) => setPendingStatusChange({ booking: b, status: s })}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ) : bookings.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-xs text-[var(--color-sand-400)]">
+                  No se encontraron reservas con los filtros seleccionados.
+                </td>
+              </tr>
+            ) : (
+              bookings.map((booking) => (
+                <BookingRow
+                  key={booking.id}
+                  booking={booking}
+                  onViewDetail={(b) => setSelectedBooking(b)}
+                  onQuickStatusChange={(b, s) => setPendingStatusChange({ booking: b, status: s })}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Quick Status Confirm Dialog */}

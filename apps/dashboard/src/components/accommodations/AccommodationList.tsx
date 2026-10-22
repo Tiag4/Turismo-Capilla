@@ -106,14 +106,9 @@ export const AccommodationList: React.FC<AccommodationListProps> = ({
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[var(--color-sand-200)]">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
-              {isAdmin ? 'Prestadores y Alojamientos' : 'Mis Cabañas y Hospedajes'}
-            </h2>
-            <span className="text-xs font-bold text-[var(--color-terracotta-600)] bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] px-2.5 py-0.5 rounded-full">
-              {enrichedAccommodations.length} {enrichedAccommodations.length === 1 ? 'unidad' : 'unidades'}
-            </span>
-          </div>
+          <h2 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
+            {isAdmin ? 'Prestadores y Alojamientos' : 'Mis Cabañas y Hospedajes'}
+          </h2>
           <p className="text-xs text-[var(--color-sand-500)] font-medium mt-1">
             {isAdmin
               ? 'Padrón de prestadores y fiscalización de habilitaciones técnicas municipales'

@@ -16,39 +16,39 @@ export const BookingRow: React.FC<BookingRowProps> = ({
   onQuickStatusChange,
 }) => {
   return (
-    <tr className="border-b border-[var(--color-sand-200)] hover:bg-[var(--color-sand-50)] transition-colors">
-      <td className="py-3.5 px-4">
+    <tr className="border-b border-[var(--color-sand-200)] hover:bg-[var(--color-sand-100)]/70 transition-colors">
+      <td className="py-3.5 px-3 sm:px-4">
         <span className="font-['Outfit'] font-bold tabular-nums tracking-wide text-xs text-[var(--color-sand-900)] block">
           {booking.bookingCode}
         </span>
-        <span className="text-[11px] text-[var(--color-sand-600)] block">
+        <span className="text-[11px] text-[var(--color-sand-500)] block">
           {booking.accommodation?.name || 'Alojamiento'}
         </span>
       </td>
-      <td className="py-3.5 px-4 text-sm">
+      <td className="py-3.5 px-3 sm:px-4 text-xs sm:text-sm">
         <span className="font-semibold text-[var(--color-sand-900)] block">
           {booking.guestName}
         </span>
-        <span className="text-[11px] text-[var(--color-sand-600)] block">
+        <span className="text-[11px] text-[var(--color-sand-500)] block">
           {booking.guestPhone}
         </span>
       </td>
-      <td className="py-3.5 px-4 text-xs text-[var(--color-sand-800)]">
+      <td className="py-3.5 px-3 sm:px-4 text-xs text-[var(--color-sand-700)]">
         <div>
-          <span className="font-medium text-[var(--color-sand-900)]">{booking.checkIn}</span> al{' '}
-          <span className="font-medium text-[var(--color-sand-900)]">{booking.checkOut}</span>
+          <span className="font-semibold text-[var(--color-sand-900)]">{booking.checkIn}</span> al{' '}
+          <span className="font-semibold text-[var(--color-sand-900)]">{booking.checkOut}</span>
         </div>
-        <span className="text-[11px] text-[var(--color-sand-600)] tabular-nums">
+        <span className="text-[11px] text-[var(--color-sand-500)] tabular-nums">
           {booking.totalNights} {booking.totalNights === 1 ? 'noche' : 'noches'} · {booking.guestCount} pers.
         </span>
       </td>
-      <td className="py-3.5 px-4 text-sm font-bold text-[var(--color-sand-900)] font-['Outfit'] tabular-nums">
+      <td className="py-3.5 px-3 sm:px-4 text-xs sm:text-sm font-bold text-[var(--color-sand-900)] font-['Outfit'] tabular-nums">
         ${(booking.totalAmount ?? 0).toLocaleString('es-AR')}
       </td>
-      <td className="py-3.5 px-4">
+      <td className="py-3.5 px-3 sm:px-4">
         <BookingStatusBadge status={booking.status} />
       </td>
-      <td className="py-3.5 px-4 text-right">
+      <td className="py-3.5 px-3 sm:px-4 text-right">
         <div className="flex items-center justify-end gap-1.5">
           <Button
             variant="ghost"
@@ -57,7 +57,7 @@ export const BookingRow: React.FC<BookingRowProps> = ({
             title="Ver ficha completa"
             className="p-1.5"
           >
-            <Eye className="w-4 h-4 text-[var(--color-sand-800)]" />
+            <Eye className="w-4 h-4 text-[var(--color-sand-700)]" />
           </Button>
 
           {booking.status === 'PENDING' && (

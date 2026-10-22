@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User as UserIcon, Lock, CheckCircle2, AlertCircle, Save } from 'lucide-react';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button.tsx';
 import type { User, UpdateProfilePayload } from '../../types/auth.types.ts';
 
@@ -39,7 +39,7 @@ export const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ user, onSubmit
       });
       setFeedback({ type: 'success', message: 'Tus datos personales fueron actualizados correctamente.' });
     } catch (err: unknown) {
-      setFeedback({ type: 'error', message: err instanceof Error ? err.message : 'Error al guardar los cambios.' });
+      setFeedback({ type: 'error', message: err instanceof Error ? err.message : 'Error al actualizar perfil.' });
     } finally {
       setIsLoading(false);
     }
@@ -47,14 +47,13 @@ export const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ user, onSubmit
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-[var(--color-sand-200)] shadow-xs p-6 space-y-5">
-      <div className="flex items-center gap-3 pb-4 border-b border-[var(--color-sand-200)]">
-        <div className="w-10 h-10 rounded-xl bg-[var(--color-sand-100)] text-[var(--color-sand-800)] flex items-center justify-center">
-          <UserIcon className="w-5 h-5 text-[var(--color-terracotta-600)]" />
-        </div>
-        <div>
-          <h3 className="text-base font-extrabold text-[var(--color-sand-900)] font-['Outfit']">Información de Contacto</h3>
-          <p className="text-xs text-[var(--color-sand-500)]">Actualizá tus datos personales visibles para la gestión.</p>
-        </div>
+      <div className="pb-3 border-b border-[var(--color-sand-200)]">
+        <h3 className="text-base font-extrabold text-[var(--color-sand-900)] font-['Outfit']">
+          Información de Contacto
+        </h3>
+        <p className="text-xs text-[var(--color-sand-500)] mt-0.5">
+          Datos personales visibles en la gestión del establecimiento.
+        </p>
       </div>
 
       {feedback && (
@@ -83,9 +82,9 @@ export const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ user, onSubmit
           />
         </div>
         <div>
-          <label htmlFor="p-last" className="block text-xs font-bold text-[var(--color-sand-700)] mb-1.5">Apellido *</label>
+          <label htmlFor="p-lastname" className="block text-xs font-bold text-[var(--color-sand-700)] mb-1.5">Apellido *</label>
           <input
-            id="p-last"
+            id="p-lastname"
             name="lastName"
             type="text"
             required
@@ -99,18 +98,16 @@ export const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ user, onSubmit
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="p-email" className="block text-xs font-bold text-[var(--color-sand-700)] mb-1.5">Correo Electrónico (Oficial)</label>
-          <div className="relative">
-            <input
-              id="p-email"
-              type="email"
-              disabled
-              value={user.email}
-              className="w-full pl-3.5 pr-8 py-2.5 rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-100)] text-xs font-medium text-[var(--color-sand-600)] cursor-not-allowed select-none"
-            />
-            <Lock className="w-4 h-4 text-[var(--color-sand-400)] absolute right-2.5 top-1/2 -translate-y-1/2" />
-          </div>
-          <p className="text-[10px] text-[var(--color-sand-400)] mt-1">El email institucional no puede modificarse libremente.</p>
+          <label htmlFor="p-email" className="block text-xs font-bold text-[var(--color-sand-700)] mb-1.5">
+            Correo Electrónico (Oficial)
+          </label>
+          <input
+            id="p-email"
+            type="email"
+            disabled
+            value={user.email}
+            className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-xs font-medium text-[var(--color-sand-600)] cursor-not-allowed"
+          />
         </div>
         <div>
           <label htmlFor="p-phone" className="block text-xs font-bold text-[var(--color-sand-700)] mb-1.5">Teléfono de Contacto</label>
@@ -121,15 +118,19 @@ export const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ user, onSubmit
             value={formData.phone ?? ''}
             onChange={handleChange}
             className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-sand-300)] bg-white text-xs font-medium text-[var(--color-sand-900)] focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)]"
-            placeholder="+54 9 3548 ..."
+            placeholder="+54 3548 ..."
           />
         </div>
       </div>
 
-      <div className="flex justify-end pt-2">
-        <Button type="submit" variant="terracotta" isLoading={isLoading} className="flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          <span>Guardar Cambios</span>
+      <div className="flex justify-end pt-3 border-t border-[var(--color-sand-100)]">
+        <Button
+          type="submit"
+          variant="terracotta"
+          size="md"
+          isLoading={isLoading}
+        >
+          Guardar Cambios
         </Button>
       </div>
     </form>

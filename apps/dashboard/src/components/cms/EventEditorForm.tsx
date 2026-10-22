@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, ArrowLeft, Save } from 'lucide-react';
-import type { CulturalEvent, CreateCulturalEventDTO, EventCategory } from '../../types/culturalEvent.types';
-import { EventFlyerDropzone } from './EventFlyerDropzone';
+import { Calendar, ArrowLeft, Save, Check } from 'lucide-react';
+import type { CulturalEvent, CreateCulturalEventDTO, EventCategory } from '../../types/culturalEvent.types.ts';
+import { EventFlyerDropzone } from './EventFlyerDropzone.tsx';
+import { Button } from '../ui/Button.tsx';
+import { Input } from '../ui/Input.tsx';
+import { Select } from '../ui/Select.tsx';
 
 const VENUE_PRESETS = [
   'Predio Gabriel Suárez & Calle Techada',
@@ -13,14 +16,14 @@ const VENUE_PRESETS = [
   'Parque Recreativo Los Terrones',
 ];
 
-const CATEGORY_LABELS: Record<EventCategory, string> = {
-  FESTIVAL: 'Festival',
-  THEATER: 'Teatro',
-  MUSIC: 'Música en Vivo',
-  FAIR: 'Feria & Paseo',
-  WORKSHOP: 'Taller & Charla',
-  COMMUNITY: 'Comunitario',
-};
+const CATEGORY_OPTIONS: { value: string; label: string }[] = [
+  { value: 'FESTIVAL', label: 'Festival' },
+  { value: 'THEATER', label: 'Teatro' },
+  { value: 'MUSIC', label: 'Música en Vivo' },
+  { value: 'FAIR', label: 'Feria & Paseo' },
+  { value: 'WORKSHOP', label: 'Taller & Charla' },
+  { value: 'COMMUNITY', label: 'Comunitario' },
+];
 
 export interface EventEditorFormProps {
   initialData?: CulturalEvent | null;
@@ -97,22 +100,19 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="px-4 py-2.5 rounded-xl border border-[var(--color-sand-200)] text-xs font-bold text-[var(--color-sand-700)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer disabled:opacity-50"
-          >
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={isSubmitting || !title.trim() || !startDate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-50"
+            variant="emerald"
+            isLoading={isSubmitting}
+            disabled={!title.trim() || !startDate}
+            className="font-bold shadow-xs cursor-pointer"
           >
-            <Save className="w-4 h-4" />
-            <span>{isSubmitting ? 'Guardando...' : 'Guardar Evento'}</span>
-          </button>
+            <Save className="w-4 h-4 mr-1.5" />
+            <span>{initialData ? 'Guardar Cambios' : 'Registrar Evento'}</span>
+          </Button>
         </div>
       </div>
 
@@ -125,50 +125,28 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
               Información General
             </h2>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                Título del Evento *
-              </label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="ej. Festival Alienígena de Capilla del Monte"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-              />
-            </div>
+            <Input
+              label="Título del Evento *"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="ej. Festival Alienígena de Capilla del Monte"
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Categoría del Evento *
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as EventCategory)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)] cursor-pointer"
-                >
-                  {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                label="Categoría del Evento *"
+                value={category}
+                onChange={(val) => setCategory(val as EventCategory)}
+                options={CATEGORY_OPTIONS}
+              />
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Horario o Convocatoria
-                </label>
-                <input
-                  type="text"
-                  value={timeString}
-                  onChange={(e) => setTimeString(e.target.value)}
-                  placeholder="ej. 20:30 hs o 18:00 a 23:00 hs"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
+              <Input
+                label="Horario o Convocatoria"
+                value={timeString}
+                onChange={(e) => setTimeString(e.target.value)}
+                placeholder="ej. 20:30 hs o 18:00 a 23:00 hs"
+              />
             </div>
 
             <div>
@@ -179,76 +157,42 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Detalles sobre actividades, artistas, recomendaciones para el público, estacionamiento..."
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)] resize-none"
+                placeholder="Describí los detalles del evento, cronograma de actividades, artistas invitados..."
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)] resize-y"
               />
             </div>
           </section>
 
-          {/* Card: Fechas y Sede */}
+          {/* Card: Fechas y Ubicación */}
           <section className="bg-white p-6 rounded-2xl border border-[var(--color-sand-200)] shadow-2xs space-y-4">
             <h2 className="font-display font-bold text-base text-[var(--color-sand-900)] border-b border-[var(--color-sand-100)] pb-2">
               Fechas y Ubicación
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Fecha de Inicio *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
+              <Input
+                label="Fecha de Inicio *"
+                type="date"
+                required
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                  Fecha de Fin (Opcional)
-                </label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
+              <Input
+                label="Fecha de Fin (Opcional)"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
-                  Lugar o Sede *
-                </label>
-              </div>
-              <div className="relative">
-                <MapPin className="w-4 h-4 text-[var(--color-sand-400)] absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="ej. Predio Gabriel Suárez & Calle Techada"
-                  className="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {VENUE_PRESETS.map((preset) => (
-                  <button
-                    key={preset}
-                    type="button"
-                    onClick={() => setLocation(preset)}
-                    className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--color-sand-100)] text-[var(--color-sand-700)] hover:bg-[var(--color-sand-200)] font-semibold transition-colors cursor-pointer"
-                  >
-                    {preset}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <Input
+              label="Lugar o Sede *"
+              required
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="ej. Predio Gabriel Suárez & Calle Techada"
+            />
           </section>
 
           {/* Card: Flyer Oficial */}
@@ -274,7 +218,7 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
             </h2>
 
             <div className="p-3.5 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] space-y-3">
-              <label className="flex items-center justify-between cursor-pointer">
+              <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-[var(--color-sand-900)] block">
                     Acceso Gratuito
@@ -283,26 +227,28 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                     Entrada libre para turistas y vecinos
                   </span>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={isFree}
-                  onChange={(e) => setIsFree(e.target.checked)}
-                  className="w-4 h-4 rounded text-[var(--color-emerald-portal-600)] cursor-pointer"
-                />
-              </label>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={isFree}
+                  onClick={() => setIsFree(!isFree)}
+                  className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
+                    isFree ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+                  }`}
+                >
+                  {isFree && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </button>
+              </div>
 
               {!isFree && (
                 <div className="pt-2 border-t border-[var(--color-sand-200)]">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
-                    Costo de la Entrada (ARS)
-                  </label>
-                  <input
+                  <Input
+                    label="Costo de la Entrada (ARS)"
                     type="number"
                     min="0"
                     value={price ?? ''}
                     onChange={(e) => setPrice(Number(e.target.value) || undefined)}
                     placeholder="ej. 5000"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--color-sand-200)] bg-white text-[var(--color-sand-900)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
                   />
                 </div>
               )}
@@ -316,14 +262,19 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
             </h2>
 
             <div className="space-y-3">
-              <label className="flex items-start gap-3 p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded text-[var(--color-emerald-portal-600)] cursor-pointer"
-                />
-                <div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={isActive}
+                  onClick={() => setIsActive(!isActive)}
+                  className={`w-5 h-5 mt-0.5 rounded-md border flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+                    isActive ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+                  }`}
+                >
+                  {isActive && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </button>
+                <div onClick={() => setIsActive(!isActive)} className="cursor-pointer">
                   <span className="text-xs font-bold text-[var(--color-sand-900)] block">
                     Publicar de Inmediato
                   </span>
@@ -331,16 +282,21 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                     El evento será visible de inmediato en la portada y el calendario oficial.
                   </span>
                 </div>
-              </label>
+              </div>
 
-              <label className="flex items-start gap-3 p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isFeatured}
-                  onChange={(e) => setIsFeatured(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded text-[var(--color-terracotta-600)] cursor-pointer"
-                />
-                <div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={isFeatured}
+                  onClick={() => setIsFeatured(!isFeatured)}
+                  className={`w-5 h-5 mt-0.5 rounded-md border flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+                    isFeatured ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+                  }`}
+                >
+                  {isFeatured && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </button>
+                <div onClick={() => setIsFeatured(!isFeatured)} className="cursor-pointer">
                   <span className="text-xs font-bold text-[var(--color-sand-900)] block">
                     Evento Destacado
                   </span>
@@ -348,7 +304,7 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                     Prioridad visual en la cinta de eventos de la portada.
                   </span>
                 </div>
-              </label>
+              </div>
             </div>
           </section>
         </div>

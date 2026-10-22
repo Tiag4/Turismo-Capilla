@@ -1,42 +1,71 @@
 import React from 'react';
+import { CustomSelect, type CustomSelectOption } from './CustomSelect.tsx';
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  error?: string;
-  options: { value: string; label: string }[];
+export type SelectOption = CustomSelectOption;
+
+export type SelectChangeEvent = string & {
+  target: { value: string; name?: string };
+  currentTarget: { value: string; name?: string };
+  value: string;
+};
+
+class SelectValueEvent extends String {
+  target: { value: string; name?: string };
+  currentTarget: { value: string; name?: string };
+  value: string;
+
+  constructor(val: string, name?: string) {
+    super(val);
+    this.value = val;
+    this.target = { value: val, name };
+    this.currentTarget = { value: val, name };
+  }
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, className = '', id, ...props }, ref) => {
-    const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+export interface SelectProps {
+  label?: string;
+  value?: string | number;
+  onChange?: (e: SelectChangeEvent) => void;
+  options: SelectOption[];
+  placeholder?: string;
+  error?: string;
+  helperText?: string;
+  className?: string;
+  disabled?: boolean;
+  required?: boolean;
+  id?: string;
+  name?: string;
+}
 
-    return (
-      <div className="flex flex-col gap-1.5 w-full">
-        {label && (
-          <label htmlFor={selectId} className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
-            {label}
-          </label>
-        )}
-        <select
-          ref={ref}
-          id={selectId}
-          className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-[var(--color-sand-900)] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-            error
-              ? 'border-rose-600 focus:border-rose-600 focus:ring-rose-500'
-              : 'border-[var(--color-sand-300)] focus:border-[var(--color-terracotta-500)] focus:ring-[var(--color-terracotta-500)]'
-          } ${className}`}
-          {...props}
-        >
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
-      </div>
-    );
-  }
-);
+export const Select: React.FC<SelectProps> = ({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  error,
+  helperText,
+  className = '',
+  disabled = false,
+  name,
+}) => {
+  const handleChange = (val: string) => {
+    if (!onChange) return;
+    const event = new SelectValueEvent(val, name) as unknown as SelectChangeEvent;
+    onChange(event);
+  };
 
-Select.displayName = 'Select';
+  return (
+    <CustomSelect
+      label={label}
+      value={value !== undefined ? String(value) : ''}
+      onChange={handleChange}
+      options={options}
+      placeholder={placeholder}
+      error={error}
+      helperText={helperText}
+      className={className}
+      disabled={disabled}
+    />
+  );
+};

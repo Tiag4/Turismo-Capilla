@@ -3,8 +3,14 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ShieldAlert, Phone, AlertTriangle, MapPin } from 'lucide-react';
 import { EMERGENCY_CONTACTS } from '../components/emergencies/data/emergenciesData';
 import { EmergencyProtocolAccordion } from '../components/emergencies/EmergencyProtocolAccordion';
+import { usePharmacyDuty } from '../components/emergencies/hooks/usePharmacyDuty';
+import { ActivePharmacyHeroCard } from '../components/emergencies/ActivePharmacyHeroCard';
+import { HealthGuardNoticeBanner } from '../components/emergencies/HealthGuardNoticeBanner';
+import { PharmaciesDirectorySection } from '../components/emergencies/PharmaciesDirectorySection';
 
 export const EmergencyPage: React.FC = () => {
+  const { activePharmacy, otherPharmacies, healthGuard } = usePharmacyDuty();
+
   return (
     <div className="py-10 sm:py-16 bg-sand-50/60 min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -20,22 +26,32 @@ export const EmergencyPage: React.FC = () => {
           </nav>
 
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
-              <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-700 text-white shadow-xs">
+              <ShieldAlert className="w-3.5 h-3.5" />
               <span>Central Oficial de Seguridad & Auxilio · Valle de Punilla</span>
             </div>
 
             <h1 className="font-display font-black text-3xl sm:text-5xl text-sand-900 tracking-tight">
-              Ficha de Emergencias & <span className="text-red-600">Números Útiles</span>
+              Ficha de Emergencias, <span className="text-emerald-700">Farmacias</span> & Salud
             </h1>
 
             <p className="text-base text-sand-700 leading-relaxed font-normal max-w-3xl">
-              Información de auxilio directo disponible offline para turistas y senderistas en Capilla del Monte. Hacé clic en cualquier número para discar inmediatamente desde tu teléfono.
+              Información de auxilio directo disponible offline para turistas y senderistas en Capilla del Monte. Consultá la farmacia de turno activa, guardias médicas del Hospital Municipal y teléfonos de rescate en montaña.
             </p>
           </div>
         </header>
 
-        {/* Directorio Telefónico */}
+        {/* 1. Farmacia de Turno Hoy (Destacada) */}
+        {activePharmacy && (
+          <ActivePharmacyHeroCard pharmacy={activePharmacy} />
+        )}
+
+        {/* 2. Guardia Médica Hospital Municipal */}
+        {healthGuard && (
+          <HealthGuardNoticeBanner healthGuard={healthGuard} />
+        )}
+
+        {/* 3. Directorio Telefónico de Rescate & Urgencias */}
         <section className="space-y-4">
           <h2 className="text-lg font-bold text-sand-900 font-display flex items-center gap-2">
             <Phone className="w-5 h-5 text-red-600" />
@@ -50,7 +66,7 @@ export const EmergencyPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase bg-red-100 text-red-800">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase bg-sand-800 text-white shadow-xs">
                       {c.badge}
                     </span>
                     <span className="text-sm font-black text-red-600 font-display">
@@ -83,7 +99,12 @@ export const EmergencyPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Protocolos de Seguridad */}
+        {/* 4. Otras Farmacias de la Localidad */}
+        {otherPharmacies.length > 0 && (
+          <PharmaciesDirectorySection pharmacies={otherPharmacies} />
+        )}
+
+        {/* 5. Protocolos de Seguridad */}
         <section className="space-y-4 pt-4 border-t border-sand-200">
           <h2 className="text-lg font-bold text-sand-900 font-display flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-amber-600" />

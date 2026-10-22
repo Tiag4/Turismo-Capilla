@@ -13,6 +13,7 @@ import {
   ExternalLink,
   CalendarDays,
   LayoutTemplate,
+  ShieldAlert,
 } from 'lucide-react';
 import { PORTAL_URL } from '../../config/navigation.ts';
 import type { User } from '../../types/auth.types.ts';
@@ -38,6 +39,7 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
   { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
   { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
+  { id: 'emergencies', label: 'Guardias y Farmacias', icon: ShieldAlert },
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
   { id: 'invitations', label: 'Tokens de Invitación', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },

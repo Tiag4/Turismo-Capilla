@@ -19,6 +19,7 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   accommodations: '/mis-cabanas',
   attractions: '/atractivos',
   alerts: '/alertas',
+  emergencies: '/guardias-farmacias',
   calendar: '/calendario',
   pricing: '/tarifas',
   performance: '/rendimiento',
@@ -34,6 +35,9 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
 
 // Friendly aliases and accented URL matching
 const ROUTE_ALIASES: Record<string, DashboardTab> = {
+  '/guardias-farmacias': 'emergencies',
+  '/emergencias': 'emergencies',
+  '/farmacias': 'emergencies',
   '/agenda-cultural': 'events',
   '/eventos': 'events',
   '/personalizador-portal': 'portal_cms',

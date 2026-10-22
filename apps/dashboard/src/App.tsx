@@ -22,6 +22,7 @@ import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx'
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
+import { EmergencySanitaryManagerView } from './components/emergencies/EmergencySanitaryManagerView.tsx';
 import { ProfileView } from './components/profile/ProfileView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
@@ -91,6 +92,7 @@ export const App: React.FC = () => {
       )}
 
       {currentTab === 'attractions' && user.role === 'ADMIN' && <AttractionsManager />}
+      {currentTab === 'emergencies' && user.role === 'ADMIN' && <EmergencySanitaryManagerView />}
       {currentTab === 'alerts' && user.role === 'ADMIN' && <AlertsManagerView />}
 
       {currentTab === 'bookings' && <BookingList />}

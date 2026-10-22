@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Phone, X, ShieldAlert, AlertTriangle, MapPin, Clock } from 'lucide-react';
+import { Phone, X, ShieldAlert, AlertTriangle, MapPin, Clock, Building2, ExternalLink } from 'lucide-react';
 import { EMERGENCY_CONTACTS } from './data/emergenciesData';
 import { EmergencyProtocolAccordion } from './EmergencyProtocolAccordion';
+import { usePharmacyDuty } from './hooks/usePharmacyDuty';
 
 interface EmergencyModalProps {
   isOpen: boolean;
@@ -9,10 +10,10 @@ interface EmergencyModalProps {
 }
 
 export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose }) => {
+  const { activePharmacy } = usePharmacyDuty();
+
   useEffect(() => {
     if (!isOpen) return;
-
-    // Bloqueo de scroll en body al abrir modal
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -46,8 +47,8 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose 
         {/* Cabecera del Modal */}
         <div className="flex items-start justify-between gap-4 border-b border-sand-200 pb-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
-              <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-700 text-white shadow-xs">
+              <ShieldAlert className="w-3.5 h-3.5" />
               <span>Guardia Activa 24hs · Valle de Punilla</span>
             </div>
             <h3 id="emergency-modal-title" className="font-display font-black text-2xl sm:text-3xl text-sand-900">
@@ -68,6 +69,41 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose 
           </button>
         </div>
 
+        {/* Farmacia de Turno Hoy Strip */}
+        {activePharmacy && (
+          <div className="p-4 rounded-2xl bg-white border-2 border-emerald-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="bg-emerald-700 text-white font-extrabold uppercase px-2.5 py-0.5 rounded-full text-[10px] tracking-wider shadow-xs">
+                  DE TURNO HOY
+                </span>
+                <span className="font-bold text-sm text-sand-900">{activePharmacy.name}</span>
+              </div>
+              <p className="text-xs text-sand-600 flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-sand-400 shrink-0" />
+                <span>{activePharmacy.address} ({activePharmacy.dutyHours})</span>
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={`tel:${activePharmacy.phone.replace(/\s+/g, '')}`}
+                className="py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Llamar</span>
+              </a>
+              <a
+                href="/emergencias"
+                onClick={onClose}
+                className="py-2 px-3 rounded-xl bg-sand-100 hover:bg-sand-200 text-sand-800 font-bold text-xs inline-flex items-center gap-1"
+              >
+                <span>Ver Ficha</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Directorio Telefónico de Discado Rápido */}
         <div className="space-y-3">
           <h4 className="text-xs font-bold text-sand-700 uppercase tracking-wider">
@@ -81,7 +117,7 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose 
               >
                 <div className="space-y-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-800">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-sand-800 text-white shadow-xs">
                       {c.badge}
                     </span>
                     <span className="text-xs font-black text-red-600 font-display">
@@ -118,7 +154,7 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose 
         <div className="space-y-3 pt-2">
           <h4 className="text-xs font-bold text-sand-700 uppercase tracking-wider flex items-center gap-1.5">
             <AlertTriangle className="w-4 h-4 text-amber-600" />
-            Protocolos de Seguridad en Senderos y Ríos:
+            <span>Protocolos de Seguridad en Senderos y Ríos:</span>
           </h4>
           <EmergencyProtocolAccordion />
         </div>

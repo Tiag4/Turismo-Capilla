@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Compass, ArrowLeft, Save, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Compass, ArrowLeft, Save, Check } from 'lucide-react';
 import { Button } from '../../ui/Button.tsx';
 import { Input } from '../../ui/Input.tsx';
 import { Select } from '../../ui/Select.tsx';
+import { AttractionPhotoDropzone } from './AttractionPhotoDropzone.tsx';
 import type { Attraction, CreateAttractionDto, AttractionCategory, AttractionStatus } from '../../../types/attraction.types.ts';
 
 const CATEGORY_OPTIONS: { value: AttractionCategory; label: string }[] = [
@@ -51,22 +52,8 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
   const [status, setStatus] = useState<AttractionStatus>(initialData?.status ?? 'OPEN');
   const [statusNotice, setStatusNotice] = useState(initialData?.statusNotice ?? '');
   const [isFeatured, setIsFeatured] = useState(Boolean(initialData?.isFeatured));
-  const [imageUrlInput, setImageUrlInput] = useState('');
   const [images, setImages] = useState<string[]>(initialData?.images?.map((img) => img.url) ?? []);
   const [validationError, setValidationError] = useState<string | null>(null);
-
-  const handleAddImage = () => {
-    const trimmed = imageUrlInput.trim();
-    if (!trimmed) return;
-    if (!images.includes(trimmed)) {
-      setImages([...images, trimmed]);
-      setImageUrlInput('');
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +115,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button type="submit" variant="emerald" isLoading={isSubmitting} className="font-bold shadow-xs">
+          <Button type="submit" variant="emerald" isLoading={isSubmitting} className="font-bold shadow-xs cursor-pointer">
             <Save className="w-4 h-4 mr-1.5" />
             <span>{initialData ? 'Guardar Cambios' : 'Registrar Atractivo'}</span>
           </Button>
@@ -156,13 +143,13 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
           <Select
             label="Categoría Oficial"
             value={category}
-            onChange={(e) => setCategory(e.target.value as AttractionCategory)}
+            onChange={(val) => setCategory(val as AttractionCategory)}
             options={CATEGORY_OPTIONS}
           />
           <Select
             label="Dificultad Estimada"
             value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
+            onChange={(val) => setDifficulty(val)}
             options={DIFFICULTY_OPTIONS}
           />
           <Input
@@ -182,7 +169,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="Describí las características del paseo, atractivos naturales, flora, fauna y recomendaciones para el visitante..."
-            className="w-full px-3 py-2 text-xs rounded-xl border border-sand-300 bg-sand-50/50 text-sand-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white resize-y"
+            className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sand-300 bg-sand-50/50 text-sand-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white resize-y"
             required
           />
         </div>
@@ -195,7 +182,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
           label="Cómo Llegar (Indicaciones viales / peatonales)"
           value={howToGet}
           onChange={(e) => setHowToGet(e.target.value)}
-          placeholder="Ej: A 3 km del centro por cable Sabattini hasta el parador comunal."
+          placeholder="Ej: A 3 km del centro por calle Sabattini hasta el parador comunal."
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -220,15 +207,19 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             onChange={(e) => setAdmissionFee(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
             helperText="Dejar en 0 si el acceso es libre y gratuito."
           />
-          <div className="flex items-center gap-2 pt-6">
-            <input
-              type="checkbox"
-              id="requiresGuide"
-              checked={requiresGuide}
-              onChange={(e) => setRequiresGuide(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-            />
-            <label htmlFor="requiresGuide" className="text-xs font-bold text-sand-800 cursor-pointer">
+          <div className="flex items-center gap-2.5 pt-6">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={requiresGuide}
+              onClick={() => setRequiresGuide(!requiresGuide)}
+              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
+                requiresGuide ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+              }`}
+            >
+              {requiresGuide && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+            </button>
+            <label onClick={() => setRequiresGuide(!requiresGuide)} className="text-xs font-bold text-sand-800 cursor-pointer">
               Exige Guía Habilitado
             </label>
           </div>
@@ -242,18 +233,22 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
           <Select
             label="Estado Operativo Actual"
             value={status}
-            onChange={(e) => setStatus(e.target.value as AttractionStatus)}
+            onChange={(val) => setStatus(val as AttractionStatus)}
             options={STATUS_OPTIONS}
           />
-          <div className="flex items-center gap-2 pt-6">
-            <input
-              type="checkbox"
-              id="isFeatured"
-              checked={isFeatured}
-              onChange={(e) => setIsFeatured(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-            />
-            <label htmlFor="isFeatured" className="text-xs font-bold text-sand-800 cursor-pointer">
+          <div className="flex items-center gap-2.5 pt-6">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={isFeatured}
+              onClick={() => setIsFeatured(!isFeatured)}
+              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
+                isFeatured ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+              }`}
+            >
+              {isFeatured && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+            </button>
+            <label onClick={() => setIsFeatured(!isFeatured)} className="text-xs font-bold text-sand-800 cursor-pointer">
               Destacar en Portada del Portal Turístico
             </label>
           </div>
@@ -270,45 +265,17 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
         )}
       </div>
 
-      {/* 5. Sección: Galería Fotográfica */}
+      {/* 5. Sección: Galería Fotográfica (Carga exclusiva por archivo / Dropzone) */}
       <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Galería Fotográfica</h2>
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <Input
-              value={imageUrlInput}
-              onChange={(e) => setImageUrlInput(e.target.value)}
-              placeholder="https://ejemplo.com/foto-uritorco.jpg"
-              helperText="Pegá una URL directa de imagen (.jpg, .png, .webp)"
-            />
+        <div className="flex items-center justify-between border-b border-sand-100 pb-3">
+          <div>
+            <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Galería Fotográfica</h2>
+            <p className="text-xs text-sand-500">Carga directa de fotografías desde tu dispositivo (arrastrá o seleccioná archivos)</p>
           </div>
-          <Button type="button" variant="outline" onClick={handleAddImage} className="self-start mt-0.5">
-            <Plus className="w-4 h-4 mr-1" />
-            <span>Agregar</span>
-          </Button>
+          <span className="text-xs font-bold text-sand-500">{images.length} / 8 fotos</span>
         </div>
 
-        {images.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {images.map((url, idx) => (
-              <div key={idx} className="relative group rounded-xl overflow-hidden border border-sand-200 aspect-video bg-sand-100">
-                <img src={url} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(idx)}
-                  className="absolute top-1.5 right-1.5 p-1 bg-white/90 text-rose-600 hover:text-rose-800 rounded-lg shadow-xs opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-6 text-center border-2 border-dashed border-sand-200 rounded-xl text-sand-400 text-xs">
-            <ImageIcon className="w-6 h-6 mx-auto mb-1 text-sand-300" />
-            <span>No hay fotos añadidas. Agregá una URL arriba.</span>
-          </div>
-        )}
+        <AttractionPhotoDropzone images={images} onChange={setImages} />
       </div>
     </form>
   );

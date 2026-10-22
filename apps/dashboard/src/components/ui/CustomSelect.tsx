@@ -9,7 +9,7 @@ export interface CustomSelectOption {
 
 export interface CustomSelectProps {
   label?: string;
-  value: string;
+  value?: string | number;
   onChange: (value: string) => void;
   options: CustomSelectOption[];
   placeholder?: string;
@@ -33,7 +33,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedOption = options.find((opt) => String(opt.value) === String(value));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,12 +41,19 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         setIsOpen(false);
       }
     };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
 
@@ -99,7 +106,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           className="absolute top-full left-0 mt-1.5 w-full bg-white border border-[var(--color-sand-200)] rounded-xl shadow-lg z-50 py-1 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150"
         >
           {options.map((option) => {
-            const isSelected = option.value === value;
+            const isSelected = String(option.value) === String(value);
             return (
               <button
                 key={option.value}

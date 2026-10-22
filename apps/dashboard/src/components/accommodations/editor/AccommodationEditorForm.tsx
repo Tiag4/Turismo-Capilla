@@ -109,18 +109,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [images, setImages] = useState<AccommodationImage[]>(
     initialData?.images && initialData.images.length > 0
       ? initialData.images
-      : [
-          {
-            id: 'img-def-1',
-            url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
-            isMain: true,
-          },
-          {
-            id: 'img-def-2',
-            url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-            isMain: false,
-          },
-        ]
+      : []
   );
 
   const handleToggleAmenity = (amenity: string) => {

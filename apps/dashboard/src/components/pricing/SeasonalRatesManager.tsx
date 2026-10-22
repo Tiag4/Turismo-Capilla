@@ -14,14 +14,15 @@ import {
   parseCurrencyARS,
 } from '../../hooks/useHostPricing.ts';
 import { Button } from '../ui/Button.tsx';
+import { CustomSelect } from '../ui/CustomSelect.tsx';
 
 const MIN_NIGHTS_OPTIONS = [
-  { value: 1, label: '1 noche mínima (flexible)' },
-  { value: 2, label: '2 noches mínimas' },
-  { value: 3, label: '3 noches mínimas (recomendado fines de semana)' },
-  { value: 4, label: '4 noches mínimas' },
-  { value: 5, label: '5 noches mínimas (recomendado temporada alta)' },
-  { value: 7, label: '7 noches mínimas (semana completa)' },
+  { value: '1', label: '1 noche mínima (flexible)' },
+  { value: '2', label: '2 noches mínimas' },
+  { value: '3', label: '3 noches mínimas (recomendado fines de semana)' },
+  { value: '4', label: '4 noches mínimas' },
+  { value: '5', label: '5 noches mínimas (recomendado temporada alta)' },
+  { value: '7', label: '7 noches mínimas (semana completa)' },
 ];
 
 export const SeasonalRatesManager: React.FC = () => {
@@ -84,25 +85,12 @@ export const SeasonalRatesManager: React.FC = () => {
         </div>
 
         {/* Accommodation Selector */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <label
-            htmlFor="acc-select"
-            className="text-xs font-bold text-[var(--color-sand-700)] shrink-0"
-          >
-            Cabaña:
-          </label>
-          <select
-            id="acc-select"
+        <div className="w-full sm:w-64">
+          <CustomSelect
             value={selectedAccommodationId}
-            onChange={(e) => setSelectedAccommodationId(e.target.value)}
-            className="w-full sm:w-64 rounded-xl border border-[var(--color-sand-300)] bg-white px-3 py-2 text-xs font-semibold text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)] cursor-pointer"
-          >
-            {accommodations.map((acc) => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setSelectedAccommodationId(val)}
+            options={accommodations.map((acc) => ({ value: acc.id, label: acc.name }))}
+          />
         </div>
       </div>
 
@@ -154,17 +142,11 @@ export const SeasonalRatesManager: React.FC = () => {
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-700)] block">
                 Estadía Mínima Obligatoria
               </label>
-              <select
-                value={minNightsBase}
-                onChange={(e) => setMinNightsBase(Number(e.target.value))}
-                className="w-full rounded-xl border border-[var(--color-sand-300)] bg-white px-3 py-2 text-xs text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)] cursor-pointer"
-              >
-                {MIN_NIGHTS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <CustomSelect
+                value={String(minNightsBase)}
+                onChange={(val) => setMinNightsBase(Number(val))}
+                options={MIN_NIGHTS_OPTIONS}
+              />
             </div>
           </div>
 
@@ -213,17 +195,11 @@ export const SeasonalRatesManager: React.FC = () => {
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-700)] block">
                 Estadía Mínima Obligatoria
               </label>
-              <select
-                value={minNightsHighSeason}
-                onChange={(e) => setMinNightsHighSeason(Number(e.target.value))}
-                className="w-full rounded-xl border border-[var(--color-sand-300)] bg-white px-3 py-2 text-xs text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)] cursor-pointer"
-              >
-                {MIN_NIGHTS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <CustomSelect
+                value={String(minNightsHighSeason)}
+                onChange={(val) => setMinNightsHighSeason(Number(val))}
+                options={MIN_NIGHTS_OPTIONS}
+              />
             </div>
           </div>
 
@@ -272,17 +248,11 @@ export const SeasonalRatesManager: React.FC = () => {
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-700)] block">
                 Estadía Mínima Obligatoria
               </label>
-              <select
-                value={minNightsLongWeekend}
-                onChange={(e) => setMinNightsLongWeekend(Number(e.target.value))}
-                className="w-full rounded-xl border border-[var(--color-sand-300)] bg-white px-3 py-2 text-xs text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)] cursor-pointer"
-              >
-                {MIN_NIGHTS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <CustomSelect
+                value={String(minNightsLongWeekend)}
+                onChange={(val) => setMinNightsLongWeekend(Number(val))}
+                options={MIN_NIGHTS_OPTIONS}
+              />
             </div>
           </div>
 

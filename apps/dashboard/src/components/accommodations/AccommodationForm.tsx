@@ -40,13 +40,7 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
   const [images, setImages] = useState<AccommodationImage[]>(
     initialData?.images && initialData.images.length > 0
       ? initialData.images
-      : [
-          {
-            id: 'img-initial',
-            url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
-            isMain: true,
-          },
-        ]
+      : []
   );
 
   const handleToggleAmenity = (amenity: string) => {

@@ -68,25 +68,28 @@ export const EmergencySanitaryManagerView: React.FC = () => {
       {/* KPI Stats — Unified Stat Strip (Flat on canvas) */}
       <InlineStatStrip stats={statItems} />
 
-      {/* Active Duty Pharmacy Notice — Flat accent without floating card box */}
+      {/* Active Duty Pharmacy Notice — Focal element */}
       {activeDutyPharmacy && (
-        <div className="border-l-2 border-[#005530] pl-3.5 py-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-0.5">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#005530] block">
-              Publicado en el portal (/emergencias)
-            </span>
-            <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
+        <div className="border-l-4 border-emerald-700 bg-sand-100/40 p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
+                Publicado en el portal oficial (/emergencias)
+              </span>
+            </div>
+            <h2 className="text-base font-bold text-sand-900 font-['Outfit']">
               {activeDutyPharmacy.name} — {activeDutyPharmacy.address}
-            </h3>
-            <p className="text-xs text-[var(--color-sand-600)]">
-              Teléfono de urgencia: <strong className="text-[var(--color-sand-900)]">{activeDutyPharmacy.phone}</strong>
+            </h2>
+            <p className="text-xs text-sand-600">
+              Teléfono de urgencia: <strong className="text-sand-900">{activeDutyPharmacy.phone}</strong>
               {activeDutyPharmacy.whatsapp && ` · WhatsApp: ${activeDutyPharmacy.whatsapp}`}
               {activeDutyPharmacy.notes && ` · "${activeDutyPharmacy.notes}"`}
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#005530] shrink-0">
-            <CheckCircle2 className="w-4 h-4 text-[#005530]" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 shrink-0">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>Visible para turistas</span>
           </div>
         </div>

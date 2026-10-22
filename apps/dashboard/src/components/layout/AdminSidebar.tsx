@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  BarChart3,
+  LayoutDashboard,
   Home,
   Compass,
   KeyRound,
@@ -35,7 +35,7 @@ interface NavItem {
 }
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
-  { id: 'overview', label: 'Centro de Control', icon: BarChart3 },
+  { id: 'overview', label: 'Inicio', icon: LayoutDashboard },
   { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
   { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
   { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },

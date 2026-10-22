@@ -25,6 +25,15 @@ export const alertsService = {
     }
   },
 
+  async getById(id: string): Promise<Alert | null> {
+    try {
+      return await apiClient.get<Alert>(`/alerts/${id}`);
+    } catch {
+      const all = await this.getAll();
+      return all.find((a) => a.id === id) || null;
+    }
+  },
+
   async getActive(): Promise<Alert | null> {
     try {
       return await apiClient.get<Alert>('/alerts/active');

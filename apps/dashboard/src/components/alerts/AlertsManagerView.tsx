@@ -14,18 +14,21 @@ import {
 import { Button } from '../ui/Button.tsx';
 import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
-import { AlertModal } from './AlertModal.tsx';
 import { AlertRow } from './AlertRow.tsx';
 import { alertsService } from '../../services/alerts.service.ts';
-import type { Alert, CreateOrUpdateAlertDto, AlertSeverity } from '../../types/alert.types.ts';
+import type { Alert, AlertSeverity } from '../../types/alert.types.ts';
 
-export const AlertsManagerView: React.FC = () => {
+export interface AlertsManagerViewProps {
+  onNavigateCreate?: () => void;
+  onNavigateEdit?: (id: string) => void;
+}
+
+export const AlertsManagerView: React.FC<AlertsManagerViewProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Modal create / edit
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAlert, setEditingAlert] = useState<Alert | null>(null);
 
   // Status toggle confirmation
   const [targetToggleAlert, setTargetToggleAlert] = useState<Alert | null>(null);
@@ -57,22 +60,11 @@ export const AlertsManagerView: React.FC = () => {
   }, [alerts]);
 
   const handleOpenCreate = () => {
-    setEditingAlert(null);
-    setIsModalOpen(true);
+    onNavigateCreate?.();
   };
 
   const handleOpenEdit = (alert: Alert) => {
-    setEditingAlert(alert);
-    setIsModalOpen(true);
-  };
-
-  const handleSave = async (dto: CreateOrUpdateAlertDto) => {
-    if (editingAlert) {
-      await alertsService.update(editingAlert.id, dto);
-    } else {
-      await alertsService.create(dto);
-    }
-    await loadAlerts();
+    onNavigateEdit?.(alert.id);
   };
 
   const handleConfirmToggle = async () => {
@@ -300,14 +292,6 @@ export const AlertsManagerView: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Modal Crear / Editar */}
-      <AlertModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-        alertToEdit={editingAlert}
-      />
 
       {/* Confirm Toggle Dialog */}
       <ConfirmDialog

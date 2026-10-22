@@ -2,30 +2,23 @@ import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useAdminInvitations } from '../../hooks/useAdminInvitations.ts';
 import { InvitationList } from './InvitationList.tsx';
-import { GenerateInvitationModal } from './GenerateInvitationModal.tsx';
 import { RevokeInvitationModal } from './RevokeInvitationModal.tsx';
 import { Button } from '../ui/Button.tsx';
-import type { CreateInvitationDto, InvitationToken } from '../../types/invitation.types.ts';
+import type { InvitationToken } from '../../types/invitation.types.ts';
 
-export const InvitationManager: React.FC = () => {
-  const { invitations, isLoading, createInvitation, revokeInvitation } = useAdminInvitations();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export interface InvitationManagerProps {
+  onNavigateCreate?: () => void;
+}
+
+export const InvitationManager: React.FC<InvitationManagerProps> = ({
+  onNavigateCreate,
+}) => {
+  const { invitations, isLoading, revokeInvitation } = useAdminInvitations();
 
   // Revoke state
   const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
   const [revokingInvitation, setRevokingInvitation] = useState<InvitationToken | null>(null);
   const [isRevoking, setIsRevoking] = useState(false);
-
-  const handleCreate = async (dto: CreateInvitationDto) => {
-    setIsSubmitting(true);
-    try {
-      await createInvitation(dto);
-      setIsModalOpen(false);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleOpenRevoke = (invitation: InvitationToken) => {
     setRevokingInvitation(invitation);
@@ -54,7 +47,12 @@ export const InvitationManager: React.FC = () => {
             Envío de enlaces seguros para el registro y habilitación formal de cabañas
           </p>
         </div>
-        <Button variant="emerald" onClick={() => setIsModalOpen(true)} size="md" className="font-bold">
+        <Button
+          variant="emerald"
+          onClick={() => onNavigateCreate?.()}
+          size="md"
+          className="font-bold cursor-pointer"
+        >
           <Plus className="w-4 h-4 mr-1.5" />
           <span>Nueva Invitación</span>
         </Button>
@@ -73,14 +71,6 @@ export const InvitationManager: React.FC = () => {
         invitations={invitations}
         isLoading={isLoading}
         onOpenRevoke={handleOpenRevoke}
-      />
-
-      {/* Generate Modal */}
-      <GenerateInvitationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreate}
-        isLoading={isSubmitting}
       />
 
       {/* Revoke Modal */}

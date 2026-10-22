@@ -11,12 +11,10 @@ import {
 import { Button } from '../ui/Button.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
-import { AttractionModal } from './AttractionModal.tsx';
 import { AttractionCard } from './AttractionCard.tsx';
 import { attractionsService } from '../../services/attractions.service.ts';
 import type {
   Attraction,
-  CreateAttractionDto,
   AttractionCategory,
   AttractionStatus,
 } from '../../types/attraction.types.ts';
@@ -29,16 +27,20 @@ const CATEGORY_LABELS: Record<AttractionCategory, string> = {
   NIGHT: 'Nocturno / Astroturismo',
 };
 
-export const AttractionsManager: React.FC = () => {
+export interface AttractionsManagerProps {
+  onNavigateCreate?: () => void;
+  onNavigateEdit?: (id: string) => void;
+}
+
+export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const [attractions, setAttractions] = useState<Attraction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'ALL' | AttractionCategory>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | AttractionStatus | 'FEATURED'>('ALL');
-
-  // Modal State
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAttraction, setEditingAttraction] = useState<Attraction | null>(null);
 
   // Delete Confirm State
   const [deletingAttraction, setDeletingAttraction] = useState<Attraction | null>(null);
@@ -59,16 +61,6 @@ export const AttractionsManager: React.FC = () => {
   useEffect(() => {
     loadAttractions();
   }, [loadAttractions]);
-
-  // Handle Save (Create or Update)
-  const handleSaveAttraction = async (dto: CreateAttractionDto) => {
-    if (editingAttraction) {
-      await attractionsService.update(editingAttraction.id, dto);
-    } else {
-      await attractionsService.create(dto);
-    }
-    await loadAttractions();
-  };
 
   // Handle Quick Toggle Featured
   const handleToggleFeatured = async (attraction: Attraction) => {
@@ -194,10 +186,7 @@ export const AttractionsManager: React.FC = () => {
 
         <Button
           variant="terracotta"
-          onClick={() => {
-            setEditingAttraction(null);
-            setIsModalOpen(true);
-          }}
+          onClick={() => onNavigateCreate?.()}
           className="gap-2 shrink-0 font-bold"
         >
           <Plus className="w-4 h-4" />
@@ -314,26 +303,12 @@ export const AttractionsManager: React.FC = () => {
               item={item}
               onToggleFeatured={handleToggleFeatured}
               onQuickStatusChange={handleQuickStatusChange}
-              onEdit={(att) => {
-                setEditingAttraction(att);
-                setIsModalOpen(true);
-              }}
+              onEdit={(att) => onNavigateEdit?.(att.id)}
               onDelete={(att) => setDeletingAttraction(att)}
             />
           ))}
         </div>
       )}
-
-      {/* Modal para Crear / Editar */}
-      <AttractionModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingAttraction(null);
-        }}
-        onSubmit={handleSaveAttraction}
-        attraction={editingAttraction}
-      />
 
       {/* Diálogo de Confirmación para Eliminar */}
       <ConfirmDialog

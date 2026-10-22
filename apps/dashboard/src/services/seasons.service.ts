@@ -57,6 +57,11 @@ export const seasonsService = {
     return DEFAULT_SEASONS;
   },
 
+  async getById(id: string): Promise<TourismSeason | null> {
+    const list = await this.getAll();
+    return list.find((s) => s.id === id) || null;
+  },
+
   async create(dto: CreateSeasonDto): Promise<TourismSeason> {
     const list = await this.getAll();
     const newSeason: TourismSeason = {

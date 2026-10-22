@@ -9,93 +9,79 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useTourismCalendar } from '../../hooks/useTourismCalendar.ts';
-import { SeasonModal } from './SeasonModal.tsx';
 import { Button } from '../ui/Button.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
-import type { TourismSeason, CreateSeasonDto, SeasonType } from '../../types/season.types.ts';
+import type { TourismSeason, SeasonType } from '../../types/season.types.ts';
 
-export const TourismCalendarSettings: React.FC = () => {
+export interface TourismCalendarSettingsProps {
+  onNavigateCreate?: () => void;
+  onNavigateEdit?: (id: string) => void;
+}
+
+export const TourismCalendarSettings: React.FC<TourismCalendarSettingsProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const {
     seasons,
     isLoading,
-    createSeason,
-    updateSeason,
     toggleSeasonActive,
   } = useTourismCalendar();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSeason, setEditingSeason] = useState<TourismSeason | null>(null);
   const [seasonToToggle, setSeasonToToggle] = useState<TourismSeason | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenCreate = () => {
-    setEditingSeason(null);
-    setIsModalOpen(true);
+    onNavigateCreate?.();
   };
 
   const handleOpenEdit = (season: TourismSeason) => {
-    setEditingSeason(season);
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (dto: CreateSeasonDto) => {
-    setIsSubmitting(true);
-    try {
-      if (editingSeason) {
-        await updateSeason(editingSeason.id, dto);
-      } else {
-        await createSeason(dto);
-      }
-      setIsModalOpen(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+    onNavigateEdit?.(season.id);
   };
 
   const typeConfig: Record<
     SeasonType,
-    { label: string; textClass: string; dotClass: string; icon: React.ComponentType<{ className?: string }> }
+    { label: string; textClass: string; icon: React.ComponentType<{ className?: string }> }
   > = {
     HIGH: {
       label: 'Temporada Alta',
       textClass: 'text-[var(--color-terracotta-600)]',
-      dotClass: 'bg-[var(--color-terracotta-500)]',
       icon: Flame,
     },
     MEDIUM: {
       label: 'Temporada Media',
-      textClass: 'text-amber-700',
-      dotClass: 'bg-amber-600',
+      textClass: 'text-[var(--color-sand-700)]',
       icon: Calendar,
     },
     LOW: {
       label: 'Temporada Baja',
-      textClass: 'text-zinc-600',
-      dotClass: 'bg-zinc-500',
+      textClass: 'text-[var(--color-sand-500)]',
       icon: Calendar,
     },
     SPECIAL_EVENT: {
-      label: 'Evento Especial',
-      textClass: 'text-[var(--color-uritorco-700)]',
-      dotClass: 'bg-[var(--color-uritorco-600)]',
+      label: 'Evento Oficial',
+      textClass: 'text-[var(--color-emerald-portal-600)]',
       icon: Sparkles,
     },
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
+    <div className="space-y-6">
+      {/* 1. Header & Actions — Senior Clean Canvas */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
-            Calendario Oficial de Temporadas y Tarifas
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
+            Períodos y Temporadas Oficiales
           </h1>
           <p className="text-xs sm:text-sm text-[var(--color-sand-500)] mt-0.5">
-            Parámetros oficiales de fechas pico para sugerencia tarifaria a prestadores adheridos
+            Configurá las temporadas altas, medias y eventos de Capilla del Monte para sugerir multiplicadores tarifarios a los prestadores.
           </p>
         </div>
 
-        <Button variant="emerald" onClick={handleOpenCreate} size="md">
+        <Button
+          variant="emerald"
+          onClick={handleOpenCreate}
+          className="gap-2 shrink-0 font-bold shadow-xs cursor-pointer"
+        >
           <Plus className="w-4 h-4" />
           <span>Nuevo Período Turístico</span>
         </Button>
@@ -139,30 +125,22 @@ export const TourismCalendarSettings: React.FC = () => {
 
                     <span className="text-[var(--color-sand-300)]">·</span>
 
-                    <span className="font-semibold text-[var(--color-sand-600)] flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
-                      <span>
-                        {new Date(season.startDate + 'T00:00:00').toLocaleDateString('es-AR')} al{' '}
-                        {new Date(season.endDate + 'T00:00:00').toLocaleDateString('es-AR')}
-                      </span>
+                    <span className="text-[var(--color-sand-700)] font-medium">
+                      {season.startDate} al {season.endDate}
                     </span>
 
                     <span className="text-[var(--color-sand-300)]">·</span>
 
-                    <span className="inline-flex items-center gap-1.5 font-bold text-[11px]">
-                      <span className={`w-1.5 h-1.5 rounded-full ${season.isActive ? 'bg-[#005530]' : 'bg-rose-600'}`} />
-                      <span className={season.isActive ? 'text-[#005530]' : 'text-rose-700'}>
-                        {season.isActive ? 'Vigente' : 'Inactiva'}
-                      </span>
+                    <span className={`text-[11px] font-semibold ${season.isActive ? 'text-[var(--color-emerald-portal-600)]' : 'text-[var(--color-sand-400)]'}`}>
+                      {season.isActive ? 'Activo' : 'Pausado'}
                     </span>
                   </div>
 
-                  {/* Title */}
+                  {/* Title & Description */}
                   <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
                     {season.name}
                   </h3>
 
-                  {/* Description */}
                   {season.description && (
                     <p className="text-xs text-[var(--color-sand-500)] line-clamp-1 max-w-2xl">
                       {season.description}
@@ -184,7 +162,7 @@ export const TourismCalendarSettings: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setSeasonToToggle(season)}
-                      className="text-xs font-semibold"
+                      className="text-xs font-semibold cursor-pointer"
                       title={season.isActive ? 'Desactivar temporada' : 'Activar temporada'}
                     >
                       <Power className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
@@ -195,7 +173,7 @@ export const TourismCalendarSettings: React.FC = () => {
                       variant="terracotta"
                       size="sm"
                       onClick={() => handleOpenEdit(season)}
-                      className="text-xs font-bold"
+                      className="text-xs font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>Editar</span>
@@ -208,13 +186,13 @@ export const TourismCalendarSettings: React.FC = () => {
         </div>
       )}
 
-      {/* Confirm Season Toggle Dialog */}
+      {/* Toggle Confirm Dialog */}
       <ConfirmDialog
         isOpen={Boolean(seasonToToggle)}
         onClose={() => setSeasonToToggle(null)}
-        onConfirm={() => {
+        onConfirm={async () => {
           if (seasonToToggle) {
-            toggleSeasonActive(seasonToToggle.id);
+            await toggleSeasonActive(seasonToToggle.id);
             setSeasonToToggle(null);
           }
         }}
@@ -226,15 +204,6 @@ export const TourismCalendarSettings: React.FC = () => {
             : `¿Estás seguro de que deseas activar el período "${seasonToToggle?.name}"? Se reanudarán las sugerencias tarifarias asociadas a estas fechas en el portal.`
         }
         confirmLabel={seasonToToggle?.isActive ? 'Pausar Período' : 'Activar Período'}
-      />
-
-      {/* Season Modal */}
-      <SeasonModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        season={editingSeason}
-        onSubmit={handleSubmit}
-        isLoading={isSubmitting}
       />
     </div>
   );

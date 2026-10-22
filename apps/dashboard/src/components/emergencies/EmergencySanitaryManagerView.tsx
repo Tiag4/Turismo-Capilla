@@ -4,20 +4,21 @@ import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 import { useEmergencySanitary } from '../../hooks/useEmergencySanitary.ts';
 import { PharmacyDutyListCard } from './PharmacyDutyListCard.tsx';
 import { HealthGuardNoticeCard } from './HealthGuardNoticeCard.tsx';
-import { PharmacyDutyEditorModal } from './PharmacyDutyEditorModal.tsx';
 
-export const EmergencySanitaryManagerView: React.FC = () => {
+export interface EmergencySanitaryManagerViewProps {
+  onNavigateCreate?: () => void;
+  onNavigateEdit?: (id: string) => void;
+}
+
+export const EmergencySanitaryManagerView: React.FC<EmergencySanitaryManagerViewProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const {
     config,
     activeDutyPharmacy,
     isSaving,
-    isEditorOpen,
-    editingPharmacy,
-    openCreatePharmacy,
-    openEditPharmacy,
-    closeEditor,
     handleSetOnDuty,
-    handleSavePharmacy,
     handleDeletePharmacy,
     handleUpdateHealthGuard,
   } = useEmergencySanitary();
@@ -106,18 +107,9 @@ export const EmergencySanitaryManagerView: React.FC = () => {
       <PharmacyDutyListCard
         pharmacies={config.pharmacies}
         onSetOnDuty={(id) => handleSetOnDuty(id)}
-        onEdit={openEditPharmacy}
+        onEdit={(pharmacy) => onNavigateEdit?.(pharmacy.id)}
         onDelete={handleDeletePharmacy}
-        onAddNew={openCreatePharmacy}
-        isSaving={isSaving}
-      />
-
-      {/* Create / Edit Pharmacy Modal */}
-      <PharmacyDutyEditorModal
-        isOpen={isEditorOpen}
-        onClose={closeEditor}
-        onSave={handleSavePharmacy}
-        pharmacy={editingPharmacy}
+        onAddNew={() => onNavigateCreate?.()}
         isSaving={isSaving}
       />
     </div>

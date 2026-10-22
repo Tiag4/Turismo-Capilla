@@ -1,276 +1,141 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { DashboardTab } from '../components/layout/DashboardNav.tsx';
 import type { UserRole } from '../types/auth.types.ts';
+import type { RouteDetail } from './dashboardRouter.types.ts';
+import { TAB_ROUTE_MAP, sanitizeTabForRole } from './dashboardRouter.types.ts';
+import { parseRouteFromPath } from './parseDashboardRoute.ts';
 
-export type AccommodationViewMode = 'list' | 'create' | 'edit';
-export type EventViewMode = 'list' | 'create' | 'edit';
-
-export interface RouteDetail {
-  tab: DashboardTab;
-  accommodationView: AccommodationViewMode;
-  accommodationEditId?: string;
-  eventView: EventViewMode;
-  eventEditId?: string;
-}
-
-export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
-  overview: '/panel-general',
-  bookings: '/reservas',
-  accommodations: '/mis-cabanas',
-  attractions: '/atractivos',
-  alerts: '/alertas',
-  emergencies: '/guardias-farmacias',
-  calendar: '/calendario',
-  pricing: '/tarifas',
-  performance: '/rendimiento',
-  invitations: '/invitaciones',
-  reports: '/reportes',
-  audit: '/auditoria',
-  moderation: '/moderacion',
-  settings: '/configuracion',
-  events: '/agenda-cultural',
-  portal_cms: '/personalizador-portal',
-  profile: '/perfil',
-};
-
-// Friendly aliases and accented URL matching
-const ROUTE_ALIASES: Record<string, DashboardTab> = {
-  '/guardias-farmacias': 'emergencies',
-  '/emergencias': 'emergencies',
-  '/farmacias': 'emergencies',
-  '/agenda-cultural': 'events',
-  '/eventos': 'events',
-  '/personalizador-portal': 'portal_cms',
-  '/cms': 'portal_cms',
-  '/personalizador': 'portal_cms',
-  '/mis-cabanas': 'accommodations',
-  '/mis-cabañas': 'accommodations',
-  '/alojamientos': 'accommodations',
-  '/cabanas': 'accommodations',
-  '/cabañas': 'accommodations',
-  '/atractivos': 'attractions',
-  '/senderos': 'attractions',
-  '/paseos': 'attractions',
-  '/alertas': 'alerts',
-  '/seguridad': 'alerts',
-  '/reservas': 'bookings',
-  '/calendario': 'calendar',
-  '/tarifas': 'pricing',
-  '/precios': 'pricing',
-  '/rendimiento': 'performance',
-  '/balance': 'performance',
-  '/panel-general': 'overview',
-  '/resumen': 'overview',
-  '/overview': 'overview',
-  '/invitaciones': 'invitations',
-  '/tokens': 'invitations',
-  '/reportes': 'reports',
-  '/auditoria': 'audit',
-  '/auditoría': 'audit',
-  '/moderacion': 'moderation',
-  '/moderación': 'moderation',
-  '/configuracion': 'settings',
-  '/perfil': 'profile',
-  '/mi-perfil': 'profile',
-  '/profile': 'profile',
-  '/configuración': 'settings',
-};
-
-export const ADMIN_ONLY_TABS: DashboardTab[] = [
-  'overview',
-  'portal_cms',
-  'events',
-  'attractions',
-  'alerts',
-  'invitations',
-  'reports',
-  'audit',
-  'moderation',
-  'settings',
-];
-
-export const HOST_ONLY_TABS: DashboardTab[] = [
-  'calendar',
-  'pricing',
-  'performance',
-];
-
-export const sanitizeTabForRole = (tab: DashboardTab, role: UserRole): DashboardTab => {
-  if (role === 'HOST' && ADMIN_ONLY_TABS.includes(tab)) {
-    return 'bookings';
-  }
-  if (role === 'ADMIN' && HOST_ONLY_TABS.includes(tab)) {
-    return 'overview';
-  }
-  return tab;
-};
-
-export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetail => {
-  const normalized = decodeURIComponent(pathname.toLowerCase()).replace(/\/+$/, '');
-
-  // Sub-route: /mis-cabanas/nuevo or /alojamientos/nuevo
-  if (normalized === '/mis-cabanas/nuevo' || normalized === '/alojamientos/nuevo') {
-    return {
-      tab: 'accommodations',
-      accommodationView: 'create',
-      eventView: 'list',
-    };
-  }
-
-  // Sub-route: /mis-cabanas/:id/editar or /alojamientos/:id/editar
-  const editMatch = normalized.match(/^\/(?:mis-cabanas|mis-cabañas|alojamientos)\/([^/]+)\/editar$/i);
-  if (editMatch && editMatch[1]) {
-    return {
-      tab: 'accommodations',
-      accommodationView: 'edit',
-      accommodationEditId: editMatch[1],
-      eventView: 'list',
-    };
-  }
-
-  // Sub-route: /agenda-cultural/nuevo or /eventos/nuevo
-  if (normalized === '/agenda-cultural/nuevo' || normalized === '/eventos/nuevo') {
-    return {
-      tab: 'events',
-      accommodationView: 'list',
-      eventView: 'create',
-    };
-  }
-
-  // Sub-route: /agenda-cultural/:id/editar or /eventos/:id/editar
-  const eventEditMatch = normalized.match(/^\/(?:agenda-cultural|eventos)\/([^/]+)\/editar$/i);
-  if (eventEditMatch && eventEditMatch[1]) {
-    return {
-      tab: 'events',
-      accommodationView: 'list',
-      eventView: 'edit',
-      eventEditId: eventEditMatch[1],
-    };
-  }
-
-  // Standard tab matching
-  if (ROUTE_ALIASES[normalized]) {
-    return {
-      tab: sanitizeTabForRole(ROUTE_ALIASES[normalized], role),
-      accommodationView: 'list',
-      eventView: 'list',
-    };
-  }
-
-  // Fallback default per role
-  return {
-    tab: role === 'ADMIN' ? 'overview' : 'bookings',
-    accommodationView: 'list',
-    eventView: 'list',
-  };
-};
-
-export const getTabFromPath = (pathname: string, role: UserRole): DashboardTab => {
-  return parseRouteFromPath(pathname, role).tab;
-};
+export * from './dashboardRouter.types.ts';
+export * from './parseDashboardRoute.ts';
 
 export const useDashboardRouter = (role: UserRole) => {
   const [routeState, setRouteState] = useState<RouteDetail>(() => {
-    return parseRouteFromPath(window.location.pathname, role);
+    return parseRouteFromPath(typeof window !== 'undefined' ? window.location.pathname : '/', role);
   });
 
-  const navigateToTab = useCallback((tab: DashboardTab, replace = false) => {
-
-    setRouteState({
-      tab: sanitizeTabForRole(tab, role),
-      accommodationView: 'list',
-      eventView: 'list',
-    });
-    const safeTab = sanitizeTabForRole(tab, role);
-    const targetRoute = TAB_ROUTE_MAP[safeTab] || (role === 'ADMIN' ? '/panel-general' : '/reservas');
-    if (window.location.pathname !== targetRoute) {
+  const pushRoute = useCallback((nextState: RouteDetail, targetRoute: string, replace = false) => {
+    setRouteState(nextState);
+    if (typeof window !== 'undefined' && window.location.pathname !== targetRoute) {
       if (replace) {
-        window.history.replaceState({ tab: safeTab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
+        window.history.replaceState(nextState, '', targetRoute);
       } else {
-        window.history.pushState({ tab: safeTab, accommodationView: 'list', eventView: 'list' }, '', targetRoute);
+        window.history.pushState(nextState, '', targetRoute);
       }
     }
-  }, [role]);
+  }, []);
 
-  const navigateToAccommodationCreate = useCallback(() => {
-
-    setRouteState({
-      tab: 'accommodations',
-      accommodationView: 'create',
+  const navigateToTab = useCallback((tab: DashboardTab, replace = false) => {
+    const safeTab = sanitizeTabForRole(tab, role);
+    const targetRoute = TAB_ROUTE_MAP[safeTab] || (role === 'ADMIN' ? '/panel-general' : '/reservas');
+    const nextState: RouteDetail = {
+      tab: safeTab,
+      accommodationView: 'list',
       eventView: 'list',
-    });
-    const targetRoute = '/mis-cabanas/nuevo';
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'accommodations', view: 'create' }, '', targetRoute);
-    }
-  }, [role]);
+      attractionView: 'list',
+      alertView: 'list',
+      emergencyView: 'list',
+      seasonView: 'list',
+      invitationView: 'list',
+      calendarView: 'calendar',
+    };
+    pushRoute(nextState, targetRoute, replace);
+  }, [role, pushRoute]);
+
+  // Accommodations
+  const navigateToAccommodationCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'accommodations', accommodationView: 'create' }, '/mis-cabanas/nuevo');
+  }, [routeState, pushRoute]);
 
   const navigateToAccommodationEdit = useCallback((id: string) => {
-
-    setRouteState({
-      tab: 'accommodations',
-      accommodationView: 'edit',
-      accommodationEditId: id,
-      eventView: 'list',
-    });
-    const targetRoute = `/mis-cabanas/${id}/editar`;
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'accommodations', view: 'edit', id }, '', targetRoute);
-    }
-  }, [role]);
+    pushRoute({ ...routeState, tab: 'accommodations', accommodationView: 'edit', accommodationEditId: id }, `/mis-cabanas/${id}/editar`);
+  }, [routeState, pushRoute]);
 
   const navigateToAccommodationList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'accommodations', accommodationView: 'list', accommodationEditId: undefined }, '/mis-cabanas');
+  }, [routeState, pushRoute]);
 
-    setRouteState({
-      tab: 'accommodations',
-      accommodationView: 'list',
-      eventView: 'list',
-    });
-    const targetRoute = '/mis-cabanas';
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'accommodations', view: 'list' }, '', targetRoute);
-    }
-  }, [role]);
-
+  // Events
   const navigateToEventCreate = useCallback(() => {
-
-    setRouteState({
-      tab: 'events',
-      accommodationView: 'list',
-      eventView: 'create',
-    });
-    const targetRoute = '/agenda-cultural/nuevo';
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'events', view: 'create' }, '', targetRoute);
-    }
-  }, [role]);
+    pushRoute({ ...routeState, tab: 'events', eventView: 'create' }, '/agenda-cultural/nuevo');
+  }, [routeState, pushRoute]);
 
   const navigateToEventEdit = useCallback((id: string) => {
-
-    setRouteState({
-      tab: 'events',
-      accommodationView: 'list',
-      eventView: 'edit',
-      eventEditId: id,
-    });
-    const targetRoute = `/agenda-cultural/${id}/editar`;
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'events', view: 'edit', id }, '', targetRoute);
-    }
-  }, [role]);
+    pushRoute({ ...routeState, tab: 'events', eventView: 'edit', eventEditId: id }, `/agenda-cultural/${id}/editar`);
+  }, [routeState, pushRoute]);
 
   const navigateToEventList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'events', eventView: 'list', eventEditId: undefined }, '/agenda-cultural');
+  }, [routeState, pushRoute]);
 
-    setRouteState({
-      tab: 'events',
-      accommodationView: 'list',
-      eventView: 'list',
-    });
-    const targetRoute = '/agenda-cultural';
-    if (window.location.pathname !== targetRoute) {
-      window.history.pushState({ tab: 'events', view: 'list' }, '', targetRoute);
-    }
-  }, [role]);
+  // Attractions
+  const navigateToAttractionCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'attractions', attractionView: 'create' }, '/atractivos/nuevo');
+  }, [routeState, pushRoute]);
+
+  const navigateToAttractionEdit = useCallback((id: string) => {
+    pushRoute({ ...routeState, tab: 'attractions', attractionView: 'edit', attractionEditId: id }, `/atractivos/${id}/editar`);
+  }, [routeState, pushRoute]);
+
+  const navigateToAttractionList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'attractions', attractionView: 'list', attractionEditId: undefined }, '/atractivos');
+  }, [routeState, pushRoute]);
+
+  // Alerts
+  const navigateToAlertCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'alerts', alertView: 'create' }, '/alertas/nueva');
+  }, [routeState, pushRoute]);
+
+  const navigateToAlertEdit = useCallback((id: string) => {
+    pushRoute({ ...routeState, tab: 'alerts', alertView: 'edit', alertEditId: id }, `/alertas/${id}/editar`);
+  }, [routeState, pushRoute]);
+
+  const navigateToAlertList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'alerts', alertView: 'list', alertEditId: undefined }, '/alertas');
+  }, [routeState, pushRoute]);
+
+  // Emergencies / Guardias
+  const navigateToEmergencyCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'emergencies', emergencyView: 'create' }, '/guardias-farmacias/nueva');
+  }, [routeState, pushRoute]);
+
+  const navigateToEmergencyEdit = useCallback((id: string) => {
+    pushRoute({ ...routeState, tab: 'emergencies', emergencyView: 'edit', emergencyEditId: id }, `/guardias-farmacias/${id}/editar`);
+  }, [routeState, pushRoute]);
+
+  const navigateToEmergencyList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'emergencies', emergencyView: 'list', emergencyEditId: undefined }, '/guardias-farmacias');
+  }, [routeState, pushRoute]);
+
+  // Invitations
+  const navigateToInvitationCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'invitations', invitationView: 'create' }, '/invitaciones/nueva');
+  }, [routeState, pushRoute]);
+
+  const navigateToInvitationList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'invitations', invitationView: 'list' }, '/invitaciones');
+  }, [routeState, pushRoute]);
+
+  // Seasons
+  const navigateToSeasonCreate = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'settings', seasonView: 'create' }, '/configuracion/temporadas/nueva');
+  }, [routeState, pushRoute]);
+
+  const navigateToSeasonEdit = useCallback((id: string) => {
+    pushRoute({ ...routeState, tab: 'settings', seasonView: 'edit', seasonEditId: id }, `/configuracion/temporadas/${id}/editar`);
+  }, [routeState, pushRoute]);
+
+  const navigateToSeasonList = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'settings', seasonView: 'list', seasonEditId: undefined }, '/configuracion');
+  }, [routeState, pushRoute]);
+
+  // Calendar Date Block
+  const navigateToCalendarBlock = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'calendar', calendarView: 'createBlock' }, '/calendario/bloquear-fechas');
+  }, [routeState, pushRoute]);
+
+  const navigateToCalendar = useCallback(() => {
+    pushRoute({ ...routeState, tab: 'calendar', calendarView: 'calendar' }, '/calendario');
+  }, [routeState, pushRoute]);
 
   // Sync with browser back/forward buttons
   useEffect(() => {
@@ -288,13 +153,9 @@ export const useDashboardRouter = (role: UserRole) => {
     const currentPath = window.location.pathname.replace(/\/+$/, '');
     if (!currentPath || currentPath === '' || currentPath === '/') {
       const defaultRoute = TAB_ROUTE_MAP[routeState.tab];
-      window.history.replaceState(
-        { tab: routeState.tab, view: routeState.accommodationView, eventView: routeState.eventView },
-        '',
-        defaultRoute
-      );
+      window.history.replaceState(routeState, '', defaultRoute);
     }
-  }, [routeState.tab, routeState.accommodationView, routeState.eventView]);
+  }, [routeState]);
 
   return {
     currentTab: routeState.tab,
@@ -309,5 +170,31 @@ export const useDashboardRouter = (role: UserRole) => {
     navigateToEventCreate,
     navigateToEventEdit,
     navigateToEventList,
+    attractionView: routeState.attractionView,
+    attractionEditId: routeState.attractionEditId,
+    navigateToAttractionCreate,
+    navigateToAttractionEdit,
+    navigateToAttractionList,
+    alertView: routeState.alertView,
+    alertEditId: routeState.alertEditId,
+    navigateToAlertCreate,
+    navigateToAlertEdit,
+    navigateToAlertList,
+    emergencyView: routeState.emergencyView,
+    emergencyEditId: routeState.emergencyEditId,
+    navigateToEmergencyCreate,
+    navigateToEmergencyEdit,
+    navigateToEmergencyList,
+    invitationView: routeState.invitationView,
+    navigateToInvitationCreate,
+    navigateToInvitationList,
+    seasonView: routeState.seasonView,
+    seasonEditId: routeState.seasonEditId,
+    navigateToSeasonCreate,
+    navigateToSeasonEdit,
+    navigateToSeasonList,
+    calendarView: routeState.calendarView,
+    navigateToCalendarBlock,
+    navigateToCalendar,
   };
 };

@@ -113,6 +113,11 @@ export const pharmacyDutyService = {
     return readStorage();
   },
 
+  async getPharmacyById(id: string): Promise<PharmacyDutyRecord | null> {
+    const config = readStorage();
+    return config.pharmacies.find((p) => p.id === id) || null;
+  },
+
   async setPharmacyOnDuty(
     pharmacyId: string,
     validFrom?: string,

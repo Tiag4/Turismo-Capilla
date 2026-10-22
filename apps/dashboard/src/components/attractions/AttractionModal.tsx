@@ -27,9 +27,9 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 const STATUS_OPTIONS: { value: AttractionStatus; label: string }[] = [
-  { value: 'OPEN', label: '🟢 Abierto y Habilitado' },
-  { value: 'WEATHER_RESTRICTED', label: '🟡 Con Precaución Climática' },
-  { value: 'CLOSED', label: '🔴 Clausurado Temporalmente' },
+  { value: 'OPEN', label: 'Abierto y Habilitado' },
+  { value: 'WEATHER_RESTRICTED', label: 'Con Precaución Meteorológica' },
+  { value: 'CLOSED', label: 'Clausurado Temporalmente' },
 ];
 
 export const AttractionModal: React.FC<AttractionModalProps> = ({

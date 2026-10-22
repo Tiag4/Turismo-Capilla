@@ -41,7 +41,7 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
   { id: 'emergencies', label: 'Guardias y Farmacias', icon: ShieldAlert },
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
-  { id: 'invitations', label: 'Tokens de Invitación', icon: KeyRound },
+  { id: 'invitations', label: 'Invitaciones a Prestadores', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría de Actividad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', icon: Image },

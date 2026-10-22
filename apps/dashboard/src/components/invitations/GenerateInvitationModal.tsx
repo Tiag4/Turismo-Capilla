@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Modal } from '../ui/Modal.tsx';
 import { Button } from '../ui/Button.tsx';
 import { Input } from '../ui/Input.tsx';
@@ -36,8 +36,8 @@ export const GenerateInvitationModal: React.FC<GenerateInvitationModalProps> = (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Emitir Token de Adhesión para Prestador"
-      subtitle="Exclusivo Comisión de Turismo de Capilla del Monte (Anti-Estafas)"
+      title="Emitir Invitación para Prestador"
+      subtitle="Exclusivo Secretaría de Turismo de Capilla del Monte"
       maxWidth="md"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -47,12 +47,12 @@ export const GenerateInvitationModal: React.FC<GenerateInvitationModalProps> = (
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="titular.cabanas@gmail.com"
-          helperText="El prestador usará este correo para registrarse con el token emitido."
+          helperText="El prestador usará este correo para registrarse con el enlace oficial de invitación."
           required
         />
 
         <Select
-          label="Vencimiento del Token de Registro"
+          label="Plazo de Validez de la Invitación"
           value={expiresInDays}
           onChange={(e) => setExpiresInDays(e.target.value)}
           options={[
@@ -67,9 +67,9 @@ export const GenerateInvitationModal: React.FC<GenerateInvitationModalProps> = (
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" variant="emerald" isLoading={isLoading}>
-            <KeyRound className="w-4 h-4" />
-            <span>Generar Token Seguro</span>
+          <Button type="submit" variant="emerald" isLoading={isLoading} className="font-bold">
+            <Mail className="w-4 h-4 mr-1.5" />
+            <span>Generar Invitación Segura</span>
           </Button>
         </div>
       </form>

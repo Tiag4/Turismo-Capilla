@@ -46,7 +46,7 @@ const ADMIN_SHORTCUTS: NavShortcut[] = [
   { id: 'overview', label: 'Inicio', desc: 'Métricas del destino y accesos rápidos', icon: LayoutDashboard },
   { id: 'bookings', label: 'Reservas', desc: 'Gestión integral', icon: CalendarCheck },
   { id: 'accommodations', label: 'Prestadores Adheridos', desc: 'Catálogo oficial', icon: Home },
-  { id: 'invitations', label: 'Tokens de Invitación', desc: 'Acceso y habilitación', icon: KeyRound },
+  { id: 'invitations', label: 'Invitaciones a Prestadores', desc: 'Habilitación de cabañeros', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', desc: 'Estadísticas oficiales', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría', desc: 'Trazabilidad y seguridad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', desc: 'Revisión visual', icon: Image },

@@ -48,15 +48,15 @@ export const InvitationManager: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-sand-900 font-['Outfit']">
-            Tokens de Invitación y Adhesión
+            Invitaciones Oficiales a Prestadores
           </h2>
           <p className="text-xs text-sand-500 font-medium">
-            Solo los prestadores que reciben un token seguro emitido por la Comisión pueden registrarse
+            Envío de enlaces seguros para el registro y habilitación formal de cabañas
           </p>
         </div>
-        <Button variant="emerald" onClick={() => setIsModalOpen(true)} size="md">
-          <Plus className="w-4 h-4" />
-          <span>Emitir Token Prestador</span>
+        <Button variant="emerald" onClick={() => setIsModalOpen(true)} size="md" className="font-bold">
+          <Plus className="w-4 h-4 mr-1.5" />
+          <span>Nueva Invitación</span>
         </Button>
       </div>
 
@@ -65,7 +65,7 @@ export const InvitationManager: React.FC = () => {
         <span className="font-bold text-sand-900 mr-1">
           Garantía Institucional:
         </span>
-        Cada token es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Secretaría de Turismo de Capilla del Monte antes de recibir pagos o reservas.
+        Cada invitación oficial es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Secretaría de Turismo de Capilla del Monte antes de recibir pagos o reservas.
       </div>
 
       {/* List */}

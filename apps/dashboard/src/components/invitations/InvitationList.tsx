@@ -33,7 +33,7 @@ export const InvitationList: React.FC<InvitationListProps> = ({
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-sand-300 bg-sand-100/60 text-[11px] font-bold uppercase tracking-wider text-sand-600">
-            <th className="py-3 px-4">Token</th>
+            <th className="py-3 px-4">Código</th>
             <th className="py-3 px-4">Prestador Asignado</th>
             <th className="py-3 px-4">Estado</th>
             <th className="py-3 px-4">Vence el</th>
@@ -108,15 +108,18 @@ export const InvitationList: React.FC<InvitationListProps> = ({
                         disabled={isActionDisabled}
                         onClick={() => handleCopy(inv.token, `${inv.id}-token`)}
                         className="text-xs"
-                        title="Copiar solo el código de token"
+                        title="Copiar código de invitación"
                       >
                         {copiedKey === `${inv.id}-token` ? (
                           <>
                             <Check className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Token</span>
+                            <span>Código Copiado</span>
                           </>
                         ) : (
-                          <Copy className="w-3.5 h-3.5" />
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Código</span>
+                          </>
                         )}
                       </Button>
 
@@ -126,7 +129,7 @@ export const InvitationList: React.FC<InvitationListProps> = ({
                         disabled={isActionDisabled}
                         onClick={() => onOpenRevoke(inv)}
                         className="text-xs text-rose-700 hover:text-rose-800 hover:bg-rose-50"
-                        title="Revocar token formalmente"
+                        title="Revocar invitación formalmente"
                       >
                         <Ban className="w-3.5 h-3.5" />
                         <span>Revocar</span>

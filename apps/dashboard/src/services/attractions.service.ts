@@ -110,8 +110,8 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     admissionFee: 2500,
     latitude: -30.8548,
     longitude: -64.5021,
-    status: 'WEATHER_RESTRICTED',
-    statusNotice: 'Precaución por caudal crecido en temporada de lluvias.',
+    status: 'OPEN',
+    statusNotice: null,
     isFeatured: false,
     images: [
       {

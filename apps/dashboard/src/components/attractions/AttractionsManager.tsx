@@ -209,21 +209,21 @@ export const AttractionsManager: React.FC = () => {
       <InlineStatStrip stats={statItems} />
 
       {/* Filtros y Buscador */}
-      <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-xs space-y-4">
+      <div className="space-y-3">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-sand-400)]" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-sand-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nombre de atractivo, palabras clave o paisaje..."
-              className="w-full pl-10 pr-4 py-2.5 bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] rounded-xl text-xs sm:text-sm text-[var(--color-sand-900)] placeholder-[var(--color-sand-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)]/20 focus:border-[var(--color-terracotta-500)] transition-colors"
+              placeholder="Buscar por nombre de paseo, sendero o paisaje..."
+              className="w-full pl-10 pr-4 py-2 bg-white border border-sand-300 rounded-xl text-xs sm:text-sm text-sand-900 placeholder-sand-400 focus:outline-none focus:border-terracotta-500 shadow-xs transition-colors"
             />
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-500)] mr-1 shrink-0">
+            <span className="text-xs font-bold uppercase tracking-wider text-sand-500 mr-1 shrink-0">
               Estado:
             </span>
             {(
@@ -240,8 +240,8 @@ export const AttractionsManager: React.FC = () => {
                 onClick={() => setStatusFilter(s.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap cursor-pointer ${
                   statusFilter === s.id
-                    ? 'bg-[var(--color-sand-900)] text-white'
-                    : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)] hover:bg-[var(--color-sand-200)]'
+                    ? 'bg-sand-900 text-white'
+                    : 'bg-sand-200/60 text-sand-700 hover:bg-sand-200'
                 }`}
               >
                 {s.label}
@@ -252,15 +252,15 @@ export const AttractionsManager: React.FC = () => {
 
         {/* Píldoras de Categorías */}
         <div className="flex items-center gap-1.5 overflow-x-auto pt-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-500)] mr-1 shrink-0">
+          <span className="text-xs font-bold uppercase tracking-wider text-sand-500 mr-1 shrink-0">
             Categoría:
           </span>
           <button
             onClick={() => setCategoryFilter('ALL')}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
               categoryFilter === 'ALL'
-                ? 'bg-[var(--color-terracotta-600)] text-white'
-                : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)] hover:bg-[var(--color-sand-200)]'
+                ? 'bg-terracotta-600 text-white'
+                : 'bg-sand-200/60 text-sand-700 hover:bg-sand-200'
             }`}
           >
             Todas
@@ -271,8 +271,8 @@ export const AttractionsManager: React.FC = () => {
               onClick={() => setCategoryFilter(cat)}
               className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
                 categoryFilter === cat
-                  ? 'bg-[var(--color-terracotta-600)] text-white'
-                  : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)] hover:bg-[var(--color-sand-200)]'
+                  ? 'bg-terracotta-600 text-white'
+                  : 'bg-sand-200/60 text-sand-700 hover:bg-sand-200'
               }`}
             >
               {CATEGORY_LABELS[cat]}
@@ -283,15 +283,15 @@ export const AttractionsManager: React.FC = () => {
 
       {/* Grid de Atractivos */}
       {isLoading ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-[var(--color-sand-200)]">
-          <div className="w-8 h-8 border-3 border-[var(--color-terracotta-500)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm font-semibold text-[var(--color-sand-600)]">Cargando catálogo de atractivos...</p>
+        <div className="py-16 text-center">
+          <div className="w-8 h-8 border-3 border-terracotta-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm font-semibold text-sand-600">Cargando catálogo de atractivos...</p>
         </div>
       ) : filteredAttractions.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-[var(--color-sand-200)] space-y-3">
-          <Compass className="w-12 h-12 text-[var(--color-sand-300)] mx-auto" />
-          <h3 className="font-bold text-lg text-[var(--color-sand-900)]">No se encontraron atractivos</h3>
-          <p className="text-sm text-[var(--color-sand-500)] max-w-md mx-auto">
+        <div className="py-16 text-center space-y-3 border-y border-sand-200">
+          <Compass className="w-12 h-12 text-sand-300 mx-auto" />
+          <h3 className="font-bold text-lg text-sand-900">No se encontraron atractivos</h3>
+          <p className="text-sm text-sand-500 max-w-md mx-auto">
             No hay atractivos que coincidan con los filtros seleccionados. Probá limpiando el buscador o agregá uno nuevo.
           </p>
           <Button

@@ -21,8 +21,8 @@ export const PharmacyDutyListCard: React.FC<PharmacyDutyListCardProps> = ({
   isSaving,
 }) => {
   return (
-    <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] p-5 sm:p-6 shadow-xs space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--color-sand-200)] pb-4">
+    <div className="space-y-4 pt-4 border-t border-[var(--color-sand-200)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
         <div>
           <h2 className="text-base sm:text-lg font-bold text-[var(--color-sand-900)] font-['Outfit']">
             Farmacias Registradas en Capilla del Monte
@@ -37,15 +37,15 @@ export const PharmacyDutyListCard: React.FC<PharmacyDutyListCardProps> = ({
         </Button>
       </div>
 
-      {/* Flattened Structured List (Anti-Nested-Cards) */}
-      <div className="divide-y divide-[var(--color-sand-200)]">
+      {/* Flattened Structured List (Flat on canvas, zero floating card) */}
+      <div className="border-y border-[var(--color-sand-300)] divide-y divide-[var(--color-sand-200)]">
         {pharmacies.map((pharmacy) => {
           const isOnDuty = pharmacy.isOnDutyToday;
           return (
             <div
               key={pharmacy.id}
-              className={`py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${
-                isOnDuty ? 'bg-emerald-50/40 -mx-4 sm:-mx-6 px-4 sm:px-6' : ''
+              className={`py-4 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors rounded-lg ${
+                isOnDuty ? 'bg-emerald-50/50' : 'hover:bg-[var(--color-sand-100)]/60'
               }`}
             >
               <div className="space-y-1.5 flex-1">

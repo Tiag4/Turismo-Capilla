@@ -29,24 +29,24 @@ export const InlineStatStrip: React.FC<InlineStatStripProps> = ({ stats, classNa
 
   return (
     <div
-      className={`bg-white border border-[var(--color-sand-200)] rounded-2xl shadow-xs overflow-hidden grid ${gridColsClass} divide-y sm:divide-y-0 sm:divide-x divide-[var(--color-sand-200)] ${className}`}
+      className={`border-y border-[var(--color-sand-300)] grid ${gridColsClass} divide-y sm:divide-y-0 sm:divide-x divide-[var(--color-sand-200)] ${className}`}
     >
       {stats.map((stat, idx) => {
         const Icon = stat.icon;
         return (
-          <div key={idx} className="p-4 sm:p-5 flex flex-col justify-between">
+          <div key={idx} className="py-4 px-3 sm:p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-400)]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-500)]">
                 {stat.label}
               </span>
               {Icon && (
                 <Icon
-                  className={`w-4 h-4 shrink-0 ${stat.iconColor ?? 'text-[var(--color-sand-600)]'}`}
+                  className={`w-4 h-4 shrink-0 ${stat.iconColor ?? 'text-[var(--color-sand-500)]'}`}
                 />
               )}
             </div>
             <div className="mt-2">
-              <div className="text-2xl sm:text-3xl font-extrabold text-[var(--color-sand-900)] font-['Outfit'] tabular-nums leading-none">
+              <div className="text-2xl sm:text-3xl font-black text-[var(--color-sand-900)] font-['Outfit'] tabular-nums leading-none">
                 {stat.value}
               </div>
               {stat.helperText && (

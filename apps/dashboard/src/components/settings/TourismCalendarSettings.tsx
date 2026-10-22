@@ -54,26 +54,30 @@ export const TourismCalendarSettings: React.FC = () => {
 
   const typeConfig: Record<
     SeasonType,
-    { label: string; badgeColor: string; icon: React.ComponentType<{ className?: string }> }
+    { label: string; textClass: string; dotClass: string; icon: React.ComponentType<{ className?: string }> }
   > = {
     HIGH: {
       label: 'Temporada Alta',
-      badgeColor: 'bg-[var(--color-terracotta-500)] text-white',
+      textClass: 'text-[var(--color-terracotta-600)]',
+      dotClass: 'bg-[var(--color-terracotta-500)]',
       icon: Flame,
     },
     MEDIUM: {
       label: 'Temporada Media',
-      badgeColor: 'bg-amber-600 text-white',
+      textClass: 'text-amber-700',
+      dotClass: 'bg-amber-600',
       icon: Calendar,
     },
     LOW: {
       label: 'Temporada Baja',
-      badgeColor: 'bg-zinc-700 text-white',
+      textClass: 'text-zinc-600',
+      dotClass: 'bg-zinc-500',
       icon: Calendar,
     },
     SPECIAL_EVENT: {
       label: 'Evento Especial',
-      badgeColor: 'bg-[var(--color-uritorco-600)] text-white',
+      textClass: 'text-[var(--color-uritorco-700)]',
+      dotClass: 'bg-[var(--color-uritorco-600)]',
       icon: Sparkles,
     },
   };
@@ -81,13 +85,13 @@ export const TourismCalendarSettings: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div>
-          <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+          <h1 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
             Calendario Oficial de Temporadas y Tarifas
-          </h2>
-          <p className="text-xs text-[var(--color-sand-400)] font-medium mt-0.5">
-            Parámetros de fechas pico para sugerencia tarifaria a prestadores adheridos
+          </h1>
+          <p className="text-xs sm:text-sm text-[var(--color-sand-500)] mt-0.5">
+            Parámetros oficiales de fechas pico para sugerencia tarifaria a prestadores adheridos
           </p>
         </div>
 
@@ -97,28 +101,25 @@ export const TourismCalendarSettings: React.FC = () => {
         </Button>
       </div>
 
-      {/* Synchronized Policy Notice */}
-      <div className="bg-[var(--color-sand-50)] p-4 rounded-xl border border-[var(--color-sand-200)] flex items-start gap-3 text-xs text-[var(--color-sand-800)]">
+      {/* Synchronized Policy Notice — Clean border-l accent, zero floating card */}
+      <div className="border-l-2 border-[var(--color-emerald-portal-600)] pl-3.5 py-1 text-xs text-[var(--color-sand-600)] flex items-start gap-2.5">
         <CheckCircle2 className="w-4 h-4 text-[var(--color-emerald-portal-600)] shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold text-[var(--color-sand-900)] block mb-0.5">
-            Sincronización Automática con Paneles Cabañeros
-          </span>
-          Los períodos configurados por la Comisión se publican de forma inmediata en los calendarios de los prestadores para que puedan planificar sus cupos y aplicar el multiplicador tarifario correspondiente.
-        </div>
+        <p className="leading-relaxed">
+          <strong className="text-[var(--color-sand-900)] font-semibold">Sincronización Automática:</strong> Los períodos configurados por la Comisión se publican de forma inmediata en los calendarios de los prestadores para sugerir multiplicadores tarifarios.
+        </p>
       </div>
 
-      {/* Structured List of Seasons (Anti-Carditis) */}
+      {/* Structured List — Flat Canvas (Same background as page, Zero Carditis) */}
       {isLoading ? (
-        <div className="p-12 text-center text-xs text-[var(--color-sand-400)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
+        <div className="py-12 text-center text-xs text-[var(--color-sand-400)]">
           Cargando calendario municipal...
         </div>
       ) : seasons.length === 0 ? (
-        <div className="p-12 text-center text-xs text-[var(--color-sand-500)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
+        <div className="py-12 text-center text-xs text-[var(--color-sand-500)]">
           No hay temporadas configuradas aún.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] overflow-hidden shadow-xs divide-y divide-[var(--color-sand-200)]">
+        <div className="border-y border-[var(--color-sand-300)] divide-y divide-[var(--color-sand-200)]">
           {seasons.map((season) => {
             const current = typeConfig[season.type];
             const Icon = current.icon;
@@ -126,36 +127,42 @@ export const TourismCalendarSettings: React.FC = () => {
             return (
               <div
                 key={season.id}
-                className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[var(--color-sand-50)] transition-colors"
+                className="py-4.5 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[var(--color-sand-100)]/60 transition-colors rounded-lg"
               >
-                <div className="flex-1 space-y-1.5">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${current.badgeColor}`}>
-                      <Icon className="w-3 h-3" />
+                <div className="flex-1 space-y-1">
+                  {/* Metadata Row: Category + Dates + Status (Typographic hierarchy, no badge soup) */}
+                  <div className="flex items-center gap-2 text-xs flex-wrap">
+                    <span className={`inline-flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider ${current.textClass}`}>
+                      <Icon className="w-3.5 h-3.5" />
                       <span>{current.label}</span>
                     </span>
 
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md text-white ${
-                        season.isActive ? 'bg-[#005530]' : 'bg-rose-700'
-                      }`}
-                    >
-                      {season.isActive ? 'Vigente' : 'Inactiva'}
-                    </span>
+                    <span className="text-[var(--color-sand-300)]">·</span>
 
-                    <span className="text-xs font-semibold text-[var(--color-sand-500)] flex items-center gap-1">
+                    <span className="font-semibold text-[var(--color-sand-600)] flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
                       <span>
                         {new Date(season.startDate + 'T00:00:00').toLocaleDateString('es-AR')} al{' '}
                         {new Date(season.endDate + 'T00:00:00').toLocaleDateString('es-AR')}
                       </span>
                     </span>
+
+                    <span className="text-[var(--color-sand-300)]">·</span>
+
+                    <span className="inline-flex items-center gap-1.5 font-bold text-[11px]">
+                      <span className={`w-1.5 h-1.5 rounded-full ${season.isActive ? 'bg-[#005530]' : 'bg-rose-600'}`} />
+                      <span className={season.isActive ? 'text-[#005530]' : 'text-rose-700'}>
+                        {season.isActive ? 'Vigente' : 'Inactiva'}
+                      </span>
+                    </span>
                   </div>
 
+                  {/* Title */}
                   <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
                     {season.name}
                   </h3>
 
+                  {/* Description */}
                   {season.description && (
                     <p className="text-xs text-[var(--color-sand-500)] line-clamp-1 max-w-2xl">
                       {season.description}
@@ -163,10 +170,11 @@ export const TourismCalendarSettings: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[var(--color-sand-100)]">
-                  <div className="text-xs font-semibold text-[var(--color-sand-700)] bg-[var(--color-sand-100)] px-2.5 py-1 rounded-lg">
+                {/* Right Column: Multiplier text + Actions */}
+                <div className="flex items-center justify-between md:justify-end gap-5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[var(--color-sand-200)]">
+                  <div className="text-xs text-[var(--color-sand-600)]">
                     <span>Sugerencia: </span>
-                    <strong className="text-[var(--color-terracotta-600)] font-bold">
+                    <strong className="text-sm font-black text-[var(--color-terracotta-600)] font-['Outfit']">
                       x{season.suggestedMultiplier}
                     </strong>
                   </div>
@@ -176,7 +184,7 @@ export const TourismCalendarSettings: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setSeasonToToggle(season)}
-                      className="text-xs"
+                      className="text-xs font-semibold"
                       title={season.isActive ? 'Desactivar temporada' : 'Activar temporada'}
                     >
                       <Power className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
@@ -187,7 +195,7 @@ export const TourismCalendarSettings: React.FC = () => {
                       variant="terracotta"
                       size="sm"
                       onClick={() => handleOpenEdit(season)}
-                      className="text-xs"
+                      className="text-xs font-bold"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>Editar</span>

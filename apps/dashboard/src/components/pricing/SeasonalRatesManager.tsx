@@ -7,7 +7,6 @@ import {
   Save,
   HelpCircle,
   Home,
-  AlertCircle,
 } from 'lucide-react';
 import {
   useHostPricing,
@@ -51,7 +50,7 @@ export const SeasonalRatesManager: React.FC = () => {
 
   if (isLoadingAccommodations) {
     return (
-      <div className="p-12 text-center text-xs text-[var(--color-sand-400)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
+      <div className="py-16 text-center text-xs text-sand-500">
         Cargando configuración tarifaria...
       </div>
     );
@@ -59,12 +58,12 @@ export const SeasonalRatesManager: React.FC = () => {
 
   if (accommodations.length === 0) {
     return (
-      <div className="p-12 text-center bg-white rounded-2xl border border-[var(--color-sand-200)] flex flex-col items-center gap-3">
-        <Home className="w-8 h-8 text-[var(--color-sand-400)]" />
-        <p className="text-sm font-semibold text-[var(--color-sand-900)]">
+      <div className="py-16 text-center border-y border-sand-200 flex flex-col items-center gap-3">
+        <Home className="w-8 h-8 text-sand-400" />
+        <p className="text-sm font-semibold text-sand-900">
           No tenés cabañas registradas para tarifar.
         </p>
-        <p className="text-xs text-[var(--color-sand-400)] max-w-sm">
+        <p className="text-xs text-sand-500 max-w-sm">
           Primero creá un alojamiento en la sección Mis Cabañas para poder configurar sus temporadas.
         </p>
       </div>
@@ -108,12 +107,9 @@ export const SeasonalRatesManager: React.FC = () => {
       </div>
 
       {/* Notice callout */}
-      <div className="p-3.5 bg-[var(--color-sand-50)] rounded-xl border border-[var(--color-sand-200)] flex items-start gap-3">
-        <AlertCircle className="w-4 h-4 text-[var(--color-terracotta-500)] shrink-0 mt-0.5" />
-        <p className="text-xs text-[var(--color-sand-800)] leading-relaxed">
-          Las tarifas se aplican automáticamente en el motor de reservas según la fecha de ingreso del turista. 
-          Las reglas de noches mínimas evitan que entren solicitudes fragmentadas que dejen días vacíos sin ocupar.
-        </p>
+      <div className="border-l-2 border-[var(--color-terracotta-500)] pl-3.5 py-1 text-xs text-[var(--color-sand-700)] leading-relaxed">
+        Las tarifas se aplican automáticamente en el motor de reservas según la fecha de ingreso del turista. 
+        Las reglas de noches mínimas evitan que entren solicitudes fragmentadas que dejen días vacíos sin ocupar.
       </div>
 
       {/* Main Pricing Cards Grid */}

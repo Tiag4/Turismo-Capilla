@@ -178,7 +178,7 @@ export const HostPerformanceView: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="p-12 text-center text-xs text-[var(--color-sand-400)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
+      <div className="py-12 text-center text-xs text-[var(--color-sand-400)]">
         Calculando métricas de rendimiento y balance...
       </div>
     );
@@ -198,7 +198,7 @@ export const HostPerformanceView: React.FC = () => {
         </div>
 
         {/* Period Selector */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-[var(--color-sand-200)]">
+        <div className="flex items-center gap-1 p-1 rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-100)]/60">
           {(
             [
               { id: 'MONTH', label: 'Mes Actual' },
@@ -211,8 +211,8 @@ export const HostPerformanceView: React.FC = () => {
               onClick={() => setSelectedPeriod(p.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 selectedPeriod === p.id
-                  ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs'
-                  : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)]'
+                  ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
+                  : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)]'
               }`}
             >
               {p.label}
@@ -221,27 +221,27 @@ export const HostPerformanceView: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI Stat Strip — High Density, Anti-Carditis */}
+      {/* KPI Stat Strip — Flat on Canvas */}
       <InlineStatStrip stats={statItems} />
 
-      {/* Monthly Evolution Chart */}
-      <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] p-5 sm:p-6 space-y-4">
+      {/* Monthly Evolution Chart (Flat on canvas, zero floating card) */}
+      <div className="space-y-4 pt-4 border-t border-[var(--color-sand-300)]">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
               Facturación Mensual (Últimos 6 Meses)
             </h3>
             <p className="text-xs text-[var(--color-sand-400)] mt-0.5">
               Evolución de ingresos generados por reservas confirmadas
             </p>
           </div>
-          <span className="text-xs font-bold text-[var(--color-sand-700)] bg-[var(--color-sand-100)] px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-[var(--color-sand-600)]">
             Valores en ARS
           </span>
         </div>
 
         {/* Bar visualization */}
-        <div className="pt-6 pb-2">
+        <div className="pt-4 pb-2">
           <div className="h-44 flex items-end justify-between gap-3 sm:gap-6 border-b border-[var(--color-sand-200)] px-2">
             {metrics.monthlyData.map((m, idx) => {
               const heightPercent = Math.max(
@@ -273,27 +273,27 @@ export const HostPerformanceView: React.FC = () => {
         </div>
       </div>
 
-      {/* Breakdown per Accommodation */}
-      <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] p-5 sm:p-6 space-y-4">
+      {/* Breakdown per Accommodation (Flat on canvas, zero floating card) */}
+      <div className="space-y-4 pt-4 border-t border-[var(--color-sand-300)]">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
               Rendimiento por Cabaña y Unidad
             </h3>
             <p className="text-xs text-[var(--color-sand-400)] mt-0.5">
               Desglose detallado de reservas e ingresos de cada alojamiento
             </p>
           </div>
-          <span className="text-xs text-[var(--color-sand-400)] font-medium">
+          <span className="text-xs text-[var(--color-sand-500)] font-medium">
             {metrics.revenueByAccommodation.length} establecimientos
           </span>
         </div>
 
-        <div className="divide-y divide-[var(--color-sand-100)]">
+        <div className="border-y border-[var(--color-sand-300)] divide-y divide-[var(--color-sand-200)]">
           {metrics.revenueByAccommodation.map((acc) => (
             <div
               key={acc.id}
-              className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[var(--color-sand-50)] px-2 rounded-xl transition-colors"
+              className="py-3.5 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[var(--color-sand-100)]/60 rounded-lg transition-colors"
             >
               <div className="flex items-center gap-3">
                 <Home className="w-4 h-4 text-[var(--color-sand-400)] shrink-0" />

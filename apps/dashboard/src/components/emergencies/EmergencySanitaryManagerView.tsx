@@ -59,24 +59,22 @@ export const EmergencySanitaryManagerView: React.FC = () => {
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[var(--color-sand-200)] text-xs font-bold text-[var(--color-sand-700)] shadow-xs">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#005530] animate-pulse" />
+        <div className="inline-flex items-center gap-2 text-xs font-bold text-[var(--color-sand-700)]">
+          <span className="w-2 h-2 rounded-full bg-[#005530] animate-pulse" />
           <span>Sincronización en Tiempo Real</span>
         </div>
       </div>
 
-      {/* KPI Stats — Unified Stat Strip */}
+      {/* KPI Stats — Unified Stat Strip (Flat on canvas) */}
       <InlineStatStrip stats={statItems} />
 
-      {/* Active Duty Pharmacy Notice Callout */}
+      {/* Active Duty Pharmacy Notice — Flat accent without floating card box */}
       {activeDutyPharmacy && (
-        <div className="bg-[var(--color-sand-50)] rounded-xl border border-[var(--color-sand-200)] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="bg-[#005530] text-white font-extrabold text-[10px] uppercase px-2 py-0.5 rounded-md tracking-wider shadow-xs">
-                Publicado en el portal (/emergencias)
-              </span>
-            </div>
+        <div className="border-l-2 border-[#005530] pl-3.5 py-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#005530] block">
+              Publicado en el portal (/emergencias)
+            </span>
             <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
               {activeDutyPharmacy.name} — {activeDutyPharmacy.address}
             </h3>
@@ -94,14 +92,14 @@ export const EmergencySanitaryManagerView: React.FC = () => {
         </div>
       )}
 
-      {/* Hospital Municipal Guard Notice Card */}
+      {/* Hospital Municipal Guard Notice */}
       <HealthGuardNoticeCard
         healthGuard={config.healthGuard}
         onUpdateNotice={handleUpdateHealthGuard}
         isSaving={isSaving}
       />
 
-      {/* Pharmacy Directory & Duty Management Card */}
+      {/* Pharmacy Directory & Duty Management */}
       <PharmacyDutyListCard
         pharmacies={config.pharmacies}
         onSetOnDuty={(id) => handleSetOnDuty(id)}

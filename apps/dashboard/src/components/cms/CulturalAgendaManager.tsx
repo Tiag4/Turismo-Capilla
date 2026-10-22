@@ -105,7 +105,7 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* 1. Header & Actions (No category eyebrow) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--color-sand-200)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
           <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
             Eventos y Actividades
@@ -125,11 +125,11 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
         </button>
       </div>
 
-      {/* 2. Métricas Rápidas — Unified Stat Strip */}
+      {/* 2. Métricas Rápidas — Unified Stat Strip (Flat on canvas) */}
       <InlineStatStrip stats={statItems} />
 
-      {/* 3. Barra de Búsqueda y Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-3.5 rounded-2xl border border-[var(--color-sand-200)] shadow-xs">
+      {/* 3. Barra de Búsqueda y Filtros (Direct on canvas, zero floating card) */}
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between py-1">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-[var(--color-sand-400)] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -137,18 +137,18 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar por título o lugar..."
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--color-sand-300)] bg-white text-[var(--color-sand-900)] focus:outline-none focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <button
             type="button"
             onClick={() => setFilterCategory('ALL')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               filterCategory === 'ALL'
-                ? 'bg-[var(--color-sand-900)] text-white'
-                : 'text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)]'
+                ? 'bg-[var(--color-sand-900)] text-white shadow-xs'
+                : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)]'
             }`}
           >
             Todos ({events.length})
@@ -164,7 +164,7 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isSelected
                     ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-xs'
-                    : 'text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)]'
+                    : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)]'
                 }`}
               >
                 {catLabel} ({count})

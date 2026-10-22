@@ -19,16 +19,16 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
   const mailLink = `mailto:${item.email}`;
 
   return (
-    <tr className="hover:bg-[var(--color-sand-50)] transition-colors">
+    <tr className="hover:bg-[var(--color-sand-100)]/60 transition-colors">
       {/* Titular */}
-      <td className="py-3.5 px-4">
+      <td className="py-3.5 px-3 sm:px-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[var(--color-terracotta-100)] text-[var(--color-terracotta-800)] font-bold flex items-center justify-center shrink-0 font-['Outfit'] text-xs">
+          <div className="w-8 h-8 rounded-lg bg-[var(--color-terracotta-100)] text-[var(--color-terracotta-800)] font-bold flex items-center justify-center shrink-0 font-['Outfit'] text-xs">
             {item.name.charAt(0)}
             {item.lastName.charAt(0)}
           </div>
           <div>
-            <span className="font-bold text-[var(--color-sand-900)] block">
+            <span className="font-bold text-xs sm:text-sm text-[var(--color-sand-900)] block">
               {item.name} {item.lastName}
             </span>
             <span className="text-[11px] text-[var(--color-sand-500)]">
@@ -39,7 +39,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       </td>
 
       {/* Contacto */}
-      <td className="py-3.5 px-4 text-xs text-[var(--color-sand-700)]">
+      <td className="py-3.5 px-3 sm:px-4 text-xs text-[var(--color-sand-700)]">
         <div className="space-y-0.5">
           <span className="block font-medium truncate max-w-xs">{item.email}</span>
           <span className="block text-[var(--color-sand-500)]">{item.phone || 'Sin teléfono'}</span>
@@ -47,7 +47,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       </td>
 
       {/* Cabañas */}
-      <td className="py-3.5 px-4 text-center">
+      <td className="py-3.5 px-3 sm:px-4 text-center">
         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-[var(--color-sand-100)] text-[var(--color-sand-800)]">
           <Home className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
           {item.accommodationsCount ?? 1}
@@ -55,7 +55,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       </td>
 
       {/* Fecha */}
-      <td className="py-3.5 px-4 text-xs text-[var(--color-sand-600)] whitespace-nowrap">
+      <td className="py-3.5 px-3 sm:px-4 text-xs text-[var(--color-sand-600)] whitespace-nowrap">
         {new Date(item.createdAt).toLocaleDateString('es-AR', {
           day: '2-digit',
           month: '2-digit',
@@ -64,7 +64,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       </td>
 
       {/* Estado (Anti-Vibecoded solid badge without status dot soup) */}
-      <td className="py-3.5 px-4 text-center">
+      <td className="py-3.5 px-3 sm:px-4 text-center">
         {item.isActive ? (
           <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#005530] text-white">
             Habilitado
@@ -77,7 +77,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       </td>
 
       {/* Acciones */}
-      <td className="py-3.5 px-4 text-right">
+      <td className="py-3.5 px-3 sm:px-4 text-right">
         <div className="flex items-center justify-end gap-1.5">
           <Button
             variant="outline"

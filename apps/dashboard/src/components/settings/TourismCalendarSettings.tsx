@@ -86,8 +86,8 @@ export const TourismCalendarSettings: React.FC = () => {
           <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
             Calendario Oficial de Temporadas y Tarifas
           </h2>
-          <p className="text-xs text-[var(--color-sand-400)] font-medium">
-            Parámetros oficiales de fechas pico para sugerencia tarifaria a cabañeros adheridos
+          <p className="text-xs text-[var(--color-sand-400)] font-medium mt-0.5">
+            Parámetros de fechas pico para sugerencia tarifaria a prestadores adheridos
           </p>
         </div>
 
@@ -98,8 +98,8 @@ export const TourismCalendarSettings: React.FC = () => {
       </div>
 
       {/* Synchronized Policy Notice */}
-      <div className="bg-white p-4 rounded-2xl border border-[var(--color-sand-200)] flex items-start gap-3 text-xs text-[var(--color-sand-800)]">
-        <CheckCircle2 className="w-5 h-5 text-[var(--color-emerald-portal-600)] shrink-0 mt-0.5" />
+      <div className="bg-[var(--color-sand-50)] p-4 rounded-xl border border-[var(--color-sand-200)] flex items-start gap-3 text-xs text-[var(--color-sand-800)]">
+        <CheckCircle2 className="w-4 h-4 text-[var(--color-emerald-portal-600)] shrink-0 mt-0.5" />
         <div>
           <span className="font-bold text-[var(--color-sand-900)] block mb-0.5">
             Sincronización Automática con Paneles Cabañeros
@@ -108,17 +108,17 @@ export const TourismCalendarSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* Grid of Season Cards */}
+      {/* Structured List of Seasons (Anti-Carditis) */}
       {isLoading ? (
         <div className="p-12 text-center text-xs text-[var(--color-sand-400)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
           Cargando calendario municipal...
         </div>
       ) : seasons.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-[var(--color-sand-200)]">
+        <div className="p-12 text-center text-xs text-[var(--color-sand-500)] bg-white rounded-2xl border border-[var(--color-sand-200)]">
           No hay temporadas configuradas aún.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white rounded-2xl border border-[var(--color-sand-200)] overflow-hidden shadow-xs divide-y divide-[var(--color-sand-200)]">
           {seasons.map((season) => {
             const current = typeConfig[season.type];
             const Icon = current.icon;
@@ -126,11 +126,11 @@ export const TourismCalendarSettings: React.FC = () => {
             return (
               <div
                 key={season.id}
-                className="bg-white p-5 rounded-2xl border border-[var(--color-sand-200)] shadow-xs flex flex-col justify-between hover:border-[var(--color-sand-300)] transition-colors"
+                className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[var(--color-sand-50)] transition-colors"
               >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${current.badgeColor}`}>
+                <div className="flex-1 space-y-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${current.badgeColor}`}>
                       <Icon className="w-3 h-3" />
                       <span>{current.label}</span>
                     </span>
@@ -142,55 +142,57 @@ export const TourismCalendarSettings: React.FC = () => {
                     >
                       {season.isActive ? 'Vigente' : 'Inactiva'}
                     </span>
+
+                    <span className="text-xs font-semibold text-[var(--color-sand-500)] flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
+                      <span>
+                        {new Date(season.startDate + 'T00:00:00').toLocaleDateString('es-AR')} al{' '}
+                        {new Date(season.endDate + 'T00:00:00').toLocaleDateString('es-AR')}
+                      </span>
+                    </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit'] mb-1">
+                  <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
                     {season.name}
                   </h3>
 
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-sand-800)] mb-2">
-                    <Calendar className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
-                    <span>
-                      {new Date(season.startDate + 'T00:00:00').toLocaleDateString('es-AR')} al{' '}
-                      {new Date(season.endDate + 'T00:00:00').toLocaleDateString('es-AR')}
-                    </span>
-                  </div>
-
                   {season.description && (
-                    <p className="text-xs text-[var(--color-sand-400)] mb-3 line-clamp-2">
+                    <p className="text-xs text-[var(--color-sand-500)] line-clamp-1 max-w-2xl">
                       {season.description}
                     </p>
                   )}
-
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--color-sand-100)] text-xs font-semibold text-[var(--color-sand-900)]">
-                    <span>Sugerencia:</span>
-                    <span className="font-bold text-[var(--color-terracotta-500)]">
-                      x{season.suggestedMultiplier} sobre tarifa base
-                    </span>
-                  </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[var(--color-sand-200)] flex items-center justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSeasonToToggle(season)}
-                    className="text-xs"
-                    title={season.isActive ? 'Desactivar temporada' : 'Activar temporada'}
-                  >
-                    <Power className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
-                    <span>{season.isActive ? 'Pausar' : 'Activar'}</span>
-                  </Button>
+                <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[var(--color-sand-100)]">
+                  <div className="text-xs font-semibold text-[var(--color-sand-700)] bg-[var(--color-sand-100)] px-2.5 py-1 rounded-lg">
+                    <span>Sugerencia: </span>
+                    <strong className="text-[var(--color-terracotta-600)] font-bold">
+                      x{season.suggestedMultiplier}
+                    </strong>
+                  </div>
 
-                  <Button
-                    variant="terracotta"
-                    size="sm"
-                    onClick={() => handleOpenEdit(season)}
-                    className="text-xs"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Editar</span>
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSeasonToToggle(season)}
+                      className="text-xs"
+                      title={season.isActive ? 'Desactivar temporada' : 'Activar temporada'}
+                    >
+                      <Power className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
+                      <span>{season.isActive ? 'Pausar' : 'Activar'}</span>
+                    </Button>
+
+                    <Button
+                      variant="terracotta"
+                      size="sm"
+                      onClick={() => handleOpenEdit(season)}
+                      className="text-xs"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Editar</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             );

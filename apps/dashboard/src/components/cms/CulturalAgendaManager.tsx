@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar,
   Plus,
@@ -9,9 +9,10 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
-import { culturalEventsService } from '../../services/culturalEvents.service';
-import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { culturalEventsService } from '../../services/culturalEvents.service.ts';
+import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types.ts';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
+import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
   FESTIVAL: 'Festival',
@@ -81,19 +82,35 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
   const activeCount = events.filter((e) => e.isActive).length;
   const freeCount = events.filter((e) => e.isFree).length;
 
+  const statItems: StatItem[] = useMemo(() => [
+    {
+      label: 'Total Programados',
+      value: events.length,
+      helperText: 'Eventos registrados en agenda',
+    },
+    {
+      label: 'Publicados en Portada',
+      value: activeCount,
+      iconColor: 'text-[var(--color-emerald-portal-600)]',
+      helperText: 'Visibles para el turista',
+    },
+    {
+      label: 'Entrada Gratuita',
+      value: freeCount,
+      iconColor: 'text-[var(--color-terracotta-500)]',
+      helperText: 'Acceso libre y comunitario',
+    },
+  ], [events.length, activeCount, freeCount]);
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* 1. Header & Actions */}
+      {/* 1. Header & Actions (No category eyebrow) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--color-sand-200)]">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-emerald-portal-600)] mb-1">
-            <Calendar className="w-4 h-4" />
-            <span>Gestión Municipal — Agenda Cultural</span>
-          </div>
           <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
             Eventos y Actividades
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--color-sand-600)]">
+          <p className="text-xs sm:text-sm text-[var(--color-sand-500)] mt-0.5">
             Administrá los eventos públicos que se exhiben en la portada y la agenda turística oficial de Capilla del Monte.
           </p>
         </div>
@@ -101,43 +118,18 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
         <button
           type="button"
           onClick={onNavigateCreate}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold tracking-wide shadow-sm transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white text-xs font-bold tracking-wide shadow-xs transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Nuevo Evento Cultural</span>
         </button>
       </div>
 
-      {/* 2. Métricas Rápidas */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs">
-          <span className="text-xs font-bold text-[var(--color-sand-500)] uppercase tracking-wider">
-            Total Programados
-          </span>
-          <p className="text-2xl font-black text-[var(--color-sand-900)] mt-1 font-['Outfit']">
-            {events.length}
-          </p>
-        </div>
-        <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs">
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-            Publicados en Portada
-          </span>
-          <p className="text-2xl font-black text-emerald-700 mt-1 font-['Outfit']">
-            {activeCount}
-          </p>
-        </div>
-        <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs">
-          <span className="text-xs font-bold text-[var(--color-terracotta-600)] uppercase tracking-wider">
-            Entrada Gratuita
-          </span>
-          <p className="text-2xl font-black text-[var(--color-terracotta-600)] mt-1 font-['Outfit']">
-            {freeCount}
-          </p>
-        </div>
-      </div>
+      {/* 2. Métricas Rápidas — Unified Stat Strip */}
+      <InlineStatStrip stats={statItems} />
 
       {/* 3. Barra de Búsqueda y Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-3.5 rounded-2xl border border-[var(--color-sand-200)] shadow-2xs">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-3.5 rounded-2xl border border-[var(--color-sand-200)] shadow-xs">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-[var(--color-sand-400)] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -171,7 +163,7 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
                 onClick={() => setFilterCategory(catKey)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isSelected
-                    ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-2xs'
+                    ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-xs'
                     : 'text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)]'
                 }`}
               >
@@ -187,7 +179,7 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
         {filteredEvents.map((evt) => (
           <div
             key={evt.id}
-            className={`flex flex-col bg-white rounded-2xl border transition-all overflow-hidden shadow-2xs hover:shadow-md ${
+            className={`flex flex-col bg-white rounded-2xl border transition-all overflow-hidden shadow-xs hover:shadow-md ${
               evt.isActive ? 'border-[var(--color-sand-200)]' : 'border-dashed border-[var(--color-sand-300)] opacity-75'
             }`}
           >

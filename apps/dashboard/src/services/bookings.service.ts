@@ -87,6 +87,10 @@ export const bookingsService = {
     }
   },
 
+  async resendVoucher(id: string): Promise<{ message: string }> {
+    return apiClient.post<{ message: string }>(`/bookings/${id}/resend-voucher`, {});
+  },
+
   async updateStatus(id: string, status: BookingStatus): Promise<Booking> {
     try {
       return await apiClient.patch<Booking>(`/bookings/${id}/status`, { status });

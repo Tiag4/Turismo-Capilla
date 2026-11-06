@@ -170,6 +170,20 @@ export const api = {
     return res.json();
   },
 
+  async resendVoucher(code: string, email: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE_URL}/bookings/resend-voucher`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, email }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.message || 'No se pudo reenviar el voucher por email');
+    }
+    return data;
+  },
+
   async getActiveAlert(): Promise<PublicAlert | null> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);

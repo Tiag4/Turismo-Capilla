@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import type { BookingVoucherRecord } from '../types';
 
 interface BookingVoucherCardProps {
@@ -8,7 +10,32 @@ interface BookingVoucherCardProps {
 
 export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher, onPrint }) => {
   const isConfirmed = voucher.status === 'CONFIRMED';
+  const isCompleted = voucher.status === 'COMPLETED';
+  const isCancelled = voucher.status === 'CANCELLED';
   const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
+
+  const checkoutTimestamp = voucher.checkOut
+    ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
+    : NaN;
+  const stayFinished =
+    isCompleted || (!Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
+  const canReview = stayFinished && !isCancelled;
+
+  const statusLabel = isCompleted
+    ? 'Estadía Completada'
+    : isCancelled
+      ? 'Reserva Cancelada'
+      : isConfirmed
+        ? 'Reserva Confirmada'
+        : 'Pendiente de Confirmación';
+
+  const statusClassName = isCompleted
+    ? 'bg-sand-900 text-white'
+    : isCancelled
+      ? 'bg-rose-700 text-white'
+      : isConfirmed
+        ? 'bg-emerald-portal-500 text-white'
+        : 'bg-amber-500 text-white';
 
   const downPaymentPercentage = voucher.downPaymentPercentage ?? 50;
   const downPaymentAmount =
@@ -52,13 +79,9 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
 
         <div className="flex items-center gap-2">
           <span
-            className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${
-              isConfirmed
-                ? 'bg-emerald-portal-500 text-white'
-                : 'bg-amber-500 text-white'
-            }`}
+            className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${statusClassName}`}
           >
-            {isConfirmed ? 'Reserva Confirmada' : 'Pendiente de Confirmación'}
+            {statusLabel}
           </span>
         </div>
       </div>
@@ -213,6 +236,16 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
 
       {/* Acciones del Voucher (Ocultas al imprimir con @media print) */}
       <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-sand-200 print:hidden">
+        {canReview && (
+          <Link
+            to={`/resenas/nueva?code=${encodeURIComponent(voucher.code)}`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white transition-colors"
+          >
+            <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
+            <span>Calificar Estadía</span>
+          </Link>
+        )}
+
         <a
           href={whatsappUrl}
           target="_blank"

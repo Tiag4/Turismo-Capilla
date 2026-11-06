@@ -1,4 +1,4 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   (typeof import.meta !== 'undefined' &&
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
   'https://turismo-capilla-backend.onrender.com/api/v1';

@@ -28,7 +28,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     bankCbu: '0110485530048500123456',
     bankAlias: 'VALLEDELSOL.CAPILLA',
     bankName: 'Banco de la Nación Argentina',
-    status: 'CONFIRMED',
+    status: 'COMPLETED',
     createdAt: '2026-09-08T14:30:00Z',
     hostPhone: '+54 9 3548 40-1122',
   },

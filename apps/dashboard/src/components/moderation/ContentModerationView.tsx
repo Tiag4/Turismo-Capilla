@@ -3,6 +3,7 @@ import { ShieldCheck } from 'lucide-react';
 import { usePhotoModeration } from '../../hooks/usePhotoModeration.ts';
 import { ModerationCard } from './ModerationCard.tsx';
 import { ObservationModal } from './ObservationModal.tsx';
+import { ReviewModerationSection } from './ReviewModerationSection.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { ModerationItem, ModerationStatus } from '../../types/moderation.types.ts';
 
@@ -51,7 +52,7 @@ export const ContentModerationView: React.FC = () => {
           Supervisión y Moderación de Contenidos
         </h2>
         <p className="text-xs text-[var(--color-sand-400)] font-medium">
-          Control de calidad de fotografías y fichas publicadas por cabañeros en el portal oficial
+          Control de calidad de fotografías, fichas y reseñas publicadas en el portal oficial
         </p>
       </div>
 
@@ -124,6 +125,8 @@ export const ContentModerationView: React.FC = () => {
         onSubmit={handleSubmitObservation}
         isLoading={isSubmitting}
       />
+
+      <ReviewModerationSection />
     </div>
   );
 };

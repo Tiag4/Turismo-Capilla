@@ -97,7 +97,12 @@ export function useBookingInquiry() {
                 bankCbu: apiRes.bankCbu || apiRes.accommodation?.bankCbu || '0110485530048500123456',
                 bankAlias: apiRes.bankAlias || apiRes.accommodation?.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
                 bankName: apiRes.bankName || apiRes.accommodation?.bankName || 'Banco de la Nación Argentina',
-                status: apiRes.status === 'CONFIRMED' ? 'CONFIRMED' : 'PENDING_CONFIRMATION',
+                status:
+                  apiRes.status === 'CONFIRMED' ||
+                  apiRes.status === 'COMPLETED' ||
+                  apiRes.status === 'CANCELLED'
+                    ? apiRes.status
+                    : 'PENDING_CONFIRMATION',
                 createdAt: new Date().toISOString(),
               };
               setVoucher(mappedVoucher);

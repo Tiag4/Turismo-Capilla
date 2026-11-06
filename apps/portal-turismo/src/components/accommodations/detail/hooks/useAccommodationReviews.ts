@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReviewItem, ReviewAspect } from '../types';
+import type { Review } from '../../../../types/review.types';
+import { reviewsService } from '../../../../services/reviews.service';
 import { getDefaultReviewsForAccommodation } from '../data/mockReviews';
 
 const STORAGE_KEY_PREFIX = 'turismo_capilla_reviews_v1_';
@@ -36,6 +38,28 @@ function isValidBookingCodeFormat(code: string): boolean {
   return /^CAP-\d{4}-[A-Z0-9]{4,8}$/.test(clean);
 }
 
+function mapApprovedReview(review: Review): ReviewItem {
+  const aspects: ReviewAspect[] = [];
+
+  if (review.cleanlinessRating >= 4) aspects.push('Limpieza impecable');
+  if (review.hostRating >= 4) aspects.push('Atención del anfitrión');
+  if (review.locationRating >= 4) aspects.push('Ubicación y vistas');
+
+  return {
+    id: `approved-${review.id}`,
+    accommodationId: review.accommodationId,
+    authorName: review.guestName,
+    authorOrigin: review.guestOrigin ?? undefined,
+    stayDate: review.stayDate ?? 'Estadía verificada',
+    rating: review.rating,
+    comment: review.comment,
+    aspects: aspects.length > 0 ? aspects : ['Tranquilidad serrana'],
+    verifiedBooking: true,
+    bookingCode: review.bookingCode,
+    createdAt: review.createdAt,
+  };
+}
+
 export function useAccommodationReviews(
   accommodationId: string,
   accommodationTitle: string,
@@ -45,6 +69,7 @@ export function useAccommodationReviews(
   const storageKey = `${STORAGE_KEY_PREFIX}${accommodationId}`;
 
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [approvedReviews, setApprovedReviews] = useState<ReviewItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [lastSubmittedAt, setLastSubmittedAt] = useState<number>(0);
@@ -74,13 +99,44 @@ export function useAccommodationReviews(
     return () => clearTimeout(timer);
   }, [accommodationId, accommodationTitle, storageKey]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    reviewsService
+      .getApprovedByAccommodation(accommodationId)
+      .then((result) => {
+        if (isActive) {
+          setApprovedReviews(result.reviews.map(mapApprovedReview));
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setApprovedReviews([]);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [accommodationId]);
+
+  const allReviews = useMemo(() => {
+    const approvedCodes = new Set(
+      approvedReviews.map((review) => review.bookingCode).filter(Boolean) as string[],
+    );
+    const localReviews = reviews.filter(
+      (review) => !review.bookingCode || !approvedCodes.has(review.bookingCode),
+    );
+    return [...approvedReviews, ...localReviews];
+  }, [approvedReviews, reviews]);
+
   const stats: ReviewStats = useMemo(() => {
     const distribution: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     const aspectCounts: Record<string, number> = {};
     let sum = 0;
     let verifiedCount = 0;
 
-    for (const rev of reviews) {
+    for (const rev of allReviews) {
       const r = Math.min(5, Math.max(1, Math.round(rev.rating))) as 1 | 2 | 3 | 4 | 5;
       distribution[r] = (distribution[r] ?? 0) + 1;
       sum += rev.rating;
@@ -91,15 +147,15 @@ export function useAccommodationReviews(
     }
 
     const defaultListLength = getDefaultReviewsForAccommodation(accommodationId, accommodationTitle).length;
-    const userAddedCount = Math.max(0, reviews.length - defaultListLength);
-    const totalReviews = Math.max(reviews.length, baseReviewCount + userAddedCount);
+    const userAddedCount = Math.max(0, allReviews.length - defaultListLength);
+    const totalReviews = Math.max(allReviews.length, baseReviewCount + userAddedCount);
 
     let averageRating = baseRating;
-    if (reviews.length > 0) {
+    if (allReviews.length > 0) {
       const historicalCount = Math.max(0, baseReviewCount - defaultListLength);
       const totalWeighted = historicalCount * baseRating + sum;
-      const totalDivisor = historicalCount + reviews.length;
-      averageRating = totalDivisor > 0 ? Number((totalWeighted / totalDivisor).toFixed(1)) : Number((sum / reviews.length).toFixed(1));
+      const totalDivisor = historicalCount + allReviews.length;
+      averageRating = totalDivisor > 0 ? Number((totalWeighted / totalDivisor).toFixed(1)) : Number((sum / allReviews.length).toFixed(1));
     }
 
     return {
@@ -109,7 +165,7 @@ export function useAccommodationReviews(
       distribution,
       aspectCounts,
     };
-  }, [reviews, accommodationId, accommodationTitle, baseRating, baseReviewCount]);
+  }, [allReviews, accommodationId, accommodationTitle, baseRating, baseReviewCount]);
 
   const addReview = useCallback(
     (input: CreateReviewInput): { ok: boolean; error?: string } => {
@@ -196,7 +252,7 @@ export function useAccommodationReviews(
   }, []);
 
   return {
-    reviews,
+    reviews: allReviews,
     isLoading,
     stats,
     isModalOpen,

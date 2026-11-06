@@ -19,6 +19,8 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
     setCheckIn,
     checkOut,
     setCheckOut,
+    blockedRanges,
+    dateRangeError,
     guestsSelection,
     setGuestsSelection,
     nightsCount,
@@ -53,6 +55,7 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
               if (checkOut && d >= checkOut) setCheckOut('');
             }}
             minDate={todayStr}
+            blockedRanges={blockedRanges}
             placeholder="Ingreso"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
@@ -61,10 +64,20 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
             value={checkOut}
             onChange={setCheckOut}
             minDate={checkIn || todayStr}
+            blockedRanges={blockedRanges}
             placeholder="Egreso"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
         </div>
+
+        {dateRangeError && (
+          <div
+            role="alert"
+            className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-[11px] font-semibold text-rose-900"
+          >
+            {dateRangeError}
+          </div>
+        )}
 
         <AccommodationGuestsPicker
           value={guestsSelection}

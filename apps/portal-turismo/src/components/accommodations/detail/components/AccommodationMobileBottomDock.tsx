@@ -13,6 +13,7 @@ interface AccommodationMobileBottomDockProps {
   totalSelectedCapacity?: number;
   totalRequestedGuests?: number;
   isCapacitySufficient?: boolean;
+  dateRangeError?: string | null;
 }
 
 export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDockProps> = ({
@@ -25,6 +26,7 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
   totalSelectedCapacity = 4,
   totalRequestedGuests = 2,
   isCapacitySufficient = true,
+  dateRangeError = null,
 }) => {
   const price = data.pricePerNight ?? 0;
   const displayNights = nightsCount && nightsCount > 0 ? nightsCount : 1;
@@ -67,6 +69,13 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
 
         {/* Acción / Validación previa al Checkout */}
         <div className="flex items-center gap-3 ml-auto">
+          {dateRangeError && (
+            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-700 text-white text-xs font-extrabold">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              <span>Fechas no disponibles</span>
+            </span>
+          )}
+
           {!isCapacitySufficient && (
             <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-extrabold">
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -74,13 +83,21 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
             </span>
           )}
 
-          {totalSelectedRooms > 0 && isCapacitySufficient ? (
+          {totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
             <Link
               to={wizardUrl}
               className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer select-none block text-center"
             >
               Continuar con la Reserva
             </Link>
+          ) : dateRangeError ? (
+            <button
+              type="button"
+              disabled
+              className="px-5 py-2.5 rounded-xl bg-rose-700 text-white font-display font-bold text-xs sm:text-sm opacity-90 cursor-not-allowed select-none block text-center"
+            >
+              Fechas no disponibles
+            </button>
           ) : (
             <a
               href="#inventario-habitaciones"

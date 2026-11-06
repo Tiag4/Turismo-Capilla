@@ -25,6 +25,8 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     accommodations,
     monthStats,
     deleteBlock,
+    dateBlocksError,
+    isUsingLocalFallback,
     isLoading,
     updateBookingStatus,
   } = useHostCalendar();
@@ -57,11 +59,23 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   };
 
   const handleDeleteBlock = (id: string) => {
-    deleteBlock(id);
+    return deleteBlock(id);
   };
 
   return (
     <div className="space-y-6">
+      {isUsingLocalFallback && (
+        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
+          Modo demostración: no se pudo conectar con la API y los bloqueos se muestran desde el almacenamiento local.
+        </div>
+      )}
+
+      {dateBlocksError && (
+        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-900">
+          {dateBlocksError}
+        </div>
+      )}
+
       {/* Calendar Header with Navigation, Filters and Block Action */}
       <CalendarHeader
         monthLabel={monthLabel}

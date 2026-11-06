@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { Button } from '../../ui/Button.tsx';
 import { Input } from '../../ui/Input.tsx';
@@ -18,7 +18,7 @@ export const DateBlockEditorPage: React.FC<DateBlockEditorPageProps> = ({
   onSuccess,
 }) => {
   const { accommodations } = useHostAccommodations();
-  const [accommodationId, setAccommodationId] = useState<string>(accommodations[0]?.id || '');
+  const [accommodationId, setAccommodationId] = useState<string>('');
   const [startDate, setStartDate] = useState<string>(() => new Date().toISOString().substring(0, 10));
   const [endDate, setEndDate] = useState<string>(() => new Date().toISOString().substring(0, 10));
   const [reason, setReason] = useState<DateBlockReason>('MAINTENANCE');
@@ -26,7 +26,13 @@ export const DateBlockEditorPage: React.FC<DateBlockEditorPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!accommodationId && accommodations.length > 0) {
+      setAccommodationId(accommodations[0].id);
+    }
+  }, [accommodationId, accommodations]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accommodationId) {
       setError('Por favor seleccioná una cabaña o propiedad para el bloqueo.');
@@ -36,8 +42,8 @@ export const DateBlockEditorPage: React.FC<DateBlockEditorPageProps> = ({
       setError('Las fechas de inicio y fin son obligatorias.');
       return;
     }
-    if (new Date(endDate) < new Date(startDate)) {
-      setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
+    if (endDate <= startDate) {
+      setError('La fecha de fin debe ser posterior a la fecha de inicio.');
       return;
     }
 
@@ -53,7 +59,7 @@ export const DateBlockEditorPage: React.FC<DateBlockEditorPageProps> = ({
         reason,
         notes: notes.trim() || undefined,
       };
-      dateBlocksService.create(dto);
+      await dateBlocksService.create(dto);
       onSuccess();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al registrar el bloqueo.');

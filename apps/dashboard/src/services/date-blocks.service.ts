@@ -1,8 +1,31 @@
-import type { DateBlock, CreateDateBlockDto } from '../types/date-block.types.ts';
+import { apiClient } from './api.client.ts';
+import type { DateBlock, CreateDateBlockDto, DateBlockReason } from '../types/date-block.types.ts';
 
 const STORAGE_KEY = 'turismo_capilla_date_blocks';
 
+interface ApiDateBlock {
+  id: string;
+  accommodationId: string;
+  accommodationName?: string | null;
+  startDate: string;
+  endDate: string;
+  reason?: DateBlockReason | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
+interface ApiCreateDateBlockBody {
+  startDate: string;
+  endDate: string;
+  reason: DateBlockReason;
+  notes?: string;
+}
+
+type DataSource = 'remote' | 'local';
+
 class DateBlocksService {
+  private lastSource: DataSource = 'remote';
+
   private getStorage(): DateBlock[] {
     if (typeof window === 'undefined') return [];
     try {
@@ -22,30 +45,75 @@ class DateBlocksService {
     }
   }
 
-  getAll(): DateBlock[] {
-    return this.getStorage();
+  getLastSource(): DataSource {
+    return this.lastSource;
   }
 
-  create(dto: CreateDateBlockDto): DateBlock {
-    const blocks = this.getStorage();
-    const newBlock: DateBlock = {
-      id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-      accommodationId: dto.accommodationId,
-      accommodationName: dto.accommodationName,
+  async getAll(accommodationIds: string[]): Promise<DateBlock[]> {
+    if (accommodationIds.length === 0) {
+      this.lastSource = 'remote';
+      return [];
+    }
+
+    const responses = await Promise.allSettled(
+      accommodationIds.map((accommodationId) =>
+        apiClient.get<ApiDateBlock[]>(`/accommodations/${accommodationId}/date-blocks`),
+      ),
+    );
+
+    const fulfilled = responses.filter(
+      (result): result is PromiseFulfilledResult<ApiDateBlock[]> => result.status === 'fulfilled',
+    );
+
+    if (fulfilled.length === 0) {
+      this.lastSource = 'local';
+      const localBlocks = this.getStorage();
+      return localBlocks.filter((block) => accommodationIds.includes(block.accommodationId));
+    }
+
+    this.lastSource = 'remote';
+    const blocks = fulfilled
+      .flatMap((result) => result.value)
+      .map((block) => this.mapFromApi(block));
+    this.setStorage(blocks);
+    return blocks;
+  }
+
+  async create(dto: CreateDateBlockDto): Promise<DateBlock> {
+    const body: ApiCreateDateBlockBody = {
       startDate: dto.startDate,
       endDate: dto.endDate,
       reason: dto.reason,
       notes: dto.notes,
-      createdAt: new Date().toISOString(),
     };
-    blocks.push(newBlock);
-    this.setStorage(blocks);
-    return newBlock;
+
+    const response = await apiClient.post<ApiDateBlock>(
+      `/accommodations/${dto.accommodationId}/date-blocks`,
+      body,
+    );
+
+    return this.mapFromApi({
+      ...response,
+      accommodationId: response.accommodationId || dto.accommodationId,
+      accommodationName: response.accommodationName || dto.accommodationName,
+    });
   }
 
-  delete(id: string): void {
-    const blocks = this.getStorage().filter((b) => b.id !== id);
-    this.setStorage(blocks);
+  async delete(id: string): Promise<void> {
+    await apiClient.delete(`/date-blocks/${id}`);
+  }
+
+  private mapFromApi(block: ApiDateBlock): DateBlock {
+    return {
+      id: block.id,
+      accommodationId: block.accommodationId,
+      accommodationName: block.accommodationName || 'Alojamiento',
+      startDate: block.startDate,
+      endDate: block.endDate,
+      reason: block.reason || 'MAINTENANCE',
+      notes: block.notes || undefined,
+      createdAt: block.createdAt,
+    };
   }
 }
 

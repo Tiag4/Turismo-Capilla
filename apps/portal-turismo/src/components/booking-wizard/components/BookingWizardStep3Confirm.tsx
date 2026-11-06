@@ -9,7 +9,7 @@ interface BookingWizardStep3ConfirmProps {
 }
 
 export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps> = ({ data, wizard }) => {
-  const { form, updateField, errors, completeBooking, isSubmitting, goToStep2, applyPromoCode } = wizard;
+  const { form, updateField, errors, submitError, completeBooking, isSubmitting, goToStep2, applyPromoCode } = wizard;
   const [promoMessage, setPromoMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   const handleApplyPromo = () => {
@@ -117,6 +117,11 @@ export const BookingWizardStep3Confirm: React.FC<BookingWizardStep3ConfirmProps>
           </span>
         </label>
         {errors.terms && <p className="text-xs text-red-600 font-semibold">{errors.terms}</p>}
+        {submitError && (
+          <div role="alert" className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-900">
+            {submitError}
+          </div>
+        )}
 
         <button
           type="button"

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Mail, Star } from 'lucide-react';
+import { api } from '../../../services/api';
 import type { BookingVoucherRecord } from '../types';
 
 interface BookingVoucherCardProps {
@@ -13,6 +14,8 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
   const isCompleted = voucher.status === 'COMPLETED';
   const isCancelled = voucher.status === 'CANCELLED';
   const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [resendMessage, setResendMessage] = useState('');
 
   const checkoutTimestamp = voucher.checkOut
     ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
@@ -56,6 +59,28 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
   const whatsappUrl = `https://wa.me/${(voucher.hostPhone || '5493548401122').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
     `Hola! Me comunico respecto a mi reserva oficial *${voucher.code}* en *${voucher.accommodationTitle}* a nombre de *${voucher.firstName} ${voucher.lastName}*.`,
   )}`;
+
+  const handleResendVoucher = async () => {
+    if (!voucher.email) {
+      setResendState('error');
+      setResendMessage('La reserva no tiene un correo asociado para el reenvío.');
+      return;
+    }
+
+    setResendState('sending');
+    setResendMessage('');
+
+    try {
+      const response = await api.resendVoucher(voucher.code, voucher.email);
+      setResendState('success');
+      setResendMessage(response.message || 'Voucher reenviado por email correctamente.');
+    } catch (error) {
+      setResendState('error');
+      setResendMessage(
+        error instanceof Error ? error.message : 'No pudimos reenviar el voucher. Intentá nuevamente.',
+      );
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border-2 border-sand-300 p-6 sm:p-8 shadow-sm space-y-6 print:border-none print:shadow-none print:p-0">
@@ -235,6 +260,24 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
       </div>
 
       {/* Acciones del Voucher (Ocultas al imprimir con @media print) */}
+      {resendMessage && (
+        <div
+          role="status"
+          className={`flex items-start gap-2 p-3 rounded-xl border text-xs font-semibold print:hidden ${
+            resendState === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+              : 'bg-rose-50 border-rose-200 text-rose-900'
+          }`}
+        >
+          {resendState === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          )}
+          <span>{resendMessage}</span>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-sand-200 print:hidden">
         {canReview && (
           <Link
@@ -245,6 +288,20 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
             <span>Calificar Estadía</span>
           </Link>
         )}
+
+        <button
+          type="button"
+          onClick={handleResendVoucher}
+          disabled={resendState === 'sending'}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        >
+          {resendState === 'sending' ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Mail className="w-4 h-4 text-terracotta-500" />
+          )}
+          <span>{resendState === 'sending' ? 'Reenviando...' : 'Reenviar voucher por email'}</span>
+        </button>
 
         <a
           href={whatsappUrl}

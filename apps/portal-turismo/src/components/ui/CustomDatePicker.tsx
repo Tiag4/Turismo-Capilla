@@ -8,6 +8,7 @@ export interface CustomDatePickerProps {
   value: string; // ISO format: YYYY-MM-DD
   onChange: (date: string) => void;
   minDate?: string; // ISO format: YYYY-MM-DD
+  blockedRanges?: Array<{ startDate: string; endDate: string }>;
   placeholder?: string;
   className?: string;
   preferredPlacement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
@@ -26,6 +27,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   value,
   onChange,
   minDate,
+  blockedRanges = [],
   placeholder = 'Seleccionar fecha',
   className = '',
   preferredPlacement = 'auto',
@@ -92,10 +94,16 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     }
   };
 
+  const isDateStringDisabled = (dateStr: string) => {
+    if (minDate && dateStr < minDate) return true;
+    return blockedRanges.some(
+      (range) => range.startDate <= dateStr && dateStr < range.endDate,
+    );
+  };
+
   const isDateDisabled = (day: number) => {
-    if (!minDate) return false;
     const currentStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return currentStr < minDate;
+    return isDateStringDisabled(currentStr);
   };
 
   const isDateSelected = (day: number) => {
@@ -103,6 +111,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const currentStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return currentStr === value;
   };
+
+  const todayValue = (() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  })();
+  const isTodayDisabled = isDateStringDisabled(todayValue);
 
   const handleSelectDay = (day: number) => {
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -226,13 +240,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
                 <button
                   type="button"
+                  disabled={isTodayDisabled}
                   onClick={() => {
-                    const today = new Date();
-                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                    onChange(todayStr);
+                    onChange(todayValue);
                     setIsOpen(false);
                   }}
-                  className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer"
+                  className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer disabled:text-stone-300 disabled:cursor-not-allowed"
                 >
                   Hoy
                 </button>
@@ -345,13 +358,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
               <button
                 type="button"
+                disabled={isTodayDisabled}
                 onClick={() => {
-                  const today = new Date();
-                  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                  onChange(todayStr);
+                  onChange(todayValue);
                   setIsOpen(false);
                 }}
-                className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer"
+                className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer disabled:text-stone-300 disabled:cursor-not-allowed"
               >
                 Hoy
               </button>

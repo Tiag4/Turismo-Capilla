@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { AccommodationDetailData } from '../types';
+import type { DateBlockRange } from '../../../../types/date-block.types';
+import { dateBlocksService } from '../../../../services/dateBlocks.service';
 import type { GuestsSelection } from '../components/AccommodationGuestsPicker';
 
 interface UseAccommodationBookingProps {
@@ -9,6 +11,7 @@ interface UseAccommodationBookingProps {
 export function useAccommodationBooking({ data }: UseAccommodationBookingProps) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
+  const [blockedRanges, setBlockedRanges] = useState<DateBlockRange[]>([]);
   const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
     adults: 2,
     childrenCount: 0,
@@ -16,6 +19,32 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     rooms: 1,
   });
   const guests = String(guestsSelection.adults + guestsSelection.childrenCount);
+
+  useEffect(() => {
+    let isActive = true;
+
+    dateBlocksService.getByAccommodation(data.id).then((ranges) => {
+      if (isActive) {
+        setBlockedRanges(ranges);
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [data.id]);
+
+  const dateRangeError = useMemo(() => {
+    if (!checkIn || !checkOut) return null;
+
+    const conflictingBlock = blockedRanges.find(
+      (block) => checkIn < block.endDate && checkOut > block.startDate,
+    );
+
+    return conflictingBlock
+      ? 'El rango seleccionado incluye fechas no disponibles por mantenimiento o uso propio del alojamiento.'
+      : null;
+  }, [blockedRanges, checkIn, checkOut]);
 
   // Lightbox Gallery state
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -217,6 +246,8 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     setCheckIn,
     checkOut,
     setCheckOut,
+    blockedRanges,
+    dateRangeError,
     guests,
     guestsSelection,
     setGuestsSelection,

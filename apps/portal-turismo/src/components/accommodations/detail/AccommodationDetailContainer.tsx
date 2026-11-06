@@ -111,6 +111,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         totalSelectedCapacity={booking.totalSelectedCapacity}
         totalRequestedGuests={booking.totalRequestedGuests}
         isCapacitySufficient={booking.isCapacitySufficient}
+        dateRangeError={booking.dateRangeError}
       />
 
       {/* Modals & Drawers */}

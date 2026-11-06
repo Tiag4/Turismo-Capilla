@@ -20,6 +20,8 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
     setCheckIn,
     checkOut,
     setCheckOut,
+    blockedRanges,
+    dateRangeError,
     guestsSelection,
     setGuestsSelection,
     selectedRoomsList,
@@ -65,6 +67,7 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
               if (checkOut && d >= checkOut) setCheckOut('');
             }}
             minDate={todayStr}
+            blockedRanges={blockedRanges}
             placeholder="Llegada"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
@@ -73,10 +76,20 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
             value={checkOut}
             onChange={setCheckOut}
             minDate={checkIn || todayStr}
+            blockedRanges={blockedRanges}
             placeholder="Salida"
             icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
           />
         </div>
+
+        {dateRangeError && (
+          <div
+            role="alert"
+            className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-[11px] font-semibold text-rose-900"
+          >
+            {dateRangeError}
+          </div>
+        )}
 
         {/* Selector avanzado de Ocupación */}
         <AccommodationGuestsPicker
@@ -153,7 +166,7 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
 
       {/* Botón Solicitar reserva directo al Wizard */}
       <div className="space-y-2 pt-1">
-        {totalSelectedRooms > 0 && isCapacitySufficient ? (
+        {totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
           <Link
             to={wizardUrl}
             style={{ backgroundColor: '#C95627', color: '#ffffff' }}
@@ -161,6 +174,14 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
           >
             Solicitar reserva
           </Link>
+        ) : dateRangeError ? (
+          <button
+            type="button"
+            disabled
+            className="w-full py-3.5 px-4 rounded-xl bg-rose-700 text-white font-display font-bold text-sm opacity-90 cursor-not-allowed select-none"
+          >
+            Fechas no disponibles
+          </button>
         ) : (
           <a
             href="#inventario-habitaciones"

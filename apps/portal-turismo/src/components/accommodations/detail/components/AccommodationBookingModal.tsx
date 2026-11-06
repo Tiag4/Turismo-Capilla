@@ -22,6 +22,7 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
   const {
     checkIn,
     checkOut,
+    dateRangeError,
     nightsCount,
     totalPrice,
     isSubmitting,
@@ -125,9 +126,14 @@ export const AccommodationBookingDrawer: React.FC<AccommodationBookingModalProps
 
             {/* Footer Fijo Pinned: Botón SIEMPRE visible sin necesidad de scroll */}
             <div className="shrink-0 px-6 py-4 border-t border-stone-200 bg-white/95 backdrop-blur-xs space-y-2 shadow-lg">
+              {dateRangeError && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-[11px] font-semibold text-rose-900">
+                  {dateRangeError}
+                </div>
+              )}
               <button
                 type="submit"
-                disabled={isSubmitting || !checkIn || !checkOut}
+                disabled={isSubmitting || !checkIn || !checkOut || Boolean(dateRangeError)}
                 style={{ backgroundColor: '#C95627', color: '#ffffff' }}
                 className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-sm shadow-md hover:brightness-95 active:brightness-90 disabled:opacity-50 transition-all cursor-pointer select-none text-center"
               >

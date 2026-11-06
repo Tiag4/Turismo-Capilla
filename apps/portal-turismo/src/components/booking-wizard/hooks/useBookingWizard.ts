@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { AccommodationDetailData } from '../../accommodations/detail/types';
-import { api } from '../../../services/api';
+import { api, ApiRequestError } from '../../../services/api';
 
 export interface BookingWizardState {
   firstName: string;
@@ -69,6 +69,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingCode, setBookingCode] = useState<string>('');
 
@@ -133,6 +134,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
       return;
     }
     setIsSubmitting(true);
+    setSubmitError(null);
     let finalCode = `CAP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     try {
@@ -152,6 +154,11 @@ export function useBookingWizard(data: AccommodationDetailData) {
         finalCode = apiResult.bookingCode;
       }
     } catch (apiErr) {
+      if (apiErr instanceof ApiRequestError) {
+        setSubmitError(apiErr.message);
+        setIsSubmitting(false);
+        return;
+      }
       console.warn('Backend offline o simulación: guardando reserva localmente', apiErr);
     }
 
@@ -211,6 +218,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
     form,
     updateField,
     errors,
+    submitError,
     initialParams,
     nightsCount,
     rawTotal,

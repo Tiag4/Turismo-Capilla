@@ -1,5 +1,5 @@
-import React from 'react';
-import { Lock, Trash2, Calendar, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { AlertCircle, Calendar, Loader2, Lock, Trash2 } from 'lucide-react';
 import type { DateBlock } from '../../types/date-block.types.ts';
 import { DATE_BLOCK_REASON_LABELS } from '../../types/date-block.types.ts';
 import { Modal } from '../ui/Modal.tsx';
@@ -9,7 +9,7 @@ export interface DateBlockDetailModalProps {
   block: DateBlock | null;
   isOpen: boolean;
   onClose: () => void;
-  onDeleteBlock: (id: string) => void;
+  onDeleteBlock: (id: string) => Promise<void>;
 }
 
 export const DateBlockDetailModal: React.FC<DateBlockDetailModalProps> = ({
@@ -18,11 +18,29 @@ export const DateBlockDetailModal: React.FC<DateBlockDetailModalProps> = ({
   onClose,
   onDeleteBlock,
 }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsDeleting(false);
+    setDeleteError(null);
+  }, [block?.id]);
+
   if (!block) return null;
 
-  const handleDelete = () => {
-    onDeleteBlock(block.id);
-    onClose();
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await onDeleteBlock(block.id);
+      onClose();
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : 'No se pudo eliminar el bloqueo.',
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -78,6 +96,12 @@ export const DateBlockDetailModal: React.FC<DateBlockDetailModalProps> = ({
           </span>
         </div>
 
+        {deleteError && (
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-900">
+            {deleteError}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t border-[var(--color-sand-200)]">
           <Button
@@ -85,13 +109,18 @@ export const DateBlockDetailModal: React.FC<DateBlockDetailModalProps> = ({
             variant="danger"
             size="sm"
             onClick={handleDelete}
+            disabled={isDeleting}
             className="flex items-center gap-1.5"
           >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Eliminar Bloqueo</span>
+            {isDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            <span>{isDeleting ? 'Eliminando...' : 'Eliminar Bloqueo'}</span>
           </Button>
 
-          <Button type="button" variant="outline" size="sm" onClick={onClose}>
+          <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isDeleting}>
             Cerrar
           </Button>
         </div>

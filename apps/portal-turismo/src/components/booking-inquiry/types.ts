@@ -1,7 +1,8 @@
 export type BookingVoucherStatus =
   | 'CONFIRMED'
   | 'PENDING_CONFIRMATION'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'COMPLETED';
 
 export interface BookingVoucherRecord {
   code: string;

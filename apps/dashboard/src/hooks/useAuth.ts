@@ -13,14 +13,16 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Si el backend responde 401 en cualquier request, la sesión local deja de ser válida.
   useEffect(() => {
-    // Check initial user
-    const current = authService.getCurrentUser();
-    if (current && !user) {
-      setUser(current);
-      setToken(authService.getToken());
-    }
-  }, [user]);
+    const handleUnauthorized = () => {
+      setUser(null);
+      setToken(null);
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);

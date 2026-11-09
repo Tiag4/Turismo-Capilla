@@ -1,5 +1,21 @@
 import { apiClient } from './api.client.ts';
-import type { Accommodation, CreateAccommodationDto } from '../types/accommodation.types.ts';
+import { resolveMediaUrl } from '../utils/media-url.ts';
+import type {
+  Accommodation,
+  AccommodationImage,
+  CreateAccommodationDto,
+} from '../types/accommodation.types.ts';
+
+function normalizeImage(image: AccommodationImage): AccommodationImage {
+  return { ...image, url: resolveMediaUrl(image.url) };
+}
+
+function normalizeAccommodation(accommodation: Accommodation): Accommodation {
+  return {
+    ...accommodation,
+    images: (accommodation.images ?? []).map(normalizeImage),
+  };
+}
 
 const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
@@ -83,46 +99,52 @@ export const accommodationsService = {
       const response = await apiClient.get<any>(endpoint);
       const items = Array.isArray(response) ? response : response.data || [];
       if (Array.isArray(items)) {
-        return items;
+        return items.map(normalizeAccommodation);
       }
-      return localAccommodations;
+      return localAccommodations.map(normalizeAccommodation);
     } catch {
       try {
         const publicResp = await apiClient.get<any>('/accommodations');
         const publicItems = Array.isArray(publicResp) ? publicResp : publicResp.data || [];
-        if (Array.isArray(publicItems)) return publicItems;
+        if (Array.isArray(publicItems)) return publicItems.map(normalizeAccommodation);
       } catch {
         // Ignorar y caer a fallback local
       }
-      return localAccommodations;
+      return localAccommodations.map(normalizeAccommodation);
     }
   },
 
   async getById(id: string): Promise<Accommodation | null> {
     try {
-      return await apiClient.get<Accommodation>(`/accommodations/${id}`);
+      const accommodation = await apiClient.get<Accommodation>(`/accommodations/${id}`);
+      return accommodation ? normalizeAccommodation(accommodation) : null;
     } catch {
-      return localAccommodations.find((a) => a.id === id) || null;
+      const local = localAccommodations.find((a) => a.id === id) || null;
+      return local ? normalizeAccommodation(local) : null;
     }
   },
 
   async create(dto: CreateAccommodationDto): Promise<Accommodation> {
-    const formattedImages = (dto.images || []).map((img, index) => {
-      if (typeof img === 'string') {
+    // Images are uploaded to real storage beforehand (media service), so only
+    // http(s) URLs reach the backend. Data URLs are never persisted.
+    const formattedImages = (dto.images || [])
+      .filter((img) => {
+        const url = typeof img === 'string' ? img : img.url;
+        return !url.startsWith('data:');
+      })
+      .map((img, index) => {
+        if (typeof img === 'string') {
+          return {
+            url: img,
+            isMain: index === 0,
+          };
+        }
         return {
-          url: img,
+          url: img.url,
+          publicId: img.publicId,
           isMain: index === 0,
         };
-      }
-      return {
-        url: img.url,
-        isMain: Boolean(img.isMain) || index === 0,
-      };
-    });
-
-    if (formattedImages.length > 0 && !formattedImages.some((i) => i.isMain)) {
-      formattedImages[0].isMain = true;
-    }
+      });
 
     const payload = {
       name: dto.name,
@@ -147,7 +169,7 @@ export const accommodationsService = {
 
     try {
       const created = await apiClient.post<Accommodation>('/accommodations', payload);
-      if (created) return created;
+      if (created) return normalizeAccommodation(created);
     } catch (err) {
       console.warn('Fallo guardado en backend, usando fallback local:', err);
     }
@@ -177,29 +199,39 @@ export const accommodationsService = {
       createdAt: new Date().toISOString(),
     };
     localAccommodations = [newAcc, ...localAccommodations];
-    return newAcc;
+    return normalizeAccommodation(newAcc);
+  },
+
+  async addImage(
+    accommodationId: string,
+    image: { url: string; publicId?: string; isMain?: boolean }
+  ): Promise<AccommodationImage> {
+    const created = await apiClient.post<AccommodationImage>(
+      `/accommodations/${accommodationId}/images`,
+      image
+    );
+    return normalizeImage(created);
+  },
+
+  async deleteImage(accommodationId: string, imageId: string): Promise<void> {
+    await apiClient.delete<void>(`/accommodations/${accommodationId}/images/${imageId}`);
   },
 
   async update(id: string, dto: Partial<CreateAccommodationDto>): Promise<Accommodation> {
-    const payload: any = { ...dto };
-    if (dto.images) {
-      payload.images = dto.images.map((img, index) => {
-        if (typeof img === 'string') {
-          return { url: img, isMain: index === 0 };
-        }
-        return { url: img.url, isMain: Boolean(img.isMain) };
-      });
+    // UpdateAccommodationDto has no `images` field: image mutations are handled
+    // exclusively through addImage/deleteImage, never in the PUT payload.
+    const { images: dtoImages, ...generalData } = dto;
+    const payload: any = { ...generalData };
+    if (generalData.pricePerNight !== undefined) {
+      payload.pricePerNight = Number(generalData.pricePerNight);
     }
-    if (dto.pricePerNight !== undefined) {
-      payload.pricePerNight = Number(dto.pricePerNight);
-    }
-    if (dto.maxGuests !== undefined) {
-      payload.maxGuests = Number(dto.maxGuests);
+    if (generalData.maxGuests !== undefined) {
+      payload.maxGuests = Number(generalData.maxGuests);
     }
 
     try {
       const updated = await apiClient.put<Accommodation>(`/accommodations/${id}`, payload);
-      if (updated) return updated;
+      if (updated) return normalizeAccommodation(updated);
     } catch (err) {
       console.warn('Fallo actualizacion en backend, usando fallback local:', err);
     }
@@ -209,8 +241,8 @@ export const accommodationsService = {
     const existing = localAccommodations[index];
 
     let updatedImages = existing.images;
-    if (dto.images) {
-      updatedImages = dto.images.map((img, index) => {
+    if (dtoImages) {
+      updatedImages = dtoImages.map((img, index) => {
         if (typeof img === 'string') {
           return {
             id: `img-${Date.now()}-${index}`,
@@ -228,14 +260,14 @@ export const accommodationsService = {
 
     const updated: Accommodation = {
       ...existing,
-      ...dto,
+      ...generalData,
       images: updatedImages,
       pricePerNight: dto.pricePerNight ? Number(dto.pricePerNight) : existing.pricePerNight,
       maxGuests: dto.maxGuests ? Number(dto.maxGuests) : existing.maxGuests,
       updatedAt: new Date().toISOString(),
     };
     localAccommodations[index] = updated;
-    return updated;
+    return normalizeAccommodation(updated);
   },
 
   async delete(id: string): Promise<void> {
@@ -256,6 +288,6 @@ export const accommodationsService = {
     } catch {
       // Ignorar
     }
-    return { ...acc };
+    return normalizeAccommodation({ ...acc });
   },
 };

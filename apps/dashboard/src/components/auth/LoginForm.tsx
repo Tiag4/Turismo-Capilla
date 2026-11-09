@@ -15,8 +15,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   isLoading,
   error,
 }) => {
-  const [email, setEmail] = useState('admin@capilladelmonte.gov.ar');
-  const [password, setPassword] = useState('AdminCapilla2026!');
+  const isDev = import.meta.env.DEV;
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +59,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="prestador@capilladelmonte.gov.ar"
+            autoComplete="username"
             required
           />
 
@@ -67,11 +69,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete="current-password"
             required
           />
 
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-semibold text-rose-700">
+            <div
+              role="alert"
+              className="rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-100)] px-3 py-2 text-xs font-semibold text-rose-700"
+            >
               {error}
             </div>
           )}
@@ -88,34 +94,36 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           </Button>
         </form>
 
-        {/* Quick Demo Access Helpers */}
-        <div className="mt-8 pt-6 border-t border-[var(--color-sand-200)]">
-          <span className="block text-center text-[11px] uppercase font-bold tracking-wider text-[var(--color-sand-400)] mb-3">
-            Acceso Rápido de Demostración
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickFill('ADMIN')}
-              className="w-full text-xs"
-            >
-              <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)]" />
-              <span>Comisión (Admin)</span>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickFill('HOST')}
-              className="w-full text-xs"
-            >
-              <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)]" />
-              <span>Cabañero (Host)</span>
-            </Button>
+        {/* Atajos de acceso para desarrollo: nunca se renderizan en producción */}
+        {isDev && (
+          <div className="mt-8 pt-6 border-t border-[var(--color-sand-200)]">
+            <span className="block text-center text-[11px] uppercase font-bold tracking-wider text-[var(--color-sand-400)] mb-3">
+              Acceso rápido (solo desarrollo)
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickFill('ADMIN')}
+                className="w-full text-xs"
+              >
+                <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)]" />
+                <span>Comisión (Admin)</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickFill('HOST')}
+                className="w-full text-xs"
+              >
+                <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)]" />
+                <span>Cabañero (Host)</span>
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

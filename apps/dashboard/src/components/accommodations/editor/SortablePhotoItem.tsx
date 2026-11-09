@@ -2,6 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, Star } from 'lucide-react';
+import { resolveMediaUrl } from '../../../utils/media-url.ts';
 
 export interface SortablePhotoItemProps {
   id: string;
@@ -49,7 +50,7 @@ export const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
       {/* Image Preview with Drag Handle */}
       <div className="relative aspect-4/3 w-full bg-[var(--color-sand-100)] overflow-hidden">
         <img
-          src={url}
+          src={resolveMediaUrl(url)}
           alt={`Fotografía ${index + 1}`}
           className="w-full h-full object-cover select-none pointer-events-none"
         />

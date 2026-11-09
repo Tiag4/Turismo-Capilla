@@ -1,9 +1,21 @@
 import { apiClient } from './api.client.ts';
+import { resolveMediaUrl } from '../utils/media-url.ts';
 import type {
   Accommodation,
   AccommodationImage,
   CreateAccommodationDto,
 } from '../types/accommodation.types.ts';
+
+function normalizeImage(image: AccommodationImage): AccommodationImage {
+  return { ...image, url: resolveMediaUrl(image.url) };
+}
+
+function normalizeAccommodation(accommodation: Accommodation): Accommodation {
+  return {
+    ...accommodation,
+    images: (accommodation.images ?? []).map(normalizeImage),
+  };
+}
 
 const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
@@ -87,26 +99,28 @@ export const accommodationsService = {
       const response = await apiClient.get<any>(endpoint);
       const items = Array.isArray(response) ? response : response.data || [];
       if (Array.isArray(items)) {
-        return items;
+        return items.map(normalizeAccommodation);
       }
-      return localAccommodations;
+      return localAccommodations.map(normalizeAccommodation);
     } catch {
       try {
         const publicResp = await apiClient.get<any>('/accommodations');
         const publicItems = Array.isArray(publicResp) ? publicResp : publicResp.data || [];
-        if (Array.isArray(publicItems)) return publicItems;
+        if (Array.isArray(publicItems)) return publicItems.map(normalizeAccommodation);
       } catch {
         // Ignorar y caer a fallback local
       }
-      return localAccommodations;
+      return localAccommodations.map(normalizeAccommodation);
     }
   },
 
   async getById(id: string): Promise<Accommodation | null> {
     try {
-      return await apiClient.get<Accommodation>(`/accommodations/${id}`);
+      const accommodation = await apiClient.get<Accommodation>(`/accommodations/${id}`);
+      return accommodation ? normalizeAccommodation(accommodation) : null;
     } catch {
-      return localAccommodations.find((a) => a.id === id) || null;
+      const local = localAccommodations.find((a) => a.id === id) || null;
+      return local ? normalizeAccommodation(local) : null;
     }
   },
 
@@ -155,7 +169,7 @@ export const accommodationsService = {
 
     try {
       const created = await apiClient.post<Accommodation>('/accommodations', payload);
-      if (created) return created;
+      if (created) return normalizeAccommodation(created);
     } catch (err) {
       console.warn('Fallo guardado en backend, usando fallback local:', err);
     }
@@ -185,17 +199,18 @@ export const accommodationsService = {
       createdAt: new Date().toISOString(),
     };
     localAccommodations = [newAcc, ...localAccommodations];
-    return newAcc;
+    return normalizeAccommodation(newAcc);
   },
 
   async addImage(
     accommodationId: string,
     image: { url: string; publicId?: string; isMain?: boolean }
   ): Promise<AccommodationImage> {
-    return apiClient.post<AccommodationImage>(
+    const created = await apiClient.post<AccommodationImage>(
       `/accommodations/${accommodationId}/images`,
       image
     );
+    return normalizeImage(created);
   },
 
   async deleteImage(accommodationId: string, imageId: string): Promise<void> {
@@ -216,7 +231,7 @@ export const accommodationsService = {
 
     try {
       const updated = await apiClient.put<Accommodation>(`/accommodations/${id}`, payload);
-      if (updated) return updated;
+      if (updated) return normalizeAccommodation(updated);
     } catch (err) {
       console.warn('Fallo actualizacion en backend, usando fallback local:', err);
     }
@@ -252,7 +267,7 @@ export const accommodationsService = {
       updatedAt: new Date().toISOString(),
     };
     localAccommodations[index] = updated;
-    return updated;
+    return normalizeAccommodation(updated);
   },
 
   async delete(id: string): Promise<void> {
@@ -273,6 +288,6 @@ export const accommodationsService = {
     } catch {
       // Ignorar
     }
-    return { ...acc };
+    return normalizeAccommodation({ ...acc });
   },
 };

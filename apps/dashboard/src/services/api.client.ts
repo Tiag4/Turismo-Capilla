@@ -25,6 +25,10 @@ class ApiClient {
       // Limpiar credenciales residuales o inválidas
       localStorage.removeItem('turismo_capilla_token');
       localStorage.removeItem('turismo_capilla_user');
+      // Notificar a la capa de UI para que cierre la sesión sin esperar un reload
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('auth:unauthorized'));
+      }
     }
   }
 

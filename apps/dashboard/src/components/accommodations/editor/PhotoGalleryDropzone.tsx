@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -14,24 +14,49 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import { UploadCloud, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, AlertCircle, Loader2 } from 'lucide-react';
 import type { AccommodationImage } from '../../../types/accommodation.types.ts';
+import { mediaService } from '../../../services/media.service.ts';
 import { SortablePhotoItem } from './SortablePhotoItem.tsx';
+
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+interface PendingUpload {
+  id: string;
+  fileName: string;
+  status: 'uploading' | 'error';
+  error?: string;
+}
 
 export interface PhotoGalleryDropzoneProps {
   images: AccommodationImage[];
   onChange: (images: AccommodationImage[]) => void;
   maxImages?: number;
+  onUploadingChange?: (isUploading: boolean) => void;
 }
 
 export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
   images,
   onChange,
   maxImages = 10,
+  onUploadingChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imagesRef = useRef(images);
   const [isDragOver, setIsDragOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [pendingUploads, setPendingUploads] = useState<PendingUpload[]>([]);
+
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+
+  const isUploading = pendingUploads.some((item) => item.status === 'uploading');
+
+  useEffect(() => {
+    onUploadingChange?.(isUploading);
+  }, [isUploading, onUploadingChange]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -61,51 +86,74 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
     }
   };
 
+  const uploadFiles = async (files: File[]) => {
+    for (const file of files) {
+      const pendingId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      setPendingUploads((prev) => [
+        ...prev,
+        { id: pendingId, fileName: file.name, status: 'uploading' },
+      ]);
+
+      try {
+        const uploaded = await mediaService.uploadImage(file);
+        const current = imagesRef.current;
+        const nextImage: AccommodationImage = {
+          id: uploaded.publicId || `img-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          url: uploaded.url,
+          publicId: uploaded.publicId,
+          isMain: current.length === 0 || !current.some((img) => img.isMain),
+        };
+
+        imagesRef.current = [...current, nextImage];
+        onChange(imagesRef.current);
+        setPendingUploads((prev) => prev.filter((item) => item.id !== pendingId));
+      } catch (err: any) {
+        setPendingUploads((prev) =>
+          prev.map((item) =>
+            item.id === pendingId
+              ? {
+                  ...item,
+                  status: 'error',
+                  error: err?.message || 'No se pudo subir la imagen al almacenamiento.',
+                }
+              : item
+          )
+        );
+      }
+    }
+  };
+
   const processFiles = (files: FileList | File[]) => {
     setErrorMsg(null);
-    const validFiles: File[] = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (!file.type.startsWith('image/')) {
-        setErrorMsg('Solo se admiten archivos de imagen (JPG, PNG, WebP).');
+    const pendingCount = pendingUploads.filter((item) => item.status === 'uploading').length;
+    let availableSlots = maxImages - images.length - pendingCount;
+    const accepted: File[] = [];
+    const validationErrors: string[] = [];
+
+    for (const file of Array.from(files)) {
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        validationErrors.push(`"${file.name}" no es un formato válido. Usá JPG, PNG o WebP.`);
         continue;
       }
-      if (file.size > 8 * 1024 * 1024) {
-        setErrorMsg('Cada imagen debe pesar menos de 8 MB.');
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        validationErrors.push(`"${file.name}" supera el límite de 5 MB.`);
         continue;
       }
-      validFiles.push(file);
+      if (availableSlots <= 0) {
+        validationErrors.push(`El cupo máximo es de ${maxImages} fotografías por establecimiento.`);
+        break;
+      }
+      accepted.push(file);
+      availableSlots -= 1;
     }
 
-    if (images.length + validFiles.length > maxImages) {
-      setErrorMsg(`El cupo máximo es de ${maxImages} fotografías por establecimiento.`);
-      validFiles.splice(maxImages - images.length);
+    if (validationErrors.length > 0) {
+      setErrorMsg(validationErrors.join(' '));
     }
-
-    if (validFiles.length === 0) return;
-
-    const newImages: AccommodationImage[] = [];
-    let completed = 0;
-
-    validFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          newImages.push({
-            id: `img-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-            url: result,
-            isMain: images.length === 0 && newImages.length === 0,
-          });
-        }
-        completed++;
-        if (completed === validFiles.length) {
-          onChange([...images, ...newImages]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    if (accepted.length > 0) {
+      void uploadFiles(accepted);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -163,6 +211,15 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
           onDragLeave={() => setIsDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Subir fotografías del alojamiento"
           className={`border-2 border-dashed rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
             isDragOver
               ? 'border-[var(--color-terracotta-500)] bg-[var(--color-terracotta-50)]'
@@ -183,16 +240,44 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
             <span className="text-[var(--color-terracotta-600)] underline">examiná tus archivos</span>
           </span>
           <span className="text-[11px] text-[var(--color-sand-400)] mt-1">
-            Archivos JPG, PNG o WebP de hasta 8 MB por fotografía
+            Archivos JPG, PNG o WebP de hasta 5 MB por fotografía
           </span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+        <div role="alert" className="flex items-start gap-2 text-xs text-rose-700">
+          <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
+      )}
+
+      {/* Per-file upload status (flat list, no upload yet = not in gallery) */}
+      {pendingUploads.length > 0 && (
+        <ul
+          aria-live="polite"
+          aria-busy={isUploading}
+          className="divide-y divide-[var(--color-sand-200)] border-y border-[var(--color-sand-200)]"
+        >
+          {pendingUploads.map((item) => (
+            <li key={item.id} className="flex items-center justify-between gap-3 py-2 text-xs">
+              <span className="truncate text-[var(--color-sand-700)]">{item.fileName}</span>
+              {item.status === 'uploading' ? (
+                <span className="flex items-center gap-1.5 shrink-0 text-[var(--color-sand-500)]">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Subiendo…</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 shrink-0 text-rose-700 max-w-[65%]">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate" title={item.error}>
+                    {item.error}
+                  </span>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
 
       {/* Sortable Photo Grid */}

@@ -1,5 +1,9 @@
 import { apiClient } from './api.client.ts';
-import type { Accommodation, CreateAccommodationDto } from '../types/accommodation.types.ts';
+import type {
+  Accommodation,
+  AccommodationImage,
+  CreateAccommodationDto,
+} from '../types/accommodation.types.ts';
 
 const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
@@ -107,22 +111,26 @@ export const accommodationsService = {
   },
 
   async create(dto: CreateAccommodationDto): Promise<Accommodation> {
-    const formattedImages = (dto.images || []).map((img, index) => {
-      if (typeof img === 'string') {
+    // Images are uploaded to real storage beforehand (media service), so only
+    // http(s) URLs reach the backend. Data URLs are never persisted.
+    const formattedImages = (dto.images || [])
+      .filter((img) => {
+        const url = typeof img === 'string' ? img : img.url;
+        return !url.startsWith('data:');
+      })
+      .map((img, index) => {
+        if (typeof img === 'string') {
+          return {
+            url: img,
+            isMain: index === 0,
+          };
+        }
         return {
-          url: img,
+          url: img.url,
+          publicId: img.publicId,
           isMain: index === 0,
         };
-      }
-      return {
-        url: img.url,
-        isMain: Boolean(img.isMain) || index === 0,
-      };
-    });
-
-    if (formattedImages.length > 0 && !formattedImages.some((i) => i.isMain)) {
-      formattedImages[0].isMain = true;
-    }
+      });
 
     const payload = {
       name: dto.name,
@@ -180,21 +188,30 @@ export const accommodationsService = {
     return newAcc;
   },
 
+  async addImage(
+    accommodationId: string,
+    image: { url: string; publicId?: string; isMain?: boolean }
+  ): Promise<AccommodationImage> {
+    return apiClient.post<AccommodationImage>(
+      `/accommodations/${accommodationId}/images`,
+      image
+    );
+  },
+
+  async deleteImage(accommodationId: string, imageId: string): Promise<void> {
+    await apiClient.delete<void>(`/accommodations/${accommodationId}/images/${imageId}`);
+  },
+
   async update(id: string, dto: Partial<CreateAccommodationDto>): Promise<Accommodation> {
-    const payload: any = { ...dto };
-    if (dto.images) {
-      payload.images = dto.images.map((img, index) => {
-        if (typeof img === 'string') {
-          return { url: img, isMain: index === 0 };
-        }
-        return { url: img.url, isMain: Boolean(img.isMain) };
-      });
+    // UpdateAccommodationDto has no `images` field: image mutations are handled
+    // exclusively through addImage/deleteImage, never in the PUT payload.
+    const { images: dtoImages, ...generalData } = dto;
+    const payload: any = { ...generalData };
+    if (generalData.pricePerNight !== undefined) {
+      payload.pricePerNight = Number(generalData.pricePerNight);
     }
-    if (dto.pricePerNight !== undefined) {
-      payload.pricePerNight = Number(dto.pricePerNight);
-    }
-    if (dto.maxGuests !== undefined) {
-      payload.maxGuests = Number(dto.maxGuests);
+    if (generalData.maxGuests !== undefined) {
+      payload.maxGuests = Number(generalData.maxGuests);
     }
 
     try {
@@ -209,8 +226,8 @@ export const accommodationsService = {
     const existing = localAccommodations[index];
 
     let updatedImages = existing.images;
-    if (dto.images) {
-      updatedImages = dto.images.map((img, index) => {
+    if (dtoImages) {
+      updatedImages = dtoImages.map((img, index) => {
         if (typeof img === 'string') {
           return {
             id: `img-${Date.now()}-${index}`,
@@ -228,7 +245,7 @@ export const accommodationsService = {
 
     const updated: Accommodation = {
       ...existing,
-      ...dto,
+      ...generalData,
       images: updatedImages,
       pricePerNight: dto.pricePerNight ? Number(dto.pricePerNight) : existing.pricePerNight,
       maxGuests: dto.maxGuests ? Number(dto.maxGuests) : existing.maxGuests,

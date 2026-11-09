@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { useHostAccommodations } from '../../../hooks/useHostAccommodations.ts';
 import { accommodationsService } from '../../../services/accommodations.service.ts';
-import type { Accommodation, CreateAccommodationDto } from '../../../types/accommodation.types.ts';
+import type {
+  Accommodation,
+  AccommodationImage,
+  CreateAccommodationDto,
+} from '../../../types/accommodation.types.ts';
 import { AccommodationEditorForm } from './AccommodationEditorForm.tsx';
 
 export interface AccommodationEditorPageProps {
@@ -50,9 +55,41 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
 
   const handleSubmit = async (dto: CreateAccommodationDto) => {
     setIsSubmitting(true);
+    setError(null);
     try {
+      const galleryImages = dto.images ?? [];
+
       if (mode === 'edit' && accommodationId) {
-        await updateAccommodation(accommodationId, dto);
+        // UpdateAccommodationDto has no `images` field: send general data only,
+        // then persist image additions/removals through their own endpoints.
+        const { images: _images, ...generalData } = dto;
+        await updateAccommodation(accommodationId, generalData);
+
+        const initialImages = initialData?.images ?? [];
+        const initialIds = new Set(initialImages.map((image) => image.id));
+        const currentIds = new Set(
+          galleryImages
+            .map((image) => (typeof image === 'string' ? null : image.id))
+            .filter((id): id is string => Boolean(id))
+        );
+
+        const removedImages = initialImages.filter((image) => !currentIds.has(image.id));
+        const newImages = galleryImages.filter(
+          (image): image is AccommodationImage =>
+            typeof image !== 'string' && !initialIds.has(image.id)
+        );
+
+        for (const image of removedImages) {
+          await accommodationsService.deleteImage(accommodationId, image.id);
+        }
+
+        for (const image of newImages) {
+          await accommodationsService.addImage(accommodationId, {
+            url: image.url,
+            publicId: image.publicId,
+            isMain: Boolean(image.isMain),
+          });
+        }
       } else {
         await createAccommodation(dto);
       }
@@ -90,6 +127,12 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
 
   return (
     <AccommodationEditorPageWrapper>
+      {error && (
+        <div className="flex items-start gap-2 pb-3 text-xs font-semibold text-rose-700">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
       <AccommodationEditorForm
         initialData={initialData}
         mode={mode}

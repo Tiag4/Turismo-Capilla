@@ -111,7 +111,6 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       ? initialData.images
       : []
   );
-  const [isUploadingImages, setIsUploadingImages] = useState<boolean>(false);
 
   const handleToggleAmenity = (amenity: string) => {
     setSelectedAmenities((prev) =>
@@ -121,7 +120,6 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isUploadingImages) return;
     await onSubmit({
       name,
       description,
@@ -183,7 +181,6 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
             variant="terracotta"
             size="md"
             isLoading={isLoading}
-            disabled={isUploadingImages}
             className="shadow-xs font-bold flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
@@ -259,7 +256,6 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           <PhotoGalleryDropzone
             images={images}
             onChange={setImages}
-            onUploadingChange={setIsUploadingImages}
           />
         </div>
       </div>
@@ -274,7 +270,6 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           variant="terracotta"
           size="md"
           isLoading={isLoading}
-          disabled={isUploadingImages}
           className="shadow-xs font-bold flex items-center gap-2"
         >
           <Save className="w-4 h-4" />

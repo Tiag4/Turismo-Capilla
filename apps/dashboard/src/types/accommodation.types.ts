@@ -5,6 +5,11 @@ export interface AccommodationImage {
   url: string;
   publicId?: string;
   isMain: boolean;
+  /**
+   * Archivo local pendiente de subida. Solo existe en el cliente antes de
+   * guardar; se sube al storage recién al confirmar el formulario.
+   */
+  file?: File;
 }
 
 export type ComplianceStatus = 'APPROVED' | 'IN_REVIEW' | 'REJECTED';

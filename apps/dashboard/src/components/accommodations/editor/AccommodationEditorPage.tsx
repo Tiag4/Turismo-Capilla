@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useHostAccommodations } from '../../../hooks/useHostAccommodations.ts';
 import { accommodationsService } from '../../../services/accommodations.service.ts';
+import { mediaService } from '../../../services/media.service.ts';
 import type {
   Accommodation,
   AccommodationImage,
@@ -56,8 +57,34 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
   const handleSubmit = async (dto: CreateAccommodationDto) => {
     setIsSubmitting(true);
     setError(null);
+
+    // publicIds subidos en este intento: si algo falla después, se eliminan
+    // para no dejar archivos huérfanos en el storage.
+    const uploadedPublicIds: string[] = [];
+
     try {
-      const galleryImages = dto.images ?? [];
+      const galleryImages: AccommodationImage[] = (dto.images ?? []).filter(
+        (image): image is AccommodationImage => typeof image !== 'string'
+      );
+
+      const pendingImages = galleryImages.filter((image) => Boolean(image.file));
+
+      // Subida diferida: recién acá se envía al storage. Abandonar el editor
+      // antes de guardar no genera ninguna petición.
+      const uploaded = new Map<string, { url: string; publicId: string }>();
+      for (const image of pendingImages) {
+        const result = await mediaService.uploadImage(image.file as File);
+        uploadedPublicIds.push(result.publicId);
+        uploaded.set(image.id, result);
+      }
+
+      const resolveImage = (image: AccommodationImage) => {
+        const remote = uploaded.get(image.id);
+        return {
+          url: remote ? remote.url : image.url,
+          publicId: remote ? remote.publicId : image.publicId,
+        };
+      };
 
       if (mode === 'edit' && accommodationId) {
         // UpdateAccommodationDto has no `images` field: send general data only,
@@ -68,33 +95,43 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
         const initialImages = initialData?.images ?? [];
         const initialIds = new Set(initialImages.map((image) => image.id));
         const currentIds = new Set(
-          galleryImages
-            .map((image) => (typeof image === 'string' ? null : image.id))
-            .filter((id): id is string => Boolean(id))
+          galleryImages.filter((image) => !image.file).map((image) => image.id)
         );
 
         const removedImages = initialImages.filter((image) => !currentIds.has(image.id));
-        const newImages = galleryImages.filter(
-          (image): image is AccommodationImage =>
-            typeof image !== 'string' && !initialIds.has(image.id)
-        );
+        const newImages = galleryImages.filter((image) => !initialIds.has(image.id));
 
         for (const image of removedImages) {
           await accommodationsService.deleteImage(accommodationId, image.id);
         }
 
         for (const image of newImages) {
+          const resolved = resolveImage(image);
           await accommodationsService.addImage(accommodationId, {
-            url: image.url,
-            publicId: image.publicId,
+            url: resolved.url,
+            publicId: resolved.publicId,
             isMain: Boolean(image.isMain),
           });
         }
       } else {
-        await createAccommodation(dto);
+        const finalImages = galleryImages.map((image) => ({
+          ...image,
+          ...resolveImage(image),
+          file: undefined,
+        }));
+        await createAccommodation({ ...dto, images: finalImages });
       }
+
       onSuccess();
     } catch (err: any) {
+      // Compensación: rollback de lo que se llegó a subir en este intento.
+      for (const publicId of uploadedPublicIds) {
+        try {
+          await mediaService.deleteByPublicId(publicId);
+        } catch {
+          // Si el rollback falla, no ocultamos el error original.
+        }
+      }
       setError(err?.message || 'Error al guardar los datos del alojamiento.');
     } finally {
       setIsSubmitting(false);

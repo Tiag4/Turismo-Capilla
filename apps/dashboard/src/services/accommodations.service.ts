@@ -130,7 +130,7 @@ export const accommodationsService = {
     const formattedImages = (dto.images || [])
       .filter((img) => {
         const url = typeof img === 'string' ? img : img.url;
-        return !url.startsWith('data:');
+        return !url.startsWith('data:') && !url.startsWith('blob:');
       })
       .map((img, index) => {
         if (typeof img === 'string') {

@@ -18,4 +18,13 @@ export const mediaService = {
       url: uploaded.url,
     };
   },
+
+  /**
+   * Borra un archivo del storage por su publicId. Se usa para compensar
+   * subidas que quedaron sin referencia cuando el guardado falla.
+   */
+  async deleteByPublicId(publicId: string): Promise<void> {
+    if (!publicId) return;
+    await apiClient.delete<void>(`/media/${publicId}`);
+  },
 };

@@ -14,49 +14,42 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import { UploadCloud, Image as ImageIcon, AlertCircle, Loader2 } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import type { AccommodationImage } from '../../../types/accommodation.types.ts';
-import { mediaService } from '../../../services/media.service.ts';
 import { SortablePhotoItem } from './SortablePhotoItem.tsx';
 
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
-interface PendingUpload {
-  id: string;
-  fileName: string;
-  status: 'uploading' | 'error';
-  error?: string;
-}
-
 export interface PhotoGalleryDropzoneProps {
   images: AccommodationImage[];
   onChange: (images: AccommodationImage[]) => void;
   maxImages?: number;
-  onUploadingChange?: (isUploading: boolean) => void;
 }
 
+/**
+ * La subida al storage NO ocurre acá: el archivo queda pendiente con una vista
+ * previa local (object URL) y se sube recién al guardar el alojamiento. Así,
+ * abandonar el editor no deja imágenes huérfanas en el storage.
+ */
 export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
   images,
   onChange,
   maxImages = 10,
-  onUploadingChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imagesRef = useRef(images);
+  const objectUrlsRef = useRef<Set<string>>(new Set());
   const [isDragOver, setIsDragOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [pendingUploads, setPendingUploads] = useState<PendingUpload[]>([]);
 
+  // Liberar las vistas previas locales al desmontar
   useEffect(() => {
-    imagesRef.current = images;
-  }, [images]);
-
-  const isUploading = pendingUploads.some((item) => item.status === 'uploading');
-
-  useEffect(() => {
-    onUploadingChange?.(isUploading);
-  }, [isUploading, onUploadingChange]);
+    const urls = objectUrlsRef.current;
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+      urls.clear();
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -86,48 +79,10 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
     }
   };
 
-  const uploadFiles = async (files: File[]) => {
-    for (const file of files) {
-      const pendingId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      setPendingUploads((prev) => [
-        ...prev,
-        { id: pendingId, fileName: file.name, status: 'uploading' },
-      ]);
-
-      try {
-        const uploaded = await mediaService.uploadImage(file);
-        const current = imagesRef.current;
-        const nextImage: AccommodationImage = {
-          id: uploaded.publicId || `img-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-          url: uploaded.url,
-          publicId: uploaded.publicId,
-          isMain: current.length === 0 || !current.some((img) => img.isMain),
-        };
-
-        imagesRef.current = [...current, nextImage];
-        onChange(imagesRef.current);
-        setPendingUploads((prev) => prev.filter((item) => item.id !== pendingId));
-      } catch (err: any) {
-        setPendingUploads((prev) =>
-          prev.map((item) =>
-            item.id === pendingId
-              ? {
-                  ...item,
-                  status: 'error',
-                  error: err?.message || 'No se pudo subir la imagen al almacenamiento.',
-                }
-              : item
-          )
-        );
-      }
-    }
-  };
-
   const processFiles = (files: FileList | File[]) => {
     setErrorMsg(null);
 
-    const pendingCount = pendingUploads.filter((item) => item.status === 'uploading').length;
-    let availableSlots = maxImages - images.length - pendingCount;
+    let availableSlots = maxImages - images.length;
     const accepted: File[] = [];
     const validationErrors: string[] = [];
 
@@ -151,9 +106,22 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
     if (validationErrors.length > 0) {
       setErrorMsg(validationErrors.join(' '));
     }
-    if (accepted.length > 0) {
-      void uploadFiles(accepted);
-    }
+
+    if (accepted.length === 0) return;
+
+    const hasMain = images.some((img) => img.isMain);
+    const newImages: AccommodationImage[] = accepted.map((file, index) => {
+      const objectUrl = URL.createObjectURL(file);
+      objectUrlsRef.current.add(objectUrl);
+      return {
+        id: `pending-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 7)}`,
+        url: objectUrl,
+        isMain: !hasMain && index === 0,
+        file,
+      };
+    });
+
+    onChange([...images, ...newImages]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -180,12 +148,20 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
   };
 
   const handleRemove = (targetId: string) => {
+    const target = images.find((img) => img.id === targetId);
+    if (target && target.url.startsWith('blob:')) {
+      URL.revokeObjectURL(target.url);
+      objectUrlsRef.current.delete(target.url);
+    }
+
     const remaining = images.filter((img) => img.id !== targetId);
     if (remaining.length > 0 && !remaining.some((img) => img.isMain)) {
       remaining[0].isMain = true;
     }
     onChange(remaining);
   };
+
+  const pendingCount = images.filter((img) => Boolean(img.file)).length;
 
   return (
     <div className="flex flex-col gap-4">
@@ -198,6 +174,13 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
           <span className="text-xs text-[var(--color-sand-500)]">
             Cargá imágenes reales y arrastralas para ordenar su presentación en el portal. La primera será la portada.
           </span>
+          {pendingCount > 0 && (
+            <span className="block text-xs text-[var(--color-sand-500)] mt-1">
+              {pendingCount === 1
+                ? '1 fotografía se subirá al guardar.'
+                : `${pendingCount} fotografías se subirán al guardar.`}
+            </span>
+          )}
         </div>
       </div>
 
@@ -250,34 +233,6 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
-      )}
-
-      {/* Per-file upload status (flat list, no upload yet = not in gallery) */}
-      {pendingUploads.length > 0 && (
-        <ul
-          aria-live="polite"
-          aria-busy={isUploading}
-          className="divide-y divide-[var(--color-sand-200)] border-y border-[var(--color-sand-200)]"
-        >
-          {pendingUploads.map((item) => (
-            <li key={item.id} className="flex items-center justify-between gap-3 py-2 text-xs">
-              <span className="truncate text-[var(--color-sand-700)]">{item.fileName}</span>
-              {item.status === 'uploading' ? (
-                <span className="flex items-center gap-1.5 shrink-0 text-[var(--color-sand-500)]">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Subiendo…</span>
-                </span>
-              ) : (
-                <span className="flex items-center gap-1.5 shrink-0 text-rose-700 max-w-[65%]">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate" title={item.error}>
-                    {item.error}
-                  </span>
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
       )}
 
       {/* Sortable Photo Grid */}

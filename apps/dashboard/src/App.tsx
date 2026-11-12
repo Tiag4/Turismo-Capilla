@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from './hooks/useAuth.ts';
 import { LoginForm } from './components/auth/LoginForm.tsx';
+import { HostRegistrationPage } from './components/auth/HostRegistrationPage.tsx';
 import { DashboardLayout } from './components/layout/DashboardLayout.tsx';
 import { BookingList } from './components/bookings/BookingList.tsx';
 import { AccommodationList } from './components/accommodations/AccommodationList.tsx';
@@ -85,6 +86,14 @@ export const App: React.FC = () => {
     navigateToCalendarBlock,
     navigateToCalendar,
   } = useDashboardRouter(user?.role ?? 'HOST');
+
+  const isHostRegistrationRoute =
+    typeof window !== 'undefined' &&
+    window.location.pathname.replace(/\/+$/, '') === '/registro-prestador';
+
+  if (isHostRegistrationRoute) {
+    return <HostRegistrationPage />;
+  }
 
   if (!isAuthenticated || !user) {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;

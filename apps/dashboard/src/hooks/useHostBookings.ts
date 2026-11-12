@@ -27,9 +27,19 @@ export function useHostBookings() {
   }, [fetchBookings]);
 
   const updateBookingStatus = useCallback(async (id: string, status: BookingStatus) => {
-    const updated = await bookingsService.updateStatus(id, status);
-    setBookings((prev) => prev.map((b) => (b.id === id ? updated : b)));
-    return updated;
+    setError(null);
+    try {
+      const updated = await bookingsService.updateStatus(id, status);
+      setBookings((prev) => prev.map((b) => (b.id === id ? updated : b)));
+      return updated;
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'No se pudo actualizar el estado de la reserva.'
+      );
+      return null;
+    }
   }, []);
 
   const filteredBookings = useMemo(() => {

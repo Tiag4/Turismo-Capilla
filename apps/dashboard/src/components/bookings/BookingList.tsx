@@ -16,6 +16,7 @@ export const BookingList: React.FC = () => {
     searchQuery,
     setSearchQuery,
     isLoading,
+    error,
     updateBookingStatus,
   } = useHostBookings();
 
@@ -67,6 +68,15 @@ export const BookingList: React.FC = () => {
     <div className="flex flex-col gap-6">
       {/* High-density metrics strip (Flat, zero floating card) */}
       <InlineStatStrip stats={statItems} />
+
+      {error && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-800"
+        >
+          {error}
+        </div>
+      )}
 
       {/* Filter and Search Controls (Direct on canvas) */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-1">

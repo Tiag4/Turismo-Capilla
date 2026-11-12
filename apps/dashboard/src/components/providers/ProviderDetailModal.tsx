@@ -33,17 +33,23 @@ export const ProviderDetailModal: React.FC<ProviderDetailModalProps> = ({
 }) => {
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [isLoadingAcc, setIsLoadingAcc] = useState(false);
+  const [accommodationsError, setAccommodationsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (provider && isOpen) {
       setIsLoadingAcc(true);
+      setAccommodationsError(null);
       providersService
         .getAccommodationsByHost(provider)
         .then((data) => setAccommodations(data))
-        .catch(() => setAccommodations([]))
+        .catch(() => {
+          setAccommodations([]);
+          setAccommodationsError('No se pudieron cargar los alojamientos del prestador.');
+        })
         .finally(() => setIsLoadingAcc(false));
     } else {
       setAccommodations([]);
+      setAccommodationsError(null);
     }
   }, [provider, isOpen]);
 
@@ -169,6 +175,13 @@ export const ProviderDetailModal: React.FC<ProviderDetailModalProps> = ({
             <div className="p-6 text-center bg-sand-50 rounded-xl border border-sand-200">
               <div className="w-6 h-6 border-2 border-terracotta-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
               <p className="text-xs text-sand-600 font-medium">Cargando establecimientos...</p>
+            </div>
+          ) : accommodationsError ? (
+            <div
+              role="alert"
+              className="p-4 text-center bg-rose-50 rounded-xl border border-rose-200 text-xs font-semibold text-rose-800"
+            >
+              {accommodationsError}
             </div>
           ) : accommodations.length === 0 ? (
             <div className="p-6 text-center bg-sand-50 rounded-xl border border-sand-200 text-xs text-sand-500">

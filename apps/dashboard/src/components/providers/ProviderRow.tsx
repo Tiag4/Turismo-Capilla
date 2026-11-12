@@ -50,7 +50,7 @@ export const ProviderRow: React.FC<ProviderRowProps> = ({
       <td className="py-3.5 px-3 sm:px-4 text-center">
         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-[var(--color-sand-100)] text-[var(--color-sand-800)]">
           <Home className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
-          {item.accommodationsCount ?? 1}
+          {item.accommodationsCount ?? 0}
         </span>
       </td>
 

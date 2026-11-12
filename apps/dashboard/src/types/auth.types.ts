@@ -29,6 +29,15 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface RegisterHostPayload {
+  token: string;
+  email: string;
+  password: string;
+  name: string;
+  lastName: string;
+  phone?: string;
+}
+
 export interface UpdateProfilePayload {
   name: string;
   lastName: string;

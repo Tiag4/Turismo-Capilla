@@ -13,7 +13,7 @@ export interface InvitationManagerProps {
 export const InvitationManager: React.FC<InvitationManagerProps> = ({
   onNavigateCreate,
 }) => {
-  const { invitations, isLoading, revokeInvitation } = useAdminInvitations();
+  const { invitations, isLoading, error, revokeInvitation } = useAdminInvitations();
 
   // Revoke state
   const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
@@ -65,6 +65,15 @@ export const InvitationManager: React.FC<InvitationManagerProps> = ({
         </span>
         Cada invitación oficial es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Secretaría de Turismo de Capilla del Monte antes de recibir pagos o reservas.
       </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-800"
+        >
+          {error}
+        </div>
+      )}
 
       {/* List */}
       <InvitationList

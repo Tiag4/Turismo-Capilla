@@ -30,6 +30,7 @@ export const ProvidersDirectoryView: React.FC<ProvidersDirectoryViewProps> = ({
   const [subTab, setSubTab] = useState<ViewSubTab>('hosts');
   const [providers, setProviders] = useState<ProviderUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
 
@@ -43,10 +44,11 @@ export const ProvidersDirectoryView: React.FC<ProvidersDirectoryViewProps> = ({
   const loadProviders = useCallback(async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const data = await providersService.getAll();
       setProviders(data);
     } catch (err) {
-      console.error('Error al cargar prestadores:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo cargar el directorio de prestadores.');
     } finally {
       setIsLoading(false);
     }
@@ -60,11 +62,12 @@ export const ProvidersDirectoryView: React.FC<ProvidersDirectoryViewProps> = ({
     if (!targetProvider) return;
     try {
       setIsTogglingStatus(true);
+      setError(null);
       await providersService.toggleStatus(targetProvider.id, targetProvider.isActive);
       setTargetProvider(null);
       await loadProviders();
     } catch (err) {
-      console.error('Error al cambiar estado del prestador:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo cambiar el estado del prestador.');
     } finally {
       setIsTogglingStatus(false);
     }
@@ -75,7 +78,7 @@ export const ProvidersDirectoryView: React.FC<ProvidersDirectoryViewProps> = ({
     const total = providers.length;
     const active = providers.filter((p) => p.isActive).length;
     const suspended = providers.filter((p) => !p.isActive).length;
-    const totalAccommodations = providers.reduce((acc, curr) => acc + (curr.accommodationsCount || 1), 0);
+    const totalAccommodations = providers.reduce((acc, curr) => acc + (curr.accommodationsCount ?? 0), 0);
     return { total, active, suspended, totalAccommodations };
   }, [providers]);
 
@@ -214,6 +217,15 @@ export const ProvidersDirectoryView: React.FC<ProvidersDirectoryViewProps> = ({
               ))}
             </div>
           </div>
+
+          {error && (
+            <div
+              role="alert"
+              className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-800"
+            >
+              {error}
+            </div>
+          )}
 
           {/* Tabla de Prestadores (Direct on canvas, zero floating card) */}
           {isLoading ? (

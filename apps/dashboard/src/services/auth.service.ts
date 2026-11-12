@@ -1,5 +1,12 @@
 import { apiClient } from './api.client.ts';
-import type { AuthResponse, LoginCredentials, User, UpdateProfilePayload, ChangePasswordPayload } from '../types/auth.types.ts';
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterHostPayload,
+  User,
+  UpdateProfilePayload,
+  ChangePasswordPayload,
+} from '../types/auth.types.ts';
 
 const TOKEN_KEY = 'turismo_capilla_token';
 const USER_KEY = 'turismo_capilla_user';
@@ -41,25 +48,34 @@ function clearSession(): void {
   localStorage.removeItem(USER_KEY);
 }
 
+function persistSession(data: AuthResponse): AuthResponse {
+  const jwt = data.token || data.accessToken || '';
+
+  if (!isSessionTokenValid(jwt)) {
+    throw new Error('La respuesta del servidor no contiene un token de sesión válido');
+  }
+
+  localStorage.setItem(TOKEN_KEY, jwt);
+  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+  return {
+    ...data,
+    accessToken: jwt,
+    token: jwt,
+  };
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     // Sin fallback local: una credencial inválida o una API caída debe fallar,
     // nunca abrir una sesión ficticia.
     const data = await apiClient.post<AuthResponse>('/auth/login', credentials);
-    const jwt = data.token || data.accessToken || '';
+    return persistSession(data);
+  },
 
-    if (!isSessionTokenValid(jwt)) {
-      throw new Error('La respuesta del servidor no contiene un token de sesión válido');
-    }
-
-    localStorage.setItem(TOKEN_KEY, jwt);
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-
-    return {
-      ...data,
-      accessToken: jwt,
-      token: jwt,
-    };
+  async registerHost(payload: RegisterHostPayload): Promise<AuthResponse> {
+    const data = await apiClient.post<AuthResponse>('/auth/register-host', payload);
+    return persistSession(data);
   },
 
   getCurrentUser(): User | null {

@@ -31,9 +31,13 @@ export const RevokeInvitationModal: React.FC<RevokeInvitationModalProps> = ({
       return;
     }
     setError(null);
-    await onRevoke(invitation.id, reason.trim());
-    setReason('');
-    onClose();
+    try {
+      await onRevoke(invitation.id, reason.trim());
+      setReason('');
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo revocar la invitación.');
+    }
   };
 
   const handleClose = () => {

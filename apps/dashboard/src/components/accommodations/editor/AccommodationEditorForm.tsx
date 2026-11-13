@@ -77,8 +77,20 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [maxGuests, setMaxGuests] = useState(
     initialData?.maxGuests ? String(initialData.maxGuests) : '4'
   );
-  const [checkIn, setCheckIn] = useState('14:00 hs');
-  const [checkOut, setCheckOut] = useState('10:00 hs');
+  const [unitTitle, setUnitTitle] = useState(initialData?.unitTitle || '');
+  const [surfaceSqm, setSurfaceSqm] = useState(
+    initialData?.surfaceSqm ? String(initialData.surfaceSqm) : ''
+  );
+  const [bedroomsSummary, setBedroomsSummary] = useState(
+    initialData?.bedroomsSummary || ''
+  );
+  const [checkIn, setCheckIn] = useState(initialData?.checkInTime || '14:00 hs');
+  const [checkOut, setCheckOut] = useState(initialData?.checkOutTime || '10:00 hs');
+  const [phone, setPhone] = useState(initialData?.phone || '');
+  const [petPolicy, setPetPolicy] = useState(initialData?.petPolicy || '');
+  const [cancellationPolicy, setCancellationPolicy] = useState(initialData?.cancellationPolicy || '');
+  const [licenseNumber, setLicenseNumber] = useState(initialData?.licenseNumber || '');
+  const [responseTime, setResponseTime] = useState(initialData?.responseTime || 'Responde habitualmente en el día');
   const [hasBreakfast, setHasBreakfast] = useState<boolean>(
     initialData?.hasBreakfast ??
       (initialData?.amenities?.some((a) => a.toLowerCase().includes('desayuno')) || false)
@@ -132,6 +144,16 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       longitude: longitude ? parseFloat(longitude) : null,
       pricePerNight: Number(pricePerNight),
       maxGuests: Number(maxGuests),
+      unitTitle: unitTitle.trim() || undefined,
+      surfaceSqm: surfaceSqm ? Number(surfaceSqm) : undefined,
+      bedroomsSummary: bedroomsSummary.trim() || undefined,
+      phone: phone.trim() || undefined,
+      checkInTime: checkIn,
+      checkOutTime: checkOut,
+      petPolicy: petPolicy.trim() || undefined,
+      cancellationPolicy: cancellationPolicy.trim() || undefined,
+      licenseNumber: licenseNumber.trim() || undefined,
+      responseTime: responseTime.trim() || undefined,
       hasBreakfast,
       breakfastType: hasBreakfast ? breakfastType : undefined,
       amenities: selectedAmenities,
@@ -198,6 +220,10 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setType={setType}
           description={description}
           setDescription={setDescription}
+          licenseNumber={licenseNumber}
+          setLicenseNumber={setLicenseNumber}
+          responseTime={responseTime}
+          setResponseTime={setResponseTime}
         />
 
         <LocationSection
@@ -216,6 +242,18 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setPricePerNight={setPricePerNight}
           maxGuests={maxGuests}
           setMaxGuests={setMaxGuests}
+          unitTitle={unitTitle}
+          setUnitTitle={setUnitTitle}
+          surfaceSqm={surfaceSqm}
+          setSurfaceSqm={setSurfaceSqm}
+          bedroomsSummary={bedroomsSummary}
+          setBedroomsSummary={setBedroomsSummary}
+          phone={phone}
+          setPhone={setPhone}
+          petPolicy={petPolicy}
+          setPetPolicy={setPetPolicy}
+          cancellationPolicy={cancellationPolicy}
+          setCancellationPolicy={setCancellationPolicy}
           checkIn={checkIn}
           setCheckIn={setCheckIn}
           checkOut={checkOut}

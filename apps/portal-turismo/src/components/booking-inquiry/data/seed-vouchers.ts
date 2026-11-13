@@ -31,6 +31,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     status: 'COMPLETED',
     createdAt: '2026-09-08T14:30:00Z',
     hostPhone: '+54 9 3548 40-1122',
+    isDemo: true,
   },
   {
     code: 'CAP-2026-5120',
@@ -62,6 +63,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     status: 'PENDING_CONFIRMATION',
     createdAt: '2026-09-07T11:20:00Z',
     hostPhone: '+54 9 3548 41-9988',
+    isDemo: true,
   },
   {
     code: 'CAP-2026-3310',
@@ -93,6 +95,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     status: 'CONFIRMED',
     createdAt: '2026-09-06T18:45:00Z',
     hostPhone: '+54 9 3548 42-3344',
+    isDemo: true,
   },
 ];
 
@@ -115,7 +118,7 @@ export function lookupBooking(code: string, email?: string): BookingVoucherRecor
         }
         return true;
       });
-      if (match) return match;
+      if (match) return { ...match, isDemo: match.isDemo ?? false };
     } catch {
       // Fall through to seed records
     }
@@ -131,5 +134,5 @@ export function lookupBooking(code: string, email?: string): BookingVoucherRecor
     return true;
   });
 
-  return seedMatch || null;
+  return seedMatch ? { ...seedMatch, isDemo: true } : null;
 }

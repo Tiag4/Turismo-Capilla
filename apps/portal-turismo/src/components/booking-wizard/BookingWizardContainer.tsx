@@ -17,24 +17,24 @@ export const BookingWizardContainer: React.FC<BookingWizardContainerProps> = ({ 
   const wizard = useBookingWizard(data);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 pb-24">
-      {/* Stepper Superior con espaciado amplio respecto al navbar sticky */}
-      <div className="pt-3 sm:pt-5">
+    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 pb-16">
+      {/* Stepper Superior con espaciado equilibrado */}
+      <div className="pt-3 sm:pt-4">
         <BookingWizardStepper step={wizard.step} />
       </div>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         {wizard.step === 'success' ? (
           <BookingWizardSuccess data={data} wizard={wizard} />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-            {/* Columna Izquierda: Sticky a top-24 (96px) para quedar holgadamente debajo del navbar (68px) */}
-            <aside className="lg:col-span-5 order-2 lg:order-1 lg:sticky lg:top-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            {/* Columna Izquierda: Resumen Sticky */}
+            <aside className="lg:col-span-5 order-2 lg:order-1 lg:sticky lg:top-20">
               <BookingWizardSummaryCol data={data} wizard={wizard} />
             </aside>
 
             {/* Columna Derecha: Formularios de Fase */}
-            <section className="lg:col-span-7 order-1 lg:order-2 space-y-6">
+            <section className="lg:col-span-7 order-1 lg:order-2 space-y-5">
               {wizard.step === 2 && <BookingWizardStep2Fields data={data} wizard={wizard} />}
               {wizard.step === 3 && <BookingWizardStep3Confirm data={data} wizard={wizard} />}
             </section>

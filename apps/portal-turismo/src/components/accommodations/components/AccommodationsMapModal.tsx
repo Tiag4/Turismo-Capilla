@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, MapPin } from 'lucide-react';
 import { InteractiveMapContainer } from '../../map/InteractiveMapContainer';
+import { useAnimatedPresence } from '../../../hooks/useAnimatedPresence';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 
 interface AccommodationsMapModalProps {
   isOpen: boolean;
@@ -9,12 +11,14 @@ interface AccommodationsMapModalProps {
 }
 
 export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ isOpen, onClose }) => {
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 200);
+  useBodyScrollLock(shouldRender);
   // Scroll Lock obligatorio (AGENTS.md 8.2)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!shouldRender) return;
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+
+
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -22,15 +26,15 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
 
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalOverflow;
+
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen || typeof document === 'undefined') return null;
+  if (!shouldRender || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in-0 duration-200">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm transition-opacity"
@@ -43,7 +47,7 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
         role="dialog"
         aria-modal="true"
         aria-label="Mapa Territorial de Alojamientos"
-        className="relative w-full max-w-6xl h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10"
+        className={`relative w-full max-w-6xl h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10 transition-all duration-200 ease-out ${isVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-3 opacity-0'}`}
       >
         {/* Barra Superior */}
         <div className="px-6 py-4 border-b border-stone-200 bg-[#FAF8F5] flex items-center justify-between">

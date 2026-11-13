@@ -16,7 +16,7 @@ const TYPE_MAP: Record<string, string> = {
 
 function mapApiToPlace(item: Accommodation): MapPlace {
   const price = typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
-  const mainImage = item.images?.find((img) => img.isMain)?.url || item.images?.[0]?.url || 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80';
+  const mainImage = item.images?.find((img) => img.isMain)?.url || item.images?.[0]?.url || '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
 
   return {
     id: item.id,
@@ -24,12 +24,13 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     title: item.name,
     subtitle: item.description,
     category: TYPE_MAP[item.type] || 'Alojamiento',
-    lat: -30.857,
-    lng: -64.515,
+    lat: item.latitude ?? -30.857,
+    lng: item.longitude ?? -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
     rating: 4.9,
     reviewCount: 20,
     imageUrl: mainImage,
+    galleryImages: item.images?.map((img) => img.url),
     address: item.address,
     verified: item.isActive,
     hasBreakfast: item.hasBreakfast ?? item.amenities?.some((a) => a.toLowerCase().includes('desayuno')),

@@ -102,7 +102,12 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {voucher.isDemo && (
+            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white shadow-xs">
+              Modo Demostración (Datos Locales)
+            </span>
+          )}
           <span
             className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${statusClassName}`}
           >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, BedDouble, Bed, Home, Maximize2, Utensils, ShowerHead, Tv } from 'lucide-react';
+import { Users, BedDouble, Bed, Home, Maximize2, Utensils, ShowerHead, Tv, Flame, Waves, Wifi } from 'lucide-react';
 import type { UnitDetails } from '../types';
 
 interface AccommodationRoomTypeCardProps {
@@ -8,7 +8,7 @@ interface AccommodationRoomTypeCardProps {
 
 const getFeatureIcon = (feature: string) => {
   const lower = feature.toLowerCase();
-  if (lower.includes('entero') || lower.includes('chalet') || lower.includes('cabaña')) {
+  if (lower.includes('entero') || lower.includes('chalet') || lower.includes('cabaña') || lower.includes('propiedad')) {
     return <Home className="w-3.5 h-3.5 text-stone-700 shrink-0" />;
   }
   if (lower.includes('m²')) {
@@ -22,6 +22,15 @@ const getFeatureIcon = (feature: string) => {
   }
   if (lower.includes('tv')) {
     return <Tv className="w-3.5 h-3.5 text-stone-700 shrink-0" />;
+  }
+  if (lower.includes('asador') || lower.includes('parrilla')) {
+    return <Flame className="w-3.5 h-3.5 text-stone-700 shrink-0" />;
+  }
+  if (lower.includes('pileta') || lower.includes('piscina')) {
+    return <Waves className="w-3.5 h-3.5 text-stone-700 shrink-0" />;
+  }
+  if (lower.includes('wifi') || lower.includes('wi-fi')) {
+    return <Wifi className="w-3.5 h-3.5 text-stone-700 shrink-0" />;
   }
   return null;
 };

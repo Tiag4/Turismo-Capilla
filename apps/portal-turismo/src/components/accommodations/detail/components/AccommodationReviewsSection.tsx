@@ -9,6 +9,7 @@ interface AccommodationReviewsSectionProps {
   stats: ReviewStats;
   isLoading: boolean;
   submitSuccess: boolean;
+  pendingModeration?: boolean;
   onOpenReviewModal: () => void;
 }
 
@@ -17,8 +18,12 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
   stats,
   isLoading,
   submitSuccess,
+  pendingModeration = false,
   onOpenReviewModal,
 }) => {
+  const totalReviews = stats?.totalReviews ?? 0;
+  const averageRating = stats?.averageRating ?? 0;
+
   return (
     <section
       id="opiniones-huespedes"
@@ -36,11 +41,17 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
               Opiniones de Huéspedes
             </h2>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-900 text-white text-xs font-extrabold">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{(stats?.averageRating ?? 4.9).toFixed(1)}</span>
-              <span className="text-stone-300 font-medium">
-                · {stats?.totalReviews ?? 0} {(stats?.totalReviews ?? 0) === 1 ? 'reseña' : 'reseñas'}
-              </span>
+              <Star className={`w-3.5 h-3.5 ${totalReviews > 0 ? 'fill-amber-400 text-amber-400' : 'text-stone-400'}`} />
+              {totalReviews > 0 ? (
+                <>
+                  <span>{averageRating.toFixed(1)}</span>
+                  <span className="text-stone-300 font-medium">
+                    · {totalReviews} {totalReviews === 1 ? 'reseña' : 'reseñas'}
+                  </span>
+                </>
+              ) : (
+                <span className="text-stone-200 font-semibold">Sin reseñas aún</span>
+              )}
             </div>
           </div>
           <p className="text-xs sm:text-sm text-stone-600 font-medium">
@@ -66,11 +77,13 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
         >
           <div className="flex items-center gap-2.5">
             <span className="px-2.5 py-1 rounded-lg bg-uritorco-600 text-white text-[11px] font-extrabold uppercase">
-              Publicada
+              {pendingModeration ? 'En moderación' : 'Publicada'}
             </span>
             <CheckCircle2 className="w-4 h-4 text-uritorco-600 shrink-0" />
             <span className="text-xs sm:text-sm font-bold text-stone-900">
-              Tu reseña se sumó al promedio del alojamiento. ¡Gracias por tu aporte!
+              {pendingModeration
+                ? 'Tu reseña fue enviada a moderación municipal y se publicará en la ficha al ser aprobada. ¡Gracias!'
+                : 'Tu reseña se sumó al promedio del alojamiento. ¡Gracias por tu aporte!'}
             </span>
           </div>
         </div>

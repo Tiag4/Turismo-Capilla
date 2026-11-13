@@ -13,8 +13,8 @@ export const AccommodationLeftCol: React.FC<AccommodationLeftColProps> = ({
   averageRating,
   totalReviews,
 }) => {
-  const displayRating = (averageRating ?? data.rating ?? 4.9).toFixed(1);
-  const displayCount = totalReviews ?? data.reviewCount ?? 20;
+  const displayCount = totalReviews ?? data.reviewCount ?? 0;
+  const displayRating = (averageRating ?? data.rating ?? 0).toFixed(1);
 
   return (
     <div className="space-y-3">
@@ -23,9 +23,17 @@ export const AccommodationLeftCol: React.FC<AccommodationLeftColProps> = ({
           href="#opiniones-huespedes"
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-extrabold transition-colors"
         >
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span>{displayRating}</span>
-          <span className="text-stone-300 font-medium">({displayCount} reseñas)</span>
+          <Star className={`w-3.5 h-3.5 ${displayCount > 0 ? 'fill-amber-400 text-amber-400' : 'text-stone-400'}`} />
+          {displayCount > 0 ? (
+            <>
+              <span>{displayRating}</span>
+              <span className="text-stone-300 font-medium">
+                ({displayCount} {displayCount === 1 ? 'reseña' : 'reseñas'})
+              </span>
+            </>
+          ) : (
+            <span className="text-stone-200 font-semibold">Nuevo · Sin reseñas</span>
+          )}
         </a>
 
         {data.verified && (

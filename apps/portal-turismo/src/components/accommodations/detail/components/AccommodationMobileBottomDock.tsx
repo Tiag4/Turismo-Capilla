@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { BedDouble, Users, Calendar, AlertTriangle } from 'lucide-react';
 import type { AccommodationDetailData } from '../types';
@@ -32,7 +33,14 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
   const displayNights = nightsCount && nightsCount > 0 ? nightsCount : 1;
   const displayTotal = totalPrice ?? price * displayNights;
 
-  return (
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
       className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 sm:px-8 py-3 shadow-2xl transition-all duration-300 transform ${
         isVisible ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-full opacity-0 pointer-events-none'
@@ -109,6 +117,7 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
         </div>
       </div>
     </div>
+    , document.body
   );
 };
 

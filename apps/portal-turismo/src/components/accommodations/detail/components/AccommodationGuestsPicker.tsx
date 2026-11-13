@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Plus, Minus, ChevronDown } from 'lucide-react';
 import { CustomSelect, type Option } from '../../../ui/CustomSelect';
+import { useAnimatedPresence } from '../../../../hooks/useAnimatedPresence';
 
 export interface GuestsSelection {
   adults: number;
@@ -92,6 +93,7 @@ export const AccommodationGuestsPicker: React.FC<AccommodationGuestsPickerProps>
   };
 
   const summary = `${value.adults} ad. · ${value.childrenCount} niñ. · ${value.rooms} hab.`;
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
 
   return (
     <div className="relative" ref={containerRef}>
@@ -110,8 +112,8 @@ export const AccommodationGuestsPicker: React.FC<AccommodationGuestsPickerProps>
         <ChevronDown className={`w-4 h-4 text-stone-500 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-stone-200 p-4 space-y-3.5 w-full sm:w-[320px]">
+      {shouldRender && (
+        <div className={`absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-stone-200 p-4 space-y-3.5 w-full sm:w-[320px] origin-top transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
           <CounterRow label="Adultos" value={value.adults} min={1} onMinus={() => updateAdults(-1)} onPlus={() => updateAdults(1)} />
           <CounterRow label="Niños" value={value.childrenCount} min={0} onMinus={() => updateChildren(-1)} onPlus={() => updateChildren(1)} />
 

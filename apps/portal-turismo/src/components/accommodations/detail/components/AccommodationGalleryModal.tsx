@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAnimatedPresence } from '../../../../hooks/useAnimatedPresence';
+import { useBodyScrollLock } from '../../../../hooks/useBodyScrollLock';
 
 interface AccommodationGalleryModalProps {
   isOpen: boolean;
@@ -24,10 +26,12 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
   title,
 }) => {
   // Scroll Lock obligatorio (AGENTS.md 8.2)
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 200);
+  useBodyScrollLock(shouldRender);
   useEffect(() => {
-    if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (!shouldRender) return;
+
+
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -37,16 +41,16 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
 
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalOverflow;
+
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose, onNext, onPrev]);
 
-  if (!isOpen || typeof document === 'undefined') return null;
+  if (!shouldRender || typeof document === 'undefined') return null;
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md p-4 sm:p-6 flex flex-col justify-between animate-in fade-in-0 duration-200"
+      className={`fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md p-4 sm:p-6 flex flex-col justify-between transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       role="dialog"
       aria-modal="true"
       aria-label={`Galería de ${title}`}

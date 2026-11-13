@@ -184,8 +184,18 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
         ? ` (${selectedRoomsList.map((i) => `${i.quantity}x ${i.room.name}`).join(', ')})`
         : '';
     const msg = `Hola! Vengo desde Turismo Capilla del Monte oficial. Me gustaría consultar disponibilidad para *${data.title}*${roomsText}${datesText} para *${guests} personas*.`;
-    return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
-  }, [data.title, checkIn, checkOut, nightsCount, guests, selectedRoomsList]);
+
+    const rawPhone = data.phone?.trim();
+    let phoneTarget = '5493548000000';
+    if (rawPhone) {
+      const cleanDigits = rawPhone.replace(/\D/g, '');
+      if (cleanDigits.length >= 10) {
+        phoneTarget = cleanDigits.startsWith('54') ? cleanDigits : `549${cleanDigits}`;
+      }
+    }
+
+    return `https://wa.me/${phoneTarget}?text=${encodeURIComponent(msg)}`;
+  }, [data.title, data.phone, checkIn, checkOut, nightsCount, guests, selectedRoomsList]);
 
   // Booking Wizard URL generation
   const wizardUrl = useMemo(() => {

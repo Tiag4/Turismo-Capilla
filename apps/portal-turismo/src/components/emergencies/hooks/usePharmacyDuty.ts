@@ -11,8 +11,17 @@ export function usePharmacyDuty() {
   );
 
   useEffect(() => {
-    const handleSync = () => {
-      setConfig(pharmacyDutyService.getConfig());
+    pharmacyDutyService.fetchConfig().then((data) => {
+      if (data) setConfig(data);
+    });
+
+    const handleSync = (e: Event) => {
+      const customEvent = e as CustomEvent<EmergencySanitaryConfig>;
+      if (customEvent.detail) {
+        setConfig(customEvent.detail);
+      } else {
+        setConfig(pharmacyDutyService.getConfig());
+      }
     };
 
     window.addEventListener(EMERGENCY_SANITARY_EVENT, handleSync);

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './api';
 import type {
   EmergencySanitaryConfig,
   PharmacyDutyRecord,
@@ -89,6 +90,25 @@ export const pharmacyDutyService = {
     } catch {
       return DEFAULT_EMERGENCY_SANITARY_CONFIG;
     }
+  },
+
+  async fetchConfig(): Promise<EmergencySanitaryConfig> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/emergency-sanitary`, {
+        signal: AbortSignal.timeout(4000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(EMERGENCY_SANITARY_STORAGE_KEY, JSON.stringify(data));
+          window.dispatchEvent(new CustomEvent(EMERGENCY_SANITARY_EVENT, { detail: data }));
+        }
+        return data;
+      }
+    } catch {
+      // Fallback a almacenamiento local / default
+    }
+    return this.getConfig();
   },
 
   getActiveDutyPharmacy(): PharmacyDutyRecord | undefined {

@@ -69,9 +69,14 @@ export const TourismCalendarSettings: React.FC<TourismCalendarSettingsProps> = (
       {/* 1. Header & Actions — Senior Clean Canvas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
-            Períodos y Temporadas Oficiales
-          </h1>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="font-display font-black text-2xl sm:text-3xl text-[var(--color-sand-900)]">
+              Períodos y Temporadas Oficiales
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
+              Prototipo de Interfaz (Almacenamiento Local)
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-[var(--color-sand-500)] mt-0.5">
             Configurá las temporadas altas, medias y eventos de Capilla del Monte para sugerir multiplicadores tarifarios a los prestadores.
           </p>
@@ -91,7 +96,7 @@ export const TourismCalendarSettings: React.FC<TourismCalendarSettingsProps> = (
       <div className="border-l-2 border-[var(--color-emerald-portal-600)] pl-3.5 py-1 text-xs text-[var(--color-sand-600)] flex items-start gap-2.5">
         <CheckCircle2 className="w-4 h-4 text-[var(--color-emerald-portal-600)] shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong className="text-[var(--color-sand-900)] font-semibold">Sincronización Automática:</strong> Los períodos configurados por la Comisión se publican de forma inmediata en los calendarios de los prestadores para sugerir multiplicadores tarifarios.
+          <strong className="text-[var(--color-sand-900)] font-semibold">Prototipo Local:</strong> Los períodos configurados en esta vista se almacenan localmente en el navegador y sirven como demostración de la gestión de temporadas.
         </p>
       </div>
 

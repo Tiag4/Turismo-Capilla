@@ -13,6 +13,8 @@ import {
 import { PORTAL_URL } from '../../config/navigation.ts';
 import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock.ts';
 
 export interface HostSidebarProps {
   currentTab: DashboardTab;
@@ -76,14 +78,16 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
   onLogin,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { shouldRender: shouldRenderMobile, isVisible: isMobileVisible } = useAnimatedPresence(isOpenMobile, 220);
+  useBodyScrollLock(shouldRenderMobile);
 
   // Lock scroll on mobile drawer
   useEffect(() => {
     if (isOpenMobile) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+
+
       return () => {
-        document.body.style.overflow = originalOverflow;
+
       };
     }
   }, [isOpenMobile]);
@@ -131,7 +135,7 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
               </div>
             )}
           </div>
-          {isOpenMobile && (
+          {shouldRenderMobile && (
             <button
               onClick={onCloseMobile}
               className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer md:hidden"
@@ -294,14 +298,14 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
       </div>
 
       {/* Mobile Drawer (Overlay + Slide-in) */}
-      {isOpenMobile && (
+      {shouldRenderMobile && (
         <div className="fixed inset-0 z-50 md:hidden flex" role="dialog" aria-modal="true">
           <div
             onClick={onCloseMobile}
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 ease-out"
+            className={`fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-220 ease-out ${isMobileVisible ? 'opacity-100' : 'opacity-0'}`}
             aria-hidden="true"
           />
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10 animate-in slide-in-from-left duration-200 ease-out">
+          <div className={`relative w-72 max-w-[85vw] h-full shadow-2xl z-10 transition-transform duration-220 ease-out ${isMobileVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             {renderContent(true)}
           </div>
         </div>

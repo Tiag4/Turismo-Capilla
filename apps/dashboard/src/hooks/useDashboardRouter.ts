@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { DashboardTab } from '../components/layout/DashboardNav.tsx';
 import type { UserRole } from '../types/auth.types.ts';
 import type { RouteDetail } from './dashboardRouter.types.ts';
@@ -8,9 +8,15 @@ import { parseRouteFromPath } from './parseDashboardRoute.ts';
 export * from './dashboardRouter.types.ts';
 export * from './parseDashboardRoute.ts';
 
-export const useDashboardRouter = (role: UserRole) => {
+export const useDashboardRouter = (role: UserRole | null) => {
+  const effectiveRole: UserRole = role ?? 'HOST';
+  const prevRoleRef = useRef<UserRole | null>(role);
+
   const [routeState, setRouteState] = useState<RouteDetail>(() => {
-    return parseRouteFromPath(typeof window !== 'undefined' ? window.location.pathname : '/', role);
+    return parseRouteFromPath(
+      typeof window !== 'undefined' ? window.location.pathname : '/',
+      effectiveRole
+    );
   });
 
   const pushRoute = useCallback((nextState: RouteDetail, targetRoute: string, replace = false) => {
@@ -25,8 +31,8 @@ export const useDashboardRouter = (role: UserRole) => {
   }, []);
 
   const navigateToTab = useCallback((tab: DashboardTab, replace = false) => {
-    const safeTab = sanitizeTabForRole(tab, role);
-    const targetRoute = TAB_ROUTE_MAP[safeTab] || (role === 'ADMIN' ? '/panel-general' : '/reservas');
+    const safeTab = sanitizeTabForRole(tab, effectiveRole);
+    const targetRoute = TAB_ROUTE_MAP[safeTab] || (effectiveRole === 'ADMIN' ? '/panel-general' : '/reservas');
     const nextState: RouteDetail = {
       tab: safeTab,
       accommodationView: 'list',
@@ -39,7 +45,7 @@ export const useDashboardRouter = (role: UserRole) => {
       calendarView: 'calendar',
     };
     pushRoute(nextState, targetRoute, replace);
-  }, [role, pushRoute]);
+  }, [effectiveRole, pushRoute]);
 
   // Accommodations
   const navigateToAccommodationCreate = useCallback(() => {
@@ -140,22 +146,45 @@ export const useDashboardRouter = (role: UserRole) => {
   // Sync with browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const parsed = parseRouteFromPath(window.location.pathname, role);
+      const parsed = parseRouteFromPath(window.location.pathname, effectiveRole);
       setRouteState(parsed);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [role]);
+  }, [effectiveRole]);
 
-  // Sync initial URL on mount if at root
+  // Dynamically resolve initial/sanitized route when role changes (e.g., ADMIN vs HOST login)
   useEffect(() => {
+    if (!role) {
+      prevRoleRef.current = null;
+      return;
+    }
+
     const currentPath = window.location.pathname.replace(/\/+$/, '');
+    const roleChanged = prevRoleRef.current !== role;
+    prevRoleRef.current = role;
+
+    if (roleChanged) {
+      const nextState = parseRouteFromPath(window.location.pathname, role);
+      setRouteState(nextState);
+      if (!currentPath || currentPath === '' || currentPath === '/') {
+        const defaultRoute = TAB_ROUTE_MAP[nextState.tab];
+        window.history.replaceState(nextState, '', defaultRoute);
+      } else {
+        const sanitizedRoute = TAB_ROUTE_MAP[nextState.tab];
+        if (sanitizedRoute && currentPath !== sanitizedRoute) {
+          window.history.replaceState(nextState, '', sanitizedRoute);
+        }
+      }
+      return;
+    }
+
     if (!currentPath || currentPath === '' || currentPath === '/') {
       const defaultRoute = TAB_ROUTE_MAP[routeState.tab];
       window.history.replaceState(routeState, '', defaultRoute);
     }
-  }, [routeState]);
+  }, [role, routeState]);
 
   return {
     currentTab: routeState.tab,

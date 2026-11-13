@@ -138,9 +138,14 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
             <LayoutGrid className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="font-display font-black text-sm text-[var(--color-sand-900)] leading-tight">
-              Personalizador de Portada
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-display font-black text-sm text-[var(--color-sand-900)] leading-tight">
+                Personalizador de Portada
+              </h1>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white shadow-2xs">
+                Prototipo CMS (Local)
+              </span>
+            </div>
             <p className="text-[11px] text-[var(--color-sand-600)]">
               Reordená secciones en vivo y personalizá los textos de la página principal.
             </p>
@@ -148,8 +153,8 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#005530] text-white text-[11px] font-bold shadow-xs">
-            <span>Sincronización en vivo</span>
+          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-600 text-white text-[11px] font-bold shadow-xs">
+            <span>Almacenamiento Local</span>
           </div>
 
           <button

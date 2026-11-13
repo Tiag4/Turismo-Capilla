@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const Modal: React.FC<ModalProps> = ({
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useBodyScrollLock(shouldRender);
 
   useEffect(() => {
     if (timerRef.current) {
@@ -31,8 +33,8 @@ export const Modal: React.FC<ModalProps> = ({
 
     if (isOpen) {
       setShouldRender(true);
-      const prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+
+
 
       const rAF = requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -42,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
 
       return () => {
         cancelAnimationFrame(rAF);
-        document.body.style.overflow = prevOverflow;
+
       };
     } else {
       setIsVisible(false);

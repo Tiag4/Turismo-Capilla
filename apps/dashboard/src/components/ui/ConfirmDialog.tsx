@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { Button } from './Button.tsx';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 export type ConfirmDialogVariant = 'danger' | 'warning' | 'primary' | 'emerald';
 
@@ -38,6 +39,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useBodyScrollLock(shouldRender);
 
   useEffect(() => {
     if (timerRef.current) {
@@ -47,14 +49,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
     if (isOpen) {
       setShouldRender(true);
-      const prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+
+
       const rAF = requestAnimationFrame(() => {
         requestAnimationFrame(() => setIsVisible(true));
       });
       return () => {
         cancelAnimationFrame(rAF);
-        document.body.style.overflow = prevOverflow;
+
       };
     } else {
       setIsVisible(false);

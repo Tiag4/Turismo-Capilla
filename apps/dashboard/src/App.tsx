@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from './hooks/useAuth.ts';
+import { AuthProvider, useAuthContext } from './context/AuthContext.tsx';
 import { LoginForm } from './components/auth/LoginForm.tsx';
 import { HostRegistrationPage } from './components/auth/HostRegistrationPage.tsx';
 import { DashboardLayout } from './components/layout/DashboardLayout.tsx';
@@ -34,7 +34,7 @@ import { ProfileView } from './components/profile/ProfileView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
 
-export const App: React.FC = () => {
+const DashboardContent: React.FC = () => {
   const {
     user,
     isAuthenticated,
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
     logout,
     updateProfile,
     changePassword,
-  } = useAuth();
+  } = useAuthContext();
 
   const {
     currentTab,
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
     calendarView,
     navigateToCalendarBlock,
     navigateToCalendar,
-  } = useDashboardRouter(user?.role ?? 'HOST');
+  } = useDashboardRouter(isAuthenticated && user ? user.role : null);
 
   const isHostRegistrationRoute =
     typeof window !== 'undefined' &&
@@ -258,5 +258,13 @@ export const App: React.FC = () => {
         />
       )}
     </DashboardLayout>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <DashboardContent />
+    </AuthProvider>
   );
 };

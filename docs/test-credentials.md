@@ -8,16 +8,22 @@ Este documento reúne todas las cuentas de usuario, contraseñas, tokens, datos 
 
 Al iniciar el backend (`.\mvnw.cmd spring-boot:run` o `./dev.ps1`), la base de datos se puebla automáticamente con los siguientes usuarios cifrados mediante BCrypt.
 
-| Rol del Sistema | Nombre y Apellido / Entidad | Correo Electrónico | Contraseña Oficial | Panel / Ruta de Acceso | Alcance y Permisos |
+| Rol del Sistema | Nombre y Apellido / Entidad | Correo Electrónico | Contraseña Oficial | Panel / Producción | Alcance y Permisos |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`ADMIN`** | Comisión Oficial Turismo Capilla | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | `http://localhost:5174/overview` | Gestión integral municipal: Invitaciones a prestadores, directorio, suspensión de prestadores, atractivos, alertas meteorológicas, agenda de eventos y métricas de ocupación. |
-| **`HOST` (Cabañas)** | Roberto Gómez (*Pircas del Uritorco*) | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | `http://localhost:5174/reservas` | Prestador con cabaña unifamiliar: tarifas, fotos a Cloudinary, confirmación de reservas recibidas y bloqueo de fechas en calendario. |
-| **`HOST` (Hostería)** | Marcela Rossi (*Los Nogales*) | `marcela.rossi@capillaturismo.com.ar` | `HostCapilla2026!` | `http://localhost:5174/reservas` | Prestadora con inventario multi-unidad (habitaciones Standard, Superior y Suite), planes tarifarios con y sin desayuno. |
-| **`HOST` (Refugio)** | Carlos Benítez (*Los Alazanes*) | `carlos.benitez@capillaturismo.com.ar` | `HostCapilla2026!` | `http://localhost:5174/reservas` | Prestador de monoambiente de montaña pet friendly con deck privado y seña del 40%. |
-| **`TOURIST`** | Turista de Demostración | `turista@gmail.com` *(o registro libre)* | `TuristaCapilla2026!` | `http://localhost:5173` | Búsqueda de disponibilidad en el Portal público, solicitud de reserva directa y consulta pública por código `CAP-YYYY-XXXX`. |
+| **`ADMIN`** | Comisión Oficial Turismo Capilla | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Gestión integral municipal: Invitaciones a prestadores, directorio, suspensión de prestadores, atractivos, alertas meteorológicas, agenda de eventos y métricas de ocupación. |
+| **`HOST` (Cabañas)** | Roberto Gómez (*Pircas del Uritorco*) | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestador con cabaña unifamiliar: tarifas, fotos a Cloudinary, confirmación de reservas recibidas y bloqueo de fechas en calendario. |
+| **`HOST` (Hostería)** | Marcela Rossi (*Los Nogales*) | `marcela.rossi@capillaturismo.com.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestadora con inventario multi-unidad (habitaciones Standard, Superior y Suite), planes tarifarios con y sin desayuno. |
+| **`HOST` (Refugio)** | Carlos Benítez (*Los Alazanes*) | `carlos.benitez@capillaturismo.com.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestador de monoambiente de montaña pet friendly con deck privado y seña del 40%. |
+| **`TOURIST`** | Turista de Demostración | `turista@gmail.com` *(o registro libre)* | `TuristaCapilla2026!` | [https://portal-turismo-opal.vercel.app](https://portal-turismo-opal.vercel.app) *(o localhost:5173)* | Búsqueda de disponibilidad en el Portal público, solicitud de reserva directa y consulta pública por código `CAP-YYYY-XXXX`. |
 
 > [!TIP]
-> **Acceso Rápido en el Dashboard:** La pantalla de inicio de sesión (`http://localhost:5174`) dispone de botones de autocompletado rápido (**"Comisión (Admin)"** y **"Cabañero (Host)"**) que cargan automáticamente las credenciales oficiales sin necesidad de tipear.
+> **Acceso en Producción:**
+> * **Panel de Gestión (Dashboard):** [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app)
+> * **Portal Turístico Público:** [https://portal-turismo-opal.vercel.app](https://portal-turismo-opal.vercel.app)
+> * **API REST (Dokploy VPS):** [https://services.equarys.com/turismo-api/api/v1](https://services.equarys.com/turismo-api/api/v1)
+> * **Swagger UI:** [https://services.equarys.com/turismo-api/swagger-ui.html](https://services.equarys.com/turismo-api/swagger-ui.html)
+>
+> La pantalla de inicio de sesión dispone de botones de autocompletado rápido (**"Comisión (Admin)"** y **"Cabañero (Host)"**) que cargan automáticamente las credenciales sin necesidad de tipear.
 
 ---
 

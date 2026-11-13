@@ -1,38 +1,42 @@
 import React from 'react';
 import { useAstrotourism } from './hooks/useAstrotourism';
-import { NightSkyCanvas } from './components/NightSkyCanvas';
-import { NightTimeline } from './components/NightTimeline';
-import { AstroInsightPanel } from './components/AstroInsightPanel';
+import { AstroKeyFactsStrip } from './components/AstroKeyFactsStrip';
+import { NightPhasesGuide } from './components/NightPhasesGuide';
+import { StargazingSpotsSection } from './components/StargazingSpotsSection';
+import { AstroPreparationSection } from './components/AstroPreparationSection';
+import { NightSkySimulator } from './components/NightSkySimulator';
 
 export const AstrotourismContainer: React.FC = () => {
   const {
+    keyFacts,
     phases,
     spots,
+    preparationTips,
     activePhase,
-    activeSpot,
     phaseIndex,
     selectPhase,
-    selectSpot,
   } = useAstrotourism();
 
   return (
-    <div className="space-y-8">
-      {/* Canvas Bóveda Celeste Dinámica sobre el Cerro Uritorco */}
-      <NightSkyCanvas phase={activePhase} />
+    <div className="space-y-12 sm:space-y-16">
+      {/* 1. Datos clave de observación */}
+      <AstroKeyFactsStrip facts={keyFacts} />
 
-      {/* Control de Línea de Tiempo Nocturna */}
-      <NightTimeline
+      {/* 2. Guía informativa de horarios nocturnos */}
+      <NightPhasesGuide phases={phases} />
+
+      {/* 3. Miradores y puntos recomendados */}
+      <StargazingSpotsSection spots={spots} />
+
+      {/* 4. Recomendaciones prácticas para salir de noche */}
+      <AstroPreparationSection tips={preparationTips} />
+
+      {/* 5. Simulador interactivo al final */}
+      <NightSkySimulator
         phases={phases}
-        currentIndex={phaseIndex}
+        activePhase={activePhase}
+        phaseIndex={phaseIndex}
         onSelectPhase={selectPhase}
-      />
-
-      {/* Panel de Insights y Miradores Certificados */}
-      <AstroInsightPanel
-        phase={activePhase}
-        spots={spots}
-        activeSpot={activeSpot}
-        onSelectSpot={selectSpot}
       />
     </div>
   );

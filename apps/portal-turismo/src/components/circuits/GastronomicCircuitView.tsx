@@ -1,97 +1,123 @@
 import React from 'react';
-import { Utensils, Phone, Clock, MapPin, Award, CheckCircle } from 'lucide-react';
+import { ArrowRight, Phone, Star } from 'lucide-react';
 import { GASTRONOMIC_VENUES } from './data/circuitsData';
 
 export const GastronomicCircuitView: React.FC = () => {
   return (
     <div className="space-y-8">
-      {/* Banner de Sabores Serranos */}
-      <div className="bg-gradient-to-r from-amber-900 via-orange-950 to-sand-900 text-white p-6 sm:p-8 rounded-3xl space-y-4 shadow-md">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-500/30">
-          <Utensils className="w-3.5 h-3.5" />
-          <span>Ruta Gastronómica Oficial</span>
-        </div>
-
-        <h3 className="font-display font-black text-xl sm:text-3xl text-white">
+      {/* Cabecera Editorial Limpia */}
+      <div className="bg-sand-100/70 rounded-2xl border border-sand-200 p-6 sm:p-8 space-y-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
+          Ruta Gastronómica Oficial · Valle de Punilla
+        </span>
+        <h3 className="font-display font-black text-2xl sm:text-3xl text-sand-950">
           Sabores Turísticos de las Sierras
         </h3>
-
-        <p className="text-sm text-sand-200 leading-relaxed max-w-3xl font-light">
-          La cocina de Capilla del Monte fusiona la herencia criolla con la tradición repostera y de chacinados de inmigrantes europeos. Disfrutá de truchas frescas de aguas de deshielo, el auténtico cabrito a la llama, hierbas aromáticas silvestres y cervezas artesanales con agua pura de montaña.
+        <p className="text-sand-600 text-sm sm:text-base leading-relaxed max-w-3xl">
+          La cocina de Capilla del Monte fusiona la tradición criolla con la herencia repostera y de chacinados centroeuropeos. Disfrutá de truchas de montaña, cabrito a la llama con leña serrana, hierbas silvestres y cervezas artesanales con agua pura de vertiente.
         </p>
-
-        <div className="flex flex-wrap gap-2 pt-2 text-xs">
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Chacinados & Salames</span>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Té & Repostería Centroeuropea</span>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Trucha de Criadero</span>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Cabrito a la Llama</span>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Miel & Apicultura Orgánica</span>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/10">Cervecerías Artesanales</span>
-        </div>
       </div>
 
-      {/* Directorio de Locales Adheridos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Grilla con Estética de Catálogo de Senderos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
         {GASTRONOMIC_VENUES.map((venue) => (
-          <div
+          <article
             key={venue.id}
-            className="bg-white rounded-3xl p-6 border border-sand-200 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-5"
+            id={venue.id}
+            className="group flex flex-col bg-white rounded-2xl border border-sand-200/90 overflow-hidden shadow-xs hover:border-sand-400 hover:shadow-md transition-all duration-200"
           >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                  {venue.categoryLabel}
+            {/* Portada Fotográfica */}
+            <div className="relative aspect-16/10 overflow-hidden bg-sand-200">
+              <img
+                src={venue.image}
+                alt={venue.name}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute top-2.5 right-2.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                  Abierto hoy
                 </span>
-                <Award className="w-4 h-4 text-amber-600" />
               </div>
+            </div>
 
-              <h4 className="font-display font-bold text-lg sm:text-xl text-sand-900 leading-tight">
-                {venue.name}
-              </h4>
+            {/* Ficha Editorial */}
+            <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <span className="font-bold text-sand-800 uppercase tracking-wider text-[11px]">
+                    {venue.categoryLabel}
+                  </span>
+                  <div className="flex items-center gap-1 font-bold text-sand-900">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                    <span>4.8</span>
+                    <span className="text-sand-400 font-normal">(85)</span>
+                  </div>
+                </div>
 
-              {/* Especialidad de la casa */}
-              <div className="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/80 space-y-1">
-                <span className="text-[11px] font-bold uppercase text-amber-900 tracking-wider block">
-                  Especialidad de la casa:
-                </span>
-                <p className="text-xs font-medium text-amber-950">
-                  {venue.specialty}
+                <h4 className="font-display font-black text-xl text-sand-950 leading-snug group-hover:text-terracotta-600 transition-colors">
+                  {venue.name}
+                </h4>
+
+                <p className="text-terracotta-700 text-sm font-semibold line-clamp-1">
+                  Especialidad: {venue.specialty}
+                </p>
+
+                <p className="text-sand-600 text-sm line-clamp-3 leading-relaxed">
+                  {venue.description}
                 </p>
               </div>
 
-              <p className="text-xs text-sand-600 leading-relaxed">
-                {venue.description}
-              </p>
-
-              {/* Atributos / Servicios */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {venue.features.map((feat, fIdx) => (
-                  <span key={fIdx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sand-100 text-sand-700 text-[11px]">
-                    <CheckCircle className="w-3 h-3 text-uritorco-600" />
-                    {feat}
-                  </span>
+              {/* Características del Local */}
+              <div className="pt-3 border-t border-sand-100 space-y-1.5 text-xs text-sand-700">
+                {venue.features.slice(0, 2).map((feat, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-terracotta-600 font-black">•</span>
+                    <span className="line-clamp-1">{feat}</span>
+                  </div>
                 ))}
               </div>
-            </div>
 
-            {/* Datos de contacto y ubicación */}
-            <div className="pt-4 border-t border-sand-200 space-y-2 text-xs text-sand-700">
-              <div className="flex items-center gap-2 text-sand-800">
-                <MapPin className="w-3.5 h-3.5 text-terracotta-600 shrink-0" />
-                <span className="truncate">{venue.address}</span>
+              {/* Telemetría: Horarios y Dirección */}
+              <div className="pt-3 border-t border-sand-100 grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-sand-500 block text-[10px] font-bold uppercase tracking-wider">
+                    Ubicación
+                  </span>
+                  <span className="font-black text-sand-900 text-xs line-clamp-1">
+                    {venue.address}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-sand-500 block text-[10px] font-bold uppercase tracking-wider">
+                    Horario
+                  </span>
+                  <span className="font-black text-sand-900 text-xs line-clamp-1">
+                    {venue.hours}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sand-800">
-                <Phone className="w-3.5 h-3.5 text-uritorco-600 shrink-0" />
-                <a href={`tel:${venue.phone}`} className="hover:text-terracotta-600 font-semibold transition-colors">
-                  {venue.phone}
+
+              {/* Acciones: Llamar y Mapa */}
+              <div className="pt-1 grid grid-cols-2 gap-2">
+                <a
+                  href={`tel:${venue.phone}`}
+                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-100 text-sand-900 hover:bg-sand-200 transition-colors"
+                >
+                  <Phone className="w-3.5 h-3.5 text-uritorco-600" />
+                  <span>Llamar</span>
+                </a>
+                <a
+                  href="#mapa"
+                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
+                >
+                  <span>Ver mapa</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
-              <div className="flex items-center gap-2 text-sand-500 text-[11px]">
-                <Clock className="w-3.5 h-3.5 shrink-0" />
-                <span>{venue.hours}</span>
-              </div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </div>

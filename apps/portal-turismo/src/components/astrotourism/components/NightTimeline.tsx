@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { NightPhase } from '../types';
 
 interface NightTimelineProps {
@@ -12,47 +12,75 @@ export const NightTimeline: React.FC<NightTimelineProps> = ({
   currentIndex,
   onSelectPhase,
 }) => {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-sand-800 uppercase tracking-wider">
-          Línea de Tiempo Nocturna (El Paso de la Noche)
-        </span>
-        <span className="text-xs text-sand-500 font-medium">
-          Seleccioná una hora para transformar la bóveda celeste
-        </span>
-      </div>
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        {phases.map((phase, idx) => {
-          const isActive = currentIndex === idx;
-          return (
-            <button
-              key={phase.id}
-              type="button"
-              onClick={() => onSelectPhase(idx)}
-              className={`p-3.5 rounded-2xl text-left transition-all cursor-pointer border ${
-                isActive
-                  ? 'bg-sand-900 text-white border-sand-900 shadow-md ring-2 ring-primary-500/30'
-                  : 'bg-white hover:bg-sand-100 text-sand-800 border-sand-200 shadow-2xs'
+  const activateTab = (idx: number) => {
+    onSelectPhase(idx);
+    tabRefs.current[idx]?.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    let nextIdx: number | null = null;
+    if (e.key === 'ArrowRight') {
+      nextIdx = (idx + 1) % phases.length;
+    } else if (e.key === 'ArrowLeft') {
+      nextIdx = (idx - 1 + phases.length) % phases.length;
+    } else if (e.key === 'Home') {
+      nextIdx = 0;
+    } else if (e.key === 'End') {
+      nextIdx = phases.length - 1;
+    }
+
+    if (nextIdx !== null) {
+      e.preventDefault();
+      activateTab(nextIdx);
+      tabRefs.current[nextIdx]?.focus();
+    }
+  };
+
+  return (
+    <div
+      role="tablist"
+      aria-label="Franjas horarias del simulador nocturno"
+      className="flex overflow-x-auto border-b border-sand-300 gap-6 sm:gap-8"
+    >
+      {phases.map((phase, idx) => {
+        const isActive = currentIndex === idx;
+        return (
+          <button
+            key={phase.id}
+            ref={(el) => {
+              tabRefs.current[idx] = el;
+            }}
+            id={`astro-phase-tab-${phase.id}`}
+            role="tab"
+            type="button"
+            aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
+            onClick={() => activateTab(idx)}
+            onKeyDown={(e) => handleKeyDown(e, idx)}
+            className={`relative flex-none min-h-[48px] pb-3 pt-1 text-left transition-colors cursor-pointer border-b-[3px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta-700 ${
+              isActive
+                ? 'border-terracotta-700 text-sand-900'
+                : 'border-transparent text-sand-600 hover:text-sand-900 hover:border-sand-300'
+            }`}
+          >
+            <span
+              className={`block font-display font-bold text-xs tabular-nums ${
+                isActive ? 'text-terracotta-700' : 'text-sand-600'
               }`}
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-mono font-bold ${isActive ? 'text-primary-400' : 'text-primary-600'}`}>
-                  {phase.timeLabel}
-                </span>
-                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-primary-400 animate-ping' : 'bg-sand-300'}`} />
-              </div>
-              <span className="block font-display font-bold text-sm leading-snug line-clamp-1">
-                {phase.title}
-              </span>
-              <span className={`block text-[11px] mt-0.5 line-clamp-1 ${isActive ? 'text-sand-300' : 'text-sand-500'}`}>
-                {phase.subtitle}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              {phase.timeLabel}
+            </span>
+            <span className="block font-display font-bold text-sm leading-snug mt-0.5 whitespace-nowrap">
+              {phase.title}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };

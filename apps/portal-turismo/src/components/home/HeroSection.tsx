@@ -19,7 +19,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Imagen de Fondo Panorámica del Cerro Uritorco */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85"
+          src="/images/attractions/uritorco/uritorco-01.jpg"
           alt="Sierras de Capilla del Monte y Cerro Uritorco al atardecer"
           className="w-full h-full object-cover object-center brightness-[0.65] contrast-[1.05]"
           loading="eager"

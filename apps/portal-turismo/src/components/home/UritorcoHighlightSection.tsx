@@ -7,7 +7,7 @@ export const UritorcoHighlightSection: React.FC = () => {
       {/* Fotografía Panorámica */}
       <div className="w-full relative h-[500px] sm:h-[620px] lg:h-[720px] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1544198365-f5d60b6d8190?auto=format&fit=crop&w=2400&q=85"
+          src="/images/attractions/uritorco/uritorco-02.jpg"
           alt="Cerro Uritorco y las Sierras Chicas al atardecer"
           className="w-full h-full object-cover object-center brightness-95 contrast-105"
           loading="lazy"

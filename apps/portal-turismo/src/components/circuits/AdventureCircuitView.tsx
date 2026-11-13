@@ -1,110 +1,131 @@
 import React from 'react';
-import { Mountain, ShieldCheck, Phone, CheckCircle2, AlertTriangle, Clock } from 'lucide-react';
+import { ArrowRight, Phone, Star } from 'lucide-react';
 import { ADVENTURE_ACTIVITIES } from './data/circuitsData';
 
 export const AdventureCircuitView: React.FC = () => {
   return (
     <div className="space-y-8">
-      {/* Banner de Turismo Activo & Seguridad */}
-      <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-sand-900 text-white p-6 sm:p-8 rounded-3xl space-y-4 shadow-md">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-          <Mountain className="w-3.5 h-3.5" />
-          <span>Turismo Activo & Deportes de Montaña</span>
-        </div>
-
-        <h3 className="font-display font-black text-xl sm:text-3xl text-white">
+      {/* Cabecera Editorial Limpia */}
+      <div className="bg-sand-100/70 rounded-2xl border border-sand-200 p-6 sm:p-8 space-y-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
+          Turismo Activo & Prestadores Habilitados
+        </span>
+        <h3 className="font-display font-black text-2xl sm:text-3xl text-sand-950">
           Aventura Segura en las Sierras de Punilla
         </h3>
-
-        <p className="text-sm text-sand-200 leading-relaxed max-w-3xl font-light">
-          Capilla del Monte y sus alrededores ofrecen escenarios naturales inmejorables para el vuelo libre, la escalada vertical y la exploración de cavernas. Por normativa municipal y provincial, las actividades técnicas requieren la asistencia de prestadores homologados y seguros de turismo activo al día.
+        <p className="text-sand-600 text-sm sm:text-base leading-relaxed max-w-3xl">
+          Capilla del Monte y sus alrededores ofrecen escenarios naturales inmejorables para el vuelo libre, la escalada en roca y la exploración de cavernas milenarias. Todas las actividades cuentan con guías habilitados y cobertura de turismo activo.
         </p>
-
-        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-xs p-3.5 rounded-2xl border border-white/10 text-xs text-emerald-200">
-          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-          <span>Todos los prestadores listados cuentan con matrícula oficial de la Cámara de Turismo de Capilla del Monte y guías habilitados.</span>
-        </div>
       </div>
 
-      {/* Grilla de Modalidades de Aventura */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {ADVENTURE_ACTIVITIES.map((act) => (
-          <div
-            key={act.id}
-            className="bg-white rounded-3xl p-6 sm:p-7 border border-sand-200 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-5"
-          >
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  {act.modalityLabel}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-sand-500">
-                  <Clock className="w-3.5 h-3.5 text-terracotta-600" />
-                  <span>{act.duration}</span>
-                </span>
+      {/* Grilla con Estética de Catálogo de Senderos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
+        {ADVENTURE_ACTIVITIES.map((act) => {
+          const primaryProvider = act.certifiedProviders[0];
+          return (
+            <article
+              key={act.id}
+              id={act.id}
+              className="group flex flex-col bg-white rounded-2xl border border-sand-200/90 overflow-hidden shadow-xs hover:border-sand-400 hover:shadow-md transition-all duration-200"
+            >
+              {/* Portada Fotográfica */}
+              <div className="relative aspect-16/10 overflow-hidden bg-sand-200">
+                <img
+                  src={act.image}
+                  alt={act.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute top-2.5 right-2.5">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white shadow-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    Guías habilitados
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <h4 className="font-display font-bold text-xl sm:text-2xl text-sand-900">
-                  {act.title}
-                </h4>
-                <span className="text-xs font-semibold text-terracotta-600 block mt-0.5">
-                  Ubicación: {act.location} · Dificultad: {act.difficulty}
-                </span>
-              </div>
-
-              <p className="text-xs sm:text-sm text-sand-600 leading-relaxed">
-                {act.description}
-              </p>
-
-              {/* Equipamiento sugerido */}
-              <div className="bg-sand-50 p-3.5 rounded-2xl border border-sand-200 space-y-1.5 text-xs">
-                <span className="font-bold text-sand-800 block">Equipamiento sugerido para el participante:</span>
-                {act.suggestedGear.map((gear, gIdx) => (
-                  <div key={gIdx} className="flex items-start gap-1.5 text-sand-700 text-[11px]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-uritorco-600 shrink-0 mt-0.5" />
-                    <span>{gear}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Requisitos de seguridad */}
-              <div className="space-y-1 text-xs text-amber-900 bg-amber-50/60 p-3 rounded-xl border border-amber-200/60">
-                <span className="font-bold flex items-center gap-1 text-amber-950">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-700" /> Protocolo de seguridad:
-                </span>
-                {act.safetyRequirements.map((req, rIdx) => (
-                  <p key={rIdx} className="text-[11px] text-amber-900 leading-tight">
-                    • {req}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* Prestadores certificados */}
-            <div className="pt-4 border-t border-sand-200 space-y-2">
-              <span className="text-xs font-bold text-sand-900 uppercase tracking-wider block">
-                Prestadores Certificados & Reservas:
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {act.certifiedProviders.map((prov, pIdx) => (
-                  <div key={pIdx} className="bg-sand-50 p-3 rounded-xl border border-sand-200 text-xs space-y-1">
-                    <span className="font-bold text-sand-900 block truncate">{prov.name}</span>
-                    <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-800">
-                      {prov.certificationBadge}
+              {/* Ficha Editorial */}
+              <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <span className="font-bold text-sand-800 uppercase tracking-wider text-[11px]">
+                      {act.modalityLabel} · Dif. {act.difficulty}
                     </span>
-                    <div className="flex items-center gap-1.5 text-sand-700 pt-0.5">
-                      <Phone className="w-3 h-3 text-uritorco-600" />
-                      <a href={`tel:${prov.contact}`} className="font-semibold text-sand-800 hover:text-terracotta-600">
-                        {prov.contact}
-                      </a>
+                    <div className="flex items-center gap-1 font-bold text-sand-900">
+                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                      <span>4.9</span>
+                      <span className="text-sand-400 font-normal">(94)</span>
                     </div>
                   </div>
-                ))}
+
+                  <h4 className="font-display font-black text-xl text-sand-950 leading-snug group-hover:text-terracotta-600 transition-colors">
+                    {act.title}
+                  </h4>
+
+                  <p className="text-terracotta-700 text-sm font-semibold line-clamp-1">
+                    Ubicación: {act.location}
+                  </p>
+
+                  <p className="text-sand-600 text-sm line-clamp-3 leading-relaxed">
+                    {act.description}
+                  </p>
+                </div>
+
+                {/* Equipamiento / Requisitos Clave */}
+                <div className="pt-3 border-t border-sand-100 space-y-1.5 text-xs text-sand-700">
+                  {act.suggestedGear.slice(0, 2).map((gear, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="text-terracotta-600 font-black">•</span>
+                      <span className="line-clamp-1">{gear}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Telemetría: Duración y Prestador */}
+                <div className="pt-3 border-t border-sand-100 grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-sand-500 block text-[10px] font-bold uppercase tracking-wider">
+                      Duración
+                    </span>
+                    <span className="font-black text-sand-900 text-xs line-clamp-1">
+                      {act.duration}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sand-500 block text-[10px] font-bold uppercase tracking-wider">
+                      Prestador
+                    </span>
+                    <span className="font-black text-sand-900 text-xs line-clamp-1">
+                      {primaryProvider?.name ?? 'Guía Matriculado'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Acciones: Contacto y Mapa */}
+                <div className="pt-1 grid grid-cols-2 gap-2">
+                  {primaryProvider?.contact ? (
+                    <a
+                      href={`tel:${primaryProvider.contact}`}
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-100 text-sand-900 hover:bg-sand-200 transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-uritorco-600" />
+                      <span>Contactar</span>
+                    </a>
+                  ) : (
+                    <div />
+                  )}
+                  <a
+                    href="#mapa"
+                    className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
+                  >
+                    <span>Ver mapa</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </div>
   );

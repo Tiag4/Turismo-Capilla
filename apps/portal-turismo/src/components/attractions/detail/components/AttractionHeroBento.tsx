@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Camera, Maximize2 } from 'lucide-react';
 import type { AttractionItem } from '../../types';
+import { AttractionGalleryModal } from './AttractionGalleryModal';
 
 interface AttractionHeroBentoProps {
   item: AttractionItem;
@@ -10,9 +12,24 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
     ? item.galleryImages
     : [item.coverImage];
 
-  const mainImg = images[0] || item.coverImage;
-  const secondaryImg1 = images[1] || mainImg;
-  const secondaryImg2 = images[2] || mainImg;
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+
+  const handleOpenGallery = (index: number) => {
+    setActivePhotoIndex(index);
+    setIsGalleryOpen(true);
+  };
+
+  const handleMobileScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const scrollLeft = el.scrollLeft;
+    const width = el.clientWidth;
+    if (width > 0) {
+      const idx = Math.round(scrollLeft / width);
+      setMobileActiveIndex(idx);
+    }
+  };
 
   const difficultyTextColors: Record<AttractionItem['difficulty'], string> = {
     Alta: 'text-terracotta-600',
@@ -66,35 +83,234 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
         </p>
       </div>
 
-      {/* Bento Grid Fotográfico Auténtico */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 rounded-2xl overflow-hidden h-[320px] sm:h-[420px] border border-sand-200">
-        <div className="md:col-span-2 relative h-full bg-sand-200 overflow-hidden group">
-          <img
-            src={mainImg}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-            loading="eager"
-          />
+      {/* 1. VERSIÓN MOBILE: Carrusel Táctil Swipeable con Snap Scroll e Indicador */}
+      <div className="md:hidden relative rounded-2xl overflow-hidden shadow-xs bg-sand-200 border border-sand-200">
+        <div
+          onScroll={handleMobileScroll}
+          className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar h-[280px] sm:h-[340px]"
+          style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
+        >
+          {images.map((imgUrl, idx) => (
+            <div
+              key={imgUrl + idx}
+              onClick={() => handleOpenGallery(idx)}
+              className="w-full shrink-0 snap-center h-full relative cursor-pointer group"
+            >
+              <img
+                src={imgUrl}
+                alt={`${item.title} — Foto ${idx + 1}`}
+                className="w-full h-full object-cover"
+                loading={idx === 0 ? 'eager' : 'lazy'}
+              />
+              <div className="absolute inset-0 bg-sand-950/0 active:bg-sand-950/20 transition-colors" />
+            </div>
+          ))}
         </div>
-        <div className="hidden md:grid grid-rows-2 gap-3 sm:gap-4 h-full">
-          <div className="relative h-full bg-sand-200 overflow-hidden group">
-            <img
-              src={secondaryImg1}
-              alt={`${item.title} postal 1`}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-              loading="lazy"
-            />
-          </div>
-          <div className="relative h-full bg-sand-200 overflow-hidden group">
-            <img
-              src={secondaryImg2}
-              alt={`${item.title} postal 2`}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-              loading="lazy"
-            />
-          </div>
+
+        {/* Badge Indicador de Fotos en Mobile */}
+        <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleOpenGallery(mobileActiveIndex)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sand-950/80 backdrop-blur-md text-white text-xs font-semibold select-none cursor-pointer"
+          >
+            <Camera className="w-3.5 h-3.5 text-terracotta-400" />
+            <span>{mobileActiveIndex + 1} / {images.length}</span>
+            <Maximize2 className="w-3 h-3 text-sand-300 ml-0.5" />
+          </button>
         </div>
       </div>
+
+      {/* 2. VERSIÓN DESKTOP: Bento Grid Fotográfico Adaptativo según cantidad de imágenes reales */}
+      <div className="hidden md:block relative">
+        {images.length === 1 && (
+          <div
+            onClick={() => handleOpenGallery(0)}
+            className="relative w-full h-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden bg-sand-200 border border-sand-200/90 cursor-pointer group shadow-xs"
+          >
+            <img
+              src={images[0]}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+          </div>
+        )}
+
+        {images.length === 2 && (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 h-[400px] lg:h-[460px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {images.map((imgUrl, idx) => (
+              <div
+                key={imgUrl + idx}
+                onClick={() => handleOpenGallery(idx)}
+                className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+              >
+                <img
+                  src={imgUrl}
+                  alt={`${item.title} — Foto ${idx + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                  loading={idx === 0 ? 'eager' : 'lazy'}
+                />
+                <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {images.length === 3 && (
+          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {/* Foto Principal */}
+            <div
+              onClick={() => handleOpenGallery(0)}
+              className="col-span-7 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+            >
+              <img
+                src={images[0]}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+            </div>
+
+            {/* 2 Fotos Secundarias Apiladas */}
+            <div className="col-span-5 grid grid-rows-2 gap-3 sm:gap-4 h-full">
+              {[1, 2].map((idx) => (
+                <div
+                  key={images[idx] + idx}
+                  onClick={() => handleOpenGallery(idx)}
+                  className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+                >
+                  <img
+                    src={images[idx]}
+                    alt={`${item.title} — Foto ${idx + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {images.length === 4 && (
+          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[490px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {/* Foto Principal (A la izquierda, con proporción balanceada) */}
+            <div
+              onClick={() => handleOpenGallery(0)}
+              className="col-span-7 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+            >
+              <img
+                src={images[0]}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+            </div>
+
+            {/* Columna Derecha de 3 Fotos: Foto 1 arriba (apaisada), Foto 2 y 3 abajo (verticales en 2 columnas) */}
+            <div className="col-span-5 grid grid-rows-2 gap-3 sm:gap-4 h-full">
+              {/* Foto 1 (Fila superior completa) */}
+              <div
+                onClick={() => handleOpenGallery(1)}
+                className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+              >
+                <img
+                  src={images[1]}
+                  alt={`${item.title} — Foto 2`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+              </div>
+
+              {/* Fila inferior dividida en 2 fotos verticales */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
+                {[2, 3].map((idx) => (
+                  <div
+                    key={images[idx] + idx}
+                    onClick={() => handleOpenGallery(idx)}
+                    className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+                  >
+                    <img
+                      src={images[idx]}
+                      alt={`${item.title} — Foto ${idx + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {images.length >= 5 && (
+          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[490px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {/* Foto Principal */}
+            <div
+              onClick={() => handleOpenGallery(0)}
+              className="col-span-6 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+            >
+              <img
+                src={images[0]}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+            </div>
+
+            {/* 4 Fotos Secundarias en Grilla 2x2 */}
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 h-full">
+              {images.slice(1, 5).map((imgUrl, idx) => {
+                const photoIdx = idx + 1;
+                return (
+                  <div
+                    key={imgUrl + idx}
+                    onClick={() => handleOpenGallery(photoIdx)}
+                    className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`${item.title} — Foto ${photoIdx + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Botón Flotante para Expandir Galería Completa */}
+        <div className="absolute bottom-3.5 right-3.5 z-10 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => handleOpenGallery(0)}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/95 hover:bg-white text-sand-900 border border-sand-300/80 text-xs font-bold shadow-lg backdrop-blur-md transition-all cursor-pointer select-none hover:shadow-xl hover:scale-102 active:scale-98"
+          >
+            <Camera className="w-4 h-4 text-terracotta-600" />
+            <span>Ver galería ({images.length} fotos)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de Galería Pantalla Completa (LightBox con object-contain) */}
+      <AttractionGalleryModal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        gallery={images}
+        activeIndex={activePhotoIndex}
+        onSelectIndex={setActivePhotoIndex}
+        title={item.title}
+      />
     </div>
   );
 };

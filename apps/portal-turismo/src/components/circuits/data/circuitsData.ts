@@ -1,4 +1,5 @@
-import type { CircuitSpot, GastronomicVenue, AdventureActivity } from '../types/circuits.types';
+import type { CircuitSpot, GastronomicVenue, AdventureActivity, CircuitId } from '../types/circuits.types';
+import type { MapPlace } from '../../../data/mock-places';
 
 export const MYSTIC_SPOTS: CircuitSpot[] = [
   {
@@ -118,7 +119,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 481450',
     hours: 'Mar a Dom de 10:00 a 22:30 hs',
     coordinates: { lat: -30.8590, lng: -64.5240 },
-    features: ['Venta por peso', 'Picadas en el local', 'Envasado al vacío para viaje']
+    features: ['Venta por peso', 'Picadas en el local', 'Envasado al vacío para viaje'],
+    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'casa-de-te-el-paraiso',
@@ -131,7 +133,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 482110',
     hours: 'Mié a Dom de 16:00 a 21:00 hs',
     coordinates: { lat: -30.8575, lng: -64.5265 },
-    features: ['Opciones sin TACC', 'Tés en hebras artesanales', 'Jardín botánico']
+    features: ['Opciones sin TACC', 'Tés en hebras artesanales', 'Jardín botánico'],
+    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'truchas-los-mogotes',
@@ -144,7 +147,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 481890',
     hours: 'Jue a Lun de 12:00 a 16:00 y 20:00 a 00:00 hs',
     coordinates: { lat: -30.8750, lng: -64.5420 },
-    features: ['Vista a los paredones', 'Carta de vinos cordobeses', 'Menú infantil']
+    features: ['Vista a los paredones', 'Carta de vinos cordobeses', 'Menú infantil'],
+    image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'cabrito-la-casona',
@@ -157,7 +161,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 483320',
     hours: 'Todos los días de 12:00 a 16:00 y 20:30 a 01:00 hs',
     coordinates: { lat: -30.8650, lng: -64.5300 },
-    features: ['Estacionamiento propio', 'Asador a la vista', 'Empanadas al horno de barro']
+    features: ['Estacionamiento propio', 'Asador a la vista', 'Empanadas al horno de barro'],
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'miel-uritorco',
@@ -170,7 +175,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 481105',
     hours: 'Lun a Sáb de 09:30 a 13:00 y 17:00 a 21:00 hs',
     coordinates: { lat: -30.8580, lng: -64.5270 },
-    features: ['Certificación orgánica', 'Degustación sin cargo', 'Cosmética apícola natural']
+    features: ['Certificación orgánica', 'Degustación sin cargo', 'Cosmética apícola natural'],
+    image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'cerveceria-montana',
@@ -183,7 +189,8 @@ export const GASTRONOMIC_VENUES: GastronomicVenue[] = [
     phone: '+54 3548 482590',
     hours: 'Mar a Dom de 18:30 a 02:00 hs',
     coordinates: { lat: -30.8595, lng: -64.5255 },
-    features: ['Patio cervecero con fogón', 'Música acústica en vivo', 'Burgers caseras']
+    features: ['Patio cervecero con fogón', 'Música acústica en vivo', 'Burgers caseras'],
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80'
   }
 ];
 
@@ -207,7 +214,8 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
       { name: 'Alturas de Punilla Parapente', contact: '+54 3548 489910', certificationBadge: 'FAVL Habilitado #140' },
       { name: 'Uritorco Fly Adventure', contact: '+54 3548 488720', certificationBadge: 'Cámara Turismo Certificada' }
     ],
-    coordinates: { lat: -30.9850, lng: -64.5700 }
+    coordinates: { lat: -30.9850, lng: -64.5700 },
+    image: 'https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'rappel-los-paredones',
@@ -227,7 +235,8 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
     certifiedProviders: [
       { name: 'Capilla Vertical Guías de Montaña', contact: '+54 3548 481333', certificationBadge: 'AAGM Matriculado' }
     ],
-    coordinates: { lat: -30.8720, lng: -64.5450 }
+    coordinates: { lat: -30.8720, lng: -64.5450 },
+    image: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'espeleologia-ongamira',
@@ -247,7 +256,8 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
     certifiedProviders: [
       { name: 'Senderos de Ongamira Aventura', contact: '+54 3548 486711', certificationBadge: 'Patrimonio Punilla Oficial' }
     ],
-    coordinates: { lat: -30.7720, lng: -64.4480 }
+    coordinates: { lat: -30.7720, lng: -64.4480 },
+    image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80'
   },
   {
     id: 'astroturismo-uritorco',
@@ -267,6 +277,60 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
     certifiedProviders: [
       { name: 'Cielos del Uritorco Astroturismo', contact: '+54 3548 487755', certificationBadge: 'Certificación Cielo Limpio' }
     ],
-    coordinates: { lat: -30.8520, lng: -64.5100 }
+    coordinates: { lat: -30.8520, lng: -64.5100 },
+    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80'
   }
 ];
+
+export function getCircuitPlaces(circuitId: CircuitId): MapPlace[] {
+  if (circuitId === 'mistico') {
+    return MYSTIC_SPOTS.map((s) => ({
+      id: s.id,
+      type: 'attraction' as const,
+      title: s.title,
+      subtitle: s.subtitle,
+      description: s.description,
+      category: 'Circuito Místico',
+      lat: s.coordinates.lat,
+      lng: s.coordinates.lng,
+      rating: 4.9,
+      reviewCount: 120,
+      imageUrl: s.image,
+      address: 'Capilla del Monte, Córdoba',
+      ctaUrl: `/atractivos?modo=circuitos&circuito=mistico#${s.id}`,
+    }));
+  }
+  if (circuitId === 'sabores') {
+    return GASTRONOMIC_VENUES.map((v) => ({
+      id: v.id,
+      type: 'attraction' as const,
+      title: v.name,
+      subtitle: v.specialty,
+      description: v.description,
+      category: v.categoryLabel,
+      lat: v.coordinates.lat,
+      lng: v.coordinates.lng,
+      rating: 4.8,
+      reviewCount: 85,
+      imageUrl: v.image || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80',
+      address: v.address,
+      phone: v.phone,
+      ctaUrl: `/atractivos?modo=circuitos&circuito=sabores#${v.id}`,
+    }));
+  }
+  return ADVENTURE_ACTIVITIES.map((a) => ({
+    id: a.id,
+    type: 'attraction' as const,
+    title: a.title,
+    subtitle: `${a.location} · Dificultad ${a.difficulty}`,
+    description: a.description,
+    category: a.modalityLabel,
+    lat: a.coordinates.lat,
+    lng: a.coordinates.lng,
+    rating: 4.9,
+    reviewCount: 94,
+    imageUrl: a.image || 'https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=1200&q=80',
+    address: a.location,
+    ctaUrl: `/atractivos?modo=circuitos&circuito=aventura#${a.id}`,
+  }));
+}

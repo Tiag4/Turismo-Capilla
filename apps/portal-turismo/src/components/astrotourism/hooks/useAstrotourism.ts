@@ -1,18 +1,18 @@
 import { useState, useCallback, useMemo } from 'react';
-import { NIGHT_PHASES, STARGAZING_SPOTS } from '../data/astrotourism-data';
-import type { NightPhase, StargazingSpot } from '../types';
+import {
+  ASTRO_KEY_FACTS,
+  ASTRO_PREPARATION_TIPS,
+  NIGHT_PHASES,
+  STARGAZING_SPOTS,
+} from '../data/astrotourism-data';
+import type { NightPhase } from '../types';
 
 export function useAstrotourism() {
-  const [phaseIndex, setPhaseIndex] = useState<number>(1); // Default to 23:00 hs (Milky Way)
-  const [activeSpotId, setActiveSpotId] = useState<string>('alazanes');
+  const [phaseIndex, setPhaseIndex] = useState<number>(1); // Default to 23:00 hs (Milky Way zenith)
 
   const activePhase: NightPhase = useMemo(() => {
     return NIGHT_PHASES[phaseIndex] ?? NIGHT_PHASES[0];
   }, [phaseIndex]);
-
-  const activeSpot: StargazingSpot = useMemo(() => {
-    return STARGAZING_SPOTS.find((s) => s.id === activeSpotId) ?? STARGAZING_SPOTS[0];
-  }, [activeSpotId]);
 
   const selectPhase = useCallback((idx: number) => {
     if (idx >= 0 && idx < NIGHT_PHASES.length) {
@@ -20,17 +20,13 @@ export function useAstrotourism() {
     }
   }, []);
 
-  const selectSpot = useCallback((id: string) => {
-    setActiveSpotId(id);
-  }, []);
-
   return {
+    keyFacts: ASTRO_KEY_FACTS,
     phases: NIGHT_PHASES,
     spots: STARGAZING_SPOTS,
+    preparationTips: ASTRO_PREPARATION_TIPS,
     activePhase,
-    activeSpot,
     phaseIndex,
     selectPhase,
-    selectSpot,
   };
 }

@@ -51,9 +51,6 @@ export const FeaturedAttractionsSection: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
                 <div className="relative z-10 space-y-3">
-                  <span className="block text-xs font-bold text-terracotta-400 tracking-widest uppercase">
-                    {terrones.category}
-                  </span>
                   <h3 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-white leading-tight drop-shadow-sm">
                     {terrones.title}
                   </h3>
@@ -100,9 +97,6 @@ export const FeaturedAttractionsSection: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
                   <div className="relative z-10 space-y-1.5">
-                    <span className="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                      {elCajon.category}
-                    </span>
                     <h3 className="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
                       {elCajon.title}
                     </h3>
@@ -129,9 +123,6 @@ export const FeaturedAttractionsSection: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
                   <div className="relative z-10 space-y-1.5">
-                    <span className="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                      {laToma.category}
-                    </span>
                     <h3 className="font-display font-black text-2xl sm:text-3xl text-white leading-tight drop-shadow-sm">
                       {laToma.title}
                     </h3>
@@ -163,9 +154,6 @@ export const FeaturedAttractionsSection: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
                 <div className="relative z-10 space-y-1.5">
-                  <span className="block text-[11px] font-bold text-terracotta-400 tracking-widest uppercase">
-                    {item.category}
-                  </span>
                   <h3 className="font-display font-black text-2xl text-white leading-snug drop-shadow-sm">
                     {item.title}
                   </h3>

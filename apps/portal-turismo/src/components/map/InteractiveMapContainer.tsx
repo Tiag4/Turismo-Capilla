@@ -54,7 +54,19 @@ const FILTERS: FilterItem[] = [
   },
 ];
 
-export const InteractiveMapContainer: React.FC = () => {
+export interface InteractiveMapContainerProps {
+  places?: MapPlace[];
+  showFilters?: boolean;
+  heightClassName?: string;
+  className?: string;
+}
+
+export const InteractiveMapContainer: React.FC<InteractiveMapContainerProps> = ({
+  places,
+  showFilters = true,
+  heightClassName = 'h-[580px] sm:h-[660px] lg:h-[720px]',
+  className = '',
+}) => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [selectedPlace, setSelectedPlace] = useState<MapPlace | null>(null);
   const [tileStyle, setTileStyle] = useState<TileStyle>('esri');
@@ -62,6 +74,9 @@ export const InteractiveMapContainer: React.FC = () => {
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
   const filteredPlaces = useMemo(() => {
+    if (places && places.length > 0) {
+      return places;
+    }
     if (filter === 'all') return MOCK_PLACES;
     if (filter === 'alojamientos') {
       return MOCK_PLACES.filter((p) => p.type === 'accommodation');
@@ -104,7 +119,7 @@ export const InteractiveMapContainer: React.FC = () => {
       );
     }
     return MOCK_PLACES;
-  }, [filter]);
+  }, [filter, places]);
 
   const { containerRef, isLoaded } = useLeafletMap({
     places: filteredPlaces,
@@ -114,7 +129,7 @@ export const InteractiveMapContainer: React.FC = () => {
   });
 
   return (
-    <div className="relative w-full h-[580px] sm:h-[660px] lg:h-[720px] rounded-3xl overflow-hidden border border-sand-300/80 shadow-2xl shadow-sand-900/10 bg-[#f4ede2]">
+    <div className={`relative w-full ${heightClassName} rounded-3xl overflow-hidden border border-sand-300/80 shadow-2xl shadow-sand-900/10 bg-[#f4ede2] ${className}`}>
       {/* Contenedor del Mapa Leaflet */}
       <div ref={containerRef} className="w-full h-full z-0" />
 
@@ -127,30 +142,32 @@ export const InteractiveMapContainer: React.FC = () => {
       )}
 
       {/* FILTROS SUPERIORES FLOTANTES (Barra de Píldoras con Scroll Horizontal Suave) */}
-      <div className="absolute top-4 left-4 right-4 sm:right-auto z-20 flex items-center gap-2 overflow-x-auto no-scrollbar py-1 pr-2 pointer-events-auto">
-        <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-200/90 shadow-lg">
-          {FILTERS.map((item) => {
-            const isActive = filter === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setFilter(item.id)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none ${
-                  isActive
-                    ? 'bg-[#0c261a] text-white shadow-md shadow-[#0c261a]/25'
-                    : 'text-stone-700 hover:text-stone-950 hover:bg-stone-100/90'
-                }`}
-              >
-                <span className={isActive ? 'text-primary-300' : 'text-stone-500'}>
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+      {showFilters && !places && (
+        <div className="absolute top-4 left-4 right-4 sm:right-auto z-20 flex items-center gap-2 overflow-x-auto no-scrollbar py-1 pr-2 pointer-events-auto">
+          <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-200/90 shadow-lg">
+            {FILTERS.map((item) => {
+              const isActive = filter === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setFilter(item.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none ${
+                    isActive
+                      ? 'bg-[#0c261a] text-white shadow-md shadow-[#0c261a]/25'
+                      : 'text-stone-700 hover:text-stone-950 hover:bg-stone-100/90'
+                  }`}
+                >
+                  <span className={isActive ? 'text-primary-300' : 'text-stone-500'}>
+                    {item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* SELECTOR DE CAPA TOPOGRÁFICA / EDITORIAL (Esquina Superior Derecha) */}
       <div className="hidden sm:block absolute top-4 right-4 z-20 pointer-events-auto">
@@ -230,7 +247,7 @@ export const InteractiveMapContainer: React.FC = () => {
         </div>
       )}
 
-      {/* LEYENDA TOPOGRÁFICA FLOTANTE (Esquina Inferior Derecha, basada en la referencia del usuario) */}
+      {/* LEYENDA TOPOGRÁFICA FLOTANTE (Esquina Inferior Derecha) */}
       <div className="hidden md:block absolute bottom-6 right-6 z-20 pointer-events-auto">
         <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200/90 shadow-xl p-3.5 w-60 text-stone-800">
           <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-stone-100">

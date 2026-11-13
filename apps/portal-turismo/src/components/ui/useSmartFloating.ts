@@ -61,63 +61,57 @@ export function useSmartFloating({
       placement = 'left';
     } else if (preferredPlacement === 'right' && spaceRight >= estimatedWidth + padding) {
       placement = 'right';
-    } else if (preferredPlacement === 'top' && spaceAbove >= estimatedHeight + padding) {
-      placement = 'top';
-    } else if (preferredPlacement === 'bottom' && spaceBelow >= estimatedHeight + padding) {
-      placement = 'bottom';
+    } else if (preferredPlacement === 'top') {
+      placement = spaceAbove >= estimatedHeight + padding || spaceAbove >= spaceBelow ? 'top' : 'bottom';
+    } else if (preferredPlacement === 'bottom') {
+      placement = spaceBelow >= estimatedHeight + padding || spaceBelow >= spaceAbove ? 'bottom' : 'top';
     } else {
-      // Auto placement: Determine best position based on viewport geometry
-      const isInRightColumn = rect.left > viewportWidth * 0.45;
-
-      if (isInRightColumn && spaceLeft >= estimatedWidth + padding + 16) {
-        // Lateral left placement: Keeps calendar beside sidebar and avoids top/bottom clipping!
-        placement = 'left';
-      } else if (spaceBelow >= estimatedHeight + padding) {
+      // Auto placement: prioritize natural vertical anchoring for dropdowns and popovers
+      if (spaceBelow >= estimatedHeight + padding) {
         placement = 'bottom';
       } else if (spaceAbove >= estimatedHeight + padding) {
         placement = 'top';
-      } else if (spaceLeft >= estimatedWidth + padding) {
-        placement = 'left';
-      } else if (spaceRight >= estimatedWidth + padding) {
-        placement = 'right';
+      } else if (spaceBelow >= spaceAbove) {
+        placement = 'bottom';
       } else {
-        // Fallback: side with maximum vertical space
-        placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+        placement = 'top';
       }
     }
 
-    // Calculate clamped coordinates
-    let calculatedTop: number;
+    // Calculate clamped coordinates anchored strictly to trigger
+    let calculatedTop: number | undefined;
+    let calculatedBottom: number | undefined;
     let calculatedLeft: number;
+    const targetWidth = Math.max(estimatedWidth, rect.width);
 
     if (placement === 'left') {
-      // If trigger has a parent container/grid, align to its left edge
-      const parentGrid = triggerRef.current.closest('aside') || triggerRef.current.closest('.grid');
-      const referenceLeft = parentGrid ? parentGrid.getBoundingClientRect().left : rect.left;
-
-      calculatedLeft = referenceLeft - estimatedWidth - 12;
-      calculatedTop = Math.max(16, Math.min(rect.top, viewportHeight - estimatedHeight - 16));
+      calculatedLeft = rect.left - targetWidth - 8;
+      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - estimatedHeight - padding));
     } else if (placement === 'right') {
-      const parentGrid = triggerRef.current.closest('aside') || triggerRef.current.closest('.grid');
-      const referenceRight = parentGrid ? parentGrid.getBoundingClientRect().right : rect.right;
-
-      calculatedLeft = referenceRight + 12;
-      calculatedTop = Math.max(16, Math.min(rect.top, viewportHeight - estimatedHeight - 16));
+      calculatedLeft = rect.right + 8;
+      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - estimatedHeight - padding));
     } else if (placement === 'top') {
-      calculatedTop = Math.max(16, rect.top - estimatedHeight - 8);
-      calculatedLeft = Math.max(12, Math.min(rect.left, viewportWidth - estimatedWidth - 16));
+      // Anchor via bottom so actual popover height never creates a floating gap above trigger
+      calculatedBottom = Math.max(padding, Math.round(viewportHeight - rect.top + 6));
+      calculatedLeft = rect.left;
+      if (calculatedLeft + targetWidth > viewportWidth - padding) {
+        calculatedLeft = Math.max(padding, rect.right - targetWidth);
+      }
     } else {
       // bottom
-      calculatedTop = Math.min(rect.bottom + 8, viewportHeight - estimatedHeight - 16);
-      calculatedLeft = Math.max(12, Math.min(rect.left, viewportWidth - estimatedWidth - 16));
+      calculatedTop = Math.max(padding, Math.min(rect.bottom + 6, viewportHeight - estimatedHeight - padding));
+      calculatedLeft = rect.left;
+      if (calculatedLeft + targetWidth > viewportWidth - padding) {
+        calculatedLeft = Math.max(padding, rect.right - targetWidth);
+      }
     }
 
-    // Strict clamping guarantee: never off-screen
-    calculatedTop = Math.max(16, Math.min(calculatedTop, viewportHeight - estimatedHeight - 16));
-    calculatedLeft = Math.max(12, Math.min(calculatedLeft, viewportWidth - estimatedWidth - 12));
+    // Strict horizontal clamping guarantee: never off-screen
+    calculatedLeft = Math.max(padding, Math.min(calculatedLeft, viewportWidth - targetWidth - padding));
 
     setCoords({
-      top: Math.round(calculatedTop),
+      top: calculatedTop !== undefined ? Math.round(calculatedTop) : undefined,
+      bottom: calculatedBottom,
       left: Math.round(calculatedLeft),
       placement,
       width: rect.width,

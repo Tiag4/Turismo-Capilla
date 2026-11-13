@@ -5,14 +5,20 @@ import { OfflineBanner } from '../emergencies/OfflineBanner';
 import { EmergencyModal } from '../emergencies/EmergencyModal';
 import { EmergencyFloatingButton } from '../emergencies/EmergencyFloatingButton';
 import { PublicAlertBanner } from './PublicAlertBanner';
+import { AppFooter } from './AppFooter';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence';
 
 export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { shouldRender: shouldRenderMobileMenu, isVisible: isMobileMenuVisible } = useAnimatedPresence(mobileMenuOpen, 180);
   const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
   const location = useLocation();
 
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileMenuOpen(false);
+  const hasBottomDock =
+    (location.pathname.startsWith('/alojamientos/') && location.pathname !== '/alojamientos/') ||
+    location.pathname.includes('/reserva');
 
   const handleMapaClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (location.pathname === '/') {
@@ -82,16 +88,6 @@ export const AppLayout: React.FC = () => {
               Senderos & Paseos
             </Link>
             <Link
-              to="/circuitos"
-              className={`text-sm font-semibold transition-colors ${
-                location.pathname.startsWith('/circuitos')
-                  ? 'text-primary-600'
-                  : 'text-sand-700 hover:text-primary-600'
-              }`}
-            >
-              Circuitos
-            </Link>
-            <Link
               to="/como-llegar"
               className={`text-sm font-semibold transition-colors ${
                 location.pathname.startsWith('/como-llegar')
@@ -122,17 +118,6 @@ export const AppLayout: React.FC = () => {
 
           {/* CTA Panel Prestador & Menú Móvil */}
           <div className="flex items-center gap-2.5">
-            {/* Botón SOS Emergencias Rápido */}
-            <button
-              type="button"
-              onClick={() => setEmergencyModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold transition-colors cursor-pointer border border-red-200"
-              aria-label="Emergencias y auxilio"
-            >
-              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0" />
-              <span>SOS 100/107</span>
-            </button>
-
             <a
               href={DASHBOARD_URL}
               className="hidden sm:inline-flex items-center justify-center text-xs font-semibold px-4 py-2.5 rounded-xl bg-sand-900 hover:bg-sand-800 text-white transition-colors cursor-pointer"
@@ -156,8 +141,8 @@ export const AppLayout: React.FC = () => {
         </div>
 
         {/* Menú Móvil Desplegable */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-sand-200 bg-sand-50 px-4 py-4 space-y-3">
+        {shouldRenderMobileMenu && (
+          <div className={`md:hidden border-t border-sand-200 bg-sand-50 px-4 py-4 space-y-3 origin-top transition-all duration-180 ease-out ${isMobileMenuVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
             <Link to="/" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-900 py-1.5">
               Inicio
             </Link>
@@ -166,9 +151,6 @@ export const AppLayout: React.FC = () => {
             </Link>
             <Link to="/atractivos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Senderos & Paseos
-            </Link>
-            <Link to="/circuitos" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
-              Circuitos Temáticos
             </Link>
             <Link to="/como-llegar" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Cómo Llegar
@@ -186,17 +168,6 @@ export const AppLayout: React.FC = () => {
             <Link to="/reservas/consulta" onClick={closeMobileMenu} className="block text-sm font-semibold text-sand-700 py-1.5">
               Mi Reserva
             </Link>
-            <button
-              type="button"
-              onClick={() => {
-                closeMobileMenu();
-                setEmergencyModalOpen(true);
-              }}
-              className="w-full text-left flex items-center justify-between text-sm font-bold text-red-700 py-2 border-t border-sand-200"
-            >
-              <span>SOS Emergencias & Rescate</span>
-              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            </button>
             <div className="pt-2 border-t border-sand-200">
               <a
                 href={DASHBOARD_URL}
@@ -215,113 +186,12 @@ export const AppLayout: React.FC = () => {
         <Outlet />
       </main>
 
-      {/* Footer Institucional Limpio y Expansivo */}
-      <footer className="bg-sand-900 text-sand-200 border-t border-sand-800 py-16">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-12">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <img
-                src="/cropped-logo-capilla-del-monte-2024.png"
-                alt="Capilla del Monte — Pueblo Uritorco"
-                className="h-11 w-auto object-contain bg-white/95 px-2.5 py-1.5 rounded-xl shadow-sm"
-                loading="lazy"
-              />
-              <div>
-                <span className="font-display font-extrabold text-xl text-white block leading-tight">
-                  Turismo Capilla del Monte
-                </span>
-                <span className="text-xs text-sand-400 font-medium">Pueblo Uritorco · Portal Oficial</span>
-              </div>
-            </div>
-            <p className="text-sm text-sand-300 max-w-md leading-relaxed">
-              Plataforma oficial desarrollada en conjunto con la Comisión de Turismo de Capilla del Monte. Información verificada de circuitos serranos y reservas directas con prestadores habilitados oficialmente, sin comisiones ocultas.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="font-display font-bold text-white mb-4 text-sm tracking-wide">
-              Paseos & Naturaleza
-            </h4>
-            <ul className="space-y-2.5 text-sm text-sand-300">
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Cerro Uritorco</Link></li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Los Terrones</Link></li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Dique El Cajón</Link></li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Balneario La Toma</Link></li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Paseo El Zapato</Link></li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Los Mogotes</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display font-bold text-white mb-4 text-sm tracking-wide">
-              Dónde Dormir
-            </h4>
-            <ul className="space-y-2.5 text-sm text-sand-300">
-              <li><Link to="/alojamientos?amenity=pileta-climatizada" className="hover:text-primary-400 transition-colors">Cabañas con pileta</Link></li>
-              <li><Link to="/alojamientos?zone=falda-del-uritorco" className="hover:text-primary-400 transition-colors">Falda del Uritorco</Link></li>
-              <li><Link to="/alojamientos?petFriendly=true" className="hover:text-primary-400 transition-colors">Alojamientos Pet-friendly</Link></li>
-              <li><Link to="/alojamientos?zone=la-toma" className="hover:text-primary-400 transition-colors">Cerca del río</Link></li>
-              <li><Link to="/alojamientos" className="hover:text-primary-400 transition-colors">Catálogo habilitado</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display font-bold text-white mb-4 text-sm tracking-wide">
-              Experiencias
-            </h4>
-            <ul className="space-y-2.5 text-sm text-sand-300">
-              <li><Link to="/atractivos/uritorco" className="hover:text-primary-400 transition-colors">Ascenso nocturno</Link></li>
-              <li>
-                <Link
-                  to="/#mapa-valle"
-                  onClick={handleMapaClick}
-                  className="hover:text-primary-400 transition-colors"
-                >
-                  Mapa interactivo
-                </Link>
-              </li>
-              <li><Link to="/atractivos" className="hover:text-primary-400 transition-colors">Guías habilitados</Link></li>
-              <li><Link to="/circuitos" className="hover:text-primary-400 transition-colors">Circuitos Temáticos</Link></li>
-              <li><Link to="/como-llegar" className="hover:text-primary-400 transition-colors">Cómo llegar & Peajes</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display font-bold text-white mb-4 text-sm tracking-wide">
-              Atención Turística
-            </h4>
-            <ul className="space-y-2.5 text-sm text-sand-300">
-              <li className="text-sand-200 font-medium">Secretaría de Turismo</li>
-              <li>Predio Estación Ferrocarril</li>
-              <li>Tel: +54 3548 481903</li>
-              <li>Guardia Turística: 103</li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setEmergencyModalOpen(true)}
-                  className="text-red-400 hover:text-red-300 font-bold transition-colors cursor-pointer text-left flex items-center gap-1.5"
-                >
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span>SOS Emergencias 24hs (100 / 107)</span>
-                </button>
-              </li>
-              <li className="pt-1 text-xs text-sand-400">Capilla del Monte, Valle de Punilla, Córdoba</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 mt-12 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-sand-400 gap-4">
-          <span>© 2026 Comisión de Turismo de Capilla del Monte. Todos los derechos reservados.</span>
-          <div className="flex items-center gap-6">
-            <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
-            <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
-            <Link to="/circuitos" className="hover:text-sand-300 transition-colors">Circuitos</Link>
-            <Link to="/como-llegar" className="hover:text-sand-300 transition-colors">Cómo Llegar</Link>
-            <Link to="/emergencias" className="hover:text-red-300 text-red-400 font-semibold transition-colors">Emergencias</Link>
-            <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>
-          </div>
-        </div>
-      </footer>
+      <div className={hasBottomDock ? 'pb-24 sm:pb-28 bg-sand-900' : ''}>
+        <AppFooter
+          onMapaClick={handleMapaClick}
+          onOpenEmergencies={() => setEmergencyModalOpen(true)}
+        />
+      </div>
 
       {/* Acceso Rápido Flotante & Modal de Emergencias (HU-25) */}
       <EmergencyFloatingButton onOpen={() => setEmergencyModalOpen(true)} />

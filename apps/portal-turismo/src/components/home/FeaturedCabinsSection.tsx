@@ -45,8 +45,13 @@ function mapApiToPlace(item: Accommodation): MapPlace {
 }
 
 export const FeaturedCabinsSection: React.FC = () => {
-  const [cabins, setCabins] = useState<MapPlace[]>(() =>
-    MOCK_PLACES.filter((p) => p.type === 'accommodation').sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0))
+  const [cabins, setCabins] = useState<MapPlace[]>(() => {
+    const accommodations = MOCK_PLACES.filter((p) => p.type === 'accommodation');
+    const featured = accommodations.filter((p) => p.isFeatured);
+    return featured.length > 0 ? featured : accommodations.slice(0, 4);
+  });
+  const [totalCatalogCount, setTotalCatalogCount] = useState<number>(() =>
+    MOCK_PLACES.filter((p) => p.type === 'accommodation').length
   );
 
   useEffect(() => {
@@ -55,7 +60,11 @@ export const FeaturedCabinsSection: React.FC = () => {
       .getAccommodations()
       .then((data) => {
         if (isMounted && Array.isArray(data) && data.length > 0) {
-          setCabins(data.map(mapApiToPlace).sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0)));
+          const mapped = data.map(mapApiToPlace);
+          setTotalCatalogCount(mapped.length);
+          const featured = mapped.filter((item) => item.isFeatured);
+          // Si hay alojamientos destacados manualmente por la administración, mostramos exclusivamente esos.
+          setCabins(featured.length > 0 ? featured : mapped.slice(0, 4));
         }
       })
       .catch((err) => {
@@ -83,7 +92,7 @@ export const FeaturedCabinsSection: React.FC = () => {
             to="/alojamientos"
             className="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 group"
           >
-            <span>Ver catálogo completo ({cabins.length})</span>
+            <span>Ver catálogo completo ({totalCatalogCount})</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>

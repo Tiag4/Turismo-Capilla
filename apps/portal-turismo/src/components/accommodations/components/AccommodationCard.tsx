@@ -50,13 +50,20 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({ place, nig
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/20 to-transparent" />
 
-        {/* Badge de Desayuno Incluido (Anti-vibecoded sólido) */}
-        {hasBreakfast && (
-          <div className="absolute top-3 left-3 bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-            <Coffee className="w-3.5 h-3.5 text-white" />
-            <span>Desayuno</span>
-          </div>
-        )}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+          {place?.isFeatured && (
+            <div className="bg-amber-500 text-sand-950 text-[11px] font-black px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md border border-amber-300">
+              <Star className="w-3.5 h-3.5 fill-current text-sand-950" />
+              <span>Destacado</span>
+            </div>
+          )}
+          {hasBreakfast && (
+            <div className="bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+              <Coffee className="w-3.5 h-3.5 text-white" />
+              <span>Desayuno</span>
+            </div>
+          )}
+        </div>
 
         {/* Badge de Puntuación */}
         <div className="absolute top-3 right-3 bg-stone-900/85 backdrop-blur-xs px-2.5 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1 shadow-sm">

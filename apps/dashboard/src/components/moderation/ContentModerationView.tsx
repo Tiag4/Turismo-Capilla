@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { usePhotoModeration } from '../../hooks/usePhotoModeration.ts';
+import { useToast } from '../../context/ToastContext.tsx';
 import { ModerationCard } from './ModerationCard.tsx';
 import { ObservationModal } from './ObservationModal.tsx';
 import { ReviewModerationSection } from './ReviewModerationSection.tsx';
@@ -8,6 +9,7 @@ import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { ModerationItem, ModerationStatus } from '../../types/moderation.types.ts';
 
 export const ContentModerationView: React.FC = () => {
+  const { showSuccess, showError } = useToast();
   const {
     items,
     isLoading,
@@ -32,6 +34,9 @@ export const ContentModerationView: React.FC = () => {
     try {
       await requestChanges(id, notes);
       setIsModalOpen(false);
+      showSuccess('Fotografía observada/rechazada. El prestador verá el motivo en su galería.');
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'No se pudo rechazar la fotografía.');
     } finally {
       setIsSubmitting(false);
     }
@@ -56,9 +61,6 @@ export const ContentModerationView: React.FC = () => {
             Control de calidad de fotografías, fichas y reseñas publicadas en el portal oficial
           </p>
         </div>
-        <span className="self-start sm:self-auto px-3 py-1 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
-          Prototipo de Interfaz (Almacenamiento Local)
-        </span>
       </div>
 
       {/* Filter Tabs */}
@@ -110,10 +112,16 @@ export const ContentModerationView: React.FC = () => {
       <ConfirmDialog
         isOpen={Boolean(photoToApprove)}
         onClose={() => setPhotoToApprove(null)}
-        onConfirm={() => {
+        onConfirm={async () => {
           if (photoToApprove) {
-            approvePhoto(photoToApprove);
-            setPhotoToApprove(null);
+            try {
+              await approvePhoto(photoToApprove);
+              showSuccess('Fotografía aprobada y publicada en el portal.');
+            } catch (err: unknown) {
+              showError(err instanceof Error ? err.message : 'No se pudo aprobar la fotografía.');
+            } finally {
+              setPhotoToApprove(null);
+            }
           }
         }}
         variant="emerald"

@@ -29,6 +29,14 @@ const MONTH_NAMES = [
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
 ];
 
+function formatEventTime(raw?: string): string {
+  if (!raw || !raw.trim()) return 'Horario a confirmar';
+  const trimmed = raw.trim();
+  if (/todo el d[ií]a/i.test(trimmed)) return 'Todo el día';
+  if (/^\d{1,2}:\d{2}$/.test(trimmed)) return `${trimmed.padStart(5, '0')} hs`;
+  return trimmed;
+}
+
 interface CulturalAgendaSectionProps {
   eventsOverride?: CulturalEvent[];
 }
@@ -68,7 +76,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
       return;
     }
     culturalEventsService.fetchActiveEvents().then((remoteEvents) => {
-      if (remoteEvents && remoteEvents.length > 0) {
+      if (Array.isArray(remoteEvents)) {
         setEvents(remoteEvents);
       }
     });
@@ -141,7 +149,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
             <div className="flex flex-wrap gap-4 mt-3 text-xs text-[var(--color-sand-600)] font-semibold">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
-                <span>{activeModalEvent.startDate} ({activeModalEvent.timeString})</span>
+                <span>{activeModalEvent.startDate} ({formatEventTime(activeModalEvent.timeString)})</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-[var(--color-terracotta-500)]" />
@@ -264,7 +272,7 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
                         </span>
                       </div>
                       <div className="text-white text-xs drop-shadow-sm font-medium">
-                        {evt.timeString}
+                        {formatEventTime(evt.timeString)}
                       </div>
                     </div>
                   </div>

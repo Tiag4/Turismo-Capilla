@@ -97,6 +97,16 @@ function persistLocally(events: CulturalEvent[]): void {
   }
 }
 
+function isNetworkOrTimeoutError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  return (
+    err.name === 'AbortError' ||
+    err.name === 'TimeoutError' ||
+    err instanceof TypeError ||
+    /failed to fetch|networkerror|load failed/i.test(err.message)
+  );
+}
+
 export const culturalEventsService = {
   getEvents: (): CulturalEvent[] => {
     return getStoredEvents();
@@ -122,7 +132,7 @@ export const culturalEventsService = {
   fetchEvents: async (): Promise<CulturalEvent[]> => {
     try {
       const remote = await apiClient.get<CulturalEvent[]>('/events');
-      if (Array.isArray(remote) && remote.length > 0) {
+      if (Array.isArray(remote)) {
         persistLocally(remote);
         return remote;
       }
@@ -146,7 +156,10 @@ export const culturalEventsService = {
         return created;
       }
     } catch (err) {
-      console.warn('Error al persistir evento en API remota, guardando localmente:', err);
+      if (!isNetworkOrTimeoutError(err)) {
+        throw err;
+      }
+      console.warn('API offline al crear evento, guardando localmente:', err);
     }
 
     const localNewEvent: CulturalEvent = {
@@ -192,7 +205,10 @@ export const culturalEventsService = {
         return updated;
       }
     } catch (err) {
-      console.warn('Error al actualizar evento en API remota, aplicando actualización local:', err);
+      if (!isNetworkOrTimeoutError(err)) {
+        throw err;
+      }
+      console.warn('API offline al actualizar evento, aplicando actualización local:', err);
     }
 
     const localUpdated = { ...current, ...dto };
@@ -205,7 +221,10 @@ export const culturalEventsService = {
     try {
       await apiClient.delete(`/events/${id}`);
     } catch (err) {
-      console.warn('Error al eliminar evento en API remota, purgando localmente:', err);
+      if (!isNetworkOrTimeoutError(err)) {
+        throw err;
+      }
+      console.warn('API offline al eliminar evento, purgando localmente:', err);
     }
     const events = getStoredEvents().filter((e) => e.id !== id);
     persistLocally(events);

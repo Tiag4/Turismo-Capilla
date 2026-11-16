@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Calendar, ArrowLeft, Save, Check } from 'lucide-react';
 import type { CulturalEvent, CreateCulturalEventDTO, EventCategory } from '../../types/culturalEvent.types.ts';
+import { useToast } from '../../context/ToastContext.tsx';
 import { EventFlyerDropzone } from './EventFlyerDropzone.tsx';
 import { Button } from '../ui/Button.tsx';
 import { Input } from '../ui/Input.tsx';
 import { Select } from '../ui/Select.tsx';
+import { CustomTimePicker } from '../ui/CustomTimePicker.tsx';
 
 const VENUE_PRESETS = [
   'Predio Gabriel Suárez & Calle Techada',
@@ -32,12 +34,39 @@ export interface EventEditorFormProps {
   isSubmitting: boolean;
 }
 
+interface EventFormErrors {
+  title?: string;
+  startDate?: string;
+  endDate?: string;
+  location?: string;
+  price?: string;
+}
+
+function parseInitialTime(raw?: string): { isAllDay: boolean; timeValue: string } {
+  if (!raw || !raw.trim()) {
+    return { isAllDay: false, timeValue: '20:00 hs' };
+  }
+  const normalized = raw.trim();
+  if (/todo el d[ií]a/i.test(normalized)) {
+    return { isAllDay: true, timeValue: '20:00 hs' };
+  }
+  const match = normalized.match(/(\d{1,2}:\d{2})/);
+  if (match) {
+    const [h, m] = match[1].split(':');
+    return { isAllDay: false, timeValue: `${h.padStart(2, '0')}:${m} hs` };
+  }
+  return { isAllDay: false, timeValue: '20:00 hs' };
+}
+
 export const EventEditorForm: React.FC<EventEditorFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
   isSubmitting,
 }) => {
+  const { showError } = useToast();
+  const initialTime = parseInitialTime(initialData?.timeString);
+
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [description, setDescription] = useState(initialData?.description ?? '');
   const [category, setCategory] = useState<EventCategory>(initialData?.category ?? 'FESTIVAL');
@@ -45,17 +74,56 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
     initialData?.startDate ?? new Date().toISOString().split('T')[0]
   );
   const [endDate, setEndDate] = useState(initialData?.endDate ?? '');
-  const [timeString, setTimeString] = useState(initialData?.timeString ?? '20:00 hs');
+  const [isAllDay, setIsAllDay] = useState(initialTime.isAllDay);
+  const [timeString, setTimeString] = useState(initialTime.timeValue);
   const [location, setLocation] = useState(initialData?.location ?? VENUE_PRESETS[0]);
   const [isFree, setIsFree] = useState(initialData?.isFree ?? true);
   const [price, setPrice] = useState<number | undefined>(initialData?.price);
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '');
   const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
   const [isFeatured, setIsFeatured] = useState(Boolean(initialData?.isFeatured));
+  const [errors, setErrors] = useState<EventFormErrors>({});
+
+  const clearError = (field: keyof EventFormErrors) => {
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  };
+
+  const validate = (): boolean => {
+    const nextErrors: EventFormErrors = {};
+    if (!title.trim()) {
+      nextErrors.title = 'El título del evento es obligatorio.';
+    }
+    if (!startDate) {
+      nextErrors.startDate = 'La fecha de inicio es obligatoria.';
+    }
+    if (endDate && startDate && endDate < startDate) {
+      nextErrors.endDate = 'La fecha de fin no puede ser anterior a la de inicio.';
+    }
+    if (!location.trim()) {
+      nextErrors.location = 'El lugar o sede es obligatorio.';
+    }
+    if (!isFree && (price === undefined || Number.isNaN(price) || price < 0)) {
+      nextErrors.price = 'Ingresá un valor de entrada válido (0 o mayor).';
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !startDate) return;
+    if (isSubmitting) return;
+
+    if (!validate()) {
+      showError('No se pudo guardar el evento. Por favor revisá los campos obligatorios');
+      return;
+    }
+
+    const formattedTime = isAllDay
+      ? 'Todo el día'
+      : timeString.includes('hs')
+      ? timeString.trim()
+      : `${timeString.trim()} hs`;
 
     const dto: CreateCulturalEventDTO = {
       title: title.trim(),
@@ -63,7 +131,7 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
       category,
       startDate,
       endDate: endDate || undefined,
-      timeString: timeString.trim(),
+      timeString: formattedTime,
       location: location.trim(),
       isFree,
       price: isFree ? undefined : Number(price) || 0,
@@ -76,7 +144,7 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* 1. Header con botón volver */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--color-sand-200)]">
         <div className="flex items-center gap-3">
@@ -107,11 +175,11 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
             type="submit"
             variant="emerald"
             isLoading={isSubmitting}
-            disabled={!title.trim() || !startDate}
+            disabled={isSubmitting}
             className="font-bold shadow-xs cursor-pointer"
           >
             <Save className="w-4 h-4 mr-1.5" />
-            <span>{initialData ? 'Guardar Cambios' : 'Registrar Evento'}</span>
+            <span>{initialData ? 'Guardar Cambios' : 'Guardar Evento'}</span>
           </Button>
         </div>
       </div>
@@ -129,11 +197,15 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
               label="Título del Evento *"
               required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              error={errors.title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                clearError('title');
+              }}
               placeholder="ej. Festival Alienígena de Capilla del Monte"
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <Select
                 label="Categoría del Evento *"
                 value={category}
@@ -141,12 +213,26 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                 options={CATEGORY_OPTIONS}
               />
 
-              <Input
-                label="Horario o Convocatoria"
-                value={timeString}
-                onChange={(e) => setTimeString(e.target.value)}
-                placeholder="ej. 20:30 hs o 18:00 a 23:00 hs"
-              />
+              <div className="space-y-2">
+                <CustomTimePicker
+                  label="Horario de Convocatoria"
+                  value={isAllDay ? '' : timeString}
+                  onChange={(val) => setTimeString(val)}
+                  disabled={isAllDay || isSubmitting}
+                  helperText={isAllDay ? 'Modalidad continua: Todo el día' : 'Formato 24 hs (ej. 20:30 hs)'}
+                />
+                <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                    className="w-4 h-4 rounded border-[var(--color-sand-300)] text-[var(--color-emerald-portal-600)] focus:ring-[var(--color-emerald-portal-600)] cursor-pointer"
+                  />
+                  <span className="text-xs font-semibold text-[var(--color-sand-700)]">
+                    Todo el día / Horario continuo
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div>
@@ -175,14 +261,22 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                 type="date"
                 required
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                error={errors.startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  clearError('startDate');
+                }}
               />
 
               <Input
                 label="Fecha de Fin (Opcional)"
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                error={errors.endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  clearError('endDate');
+                }}
               />
             </div>
 
@@ -190,7 +284,11 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
               label="Lugar o Sede *"
               required
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              error={errors.location}
+              onChange={(e) => {
+                setLocation(e.target.value);
+                clearError('location');
+              }}
               placeholder="ej. Predio Gabriel Suárez & Calle Techada"
             />
           </section>
@@ -247,7 +345,12 @@ export const EventEditorForm: React.FC<EventEditorFormProps> = ({
                     type="number"
                     min="0"
                     value={price ?? ''}
-                    onChange={(e) => setPrice(Number(e.target.value) || undefined)}
+                    error={errors.price}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPrice(val === '' ? undefined : Number(val));
+                      clearError('price');
+                    }}
                     placeholder="ej. 5000"
                   />
                 </div>

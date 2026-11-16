@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { culturalEventsService } from '../../services/culturalEvents.service.ts';
 import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types.ts';
+import { useToast } from '../../context/ToastContext.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 
@@ -41,14 +42,16 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
   onNavigateCreate,
   onNavigateEdit,
 }) => {
+  const { showSuccess, showError } = useToast();
   const [events, setEvents] = useState<CulturalEvent[]>(() => culturalEventsService.getEvents());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   useEffect(() => {
     culturalEventsService.fetchEvents().then((fetched) => {
-      if (fetched && fetched.length > 0) {
+      if (Array.isArray(fetched)) {
         setEvents(fetched);
       }
     });
@@ -59,19 +62,35 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
   };
 
   const handleToggleActive = async (id: string) => {
+    if (togglingId === id) return;
+    setTogglingId(id);
     try {
       const updated = await culturalEventsService.toggleEventActive(id);
       setEvents((prev) => prev.map((e) => (e.id === id ? updated : e)));
-    } catch (err) {
+      showSuccess(
+        updated.isActive
+          ? 'Evento publicado exitosamente en el portal'
+          : 'Publicación del evento pausada'
+      );
+    } catch (err: any) {
       console.error('Error al alternar estado del evento:', err);
+      showError(err?.message || 'No se pudo actualizar el estado de publicación del evento.');
+    } finally {
+      setTogglingId(null);
     }
   };
 
   const handleConfirmDelete = async () => {
-    if (deletingId) {
+    if (!deletingId) return;
+    try {
       await culturalEventsService.deleteEvent(deletingId);
       setDeletingId(null);
       refreshEvents();
+      showSuccess('Evento eliminado de la agenda cultural');
+    } catch (err: any) {
+      console.error('Error al eliminar evento:', err);
+      showError(err?.message || 'No se pudo eliminar el evento.');
+      setDeletingId(null);
     }
   };
 
@@ -239,9 +258,10 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
               <div className="pt-3 border-t border-[var(--color-sand-100)] flex items-center justify-between">
                 <button
                   type="button"
+                  disabled={togglingId === evt.id}
                   onClick={() => handleToggleActive(evt.id)}
                   title={evt.isActive ? 'Pausar publicación en el portal' : 'Publicar evento'}
-                  className="p-1.5 rounded-lg text-xs font-semibold text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-xs font-semibold text-[var(--color-sand-600)] hover:bg-[var(--color-sand-100)] disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {evt.isActive ? <EyeOff className="w-4 h-4 text-amber-600" /> : <Eye className="w-4 h-4 text-emerald-600" />}
                 </button>

@@ -33,6 +33,17 @@ export interface Attraction {
   status?: AttractionStatus;
   statusNotice?: string | null;
   isFeatured?: boolean;
+  elevationGainMeters?: number | null;
+  maxElevationMsnm?: number | null;
+  distanceKm?: number | null;
+  trailType?: string | null;
+  terrainType?: string | null;
+  openingHours?: string | null;
+  cutoffTime?: string | null;
+  hydrationRequirement?: string | null;
+  highlights?: string[];
+  recommendedGear?: string[];
+  safetyWarnings?: string[];
 }
 
 export interface RoomTypeApiDto {

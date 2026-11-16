@@ -14,20 +14,19 @@ export const AttractionDetailPage: React.FC = () => {
   const [notFound, setNotFound] = useState<boolean>(false);
 
   useEffect(() => {
-    if (item || !id) return;
+    if (!id) return;
     let active = true;
-
-    const currentId = id;
-    if (!currentId) return;
 
     async function fetchFromApi() {
       try {
-        setLoading(true);
+        if (!initialItem) {
+          setLoading(true);
+        }
         let apiItem;
         try {
-          apiItem = await api.getAttractionById(currentId);
+          apiItem = await api.getAttractionById(id!);
         } catch {
-          const list = await api.getAttractions({ search: currentId.replace(/-/g, ' ') });
+          const list = await api.getAttractions({ search: id!.replace(/-/g, ' ') });
           apiItem = list?.[0];
         }
 
@@ -35,12 +34,12 @@ export const AttractionDetailPage: React.FC = () => {
           if (apiItem) {
             const mapped = mapApiToAttractionItem(apiItem);
             setItem(mapped);
-          } else {
+          } else if (!initialItem) {
             setNotFound(true);
           }
         }
       } catch {
-        if (active) {
+        if (active && !initialItem) {
           setNotFound(true);
         }
       } finally {
@@ -54,7 +53,7 @@ export const AttractionDetailPage: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [id, item]);
+  }, [id]);
 
   if (notFound) {
     return <Navigate to="/atractivos" replace />;

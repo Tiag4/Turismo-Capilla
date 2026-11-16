@@ -255,6 +255,17 @@ export const attractionsService = {
       latitude: dto.latitude !== undefined && dto.latitude !== null ? Number(dto.latitude) : null,
       longitude: dto.longitude !== undefined && dto.longitude !== null ? Number(dto.longitude) : null,
       images: formattedImages.map((img) => ({ url: img.url, publicId: img.publicId })),
+      elevationGainMeters: dto.elevationGainMeters !== undefined && dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null,
+      maxElevationMsnm: dto.maxElevationMsnm !== undefined && dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null,
+      distanceKm: dto.distanceKm !== undefined && dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null,
+      trailType: dto.trailType || null,
+      terrainType: dto.terrainType || null,
+      openingHours: dto.openingHours || null,
+      cutoffTime: dto.cutoffTime || null,
+      hydrationRequirement: dto.hydrationRequirement || null,
+      highlights: dto.highlights || [],
+      recommendedGear: dto.recommendedGear || [],
+      safetyWarnings: dto.safetyWarnings || [],
     };
 
     try {
@@ -290,6 +301,17 @@ export const attractionsService = {
       status: dto.status || 'OPEN',
       statusNotice: dto.statusNotice || null,
       isFeatured: Boolean(dto.isFeatured),
+      elevationGainMeters: dto.elevationGainMeters !== undefined && dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null,
+      maxElevationMsnm: dto.maxElevationMsnm !== undefined && dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null,
+      distanceKm: dto.distanceKm !== undefined && dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null,
+      trailType: dto.trailType || null,
+      terrainType: dto.terrainType || null,
+      openingHours: dto.openingHours || null,
+      cutoffTime: dto.cutoffTime || null,
+      hydrationRequirement: dto.hydrationRequirement || null,
+      highlights: dto.highlights || [],
+      recommendedGear: dto.recommendedGear || [],
+      safetyWarnings: dto.safetyWarnings || [],
       createdAt: new Date().toISOString(),
     };
 
@@ -326,6 +348,15 @@ export const attractionsService = {
     }
     if (dto.longitude !== undefined) {
       payload.longitude = dto.longitude !== null ? Number(dto.longitude) : null;
+    }
+    if (dto.elevationGainMeters !== undefined) {
+      payload.elevationGainMeters = dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null;
+    }
+    if (dto.maxElevationMsnm !== undefined) {
+      payload.maxElevationMsnm = dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null;
+    }
+    if (dto.distanceKm !== undefined) {
+      payload.distanceKm = dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null;
     }
 
     try {

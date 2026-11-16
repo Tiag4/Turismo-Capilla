@@ -266,6 +266,7 @@ export const attractionsService = {
       highlights: dto.highlights || [],
       recommendedGear: dto.recommendedGear || [],
       safetyWarnings: dto.safetyWarnings || [],
+      isFeatured: Boolean(dto.isFeatured),
       featuredBadgeTheme: dto.featuredBadgeTheme || 'DARK',
     };
 

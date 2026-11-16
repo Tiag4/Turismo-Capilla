@@ -703,7 +703,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             >
               <div className="flex items-center justify-between">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sand-950 text-amber-300 shadow-xs">
-                  ★ Destacado
+                  ★ Oscuro
                 </span>
                 {isFeatured && featuredBadgeTheme !== 'LIGHT' && (
                   <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
@@ -716,13 +716,6 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
                   }`}
                 >
                   Destacado Oscuro
-                </span>
-                <span
-                  className={`block text-[11px] mt-0.5 ${
-                    isFeatured && featuredBadgeTheme !== 'LIGHT' ? 'text-sand-300' : 'text-sand-500'
-                  }`}
-                >
-                  Etiqueta carbón / Recomendada para fotos claras
                 </span>
               </div>
             </button>
@@ -742,7 +735,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             >
               <div className="flex items-center justify-between">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-sand-950 shadow-xs">
-                  ★ Destacado
+                  ★ Claro
                 </span>
                 {isFeatured && featuredBadgeTheme === 'LIGHT' && (
                   <Check className="w-4 h-4 text-amber-800 stroke-[3]" />
@@ -751,9 +744,6 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               <div>
                 <span className="block text-xs font-bold text-sand-900">
                   Destacado Claro
-                </span>
-                <span className="block text-[11px] text-sand-500 mt-0.5">
-                  Etiqueta dorada cálida / Recomendada para fotos oscuras
                 </span>
               </div>
             </button>

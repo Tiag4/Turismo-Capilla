@@ -151,7 +151,7 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
 
   // Filtered List
   const filteredAttractions = useMemo(() => {
-    return attractions.filter((item) => {
+    const list = attractions.filter((item) => {
       // Category filter
       if (categoryFilter !== 'ALL' && item.category !== categoryFilter) return false;
 
@@ -173,6 +173,15 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
 
       return true;
     });
+
+    // Los atractivos destacados (tanto Claro como Oscuro) se ordenan prioritariamente arriba en el dashboard
+    list.sort((a, b) => {
+      const aFeat = Boolean(a.isFeatured) ? 1 : 0;
+      const bFeat = Boolean(b.isFeatured) ? 1 : 0;
+      return bFeat - aFeat;
+    });
+
+    return list;
   }, [attractions, categoryFilter, statusFilter, search]);
 
   return (

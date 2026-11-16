@@ -188,7 +188,7 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
     ctaUrl: `/atractivos/${slug}`,
     status: apiItem.status || matchedMock?.status || 'OPEN',
     statusNotice: apiItem.statusNotice ?? matchedMock?.statusNotice ?? null,
-    isFeatured: apiItem.isFeatured ?? matchedMock?.isFeatured ?? false,
+    isFeatured: typeof apiItem.isFeatured === 'boolean' ? apiItem.isFeatured : Boolean(matchedMock?.isFeatured ?? false),
   };
 
   return mappedItem;

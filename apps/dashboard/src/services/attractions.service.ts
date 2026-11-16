@@ -415,8 +415,23 @@ export const attractionsService = {
   },
 
   async toggleFeatured(id: string): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured`, {});
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured no disponible, usando fallback PUT/local:', err);
+    }
+
     const existing = localAttractions.find((a) => a.id === id);
-    if (!existing) throw new Error('Atractivo no encontrado');
-    return this.update(id, { isFeatured: !existing.isFeatured });
+    return this.update(id, { isFeatured: !existing?.isFeatured });
   },
 };

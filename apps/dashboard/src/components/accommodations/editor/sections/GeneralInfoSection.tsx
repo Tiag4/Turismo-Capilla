@@ -11,6 +11,10 @@ export interface GeneralInfoSectionProps {
   setType: (val: AccommodationType) => void;
   description: string;
   setDescription: (val: string) => void;
+  licenseNumber?: string;
+  setLicenseNumber?: (val: string) => void;
+  responseTime?: string;
+  setResponseTime?: (val: string) => void;
 }
 
 const ACCOMMODATION_TYPE_OPTIONS = [
@@ -28,6 +32,10 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
   setType,
   description,
   setDescription,
+  licenseNumber = '',
+  setLicenseNumber,
+  responseTime = '',
+  setResponseTime,
 }) => {
   return (
     <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
@@ -69,16 +77,37 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
           Descripción del establecimiento
         </label>
         <textarea
-          rows={4}
+          rows={5}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describí los atributos principales del lugar, entorno serrano, tranquilidad, comodidades para el descanso y atención personalizada..."
+          placeholder="Describí los atributos principales del lugar, entorno serrano, tranquilidad, comodidades para el descanso y atención personalizada (podés presionar Enter para separar párrafos)..."
           className="w-full rounded-xl border border-[var(--color-sand-300)] bg-white px-3.5 py-2.5 text-sm text-[var(--color-sand-900)] placeholder:text-[var(--color-sand-400)] focus:outline-none focus:border-[var(--color-terracotta-500)] transition-colors"
           required
         />
         <div className="flex justify-between items-center mt-1 text-[11px] text-[var(--color-sand-600)]">
-          <span>Recomendación: mínimo 100 caracteres para un buen posicionamiento en búsquedas.</span>
+          <span>Podés presionar Enter para separar párrafos (se reflejarán en la página de detalle).</span>
           <span className="font-['Outfit'] font-bold tabular-nums text-[var(--color-sand-800)]">{description.length} caracteres</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[var(--color-sand-100)]">
+        <div>
+          <Input
+            label="N° de Habilitación / Matrícula Municipal"
+            value={licenseNumber}
+            onChange={(e) => setLicenseNumber?.(e.target.value)}
+            placeholder="ej. H-4829 / Res. 104-2023"
+            helperText="Aparecerá en el portal con el sello oficial de prestador habilitado."
+          />
+        </div>
+        <div>
+          <Input
+            label="Tiempo habitual de respuesta"
+            value={responseTime}
+            onChange={(e) => setResponseTime?.(e.target.value)}
+            placeholder="ej. Responde habitualmente en el día"
+            helperText="Informa al turista la rapidez de atención para consultas y reservas."
+          />
         </div>
       </div>
     </div>

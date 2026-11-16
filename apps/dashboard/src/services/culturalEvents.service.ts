@@ -160,16 +160,34 @@ export const culturalEventsService = {
   },
 
   updateEvent: async (id: string, dto: Partial<CreateCulturalEventDTO>): Promise<CulturalEvent> => {
+    const events = getStoredEvents();
+    const index = events.findIndex((e) => e.id === id);
+    if (index === -1) {
+      throw new Error(`Event with id ${id} not found`);
+    }
+
+    const current = events[index];
+
+    // Siempre construimos el payload completo para satisfacer la validación estricta de Spring Boot (@Valid CreateOrUpdateEventDto)
+    const fullPayload: CreateCulturalEventDTO = {
+      title: dto.title ?? current.title,
+      description: dto.description ?? current.description,
+      category: dto.category ?? current.category,
+      startDate: dto.startDate ?? current.startDate,
+      endDate: dto.endDate !== undefined ? dto.endDate : current.endDate,
+      timeString: dto.timeString !== undefined ? dto.timeString : current.timeString,
+      location: dto.location ?? current.location,
+      isFree: dto.isFree !== undefined ? dto.isFree : current.isFree,
+      price: dto.price !== undefined ? dto.price : current.price,
+      imageUrl: dto.imageUrl !== undefined ? dto.imageUrl : current.imageUrl,
+      isActive: dto.isActive !== undefined ? dto.isActive : current.isActive,
+      isFeatured: dto.isFeatured !== undefined ? dto.isFeatured : current.isFeatured,
+    };
+
     try {
-      const updated = await apiClient.put<CulturalEvent>(`/events/${id}`, dto);
+      const updated = await apiClient.put<CulturalEvent>(`/events/${id}`, fullPayload);
       if (updated && updated.id) {
-        const events = getStoredEvents();
-        const idx = events.findIndex((e) => e.id === id);
-        if (idx !== -1) {
-          events[idx] = updated;
-        } else {
-          events.unshift(updated);
-        }
+        events[index] = updated;
         persistLocally(events);
         return updated;
       }
@@ -177,15 +195,10 @@ export const culturalEventsService = {
       console.warn('Error al actualizar evento en API remota, aplicando actualización local:', err);
     }
 
-    const events = getStoredEvents();
-    const index = events.findIndex((e) => e.id === id);
-    if (index === -1) {
-      throw new Error(`Event with id ${id} not found`);
-    }
-    const updated = { ...events[index], ...dto };
-    events[index] = updated;
+    const localUpdated = { ...current, ...dto };
+    events[index] = localUpdated;
     persistLocally(events);
-    return updated;
+    return localUpdated;
   },
 
   deleteEvent: async (id: string): Promise<void> => {

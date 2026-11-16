@@ -33,6 +33,27 @@ export interface Attraction {
   isFeatured?: boolean;
 }
 
+export interface RoomTypeApiDto {
+  id: string;
+  name: string;
+  description?: string;
+  baseCapacity?: number;
+  maxCapacity?: number;
+  beds?: number;
+  bedsSummary?: string;
+  sizeSqm?: number;
+  totalUnits?: number;
+  availableUnits?: number;
+  basePricePerNight?: number | string;
+  amenities?: string[];
+  ratePlans?: {
+    id: string;
+    name: string;
+    pricePerNight: number | string;
+    breakfastIncluded: boolean;
+  }[];
+}
+
 export interface Accommodation {
   id: string;
   name: string;
@@ -40,8 +61,22 @@ export interface Accommodation {
   type: 'CABIN' | 'HOTEL' | 'APARTMENT' | 'HOSTEL' | 'CAMPING';
   address: string;
   locality: string;
+  latitude?: number | null;
+  longitude?: number | null;
   pricePerNight: number | string;
   maxGuests: number;
+  unitTitle?: string;
+  surfaceSqm?: number;
+  bedroomsSummary?: string;
+  phone?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  petPolicy?: string;
+  cancellationPolicy?: string;
+  licenseNumber?: string;
+  responseTime?: string;
+  inventoryMode?: 'SINGLE_UNIT' | 'MULTI_ROOM';
+  roomTypes?: RoomTypeApiDto[];
   amenities: string[];
   isActive: boolean;
   hasBreakfast?: boolean;
@@ -51,12 +86,15 @@ export interface Accommodation {
   bankCbu?: string | null;
   bankAlias?: string | null;
   bankName?: string | null;
+  hostId?: string;
+  hostName?: string;
   host?: {
     id: string;
     name: string;
     lastName: string;
     email: string;
     phone?: string | null;
+    createdAt?: string;
   };
 }
 
@@ -88,6 +126,7 @@ export interface BookingResult {
   bankName?: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   guestName: string;
+  guestPhone?: string;
   accommodation?: Accommodation;
 }
 

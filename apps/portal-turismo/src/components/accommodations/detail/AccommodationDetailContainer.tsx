@@ -59,7 +59,12 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <div ref={booking.cardObserverRef}>
           <AccommodationStickyWidget data={data} booking={booking} />
         </div>
-        <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
+        <AccommodationCenterCol
+          unitDetails={data.unitDetails}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
+          onOpenAmenities={booking.openAmenities}
+        />
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
@@ -70,7 +75,12 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           averageRating={reviewsCtrl.stats.averageRating}
           totalReviews={reviewsCtrl.stats.totalReviews}
         />
-        <AccommodationCenterCol unitDetails={data.unitDetails} onOpenAmenities={booking.openAmenities} />
+        <AccommodationCenterCol
+          unitDetails={data.unitDetails}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
+          onOpenAmenities={booking.openAmenities}
+        />
         <AccommodationStickyWidget data={data} booking={booking} />
       </div>
 
@@ -96,6 +106,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           stats={reviewsCtrl.stats}
           isLoading={reviewsCtrl.isLoading}
           submitSuccess={reviewsCtrl.submitSuccess}
+          pendingModeration={reviewsCtrl.pendingModeration}
           onOpenReviewModal={reviewsCtrl.openModal}
         />
       </div>
@@ -115,7 +126,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
       />
 
       {/* Modals & Drawers */}
-      {booking.isGalleryOpen && (
+      {true && (
         <AccommodationGalleryModal
           isOpen={booking.isGalleryOpen}
           onClose={booking.closeGallery}
@@ -128,11 +139,13 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         />
       )}
 
-      {booking.isAmenitiesOpen && (
+      {true && (
         <AccommodationAmenitiesDrawer
           isOpen={booking.isAmenitiesOpen}
           onClose={booking.closeAmenities}
           title={data.title}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
         />
       )}
 
@@ -140,6 +153,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         isOpen={reviewsCtrl.isModalOpen}
         onClose={reviewsCtrl.closeModal}
         accommodationTitle={data.title}
+        isSubmitting={reviewsCtrl.isSubmitting}
         onSubmitReview={reviewsCtrl.addReview}
       />
     </div>

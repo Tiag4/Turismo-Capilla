@@ -76,9 +76,14 @@ export const SeasonalRatesManager: React.FC = () => {
       {/* Header and accommodation selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
-            Tarifas y Temporadas Serranas
-          </h2>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+              Tarifas y Temporadas Serranas
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
+              Prototipo de Interfaz (Almacenamiento Local)
+            </span>
+          </div>
           <p className="text-xs text-[var(--color-sand-400)] font-medium mt-0.5">
             Configurá precios por noche y estadías mínimas obligatorias por temporada.
           </p>

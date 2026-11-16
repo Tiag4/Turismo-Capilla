@@ -5,7 +5,9 @@ export type AttractionCategory =
   | 'rocas'
   | 'mirador'
   | 'cultura'
-  | 'nocturno';
+  | 'nocturno'
+  | 'rio'
+  | 'paseo';
 
 export type AttractionDifficulty = 'Baja' | 'Media' | 'Alta';
 
@@ -13,7 +15,7 @@ export interface AttractionTrailSpecs {
   elevationGainMeters?: number;
   maxElevationMsnm?: number;
   distanceKm?: number;
-  trailType?: 'Ida y vuelta' | 'Circuito cerrado' | 'Paseo urbano';
+  trailType?: 'Ida y vuelta' | 'Circuito cerrado' | 'Paseo urbano' | 'Paseo libre' | 'Paseo costero';
   estimatedDuration: string;
   terrainType?: string;
   guideRequired?: boolean;

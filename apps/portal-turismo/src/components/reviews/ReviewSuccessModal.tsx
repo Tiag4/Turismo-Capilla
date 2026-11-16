@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Clock3, X } from 'lucide-react';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 interface ReviewSuccessModalProps {
   isOpen: boolean;
@@ -16,23 +17,24 @@ export const ReviewSuccessModal: React.FC<ReviewSuccessModalProps> = ({
 }) => {
   const [isRendered, setIsRendered] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(false);
+  useBodyScrollLock(isRendered);
 
   useEffect(() => {
     if (isOpen) {
       setIsRendered(true);
-      document.body.style.overflow = 'hidden';
+
       const frame = requestAnimationFrame(() => setIsVisible(true));
       return () => cancelAnimationFrame(frame);
     }
 
     setIsVisible(false);
-    document.body.style.overflow = '';
+
     const timer = setTimeout(() => setIsRendered(false), 220);
     return () => clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => () => {
-    document.body.style.overflow = '';
+
   }, []);
 
   if (!isRendered) return null;

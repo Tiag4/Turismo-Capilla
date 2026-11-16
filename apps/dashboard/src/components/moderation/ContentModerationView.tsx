@@ -47,13 +47,18 @@ export const ContentModerationView: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
-          Supervisión y Moderación de Contenidos
-        </h2>
-        <p className="text-xs text-[var(--color-sand-400)] font-medium">
-          Control de calidad de fotografías, fichas y reseñas publicadas en el portal oficial
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            Supervisión y Moderación de Contenidos
+          </h2>
+          <p className="text-xs text-[var(--color-sand-400)] font-medium">
+            Control de calidad de fotografías, fichas y reseñas publicadas en el portal oficial
+          </p>
+        </div>
+        <span className="self-start sm:self-auto px-3 py-1 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
+          Prototipo de Interfaz (Almacenamiento Local)
+        </span>
       </div>
 
       {/* Filter Tabs */}
@@ -62,7 +67,7 @@ export const ContentModerationView: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               filter === tab.id
                 ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-xs'
                 : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)]'

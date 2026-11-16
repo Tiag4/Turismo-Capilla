@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
 
 export interface UserMenuDropdownProps {
   user: User;
@@ -62,6 +63,7 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
   onClose,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 160);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -87,7 +89,7 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const shortcuts = user.role === 'ADMIN' ? ADMIN_SHORTCUTS : HOST_SHORTCUTS;
   const initials = `${user.name?.[0] ?? 'U'}${user.lastName?.[0] ?? ''}`.toUpperCase();
@@ -102,7 +104,7 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
   return (
     <div
       ref={menuRef}
-      className="absolute right-0 top-full mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-[var(--color-sand-200)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+      className={`absolute right-0 top-full mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-[var(--color-sand-200)] z-50 overflow-hidden origin-top-right transition-all duration-160 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1.5 pointer-events-none'}`}
       role="menu"
       aria-label="Panel de usuario y navegación"
     >

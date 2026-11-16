@@ -29,7 +29,7 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     });
   }
 
-  // 2. Actualizar Hero en vivo si hay textos personalizados
+  // 2. Actualizar Hero en vivo si hay textos o imagen personalizados
   if (payload.heroConfig) {
     if (payload.heroConfig.title) {
       const titleEl = document.querySelector('[data-hero-title]');
@@ -41,6 +41,12 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
       const descEl = document.querySelector('[data-hero-desc]');
       if (descEl) {
         descEl.textContent = payload.heroConfig.subtitle;
+      }
+    }
+    if (payload.heroConfig.imageUrl !== undefined) {
+      const imgEl = document.querySelector<HTMLImageElement>('[data-hero-image]');
+      if (imgEl) {
+        imgEl.src = payload.heroConfig.imageUrl || '/images/attractions/uritorco/uritorco-01.jpg';
       }
     }
   }

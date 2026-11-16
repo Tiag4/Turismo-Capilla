@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
-import { Phone, X, ShieldAlert, AlertTriangle, MapPin, Clock, Building2, ExternalLink } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { Phone, X, AlertTriangle, MapPin, Clock, ExternalLink } from 'lucide-react';
 import { EMERGENCY_CONTACTS } from './data/emergenciesData';
 import { EmergencyProtocolAccordion } from './EmergencyProtocolAccordion';
 import { usePharmacyDuty } from './hooks/usePharmacyDuty';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 interface EmergencyModalProps {
   isOpen: boolean;
@@ -11,169 +14,184 @@ interface EmergencyModalProps {
 
 export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose }) => {
   const { activePharmacy } = usePharmacyDuty();
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 200);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isVisible) {
+      closeBtnRef.current?.focus();
+    } else if (!shouldRender) {
+      previousFocusRef.current?.focus?.();
+    }
+  }, [isVisible, shouldRender]);
+
+  useBodyScrollLock(shouldRender);
+
+  useEffect(() => {
+    if (!shouldRender) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onClose();
     };
-
     window.addEventListener('keydown', handleKeyDown);
-
     return () => {
-      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [shouldRender, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender || typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="emergency-modal-title"
-      className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+      aria-describedby="emergency-modal-desc"
+      onClick={onClose}
+      className={`fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
     >
       <div
-        className="bg-sand-50 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-sand-300 shadow-2xl flex flex-col space-y-6 p-6 sm:p-8 animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
+        className={`bg-sand-50 rounded-3xl max-w-3xl w-full max-h-[88vh] overflow-hidden border border-sand-300 shadow-2xl flex flex-col transition-all duration-200 ${
+          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'
+        }`}
       >
-        {/* Cabecera del Modal */}
-        <div className="flex items-start justify-between gap-4 border-b border-sand-200 pb-4">
+        {/* Cabecera fija */}
+        <div className="shrink-0 flex items-start justify-between gap-4 px-6 py-5 sm:px-8 sm:py-6 border-b border-sand-200 bg-sand-50">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-700 text-white shadow-xs">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Guardia Activa 24hs · Valle de Punilla</span>
-            </div>
-            <h3 id="emergency-modal-title" className="font-display font-black text-2xl sm:text-3xl text-sand-900">
-              Emergencias & Seguridad Serrana
-            </h3>
-            <p className="text-xs sm:text-sm text-sand-600">
-              Discado directo de auxilio médico, rescate en montaña e incendios forestales en Capilla del Monte.
+            <h2
+              id="emergency-modal-title"
+              className="font-display font-black text-2xl sm:text-3xl text-sand-900 tracking-tight"
+            >
+              Emergencias y Seguridad Serrana
+            </h2>
+            <p id="emergency-modal-desc" className="text-sm text-sand-700 leading-relaxed">
+              Discado directo de auxilio médico, rescate en montaña e incendios en Capilla del Monte (guardia 24 hs).
             </p>
           </div>
 
           <button
+            ref={closeBtnRef}
             type="button"
             onClick={onClose}
-            aria-label="Cerrar modal de emergencias"
-            className="p-2 rounded-xl bg-sand-200 hover:bg-sand-300 text-sand-700 transition-colors cursor-pointer shrink-0"
+            aria-label="Cerrar ventana de emergencias"
+            className="p-2.5 rounded-xl bg-sand-200/80 hover:bg-sand-300 text-sand-900 transition-colors cursor-pointer shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sand-900"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Farmacia de Turno Hoy Strip */}
-        {activePharmacy && (
-          <div className="p-4 rounded-2xl bg-white border-2 border-emerald-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="bg-emerald-700 text-white font-extrabold uppercase px-2.5 py-0.5 rounded-full text-[10px] tracking-wider shadow-xs">
-                  DE TURNO HOY
-                </span>
-                <span className="font-bold text-sm text-sand-900">{activePharmacy.name}</span>
+        {/* Contenido scrolleable */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 sm:px-8 sm:py-6 space-y-6">
+          {/* Farmacia de Turno */}
+          {activePharmacy && (
+            <section aria-label="Farmacia de turno" className="p-4 sm:p-5 rounded-2xl bg-white border border-sand-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-emerald-800">
+                  Farmacia de turno hoy
+                </p>
+                <h3 className="font-display font-bold text-base text-sand-900">
+                  {activePharmacy.name}
+                </h3>
+                <p className="text-xs text-sand-700 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-sand-600 shrink-0" aria-hidden="true" />
+                  <span>{activePharmacy.address} · {activePharmacy.dutyHours}</span>
+                </p>
               </div>
-              <p className="text-xs text-sand-600 flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-sand-400 shrink-0" />
-                <span>{activePharmacy.address} ({activePharmacy.dutyHours})</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={`tel:${activePharmacy.phone.replace(/\s+/g, '')}`}
-                className="py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs"
-              >
-                <Phone className="w-3.5 h-3.5" />
-                <span>Llamar</span>
-              </a>
-              <a
-                href="/emergencias"
-                onClick={onClose}
-                className="py-2 px-3 rounded-xl bg-sand-100 hover:bg-sand-200 text-sand-800 font-bold text-xs inline-flex items-center gap-1"
-              >
-                <span>Ver Ficha</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
-        )}
-
-        {/* Directorio Telefónico de Discado Rápido */}
-        <div className="space-y-3">
-          <h4 className="text-xs font-bold text-sand-700 uppercase tracking-wider">
-            Números de Emergencia con Discado Inmediato:
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {EMERGENCY_CONTACTS.map((c) => (
-              <div
-                key={c.id}
-                className="bg-white p-4 rounded-2xl border border-sand-200 shadow-xs flex flex-col justify-between space-y-3"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-sand-800 text-white shadow-xs">
-                      {c.badge}
-                    </span>
-                    <span className="text-xs font-black text-red-600 font-display">
-                      Discado: {c.shortNumber}
-                    </span>
-                  </div>
-                  <h5 className="font-display font-bold text-sm text-sand-900 leading-tight">
-                    {c.name}
-                  </h5>
-                  <p className="text-[11px] text-sand-600 leading-relaxed">
-                    {c.description}
-                  </p>
-                  {c.address && (
-                    <p className="text-[10px] text-sand-500 flex items-center gap-1 pt-0.5">
-                      <MapPin className="w-3 h-3 text-sand-400 shrink-0" />
-                      <span>{c.address}</span>
-                    </p>
-                  )}
-                </div>
-
+              <div className="flex items-center gap-2 shrink-0">
                 <a
-                  href={`tel:${c.fullPhone}`}
-                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer"
+                  href={`tel:${activePharmacy.phone.replace(/\s+/g, '')}`}
+                  className="py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs inline-flex items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
                 >
-                  <Phone className="w-4 h-4" />
-                  <span>Llamar al {c.shortNumber} ({c.fullPhone})</span>
+                  <Phone className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Llamar</span>
+                </a>
+                <a
+                  href="/emergencias"
+                  onClick={onClose}
+                  className="py-2.5 px-4 rounded-xl bg-white hover:bg-sand-100 border border-sand-300 text-sand-900 font-bold text-xs inline-flex items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sand-900"
+                >
+                  <span>Ver ficha</span>
+                  <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                 </a>
               </div>
-            ))}
-          </div>
+            </section>
+          )}
+
+          {/* Lista de teléfonos de emergencia */}
+          <section aria-labelledby="emergency-phones-heading" className="space-y-3">
+            <h3 id="emergency-phones-heading" className="font-display font-bold text-sm text-sand-900">
+              Números de emergencia con discado directo
+            </h3>
+            <div className="rounded-2xl border border-sand-200 bg-white divide-y divide-sand-200 overflow-hidden">
+              {EMERGENCY_CONTACTS.map((c) => (
+                <div
+                  key={c.id}
+                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1 min-w-0">
+                    <h4 className="font-display font-bold text-sm sm:text-base text-sand-900">
+                      {c.name}
+                    </h4>
+                    <p className="text-xs text-sand-700 leading-relaxed">
+                      {c.description}
+                    </p>
+                    {c.address && (
+                      <p className="text-xs text-sand-700 flex items-center gap-1.5 pt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-sand-600 shrink-0" aria-hidden="true" />
+                        <span>{c.address}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  <a
+                    href={`tel:${c.fullPhone}`}
+                    aria-label={`Llamar a ${c.name} al ${c.shortNumber}, teléfono ${c.fullPhone}`}
+                    className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-700 hover:bg-red-800 text-white font-bold text-xs transition-colors shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                  >
+                    <Phone className="w-4 h-4" aria-hidden="true" />
+                    <span>Llamar al {c.shortNumber}</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Protocolos de Seguridad */}
+          <section aria-labelledby="emergency-protocols-heading" className="space-y-3">
+            <h3 id="emergency-protocols-heading" className="font-display font-bold text-sm text-sand-900 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" aria-hidden="true" />
+              <span>Protocolos de seguridad en senderos y ríos</span>
+            </h3>
+            <EmergencyProtocolAccordion />
+          </section>
         </div>
 
-        {/* Protocolos de Seguridad en Montaña */}
-        <div className="space-y-3 pt-2">
-          <h4 className="text-xs font-bold text-sand-700 uppercase tracking-wider flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span>Protocolos de Seguridad en Senderos y Ríos:</span>
-          </h4>
-          <EmergencyProtocolAccordion />
-        </div>
-
-        {/* Pie del Modal */}
-        <div className="pt-2 border-t border-sand-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-sand-500">
+        {/* Pie fijo */}
+        <div className="shrink-0 px-6 py-4 sm:px-8 border-t border-sand-200 bg-sand-50 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-sand-700">
           <span className="flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-sand-400" />
-            <span>Datos actualizados por Defensa Civil y la Secretaría de Turismo.</span>
+            <Clock className="w-3.5 h-3.5 text-sand-600 shrink-0" aria-hidden="true" />
+            <span>Datos verificados por Defensa Civil y la Cámara de Turismo de Capilla del Monte.</span>
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="text-terracotta-600 hover:text-terracotta-700 font-bold underline cursor-pointer"
+            className="text-sand-900 hover:text-terracotta-700 font-bold underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sand-900 rounded-sm px-1"
           >
             Cerrar ventana
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

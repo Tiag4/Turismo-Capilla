@@ -33,4 +33,5 @@ export interface BookingVoucherRecord {
   status: BookingVoucherStatus;
   createdAt: string;
   hostPhone?: string;
+  isDemo?: boolean;
 }

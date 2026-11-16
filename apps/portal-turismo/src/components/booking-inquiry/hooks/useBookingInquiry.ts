@@ -60,6 +60,8 @@ export function useBookingInquiry() {
       setError(null);
 
       (async () => {
+        let apiLookupFailed = false;
+
         if (email.trim()) {
           try {
             const apiRes = await api.lookupBooking(cleanCode, email.trim());
@@ -104,6 +106,7 @@ export function useBookingInquiry() {
                     ? apiRes.status
                     : 'PENDING_CONFIRMATION',
                 createdAt: new Date().toISOString(),
+                isDemo: false,
               };
               setVoucher(mappedVoucher);
               setIsLoading(false);
@@ -111,7 +114,7 @@ export function useBookingInquiry() {
               return;
             }
           } catch {
-            // Fallback to seed lookup
+            apiLookupFailed = true;
           }
         }
 
@@ -124,11 +127,17 @@ export function useBookingInquiry() {
           setError(null);
         } else {
           setVoucher(null);
-          setError(
-            `No encontramos reservas para el código "${cleanCode}"${
-              email ? ` asociado al email ${email}` : ''
-            }. Verificá los datos e intentá de nuevo.`,
-          );
+          if (apiLookupFailed) {
+            setError(
+              `No se pudo verificar la reserva en el servidor para el código "${cleanCode}". Verificá que el backend esté en ejecución e intentá de nuevo.`,
+            );
+          } else {
+            setError(
+              `No encontramos reservas para el código "${cleanCode}"${
+                email ? ` asociado al email ${email}` : ''
+              }. Verificá los datos e intentá de nuevo.`,
+            );
+          }
         }
       })();
     },

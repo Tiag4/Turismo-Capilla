@@ -1,8 +1,10 @@
+import { apiClient } from './api.client.ts';
 import type { TourismSeason, CreateSeasonDto } from '../types/season.types.ts';
 
-const SEASONS_STORAGE_KEY = 'turismo_capilla_seasons';
+export const SEASONS_STORAGE_KEY = 'turismo_capilla_seasons';
+export const SEASONS_UPDATED_EVENT = 'turismo_capilla_seasons_updated';
 
-const DEFAULT_SEASONS: TourismSeason[] = [
+export const DEFAULT_SEASONS: TourismSeason[] = [
   {
     id: 'sea-1',
     name: 'Temporada Alta de Verano',
@@ -45,54 +47,126 @@ const DEFAULT_SEASONS: TourismSeason[] = [
   },
 ];
 
+function readFallbackStorage(): TourismSeason[] {
+  if (typeof window === 'undefined') return DEFAULT_SEASONS;
+  try {
+    const raw = localStorage.getItem(SEASONS_STORAGE_KEY);
+    if (!raw) return DEFAULT_SEASONS;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_SEASONS;
+  } catch {
+    return DEFAULT_SEASONS;
+  }
+}
+
+function syncCache(seasons: TourismSeason[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(seasons));
+    window.dispatchEvent(new CustomEvent(SEASONS_UPDATED_EVENT, { detail: seasons }));
+  } catch {
+    // Ignore storage sync errors
+  }
+}
+
 export const seasonsService = {
   async getAll(): Promise<TourismSeason[]> {
     try {
-      const raw = localStorage.getItem(SEASONS_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch {
-      // fallback
+      const data = await apiClient.get<TourismSeason[]>('/seasons');
+      syncCache(data);
+      return data;
+    } catch (e) {
+      console.warn('No se pudo conectar al endpoint /seasons, usando caché:', e);
+      return readFallbackStorage();
     }
-    localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(DEFAULT_SEASONS));
-    return DEFAULT_SEASONS;
   },
 
   async getById(id: string): Promise<TourismSeason | null> {
-    const list = await this.getAll();
-    return list.find((s) => s.id === id) || null;
+    try {
+      return await apiClient.get<TourismSeason>(`/seasons/${id}`);
+    } catch {
+      const list = await this.getAll();
+      return list.find((s) => s.id === id) || null;
+    }
   },
 
   async create(dto: CreateSeasonDto): Promise<TourismSeason> {
-    const list = await this.getAll();
-    const newSeason: TourismSeason = {
-      ...dto,
-      id: `sea-${Date.now()}`,
-      isActive: true,
-    };
-    const updated = [newSeason, ...list];
-    localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(updated));
-    return newSeason;
+    try {
+      const created = await apiClient.post<TourismSeason>('/seasons', dto);
+      const list = await this.getAll().catch(() => readFallbackStorage());
+      const updated = list.some((s) => s.id === created.id)
+        ? list
+        : [created, ...list];
+      syncCache(updated);
+      return created;
+    } catch (e) {
+      console.warn('Error al crear temporada vía API, aplicando fallback local:', e);
+      const list = readFallbackStorage();
+      const newSeason: TourismSeason = {
+        ...dto,
+        id: `sea-${Date.now()}`,
+        isActive: true,
+      };
+      const updated = [newSeason, ...list];
+      syncCache(updated);
+      return newSeason;
+    }
   },
 
   async update(id: string, dto: Partial<CreateSeasonDto>): Promise<TourismSeason> {
-    const list = await this.getAll();
-    const index = list.findIndex((s) => s.id === id);
-    if (index === -1) throw new Error('Temporada no encontrada');
-    const updatedSeason: TourismSeason = {
-      ...list[index],
-      ...dto,
-    };
-    list[index] = updatedSeason;
-    localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(list));
-    return updatedSeason;
+    try {
+      const updatedSeason = await apiClient.put<TourismSeason>(`/seasons/${id}`, dto);
+      const list = readFallbackStorage();
+      const index = list.findIndex((s) => s.id === id);
+      if (index !== -1) {
+        list[index] = updatedSeason;
+        syncCache(list);
+      }
+      return updatedSeason;
+    } catch (e) {
+      console.warn('Error al actualizar temporada vía API, aplicando fallback local:', e);
+      const list = readFallbackStorage();
+      const index = list.findIndex((s) => s.id === id);
+      if (index === -1) throw new Error('Temporada no encontrada');
+      const updatedSeason: TourismSeason = {
+        ...list[index],
+        ...dto,
+      };
+      list[index] = updatedSeason;
+      syncCache(list);
+      return updatedSeason;
+    }
   },
 
   async toggleActive(id: string): Promise<TourismSeason> {
-    const list = await this.getAll();
-    const index = list.findIndex((s) => s.id === id);
-    if (index === -1) throw new Error('Temporada no encontrada');
-    list[index].isActive = !list[index].isActive;
-    localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(list));
-    return list[index];
+    try {
+      const updatedSeason = await apiClient.patch<TourismSeason>(`/seasons/${id}/toggle-active`, {});
+      const list = readFallbackStorage();
+      const index = list.findIndex((s) => s.id === id);
+      if (index !== -1) {
+        list[index] = updatedSeason;
+        syncCache(list);
+      }
+      return updatedSeason;
+    } catch (e) {
+      console.warn('Error al alternar estado de temporada vía API, aplicando fallback local:', e);
+      const list = readFallbackStorage();
+      const index = list.findIndex((s) => s.id === id);
+      if (index === -1) throw new Error('Temporada no encontrada');
+      list[index].isActive = !list[index].isActive;
+      syncCache(list);
+      return list[index];
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    try {
+      await apiClient.delete<void>(`/seasons/${id}`);
+    } catch (e) {
+      console.warn('Error al eliminar temporada vía API, aplicando fallback local:', e);
+    }
+    const list = readFallbackStorage();
+    const updated = list.filter((s) => s.id !== id);
+    syncCache(updated);
   },
 };

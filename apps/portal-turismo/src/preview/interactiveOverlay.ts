@@ -57,7 +57,6 @@ export function updateFloatBadgePosition(element: HTMLElement | null): void {
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
   window.floatBadge.style.display = 'inline-flex';
-  const badgeHeight = window.floatBadge.offsetHeight || 32;
   const badgeWidth = window.floatBadge.offsetWidth || 80;
 
   let topPosition = rect.top + scrollTop + 12;

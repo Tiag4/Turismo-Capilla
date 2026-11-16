@@ -59,8 +59,12 @@ export const CulturalAgendaManager: React.FC<CulturalAgendaManagerProps> = ({
   };
 
   const handleToggleActive = async (id: string) => {
-    await culturalEventsService.toggleEventActive(id);
-    refreshEvents();
+    try {
+      const updated = await culturalEventsService.toggleEventActive(id);
+      setEvents((prev) => prev.map((e) => (e.id === id ? updated : e)));
+    } catch (err) {
+      console.error('Error al alternar estado del evento:', err);
+    }
   };
 
   const handleConfirmDelete = async () => {

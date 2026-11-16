@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Clock } from 'lucide-react';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
 
 export interface CustomTimePickerProps {
   label?: string;
@@ -24,6 +25,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parse hour and minute from value (e.g. "14:00 hs", "14:00", etc.)
@@ -94,8 +96,8 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
       {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
 
       {/* Popover Dropdown */}
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1.5 w-64 bg-white border border-[var(--color-sand-200)] rounded-2xl shadow-xl z-50 p-3 animate-in fade-in slide-in-from-top-1 duration-150">
+      {shouldRender && (
+        <div className={`absolute top-full left-0 mt-1.5 w-64 bg-white border border-[var(--color-sand-200)] rounded-2xl shadow-xl z-50 p-3 origin-top transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
           <div className="text-[11px] font-bold text-[var(--color-sand-500)] uppercase tracking-wider mb-2">
             Seleccionar Horario
           </div>

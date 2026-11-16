@@ -6,6 +6,8 @@ import type {
   User,
   UpdateProfilePayload,
   ChangePasswordPayload,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
 } from '../types/auth.types.ts';
 
 const TOKEN_KEY = 'turismo_capilla_token';
@@ -67,8 +69,6 @@ function persistSession(data: AuthResponse): AuthResponse {
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    // Sin fallback local: una credencial inválida o una API caída debe fallar,
-    // nunca abrir una sesión ficticia.
     const data = await apiClient.post<AuthResponse>('/auth/login', credentials);
     return persistSession(data);
   },
@@ -107,7 +107,6 @@ export const authService = {
   },
 
   async updateProfile(payload: UpdateProfilePayload): Promise<User> {
-    // Sin fallback local: si el backend rechaza el cambio, la UI debe enterarse.
     const updatedUser = await apiClient.put<User>('/auth/profile', payload);
     localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
     return updatedUser;
@@ -115,6 +114,14 @@ export const authService = {
 
   async changePassword(payload: ChangePasswordPayload): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>('/auth/change-password', payload);
+  },
+
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/forgot-password', payload);
+  },
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/reset-password', payload);
   },
 
   logout(): void {

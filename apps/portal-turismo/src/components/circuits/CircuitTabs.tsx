@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Utensils, Mountain } from 'lucide-react';
+import { Compass, Utensils, Mountain } from 'lucide-react';
 import type { CircuitId } from './types/circuits.types';
 
 interface CircuitTabsProps {
@@ -8,50 +8,43 @@ interface CircuitTabsProps {
 }
 
 export const CircuitTabs: React.FC<CircuitTabsProps> = ({ activeCircuit, onSelectCircuit }) => {
-  const tabs: { id: CircuitId; label: string; icon: React.ReactNode; badge: string }[] = [
+  const tabs: { id: CircuitId; label: string; icon: React.ReactNode }[] = [
     {
       id: 'mistico',
       label: 'Circuito Místico & Energético',
-      icon: <Sparkles className="w-4 h-4" />,
-      badge: '5 Vórtices Sagrados'
+      icon: <Compass className="w-4 h-4" />,
     },
     {
       id: 'sabores',
-      label: 'Sabores Turísticos',
+      label: 'Sabores Serranos & Gastronomía',
       icon: <Utensils className="w-4 h-4" />,
-      badge: '6 Locales Adheridos'
     },
     {
       id: 'aventura',
       label: 'Turismo Alternativo & Aventura',
       icon: <Mountain className="w-4 h-4" />,
-      badge: '4 Modalidades Activas'
-    }
+    },
   ];
 
   return (
-    <div className="flex flex-wrap gap-2.5 p-1.5 bg-sand-200/60 rounded-2xl border border-sand-300/60">
+    <div className="flex flex-wrap items-center gap-2 p-1.5 bg-sand-200/70 rounded-2xl border border-sand-300/70 max-w-fit">
       {tabs.map((tab) => {
         const isActive = activeCircuit === tab.id;
         return (
           <button
             key={tab.id}
+            type="button"
             onClick={() => onSelectCircuit(tab.id)}
-            className={`flex-1 min-w-[200px] py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all text-center cursor-pointer flex flex-col items-center justify-center gap-1 ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
               isActive
-                ? 'bg-white text-sand-900 shadow-sm border border-sand-300'
-                : 'text-sand-700 hover:text-sand-900 hover:bg-white/50'
+                ? 'bg-white text-sand-900 shadow-xs border border-sand-300/60'
+                : 'text-sand-700 hover:text-sand-950 hover:bg-white/40'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <span className={isActive ? 'text-terracotta-600' : 'text-sand-500'}>
-                {tab.icon}
-              </span>
-              <span>{tab.label}</span>
-            </div>
-            <span className="text-[11px] font-normal text-sand-500">
-              {tab.badge}
+            <span className={isActive ? 'text-terracotta-600' : 'text-sand-500'}>
+              {tab.icon}
             </span>
+            <span>{tab.label}</span>
           </button>
         );
       })}

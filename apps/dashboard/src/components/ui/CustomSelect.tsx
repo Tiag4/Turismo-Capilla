@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
 
 export interface CustomSelectOption {
   value: string;
@@ -31,6 +32,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((opt) => String(opt.value) === String(value));
@@ -100,10 +102,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
 
       {/* Popover Dropdown */}
-      {isOpen && (
+      {shouldRender && (
         <div
           role="listbox"
-          className="absolute top-full left-0 mt-1.5 w-full bg-white border border-[var(--color-sand-200)] rounded-xl shadow-lg z-50 py-1 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150"
+          className={`absolute top-full left-0 mt-1.5 w-full bg-white border border-[var(--color-sand-200)] rounded-xl shadow-lg z-50 py-1 max-h-60 overflow-y-auto origin-top transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}
         >
           {options.map((option) => {
             const isSelected = String(option.value) === String(value);

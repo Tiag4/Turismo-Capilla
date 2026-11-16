@@ -52,17 +52,22 @@ export const EmergencySanitaryManagerView: React.FC<EmergencySanitaryManagerView
       {/* Header — Clean title without embedded icon */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[var(--color-sand-900)] tracking-tight font-['Outfit']">
-            Guardias Sanitarias & Farmacias de Turno
-          </h1>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-2xl font-black text-[var(--color-sand-900)] tracking-tight font-['Outfit']">
+              Guardias Sanitarias & Farmacias de Turno
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
+              Prototipo de Interfaz (Almacenamiento Local)
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-[var(--color-sand-500)] mt-0.5">
             Control oficial y publicación de farmacias de guardia y avisos del Hospital Municipal en el portal público.
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 text-xs font-bold text-[var(--color-sand-700)]">
-          <span className="w-2 h-2 rounded-full bg-[#005530] animate-pulse" />
-          <span>Sincronización en Tiempo Real</span>
+        <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+          <span className="w-2 h-2 rounded-full bg-amber-500" />
+          <span>Almacenamiento Local (Mock)</span>
         </div>
       </div>
 

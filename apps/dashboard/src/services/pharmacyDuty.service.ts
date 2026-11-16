@@ -1,3 +1,4 @@
+import { apiClient } from './api.client';
 import type {
   EmergencySanitaryConfig,
   PharmacyDutyRecord,
@@ -75,46 +76,45 @@ export const DEFAULT_EMERGENCY_SANITARY_CONFIG: EmergencySanitaryConfig = {
   lastUpdated: new Date().toISOString(),
 };
 
-function readStorage(): EmergencySanitaryConfig {
+function readFallbackStorage(): EmergencySanitaryConfig {
   if (typeof window === 'undefined') return DEFAULT_EMERGENCY_SANITARY_CONFIG;
   try {
     const raw = localStorage.getItem(EMERGENCY_SANITARY_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(
-        EMERGENCY_SANITARY_STORAGE_KEY,
-        JSON.stringify(DEFAULT_EMERGENCY_SANITARY_CONFIG)
-      );
-      return DEFAULT_EMERGENCY_SANITARY_CONFIG;
-    }
+    if (!raw) return DEFAULT_EMERGENCY_SANITARY_CONFIG;
     const parsed = JSON.parse(raw) as EmergencySanitaryConfig;
     if (!parsed?.pharmacies || !parsed?.healthGuard) {
       return DEFAULT_EMERGENCY_SANITARY_CONFIG;
     }
     return parsed;
-  } catch (e) {
-    console.warn('Error reading emergency sanitary storage:', e);
+  } catch {
     return DEFAULT_EMERGENCY_SANITARY_CONFIG;
   }
 }
 
-function writeStorage(config: EmergencySanitaryConfig): void {
+function syncCache(config: EmergencySanitaryConfig): void {
   if (typeof window === 'undefined') return;
   try {
-    const payload = { ...config, lastUpdated: new Date().toISOString() };
-    localStorage.setItem(EMERGENCY_SANITARY_STORAGE_KEY, JSON.stringify(payload));
-    window.dispatchEvent(new CustomEvent(EMERGENCY_SANITARY_EVENT, { detail: payload }));
-  } catch (e) {
-    console.warn('Error writing emergency sanitary storage:', e);
+    localStorage.setItem(EMERGENCY_SANITARY_STORAGE_KEY, JSON.stringify(config));
+    window.dispatchEvent(new CustomEvent(EMERGENCY_SANITARY_EVENT, { detail: config }));
+  } catch {
+    // Ignore storage sync errors
   }
 }
 
 export const pharmacyDutyService = {
   async getConfig(): Promise<EmergencySanitaryConfig> {
-    return readStorage();
+    try {
+      const data = await apiClient.get<EmergencySanitaryConfig>('/emergency-sanitary');
+      syncCache(data);
+      return data;
+    } catch (e) {
+      console.warn('No se pudo conectar al endpoint /emergency-sanitary, usando caché:', e);
+      return readFallbackStorage();
+    }
   },
 
   async getPharmacyById(id: string): Promise<PharmacyDutyRecord | null> {
-    const config = readStorage();
+    const config = await this.getConfig();
     return config.pharmacies.find((p) => p.id === id) || null;
   },
 
@@ -123,88 +123,39 @@ export const pharmacyDutyService = {
     validFrom?: string,
     validTo?: string
   ): Promise<EmergencySanitaryConfig> {
-    const current = readStorage();
-    const updatedPharmacies = current.pharmacies.map((p) => {
-      const isSelected = p.id === pharmacyId;
-      return {
-        ...p,
-        isOnDutyToday: isSelected,
-        ...(isSelected
-          ? {
-              validFrom: validFrom ?? p.validFrom ?? new Date().toISOString().split('T')[0],
-              validTo: validTo ?? p.validTo,
-              dutyHours: p.dutyHours.includes('24') ? p.dutyHours : 'Guardia 24 Horas (De Turno)',
-            }
-          : {}),
-      };
-    });
-
-    const newConfig: EmergencySanitaryConfig = {
-      ...current,
-      pharmacies: updatedPharmacies,
-    };
-    writeStorage(newConfig);
-    return newConfig;
+    const data = await apiClient.put<EmergencySanitaryConfig>(
+      `/emergency-sanitary/pharmacies/${pharmacyId}/on-duty`,
+      { validFrom, validTo }
+    );
+    syncCache(data);
+    return data;
   },
 
   async savePharmacy(dto: CreateOrUpdatePharmacyDto): Promise<EmergencySanitaryConfig> {
-    const current = readStorage();
-    let updatedPharmacies: PharmacyDutyRecord[];
-
-    if (dto.id) {
-      updatedPharmacies = current.pharmacies.map((p) =>
-        p.id === dto.id ? { ...p, ...dto, id: dto.id } : p
-      );
-    } else {
-      const newPharmacy: PharmacyDutyRecord = {
-        ...dto,
-        id: `pharmacy-${Date.now()}`,
-        isOnDutyToday: dto.isOnDutyToday ?? false,
-      };
-      updatedPharmacies = [...current.pharmacies, newPharmacy];
-    }
-
-    // If new or edited pharmacy is set as on duty, unmark others
-    if (dto.isOnDutyToday) {
-      const activeId = dto.id ?? updatedPharmacies[updatedPharmacies.length - 1].id;
-      updatedPharmacies = updatedPharmacies.map((p) => ({
-        ...p,
-        isOnDutyToday: p.id === activeId,
-      }));
-    }
-
-    const newConfig: EmergencySanitaryConfig = {
-      ...current,
-      pharmacies: updatedPharmacies,
-    };
-    writeStorage(newConfig);
-    return newConfig;
+    const data = await apiClient.post<EmergencySanitaryConfig>(
+      '/emergency-sanitary/pharmacies',
+      dto
+    );
+    syncCache(data);
+    return data;
   },
 
   async deletePharmacy(pharmacyId: string): Promise<EmergencySanitaryConfig> {
-    const current = readStorage();
-    const updatedPharmacies = current.pharmacies.filter((p) => p.id !== pharmacyId);
-    const newConfig: EmergencySanitaryConfig = {
-      ...current,
-      pharmacies: updatedPharmacies,
-    };
-    writeStorage(newConfig);
-    return newConfig;
+    const data = await apiClient.delete<EmergencySanitaryConfig>(
+      `/emergency-sanitary/pharmacies/${pharmacyId}`
+    );
+    syncCache(data);
+    return data;
   },
 
   async updateHealthGuardNotice(
     notice: Partial<HealthGuardNotice>
   ): Promise<EmergencySanitaryConfig> {
-    const current = readStorage();
-    const newConfig: EmergencySanitaryConfig = {
-      ...current,
-      healthGuard: {
-        ...current.healthGuard,
-        ...notice,
-        updatedAt: new Date().toISOString(),
-      },
-    };
-    writeStorage(newConfig);
-    return newConfig;
+    const data = await apiClient.put<EmergencySanitaryConfig>(
+      '/emergency-sanitary/health-guard',
+      notice
+    );
+    syncCache(data);
+    return data;
   },
 };

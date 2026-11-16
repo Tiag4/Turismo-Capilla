@@ -8,6 +8,7 @@ export interface PortalCMSPreviewPayload {
     badge?: string;
     title?: string;
     subtitle?: string;
+    imageUrl?: string;
   };
   finalCtaConfig?: {
     title?: string;

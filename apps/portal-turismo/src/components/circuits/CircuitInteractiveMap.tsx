@@ -32,7 +32,7 @@ export const CircuitInteractiveMap: React.FC<CircuitInteractiveMapProps> = ({ ac
         lat: s.coordinates.lat,
         lng: s.coordinates.lng,
         description: s.description,
-        color: '#7e22ce' // purple
+        color: '#c95627' // terracotta místico
       }));
     }
     if (activeCircuit === 'sabores') {

@@ -24,17 +24,58 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     type: 'accommodation',
     title: item.name,
     subtitle: item.description,
+    description: item.description,
     category: typeMap[item.type] || 'Alojamiento',
-    lat: -30.857,
-    lng: -64.515,
+    lat: item.latitude ?? -30.857,
+    lng: item.longitude ?? -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
-    rating: 4.9,
-    reviewCount: 20,
+    rating: 0,
+    reviewCount: 0,
     imageUrl: mainImage,
+    galleryImages: item.images && item.images.length > 0 ? item.images.map((img) => img.url) : [mainImage],
     address: item.address,
     verified: item.isActive,
     amenities: item.amenities ?? [],
     capacity: `Hasta ${item.maxGuests} personas`,
+    maxGuests: item.maxGuests,
+    unitTitle: item.unitTitle,
+    surfaceSqm: item.surfaceSqm,
+    bedroomsSummary: item.bedroomsSummary,
+    phone: item.phone,
+    checkInTime: item.checkInTime,
+    checkOutTime: item.checkOutTime,
+    petPolicy: item.petPolicy,
+    cancellationPolicy: item.cancellationPolicy,
+    licenseNumber: item.licenseNumber,
+    responseTime: item.responseTime,
+    inventoryMode: item.inventoryMode,
+    roomTypes:
+      item.roomTypes && item.roomTypes.length > 0
+        ? item.roomTypes.map((rt) => ({
+            id: rt.id,
+            name: rt.name,
+            description: rt.description || `${rt.name} en ${item.name}`,
+            capacityAdults: rt.baseCapacity ?? Math.max(1, (rt.maxCapacity ?? 2) - 1),
+            capacityChildren: Math.max(0, (rt.maxCapacity ?? 2) - (rt.baseCapacity ?? 1)),
+            maxGuests: rt.maxCapacity ?? 2,
+            bedsSummary: rt.bedsSummary || `${rt.beds ?? 1} camas`,
+            sizeSqm: rt.sizeSqm ?? 28,
+            pricePerNight:
+              typeof rt.basePricePerNight === 'string'
+                ? parseFloat(rt.basePricePerNight)
+                : (rt.basePricePerNight ?? (isNaN(price) ? 95000 : price)),
+            totalStock: rt.totalUnits ?? 1,
+            availableStock: rt.availableUnits ?? rt.totalUnits ?? 1,
+            breakfastIncluded:
+              rt.ratePlans?.some((p) => p.breakfastIncluded) ?? Boolean(item.hasBreakfast),
+            amenities: rt.amenities && rt.amenities.length > 0 ? rt.amenities : (item.amenities ?? []),
+            imageUrl: mainImage,
+          }))
+        : undefined,
+    hostName: item.hostName || (item.host ? `${item.host.name} ${item.host.lastName}`.trim() : undefined),
+    hostYearsHosting: item.host?.createdAt
+      ? Math.max(1, new Date().getFullYear() - new Date(item.host.createdAt).getFullYear())
+      : undefined,
     zone: item.locality || 'Capilla del Monte',
     ctaUrl: `/alojamientos/${item.id}`,
   };
@@ -48,7 +89,6 @@ export const AccommodationDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(!place);
 
   useEffect(() => {
-    if (place) return;
     let active = true;
     async function loadData() {
       try {
@@ -59,7 +99,7 @@ export const AccommodationDetailPage: React.FC = () => {
           }
         }
       } catch {
-        // Not found or backend offline
+        // Backend offline or item not in DB, keep initial mock fallback
       } finally {
         if (active) setLoading(false);
       }
@@ -68,7 +108,7 @@ export const AccommodationDetailPage: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [id, place]);
+  }, [id]);
 
   if (loading) {
     return (

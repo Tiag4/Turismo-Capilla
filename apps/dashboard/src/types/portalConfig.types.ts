@@ -11,6 +11,7 @@ export interface PortalCMSConfig {
   heroConfig: {
     title: string;
     subtitle: string;
+    imageUrl?: string;
   };
   finalCtaConfig?: {
     title: string;
@@ -106,6 +107,7 @@ export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
   heroConfig: {
     title: 'El valle del Uritorco, directo y sin intermediarios.',
     subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+    imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
   },
   finalCtaConfig: {
     title: '¿Listo para descubrir Capilla del Monte?',

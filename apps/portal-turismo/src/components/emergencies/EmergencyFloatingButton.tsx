@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { PhoneCall } from 'lucide-react';
 
 interface EmergencyFloatingButtonProps {
@@ -6,8 +7,17 @@ interface EmergencyFloatingButtonProps {
 }
 
 export const EmergencyFloatingButton: React.FC<EmergencyFloatingButtonProps> = ({ onOpen }) => {
+  const location = useLocation();
+  // Elevate button when a sticky bottom checkout dock or booking wizard bar is active
+  const hasBottomDock = location.pathname.startsWith('/alojamientos/') || location.pathname.includes('/reserva');
+
   return (
-    <aside aria-label="Acceso rápido a emergencias" className="fixed bottom-6 right-6 z-[100]">
+    <aside
+      aria-label="Acceso rápido a emergencias"
+      className={`fixed right-6 z-[100] transition-all duration-300 ${
+        hasBottomDock ? 'bottom-24 sm:bottom-28' : 'bottom-6'
+      }`}
+    >
       <button
         type="button"
         onClick={onOpen}

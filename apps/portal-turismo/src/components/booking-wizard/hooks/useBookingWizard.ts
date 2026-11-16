@@ -135,7 +135,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
     }
     setIsSubmitting(true);
     setSubmitError(null);
-    let finalCode = `CAP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    let finalCode = '';
 
     try {
       const payload = {
@@ -152,14 +152,17 @@ export function useBookingWizard(data: AccommodationDetailData) {
       const apiResult = await api.createBooking(payload);
       if (apiResult?.bookingCode) {
         finalCode = apiResult.bookingCode;
+      } else {
+        throw new Error('El servidor no devolvió un código de confirmación de reserva válido.');
       }
-    } catch (apiErr) {
-      if (apiErr instanceof ApiRequestError) {
-        setSubmitError(apiErr.message);
-        setIsSubmitting(false);
-        return;
-      }
-      console.warn('Backend offline o simulación: guardando reserva localmente', apiErr);
+    } catch (apiErr: any) {
+      const errorMsg =
+        apiErr instanceof ApiRequestError
+          ? apiErr.message
+          : 'No se pudo conectar con el servidor oficial para registrar la reserva. Verificá que el backend esté en ejecución e intentá nuevamente.';
+      setSubmitError(errorMsg);
+      setIsSubmitting(false);
+      return;
     }
 
     setBookingCode(finalCode);

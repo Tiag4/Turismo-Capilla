@@ -3,8 +3,8 @@ import { BookingInquiryContainer } from '../components/booking-inquiry/BookingIn
 
 export const BookingInquiryPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-sand-50 text-sand-900 py-8 sm:py-12">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
+    <div className="min-h-screen bg-sand-50 text-sand-900 py-6 sm:py-10">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-6">
         {/* Encabezado Institucional Limpio */}
         <div className="max-w-4xl mx-auto text-center space-y-2 print:hidden">
           <span className="text-xs font-bold uppercase tracking-wider text-uritorco-700 block">

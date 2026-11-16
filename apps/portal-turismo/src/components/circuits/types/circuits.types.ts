@@ -32,6 +32,7 @@ export interface GastronomicVenue {
     lng: number;
   };
   features: string[];
+  image?: string;
 }
 
 export interface AdventureActivity {
@@ -54,4 +55,5 @@ export interface AdventureActivity {
     lat: number;
     lng: number;
   };
+  image?: string;
 }

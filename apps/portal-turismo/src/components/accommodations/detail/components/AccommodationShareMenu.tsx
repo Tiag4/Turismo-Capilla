@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Share2, MessageCircle, Copy, Check } from 'lucide-react';
 import type { AccommodationDetailData } from '../types';
+import { useAnimatedPresence } from '../../../../hooks/useAnimatedPresence';
 
 interface AccommodationShareMenuProps {
   data: AccommodationDetailData;
@@ -8,6 +9,7 @@ interface AccommodationShareMenuProps {
 
 export const AccommodationShareMenu: React.FC<AccommodationShareMenuProps> = ({ data }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -75,8 +77,8 @@ export const AccommodationShareMenu: React.FC<AccommodationShareMenuProps> = ({ 
         <span>Compartir</span>
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150">
+      {shouldRender && (
+        <div className={`absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-2 space-y-1 origin-top-right transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
           <div className="px-3 py-1.5 border-b border-stone-100">
             <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block">
               Compartir Alojamiento

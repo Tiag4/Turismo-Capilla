@@ -12,6 +12,11 @@ function generateSlug(text: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+function isRealLocalImage(url?: string | null): boolean {
+  if (!url) return false;
+  return url.startsWith('/images/') || (!url.includes('unsplash.com') && !url.startsWith('http://') && !url.startsWith('https://'));
+}
+
 function resolveCategory(category: Attraction['category']): {
   category: AttractionCategory;
   categoryLabel: string;
@@ -80,13 +85,23 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
   const categoryMeta = resolveCategory(apiItem.category);
   const difficulty = resolveDifficulty(apiItem.difficulty);
 
+  const apiCover = apiItem.images?.[0]?.url;
+  const mockCover = matchedMock?.coverImage;
+
+  // Prioridad inteligente: si el mock local tiene una foto real en disco (/images/attractions/...),
+  // la priorizamos sobre el placeholder mock de Unsplash que venga de la base de datos de la API
   const coverImage =
-    apiItem.images?.[0]?.url ||
-    matchedMock?.coverImage ||
+    (isRealLocalImage(mockCover) ? mockCover : null) ||
+    (isRealLocalImage(apiCover) ? apiCover : null) ||
+    apiCover ||
+    mockCover ||
     'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85';
 
+  const hasLocalGallery = matchedMock?.galleryImages?.some((img) => isRealLocalImage(img));
   const galleryImages =
-    apiItem.images && apiItem.images.length > 0
+    hasLocalGallery && matchedMock?.galleryImages
+      ? matchedMock.galleryImages
+      : apiItem.images && apiItem.images.length > 0
       ? apiItem.images.map((img) => img.url)
       : matchedMock?.galleryImages ?? [coverImage];
 
@@ -138,16 +153,18 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
       accessHowTo: apiItem.howToGet || matchedMock?.practicalInfo?.accessHowTo || 'Por caminos principales señalizados.',
       hydrationRequirement: matchedMock?.practicalInfo?.hydrationRequirement ?? '1 litro de agua por persona.',
       recommendedGear: matchedMock?.practicalInfo?.recommendedGear ?? [
-        'Calzado cómodo para caminar',
-        'Protector solar y gorra',
+        'Calzado cómodo para caminata',
+        'Protector solar y agua fresca',
       ],
-      safetyWarnings: matchedMock?.practicalInfo?.safetyWarnings ?? [],
+      safetyWarnings: matchedMock?.practicalInfo?.safetyWarnings ?? [
+        'Respetar las indicaciones de los guardaparques y personal municipal.',
+      ],
     },
     isTrekking: categoryMeta.isTrekking,
     ctaUrl: `/atractivos/${slug}`,
-    status: apiItem.status ?? 'OPEN',
-    statusNotice: apiItem.statusNotice,
-    isFeatured: apiItem.isFeatured ?? false,
+    status: apiItem.status || matchedMock?.status || 'OPEN',
+    statusNotice: apiItem.statusNotice ?? matchedMock?.statusNotice ?? null,
+    isFeatured: apiItem.isFeatured ?? matchedMock?.isFeatured ?? false,
   };
 
   return mappedItem;

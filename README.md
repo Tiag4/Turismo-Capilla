@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Frontend-React%2019.3%20%2B%20Vite%208-61dafb?style=for-the-badge&logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/Router-React%20Router%20v7-ca4245?style=for-the-badge&logo=reactrouter" alt="React Router">
   <img src="https://img.shields.io/badge/Estilos-Tailwind%20CSS%20v4-38bdf8?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Backend%20Roadmap-Java%2017%20%2B%20Spring%20Boot-orange?style=for-the-badge&logo=openjdk" alt="Java Backend">
+  <img src="https://img.shields.io/badge/Backend-Java%2017%20%2B%20Spring%20Boot%203-orange?style=for-the-badge&logo=openjdk" alt="Java Backend">
   <img src="https://img.shields.io/badge/Estado-Desarrollo%20Activo-brightgreen?style=for-the-badge" alt="Estado">
 </p>
 
@@ -30,7 +30,7 @@ El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacop
    * **Puertos por defecto:** Portal `http://localhost:5173` | Dashboard `http://localhost:5174`
    * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas, motor de reservas y dashboards protegidos por rol.
 2. **Backend (`backend-capilla-turismo`):**
-   * **Tecnologías:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 18.
+   * **Tecnologías:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 18, Cloudinary CDN.
    * **Responsabilidad:** Lógica de negocio, autenticación JWT con Spring Security, prevención transaccional de overbooking y persistencia relacional estricta.
 
 ### 1.1 Prevención de Solapamiento (Flujo de Reserva)
@@ -61,10 +61,13 @@ Turismo-Capilla/
 │       │   ├── hooks/             # useAuth, useDashboardRouter (RBAC estricto)
 │       │   └── services/          # Clientes de API autenticados con JWT
 │       └── vite.config.ts         # Puerto 5174
-├── docs/                          # Documentación arquitectónica, técnica y de QA
-│   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
+├── docs/                          # Documentación arquitectónica, técnica, de QA y manuales
+│   ├── user-manual.md             # Manual de Usuario Oficial (Turistas, Prestadores, Comisión)
+│   ├── test-credentials.md        # Catálogo unificado de credenciales de prueba y datos sembrados
 │   ├── architecture.md            # Blueprint del ecosistema (Frontend React + Backend Java)
-│   ├── api-reference.md           # Referencia de contratos de la API REST
+│   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
+│   ├── api-reference.md           # Referencia completa de contratos de la API REST
+│   ├── endpoints.md               # Mapeo de rutas de la API a Historias de Usuario
 │   └── manual-testing-guide.md    # Guías de testing manual de integración
 ├── package.json                   # Scripts unificados de ejecución monorepo
 └── pnpm-workspace.yaml            # Configuración de workspaces
@@ -139,10 +142,13 @@ El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al 
 
 | Rol | Correo Electrónico | Contraseña | Panel Destino (RBAC) | Funcionalidad Principal |
 | :--- | :--- | :--- | :--- | :--- |
-| **Comisión de Turismo (`ADMIN`)** | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | `/overview` *(Centro de Control)* | Gestión de prestadores, tokens de invitación, agenda cultural, auditoría y calendario de temporadas. |
-| **Cabañero / Prestador (`HOST`)** | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Administración del establecimiento (*"Cabañas Pircas del Uritorco"*), fotos, tarifas por noche y reservas recibidas. |
+| **Comisión de Turismo (`ADMIN`)** | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | `/overview` *(Centro de Control)* | Gestión de prestadores, suspensión preventiva, tokens de invitación, agenda cultural, alertas y temporadas. |
+| **Cabañero / Prestador (`HOST`)** | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Cabaña unifamiliar (*"Cabañas Pircas del Uritorco"*), fotos Cloudinary, tarifas y reservas recibidas. |
+| **Prestadora Hostería (`HOST`)** | `marcela.rossi@capillaturismo.com.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Inventario multi-unidad (*"Hostería Boutique Los Nogales"*), tipos de habitación y planes tarifarios. |
+| **Prestador Refugio (`HOST`)** | `carlos.benitez@capillaturismo.com.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Monoambiente de montaña (*"Refugio Los Alazanes"*), deck privado y seña al 40%. |
 
-> **Nota:** La pantalla de inicio de sesión (`/login`) cuenta con botones de *Acceso Rápido de Demostración* para autocompletar estas credenciales con un solo clic.
+> [!TIP]
+> **Acceso Rápido en Login:** La pantalla de inicio de sesión (`/login`) cuenta con botones de *Acceso Rápido de Demostración* para autocompletar estas credenciales con un solo clic. Para ver todas las cuentas y datos bancarios detallados, consultá [`docs/test-credentials.md`](./docs/test-credentials.md).
 
 ---
 
@@ -157,6 +163,7 @@ El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al 
 | `HU-05` | Ficha de Detalle de Alojamiento y Comodidades | ✅ Implementado |
 | `HU-06` | Motor y Asistente de Reserva de Alojamiento | ✅ Implementado |
 | `HU-08` | Ubicación y Mapa Interactivo de Capilla del Monte | ✅ Implementado |
+| `HU-20` | Inventario Multi-unidad y Selección de Habitaciones | ✅ Implementado |
 | `HU-27` | RBAC & Seguridad: Separación estricta de paneles y Módulo de Perfil | ✅ Implementado |
 | `HU-29` | Elaboración del Manual de Usuario Oficial (Prestadores y Comisión) | ✅ Implementado |
 
@@ -175,11 +182,14 @@ El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al 
 
 ## 8. 📚 Documentación y Recursos
 
-* **Manual de Usuario Oficial (Prestadores y Comisión):** [`docs/user-manual.md`](./docs/user-manual.md)
-* **Documento de Arquitectura Frontend:** [`docs/frontend-architecture.md`](./docs/frontend-architecture.md)
-* **Blueprint del Sistema:** [`docs/architecture.md`](./docs/architecture.md)
-* **Google Drive:** Almacena la documentación académica y entregables formales.  
-  [Acceder a la carpeta del proyecto en Google Drive](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E)
+* 📘 [**Manual de Usuario Oficial:**](./docs/user-manual.md) Guía completa para Turistas, Prestadores y la Comisión.
+* 🔑 [**Credenciales de Prueba y Datos Sembrados:**](./docs/test-credentials.md) Cuentas, contraseñas, CBU/Alias y servicios de prueba.
+* 🏛️ [**Blueprint del Sistema y Arquitectura:**](./docs/architecture.md) Arquitectura Multirepo, Spring Boot 3 y React 19.
+* ⚛️ [**Documento de Arquitectura Frontend:**](./docs/frontend-architecture.md) Patrones SOLID, Container-Presentational y custom hooks.
+* 🔌 [**Referencia Oficial de la API REST:**](./docs/api-reference.md) Contratos OpenAPI, Swagger y códigos de respuesta.
+* 🗺️ [**Endpoints y Mapeo de HU:**](./docs/endpoints.md) Rutas organizadas por módulo funcional.
+* 🧪 [**Guía de Testing Manual:**](./docs/manual-testing-guide.md) Casos de prueba en Swagger UI y PostgreSQL.
+* 📂 [**Google Drive:**](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E) Documentación académica y entregables formales.
 
 ---
 

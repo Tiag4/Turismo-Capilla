@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useSmartFloating } from './useSmartFloating';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence';
 
 export interface Option {
   value: string;
@@ -16,7 +17,7 @@ export interface CustomSelectProps {
   options: Option[];
   placeholder?: string;
   className?: string;
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'form';
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -30,8 +31,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   variant = 'default',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
   const [isMounted, setIsMounted] = useState(false);
   const isCompact = variant === 'compact';
+  const isForm = variant === 'form';
 
   useEffect(() => {
     setIsMounted(true);
@@ -40,6 +43,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   const { triggerRef, popoverRef, coords } = useSmartFloating({
     isOpen,
     onClose: () => setIsOpen(false),
+    preferredPlacement: 'bottom',
     estimatedHeight: isCompact ? 220 : 280,
     estimatedWidth: isCompact ? 180 : 260,
   });
@@ -48,8 +52,23 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
   return (
     <div className={`relative w-full ${className}`}>
-      {/* Trigger Button: Compact or Default */}
-      {isCompact ? (
+      {/* Trigger Button: Compact, Form or Default */}
+      {isForm ? (
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-label={label}
+          className={`w-full inline-flex items-center justify-between gap-2 bg-white border rounded-xl px-3.5 py-2.5 transition-all focus:outline-none focus:border-terracotta-500 cursor-pointer text-sm text-stone-900 ${
+            isOpen ? 'border-terracotta-500 ring-2 ring-terracotta-500/20' : 'border-sand-300 hover:border-sand-400'
+          }`}
+        >
+          <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+          <svg className={`w-4 h-4 text-stone-500 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m6 9 6 6 6-6" /></svg>
+        </button>
+      ) : isCompact ? (
         <button
           ref={triggerRef}
           type="button"
@@ -91,7 +110,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       )}
 
       {/* Popover Inteligente renderizado en document.body */}
-      {isOpen && isMounted && coords && createPortal(
+      {shouldRender && isMounted && coords && createPortal(
         <div
           ref={popoverRef}
           role="listbox"
@@ -105,7 +124,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             maxWidth: '92vw',
             zIndex: 99999,
           }}
-          className="bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 max-h-72 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-150"
+          className={`bg-white rounded-2xl shadow-2xl border border-stone-200 p-2 max-h-72 overflow-y-auto ${coords.placement === 'top' ? 'origin-bottom' : 'origin-top'} transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : `opacity-0 scale-95 ${coords.placement === 'top' ? 'translate-y-1' : '-translate-y-1'} pointer-events-none`}`}
         >
           {options.map((option) => {
             const isSelected = option.value === value;

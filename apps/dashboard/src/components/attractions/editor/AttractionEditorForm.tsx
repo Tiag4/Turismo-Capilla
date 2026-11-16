@@ -734,7 +734,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-neutral-950 shadow-xs">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white text-amber-500 border border-amber-300 shadow-xs">
                   ★ Claro
                 </span>
                 {isFeatured && featuredBadgeTheme === 'LIGHT' && (

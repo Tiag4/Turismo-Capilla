@@ -60,10 +60,10 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
           <div>
             {item.isFeatured && (
               <span
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-xs shadow-xs transition-colors ${
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md shadow-xs transition-colors ${
                   item.featuredBadgeTheme === 'LIGHT'
-                    ? 'bg-amber-400 text-neutral-950'
-                    : 'bg-neutral-950/90 text-amber-300 border border-neutral-800'
+                    ? 'bg-white/80 text-amber-500 border border-white/60 shadow-xs'
+                    : 'bg-neutral-950/85 text-amber-300 border border-white/10 shadow-xs'
                 }`}
               >
                 ★ Destacado

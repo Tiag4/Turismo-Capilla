@@ -109,6 +109,7 @@ export interface CreateAccommodationDto {
   responseTime?: string;
   hasBreakfast?: boolean;
   breakfastType?: string;
+  isActive?: boolean;
   amenities: string[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string;

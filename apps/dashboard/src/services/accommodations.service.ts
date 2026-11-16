@@ -217,6 +217,7 @@ export const accommodationsService = {
       bankCbu: dto.bankCbu,
       bankAlias: dto.bankAlias,
       bankName: dto.bankName,
+      isActive: dto.isActive !== undefined ? dto.isActive : true,
       images: formattedImages,
     };
 
@@ -258,7 +259,7 @@ export const accommodationsService = {
       bankCbu: dto.bankCbu,
       bankAlias: dto.bankAlias,
       bankName: dto.bankName,
-      isActive: true,
+      isActive: dto.isActive !== undefined ? dto.isActive : true,
       hostId: 'host-01',
       images: formattedImages.map((img, i) => ({ id: `img-${Date.now()}-${i}`, ...img })),
       createdAt: new Date().toISOString(),
@@ -344,15 +345,43 @@ export const accommodationsService = {
     localAccommodations = localAccommodations.filter((a) => a.id !== id);
   },
 
-  async toggleActive(id: string): Promise<Accommodation> {
-    const acc = localAccommodations.find((a) => a.id === id);
-    if (!acc) throw new Error('Alojamiento no encontrado');
-    acc.isActive = !acc.isActive;
+  async toggleActive(id: string, explicitActive?: boolean): Promise<Accommodation> {
     try {
-      await apiClient.put(`/accommodations/${id}`, { isActive: acc.isActive });
+      // 1. Endpoint dedicado PATCH /accommodations/{id}/status
+      const payload = explicitActive !== undefined ? { isActive: explicitActive } : {};
+      const updated = await apiClient.patch<Accommodation>(`/accommodations/${id}/status`, payload);
+      if (updated && updated.id) {
+        const localIndex = localAccommodations.findIndex((a) => a.id === id);
+        if (localIndex !== -1) {
+          localAccommodations[localIndex] = { ...localAccommodations[localIndex], isActive: updated.isActive };
+        }
+        return normalizeAccommodation(updated);
+      }
     } catch {
-      // Ignorar
+      // 2. Fallback de compatibilidad con PUT /accommodations/{id}
+      try {
+        let nextActive = explicitActive;
+        if (nextActive === undefined) {
+          const current = await this.getById(id);
+          nextActive = !current?.isActive;
+        }
+        const updated = await apiClient.put<Accommodation>(`/accommodations/${id}`, { isActive: nextActive });
+        if (updated && updated.id) {
+          const localIndex = localAccommodations.findIndex((a) => a.id === id);
+          if (localIndex !== -1) {
+            localAccommodations[localIndex] = { ...localAccommodations[localIndex], isActive: updated.isActive };
+          }
+          return normalizeAccommodation(updated);
+        }
+      } catch (err) {
+        console.warn('Fallo actualizacion de estado en API remota:', err);
+      }
     }
+
+    // Fallback local si existe en memoria
+    const acc = localAccommodations.find((a) => a.id === id);
+    if (!acc) throw new Error('No se pudo modificar la disponibilidad del establecimiento');
+    acc.isActive = explicitActive !== undefined ? explicitActive : !acc.isActive;
     return normalizeAccommodation({ ...acc });
   },
 };

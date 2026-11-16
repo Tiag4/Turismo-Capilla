@@ -35,6 +35,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [type, setType] = useState<AccommodationType>(initialData?.type || 'CABIN');
+  const [isActive, setIsActive] = useState<boolean>(initialData?.isActive ?? true);
   const [inventoryMode, setInventoryMode] = useState<InventoryMode>(
     initialData?.inventoryMode ||
       (initialData?.type === 'HOTEL' || initialData?.type === 'HOSTEL' ? 'MULTI_ROOM' : 'SINGLE_UNIT')
@@ -154,6 +155,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       cancellationPolicy: cancellationPolicy.trim() || undefined,
       licenseNumber: licenseNumber.trim() || undefined,
       responseTime: responseTime.trim() || undefined,
+      isActive,
       hasBreakfast,
       breakfastType: hasBreakfast ? breakfastType : undefined,
       amenities: selectedAmenities,
@@ -224,6 +226,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setLicenseNumber={setLicenseNumber}
           responseTime={responseTime}
           setResponseTime={setResponseTime}
+          isActive={isActive}
+          setIsActive={setIsActive}
         />
 
         <LocationSection

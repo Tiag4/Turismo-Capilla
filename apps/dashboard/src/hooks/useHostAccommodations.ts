@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { accommodationsService } from '../services/accommodations.service.ts';
+import { useToast } from '../context/ToastContext.tsx';
 import type { Accommodation, CreateAccommodationDto } from '../types/accommodation.types.ts';
 
 export function useHostAccommodations() {
+  const { showSuccess, showError } = useToast();
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,11 +38,22 @@ export function useHostAccommodations() {
     return updated;
   }, []);
 
-  const toggleActive = useCallback(async (id: string) => {
-    const updated = await accommodationsService.toggleActive(id);
-    setAccommodations((prev) => prev.map((item) => (item.id === id ? updated : item)));
-    return updated;
-  }, []);
+  const toggleActive = useCallback(async (id: string, explicitActive?: boolean) => {
+    try {
+      const updated = await accommodationsService.toggleActive(id, explicitActive);
+      setAccommodations((prev) => prev.map((item) => (item.id === id ? updated : item)));
+      if (updated.isActive) {
+        showSuccess('Alojamiento activado y publicado en el portal.');
+      } else {
+        showSuccess('Alojamiento pausado. Ya no se encuentra disponible para nuevas reservas.');
+      }
+      return updated;
+    } catch (err: any) {
+      const message = err?.message || 'Error al actualizar la disponibilidad del alojamiento';
+      showError(message);
+      throw err;
+    }
+  }, [showSuccess, showError]);
 
   return {
     accommodations,

@@ -166,7 +166,11 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
 
       {/* Botón Solicitar reserva directo al Wizard */}
       <div className="space-y-2 pt-1">
-        {totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
+        {data.verified === false ? (
+          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold text-center leading-relaxed">
+            Alojamiento pausado por el prestador. No recibe solicitudes de reserva en este momento.
+          </div>
+        ) : totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
           <Link
             to={wizardUrl}
             style={{ backgroundColor: '#C95627', color: '#ffffff' }}

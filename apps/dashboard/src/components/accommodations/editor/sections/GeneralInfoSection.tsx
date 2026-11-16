@@ -15,6 +15,8 @@ export interface GeneralInfoSectionProps {
   setLicenseNumber?: (val: string) => void;
   responseTime?: string;
   setResponseTime?: (val: string) => void;
+  isActive?: boolean;
+  setIsActive?: (val: boolean) => void;
 }
 
 const ACCOMMODATION_TYPE_OPTIONS = [
@@ -36,6 +38,8 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
   setLicenseNumber,
   responseTime = '',
   setResponseTime,
+  isActive = true,
+  setIsActive,
 }) => {
   return (
     <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
@@ -109,6 +113,35 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             helperText="Informa al turista la rapidez de atención para consultas y reservas."
           />
         </div>
+      </div>
+
+      {/* Control de Disponibilidad y Publicación */}
+      <div className="pt-4 border-t border-[var(--color-sand-200)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
+        <div>
+          <span className="text-sm font-bold text-[var(--color-sand-900)] block font-['Outfit']">
+            Disponibilidad y Publicación en el Portal
+          </span>
+          <span className="text-xs text-[var(--color-sand-600)] block mt-0.5">
+            {isActive
+              ? 'El alojamiento está activo y visible públicamente para recibir reservas en el portal.'
+              : 'El alojamiento está pausado. No aparecerá en los resultados del portal ni admitirá solicitudes de reserva.'}
+          </span>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isActive}
+          onClick={() => setIsActive?.(!isActive)}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)] focus:ring-offset-2 ${
+            isActive ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-sand-300)]'
+          }`}
+        >
+          <span
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+              isActive ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
       </div>
     </div>
   );

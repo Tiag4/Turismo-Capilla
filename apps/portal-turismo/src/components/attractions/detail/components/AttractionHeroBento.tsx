@@ -121,12 +121,12 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
         </div>
       </div>
 
-      {/* 2. VERSIÓN DESKTOP: Bento Grid Fotográfico Adaptativo según cantidad de imágenes reales */}
+      {/* 2. VERSIÓN DESKTOP: Bento Grid Fotográfico Equilibrado (Máximo 4 imágenes en preview) */}
       <div className="hidden md:block relative">
         {images.length === 1 && (
           <div
             onClick={() => handleOpenGallery(0)}
-            className="relative w-full h-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden bg-sand-200 border border-sand-200/90 cursor-pointer group shadow-xs"
+            className="relative w-full h-[440px] lg:h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden bg-sand-200 border border-sand-200/90 cursor-pointer group shadow-xs"
           >
             <img
               src={images[0]}
@@ -135,16 +135,19 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
               loading="eager"
             />
             <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+              <Maximize2 className="w-4 h-4" />
+            </div>
           </div>
         )}
 
         {images.length === 2 && (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 h-[400px] lg:h-[460px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+          <div className="grid grid-cols-2 gap-3.5 sm:gap-4 h-[440px] lg:h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
             {images.map((imgUrl, idx) => (
               <div
                 key={imgUrl + idx}
                 onClick={() => handleOpenGallery(idx)}
-                className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+                className="relative h-full min-h-0 bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
               >
                 <img
                   src={imgUrl}
@@ -153,17 +156,20 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
                   loading={idx === 0 ? 'eager' : 'lazy'}
                 />
                 <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
               </div>
             ))}
           </div>
         )}
 
         {images.length === 3 && (
-          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
-            {/* Foto Principal */}
+          <div className="grid grid-cols-2 gap-3.5 sm:gap-4 h-[460px] lg:h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {/* Foto Principal (50% izquierda) */}
             <div
               onClick={() => handleOpenGallery(0)}
-              className="col-span-7 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+              className="relative h-full min-h-0 bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
             >
               <img
                 src={images[0]}
@@ -172,15 +178,18 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
                 loading="eager"
               />
               <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                <Maximize2 className="w-4 h-4" />
+              </div>
             </div>
 
-            {/* 2 Fotos Secundarias Apiladas */}
-            <div className="col-span-5 grid grid-rows-2 gap-3 sm:gap-4 h-full">
+            {/* 2 Fotos Secundarias (50% derecha, 2 filas de 50% de alto cada una) */}
+            <div className="flex flex-col gap-3.5 sm:gap-4 h-full min-h-0">
               {[1, 2].map((idx) => (
                 <div
                   key={images[idx] + idx}
                   onClick={() => handleOpenGallery(idx)}
-                  className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+                  className="flex-1 min-h-0 relative bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
                 >
                   <img
                     src={images[idx]}
@@ -189,18 +198,21 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                    <Maximize2 className="w-4 h-4" />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {images.length === 4 && (
-          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[490px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
-            {/* Foto Principal (A la izquierda, con proporción balanceada) */}
+        {images.length >= 4 && (
+          <div className="grid grid-cols-2 gap-3.5 sm:gap-4 h-[460px] sm:h-[500px] lg:h-[540px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
+            {/* Foto Principal (50% izquierda, altura completa con proporción cómoda) */}
             <div
               onClick={() => handleOpenGallery(0)}
-              className="col-span-7 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
+              className="relative h-full min-h-0 bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
             >
               <img
                 src={images[0]}
@@ -209,14 +221,17 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
                 loading="eager"
               />
               <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                <Maximize2 className="w-4 h-4" />
+              </div>
             </div>
 
-            {/* Columna Derecha de 3 Fotos: Foto 1 arriba (apaisada), Foto 2 y 3 abajo (verticales en 2 columnas) */}
-            <div className="col-span-5 grid grid-rows-2 gap-3 sm:gap-4 h-full">
-              {/* Foto 1 (Fila superior completa) */}
+            {/* Columna Derecha (50% ancho, 2 filas de 50% de alto exactas e inamovibles) */}
+            <div className="flex flex-col gap-3.5 sm:gap-4 h-full min-h-0">
+              {/* Foto 2 (Fila superior: ocupa el 50% de la altura total) */}
               <div
                 onClick={() => handleOpenGallery(1)}
-                className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+                className="flex-1 min-h-0 relative bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
               >
                 <img
                   src={images[1]}
@@ -225,66 +240,47 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
               </div>
 
-              {/* Fila inferior dividida en 2 fotos verticales */}
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
-                {[2, 3].map((idx) => (
-                  <div
-                    key={images[idx] + idx}
-                    onClick={() => handleOpenGallery(idx)}
-                    className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
-                  >
-                    <img
-                      src={images[idx]}
-                      alt={`${item.title} — Foto ${idx + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+              {/* Fila inferior (50% de la altura total, dividida en 2 fotos de igual ancho) */}
+              <div className="flex-1 min-h-0 grid grid-cols-2 gap-3.5 sm:gap-4">
+                {/* Foto 3 */}
+                <div
+                  onClick={() => handleOpenGallery(2)}
+                  className="h-full min-h-0 relative bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+                >
+                  <img
+                    src={images[2]}
+                    alt={`${item.title} — Foto 3`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                    <Maximize2 className="w-4 h-4" />
                   </div>
-                ))}
+                </div>
+
+                {/* Foto 4 */}
+                <div
+                  onClick={() => handleOpenGallery(3)}
+                  className="h-full min-h-0 relative bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
+                >
+                  <img
+                    src={images[3]}
+                    alt={`${item.title} — Foto 4`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-sand-950/60 backdrop-blur-xs p-2 rounded-xl text-white pointer-events-none">
+                    <Maximize2 className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {images.length >= 5 && (
-          <div className="grid grid-cols-12 gap-3 sm:gap-4 h-[420px] lg:h-[490px] rounded-2xl sm:rounded-3xl overflow-hidden border border-sand-200/90 shadow-xs">
-            {/* Foto Principal */}
-            <div
-              onClick={() => handleOpenGallery(0)}
-              className="col-span-6 relative h-full bg-sand-200 overflow-hidden cursor-pointer group"
-            >
-              <img
-                src={images[0]}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
-            </div>
-
-            {/* 4 Fotos Secundarias en Grilla 2x2 */}
-            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 h-full">
-              {images.slice(1, 5).map((imgUrl, idx) => {
-                const photoIdx = idx + 1;
-                return (
-                  <div
-                    key={imgUrl + idx}
-                    onClick={() => handleOpenGallery(photoIdx)}
-                    className="relative h-full bg-sand-200 overflow-hidden cursor-pointer group rounded-xl sm:rounded-2xl"
-                  >
-                    <img
-                      src={imgUrl}
-                      alt={`${item.title} — Foto ${photoIdx + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-sand-950/0 group-hover:bg-sand-950/10 transition-colors" />
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}
@@ -294,9 +290,9 @@ export const AttractionHeroBento: React.FC<AttractionHeroBentoProps> = ({ item }
           <button
             type="button"
             onClick={() => handleOpenGallery(0)}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/95 hover:bg-white text-sand-900 border border-sand-300/80 text-xs font-bold shadow-lg backdrop-blur-md transition-all cursor-pointer select-none hover:shadow-xl hover:scale-102 active:scale-98"
+            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-sand-950/85 hover:bg-sand-950 text-white text-xs font-bold shadow-lg backdrop-blur-md transition-all cursor-pointer select-none hover:scale-102 active:scale-98 border border-white/20"
           >
-            <Camera className="w-4 h-4 text-terracotta-600" />
+            <Camera className="w-3.5 h-3.5 text-terracotta-400" />
             <span>Ver galería ({images.length} fotos)</span>
           </button>
         </div>

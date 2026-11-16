@@ -4,11 +4,13 @@ import { HeroSearchBar } from '../search/HeroSearchBar';
 interface HeroSectionProps {
   title?: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   title = 'El valle del Uritorco, directo y sin intermediarios.',
   description = 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+  imageUrl = '/images/attractions/uritorco/uritorco-01.jpg',
 }) => {
   return (
     <section
@@ -19,7 +21,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Imagen de Fondo Panorámica del Cerro Uritorco */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
-          src="/images/attractions/uritorco/uritorco-01.jpg"
+          data-hero-image
+          src={imageUrl || '/images/attractions/uritorco/uritorco-01.jpg'}
           alt="Sierras de Capilla del Monte y Cerro Uritorco al atardecer"
           className="w-full h-full object-cover object-center brightness-[0.65] contrast-[1.05]"
           loading="eager"

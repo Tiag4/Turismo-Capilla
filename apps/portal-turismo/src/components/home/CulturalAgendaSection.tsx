@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Calendar, MapPin, ArrowRight, X, AlertCircle } from 'lucide-react';
 import { culturalEventsService } from '../../services/culturalEvents.service';
 import type { CulturalEvent, EventCategory } from '../../types/culturalEvent.types';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence';
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
   FESTIVAL: 'Festival',
@@ -35,6 +38,29 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
     () => eventsOverride ?? culturalEventsService.getActiveEvents()
   );
   const [selectedEvent, setSelectedEvent] = useState<CulturalEvent | null>(null);
+  const [activeModalEvent, setActiveModalEvent] = useState<CulturalEvent | null>(null);
+
+  // Animaciones de presencia y bloqueo pasivo de scroll (mantiene scrollbar visible)
+  const { shouldRender, isVisible } = useAnimatedPresence(Boolean(selectedEvent), 200);
+  useBodyScrollLock(shouldRender);
+
+  useEffect(() => {
+    if (selectedEvent) {
+      setActiveModalEvent(selectedEvent);
+    }
+  }, [selectedEvent]);
+
+  // Cerrar modal al presionar la tecla Escape
+  useEffect(() => {
+    if (!shouldRender) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedEvent(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [shouldRender]);
 
   useEffect(() => {
     if (eventsOverride) {
@@ -69,6 +95,91 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
       return { day: 1, month: 'Nov', year: 2026 };
     }
   };
+
+  const modalElement = shouldRender && activeModalEvent && typeof document !== 'undefined' ? (
+    <div
+      className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
+        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-event-title"
+      onClick={() => setSelectedEvent(null)}
+    >
+      <div
+        className={`bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-[var(--color-sand-200)] transform transition-all duration-200 ${
+          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="relative aspect-[16/9] shrink-0 bg-stone-900">
+          <img
+            src={activeModalEvent.imageUrl}
+            alt={activeModalEvent.title}
+            className="w-full h-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => setSelectedEvent(null)}
+            className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="absolute bottom-3 left-3">
+            <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[activeModalEvent.category]}`}>
+              {CATEGORY_LABELS[activeModalEvent.category]}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-4 overflow-y-auto">
+          <div>
+            <h3 id="modal-event-title" className="font-display font-extrabold text-2xl text-[var(--color-sand-900)] leading-tight">
+              {activeModalEvent.title}
+            </h3>
+            <div className="flex flex-wrap gap-4 mt-3 text-xs text-[var(--color-sand-600)] font-semibold">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
+                <span>{activeModalEvent.startDate} ({activeModalEvent.timeString})</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-[var(--color-terracotta-500)]" />
+                <span>{activeModalEvent.location}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] flex items-center justify-between">
+            <span className="text-xs font-bold text-[var(--color-sand-700)]">Acceso:</span>
+            {activeModalEvent.isFree ? (
+              <span className="text-xs font-extrabold text-emerald-700 uppercase">
+                Entrada Libre y Gratuita
+              </span>
+            ) : (
+              <span className="text-sm font-black text-[var(--color-terracotta-600)]">
+                ${(activeModalEvent.price ?? 0).toLocaleString('es-AR')} por persona
+              </span>
+            )}
+          </div>
+
+          <p className="text-sm text-[var(--color-sand-700)] leading-relaxed">
+            {activeModalEvent.description}
+          </p>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setSelectedEvent(null)}
+              className="w-full py-3 px-4 rounded-xl bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] text-white text-xs font-bold tracking-wide transition-colors cursor-pointer"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <section
@@ -191,84 +302,8 @@ export const CulturalAgendaSection: React.FC<CulturalAgendaSectionProps> = ({ ev
         )}
       </div>
 
-      {/* Modal de Detalle de Evento */}
-      {selectedEvent && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-[var(--color-sand-200)] animate-in zoom-in-95 duration-200"
-          >
-            <div className="relative aspect-[16/9] bg-stone-900">
-              <img
-                src={selectedEvent.imageUrl}
-                alt={selectedEvent.title}
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => setSelectedEvent(null)}
-                className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors cursor-pointer"
-                aria-label="Cerrar modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <div className="absolute bottom-3 left-3">
-                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-xs ${CATEGORY_COLORS[selectedEvent.category]}`}>
-                  {CATEGORY_LABELS[selectedEvent.category]}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div>
-                <h3 className="font-display font-extrabold text-2xl text-[var(--color-sand-900)] leading-tight">
-                  {selectedEvent.title}
-                </h3>
-                <div className="flex flex-wrap gap-4 mt-3 text-xs text-[var(--color-sand-600)] font-semibold">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-[var(--color-terracotta-500)]" />
-                    <span>{selectedEvent.startDate} ({selectedEvent.timeString})</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-[var(--color-terracotta-500)]" />
-                    <span>{selectedEvent.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] flex items-center justify-between">
-                <span className="text-xs font-bold text-[var(--color-sand-700)]">Acceso:</span>
-                {selectedEvent.isFree ? (
-                  <span className="text-xs font-extrabold text-emerald-700 uppercase">
-                    Entrada Libre y Gratuita
-                  </span>
-                ) : (
-                  <span className="text-sm font-black text-[var(--color-terracotta-600)]">
-                    ${(selectedEvent.price ?? 0).toLocaleString('es-AR')} por persona
-                  </span>
-                )}
-              </div>
-
-              <p className="text-sm text-[var(--color-sand-700)] leading-relaxed">
-                {selectedEvent.description}
-              </p>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedEvent(null)}
-                  className="w-full py-3 px-4 rounded-xl bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] text-white text-xs font-bold tracking-wide transition-colors cursor-pointer"
-                >
-                  Entendido
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Renderizado de modal mediante React Portal al nivel del body */}
+      {modalElement && createPortal(modalElement, document.body)}
     </section>
   );
 };

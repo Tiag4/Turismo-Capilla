@@ -181,8 +181,8 @@ export const AppLayout: React.FC = () => {
         )}
       </header>
 
-      {/* Contenido Principal */}
-      <main className="flex-grow">
+      {/* Contenido Principal con transición fluida de entrada */}
+      <main key={location.pathname} className="flex-grow page-enter-animation">
         <Outlet />
       </main>
 

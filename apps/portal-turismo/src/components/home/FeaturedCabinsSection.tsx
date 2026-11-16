@@ -1,9 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MOCK_PLACES } from '../../data/mock-places';
+import { MOCK_PLACES, type MapPlace } from '../../data/mock-places';
+import { api, type Accommodation } from '../../services/api';
+
+const TYPE_MAP: Record<string, string> = {
+  CABIN: 'Cabaña de Montaña',
+  HOTEL: 'Hotel Serrano',
+  APARTMENT: 'Departamento',
+  HOSTEL: 'Hostería',
+  CAMPING: 'Camping & Glamping',
+};
+
+function mapApiToPlace(item: Accommodation): MapPlace {
+  const price = typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
+  const mainImage =
+    item.images?.find((img) => img.isMain)?.url ||
+    item.images?.[0]?.url ||
+    '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
+
+  return {
+    id: item.id,
+    type: 'accommodation',
+    title: item.name,
+    subtitle: item.description,
+    category: TYPE_MAP[item.type] || 'Alojamiento',
+    lat: item.latitude ?? -30.857,
+    lng: item.longitude ?? -64.515,
+    pricePerNight: isNaN(price) ? 85000 : price,
+    rating: 4.9,
+    reviewCount: 20,
+    imageUrl: mainImage,
+    galleryImages: item.images?.map((img) => img.url),
+    address: item.address,
+    verified: item.isActive,
+    hasBreakfast: item.hasBreakfast ?? item.amenities?.some((a) => a.toLowerCase().includes('desayuno')),
+    amenities: item.amenities ?? [],
+    capacity: `Hasta ${item.maxGuests} personas`,
+    zone: item.locality || 'Capilla del Monte',
+    licenseNumber: item.licenseNumber || undefined,
+    ctaUrl: `/alojamientos/${item.id}`,
+  };
+}
 
 export const FeaturedCabinsSection: React.FC = () => {
-  const featuredCabins = MOCK_PLACES.filter((p) => p.type === 'accommodation');
+  const [cabins, setCabins] = useState<MapPlace[]>(() =>
+    MOCK_PLACES.filter((p) => p.type === 'accommodation')
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+    api
+      .getAccommodations()
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setCabins(data.map(mapApiToPlace));
+        }
+      })
+      .catch((err) => {
+        console.warn('Usando catálogo local para cabañas destacadas:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section className="py-16 sm:py-24 bg-sand-50">
@@ -21,13 +81,13 @@ export const FeaturedCabinsSection: React.FC = () => {
             to="/alojamientos"
             className="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 group"
           >
-            <span>Ver catálogo completo ({featuredCabins.length})</span>
+            <span>Ver catálogo completo ({cabins.length})</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 gsap-cabins-grid">
-          {featuredCabins.map((cabin, idx) => (
+          {cabins.map((cabin, idx) => (
             <article
               key={cabin.id}
               className="gsap-cabin-card bg-white rounded-3xl border border-sand-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col group"
@@ -72,7 +132,7 @@ export const FeaturedCabinsSection: React.FC = () => {
                 <div className="pt-4 border-t border-sand-100 flex items-end justify-between">
                   <div>
                     <span className="text-xs text-emerald-portal-700 font-medium block mb-0.5">
-                      Habilitación Municipal Nº {140 + idx}
+                      {cabin.licenseNumber ? `Habilitación ${cabin.licenseNumber}` : `Habilitación Municipal Nº ${140 + idx}`}
                     </span>
                     <span className="text-[11px] text-sand-500 block">Por noche desde</span>
                     <span className="text-xl font-black text-sand-900">

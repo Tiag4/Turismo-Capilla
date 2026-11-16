@@ -37,6 +37,18 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     amenities: item.amenities ?? [],
     capacity: `Hasta ${item.maxGuests} personas`,
     zone: item.locality || 'Capilla del Monte',
+    licenseNumber: item.licenseNumber || undefined,
+    responseTime: item.responseTime || undefined,
+    downPaymentPercentage: item.downPaymentPercentage || undefined,
+    bankAccountHolder: item.bankAccountHolder || undefined,
+    bankCbu: item.bankCbu || undefined,
+    bankAlias: item.bankAlias || undefined,
+    bankName: item.bankName || undefined,
+    phone: item.phone || undefined,
+    checkInTime: item.checkInTime || undefined,
+    checkOutTime: item.checkOutTime || undefined,
+    petPolicy: item.petPolicy || undefined,
+    cancellationPolicy: item.cancellationPolicy || undefined,
     ctaUrl: `/alojamientos/${item.id}`,
   };
 }

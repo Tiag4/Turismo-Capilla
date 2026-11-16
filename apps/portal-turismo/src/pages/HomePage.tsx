@@ -15,6 +15,30 @@ import type { CulturalEvent } from '../types/culturalEvent.types';
 
 export const HomePage: React.FC = () => {
   const [liveEvents, setLiveEvents] = useState<CulturalEvent[] | undefined>(undefined);
+  const [heroConfig] = useState<{
+    title?: string;
+    subtitle?: string;
+    imageUrl?: string;
+  }>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('turismo_capilla_portal_cms_config');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.heroConfig) {
+            return parsed.heroConfig;
+          }
+        }
+      } catch {
+        // Fallback default
+      }
+    }
+    return {
+      title: 'El valle del Uritorco, directo y sin intermediarios.',
+      subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+      imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+    };
+  });
 
   useEffect(() => {
     // 1. Inicializar canal de comunicación interactivo si estamos en modo CMS Preview (?preview=true)
@@ -118,7 +142,11 @@ export const HomePage: React.FC = () => {
   return (
     <div id="sections-container" className="flex flex-col">
       <div id="section-hero" data-editable="hero" className="w-full">
-        <HeroSection />
+        <HeroSection
+          title={heroConfig.title}
+          description={heroConfig.subtitle}
+          imageUrl={heroConfig.imageUrl}
+        />
       </div>
 
       <div id="section-duoAccess" data-editable="duoAccess" className="w-full">

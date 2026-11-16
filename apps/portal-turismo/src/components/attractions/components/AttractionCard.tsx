@@ -19,9 +19,36 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
     }
   };
 
+  const getStatusBadge = () => {
+    switch (item.status) {
+      case 'CLOSED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-600 text-white shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            Clausurado
+          </span>
+        );
+      case 'WEATHER_RESTRICTED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500 text-sand-950 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-sand-950" />
+            Con precaución
+          </span>
+        );
+      case 'OPEN':
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            Abierto
+          </span>
+        );
+    }
+  };
+
   return (
     <article className="group flex flex-col bg-white rounded-2xl border border-sand-200/90 overflow-hidden shadow-xs hover:border-sand-400 hover:shadow-md transition-all duration-200">
-      {/* Portada Limpia sin Píldoras Translúcidas Encimadas */}
+      {/* Portada */}
       <a href={item.ctaUrl} className="relative aspect-16/10 overflow-hidden bg-sand-200 block">
         <img
           src={item.coverImage}
@@ -29,10 +56,25 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
+        <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between gap-2 pointer-events-none">
+          <div>
+            {item.isFeatured && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sand-950/85 text-amber-300 backdrop-blur-xs shadow-xs">
+                ★ Destacado
+              </span>
+            )}
+          </div>
+          <div>{getStatusBadge()}</div>
+        </div>
       </a>
 
       {/* Contenido Editorial de la Ficha */}
       <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
+        {item.statusNotice && (item.status === 'CLOSED' || item.status === 'WEATHER_RESTRICTED') && (
+          <div className="text-xs px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 font-medium">
+            ⚠️ {item.statusNotice}
+          </div>
+        )}
         <div className="space-y-2">
           {/* Metadatos Superiores: Categoría, Distancia, Dificultad Resaltada y Calificación */}
           <div className="flex items-center justify-between gap-2 text-xs">

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, ExternalLink } from 'lucide-react';
+import { PORTAL_URL } from '../../config/navigation.ts';
 import { HostSidebar } from './HostSidebar.tsx';
 import { AdminSidebar } from './AdminSidebar.tsx';
 import type { DashboardTab } from './DashboardNav.tsx';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 
 export interface DashboardLayoutProps {
   currentTab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
   user: User;
   onLogout: () => void;
-  onSwitchRole: (role: UserRole) => void;
   children: React.ReactNode;
 }
 
@@ -19,11 +19,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onTabChange,
   user,
   onLogout,
-  onSwitchRole,
   children,
 }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isAdmin = user.role === 'ADMIN';
+  const isCmsMode = currentTab === 'portal_cms';
 
   return (
     <div className="min-h-screen bg-[var(--color-sand-50)] flex">
@@ -36,7 +36,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
-          onSwitchRole={onSwitchRole}
         />
       ) : (
         <HostSidebar
@@ -46,7 +45,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
-          onSwitchRole={onSwitchRole}
         />
       )}
 
@@ -76,24 +74,40 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
 
-          <div
-            className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center ${
-              isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-uritorco-500)]'
-            }`}
-          >
-            {user.name.charAt(0)}{user.lastName.charAt(0)}
+          <div className="flex items-center gap-2">
+            <a
+              href={PORTAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver Portal Turístico"
+              aria-label="Ver Portal Turístico"
+              className="p-1.5 rounded-lg text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)] transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
+            <button
+              type="button"
+              onClick={() => onTabChange('profile')}
+              title="Ver Mi Perfil y Seguridad"
+              className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center cursor-pointer transition-transform active:scale-95 ${
+                isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
+              }`}
+            >
+              {user.name.charAt(0)}{user.lastName.charAt(0)}
+            </button>
           </div>
         </header>
 
         {/* Main Section */}
-        <main className="flex-1 min-w-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto">
+        <main
+          className={
+            isCmsMode
+              ? 'flex-1 min-w-0 w-full h-[calc(100vh-56px)] md:h-screen overflow-hidden flex flex-col p-0'
+              : 'flex-1 min-w-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto'
+          }
+        >
           {children}
         </main>
-
-        {/* Minimal Institutional Footer */}
-        <footer className="bg-white border-t border-[var(--color-sand-200)] py-3 text-center text-xs text-[var(--color-sand-400)]">
-          Secretaría y Comisión de Turismo de Capilla del Monte — OTA Oficial
-        </footer>
       </div>
     </div>
   );

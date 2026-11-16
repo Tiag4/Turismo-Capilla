@@ -37,6 +37,12 @@
       "skillPath": ".agents/skills/impeccable/SKILL.md",
       "computedHash": "4264ced692d227022ea8d45c20c2d22a27b168c5613daa6dc7b144e94cef947e"
     },
+    "interface-design": {
+      "source": "dammyjay93/interface-design",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/interface-design/SKILL.md",
+      "computedHash": "55a83a96d1e3d161b8c3630dab8ae2dd4547d92636d3d9b4b447d7d59163e084"
+    },
     "plantuml-ascii": {
       "source": "github/awesome-copilot",
       "sourceType": "github",

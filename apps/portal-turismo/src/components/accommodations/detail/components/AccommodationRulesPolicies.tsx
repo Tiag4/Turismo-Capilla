@@ -28,8 +28,8 @@ export const AccommodationRulesPolicies: React.FC<AccommodationRulesPoliciesProp
             </h3>
           </div>
           <div className="text-xs text-stone-700 space-y-1 font-medium">
-            <p><strong>Check-in:</strong> a partir de las {rules.checkIn}</p>
-            <p><strong>Check-out:</strong> hasta las {rules.checkOut}</p>
+            <p><strong>Ingreso:</strong> a partir de las {rules.checkIn}</p>
+            <p><strong>Egreso:</strong> hasta las {rules.checkOut}</p>
           </div>
         </div>
 

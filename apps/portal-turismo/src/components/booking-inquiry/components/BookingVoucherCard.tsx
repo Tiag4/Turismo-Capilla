@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { AlertCircle, CheckCircle2, Loader2, Mail, Star } from 'lucide-react';
+import { api } from '../../../services/api';
 import type { BookingVoucherRecord } from '../types';
 
 interface BookingVoucherCardProps {
@@ -8,9 +11,76 @@ interface BookingVoucherCardProps {
 
 export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher, onPrint }) => {
   const isConfirmed = voucher.status === 'CONFIRMED';
+  const isCompleted = voucher.status === 'COMPLETED';
+  const isCancelled = voucher.status === 'CANCELLED';
+  const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [resendMessage, setResendMessage] = useState('');
+
+  const checkoutTimestamp = voucher.checkOut
+    ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
+    : NaN;
+  const stayFinished =
+    isCompleted || (!Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
+  const canReview = stayFinished && !isCancelled;
+
+  const statusLabel = isCompleted
+    ? 'Estadía Completada'
+    : isCancelled
+      ? 'Reserva Cancelada'
+      : isConfirmed
+        ? 'Reserva Confirmada'
+        : 'Pendiente de Confirmación';
+
+  const statusClassName = isCompleted
+    ? 'bg-sand-900 text-white'
+    : isCancelled
+      ? 'bg-rose-700 text-white'
+      : isConfirmed
+        ? 'bg-emerald-portal-500 text-white'
+        : 'bg-amber-500 text-white';
+
+  const downPaymentPercentage = voucher.downPaymentPercentage ?? 50;
+  const downPaymentAmount =
+    voucher.downPaymentAmount ??
+    Math.round((voucher.finalPrice ?? 0) * (downPaymentPercentage / 100));
+  const remainingBalance =
+    voucher.remainingBalance ??
+    Math.max(0, (voucher.finalPrice ?? 0) - downPaymentAmount);
+
+  const handleCopy = (text: string, field: 'cbu' | 'alias') => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    }
+  };
+
   const whatsappUrl = `https://wa.me/${(voucher.hostPhone || '5493548401122').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
     `Hola! Me comunico respecto a mi reserva oficial *${voucher.code}* en *${voucher.accommodationTitle}* a nombre de *${voucher.firstName} ${voucher.lastName}*.`,
   )}`;
+
+  const handleResendVoucher = async () => {
+    if (!voucher.email) {
+      setResendState('error');
+      setResendMessage('La reserva no tiene un correo asociado para el reenvío.');
+      return;
+    }
+
+    setResendState('sending');
+    setResendMessage('');
+
+    try {
+      const response = await api.resendVoucher(voucher.code, voucher.email);
+      setResendState('success');
+      setResendMessage(response.message || 'Voucher reenviado por email correctamente.');
+    } catch (error) {
+      setResendState('error');
+      setResendMessage(
+        error instanceof Error ? error.message : 'No pudimos reenviar el voucher. Intentá nuevamente.',
+      );
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border-2 border-sand-300 p-6 sm:p-8 shadow-sm space-y-6 print:border-none print:shadow-none print:p-0">
@@ -32,15 +102,16 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {voucher.isDemo && (
+            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white shadow-xs">
+              Modo Demostración (Datos Locales)
+            </span>
+          )}
           <span
-            className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${
-              isConfirmed
-                ? 'bg-emerald-portal-500 text-white'
-                : 'bg-amber-500 text-white'
-            }`}
+            className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${statusClassName}`}
           >
-            {isConfirmed ? 'Reserva Confirmada' : 'Pendiente de Confirmación'}
+            {statusLabel}
           </span>
         </div>
       </div>
@@ -86,12 +157,12 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
       {/* Cuadrícula de Datos de Estadía y Pasajeros */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-sand-50/70 border border-sand-200/80 text-xs">
         <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Check-In</span>
+          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Ingreso</span>
           <span className="font-bold text-sand-900 text-sm">{voucher.checkIn || 'A coordinar'}</span>
           <span className="text-sand-500 text-[11px]">Desde las 14:00 hs</span>
         </div>
         <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Check-Out</span>
+          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Egreso</span>
           <span className="font-bold text-sand-900 text-sm">{voucher.checkOut || 'A coordinar'}</span>
           <span className="text-sand-500 text-[11px]">Hasta las 10:00 hs</span>
         </div>
@@ -111,28 +182,132 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
         </div>
       </div>
 
-      {/* Desglose Tarifario y Condiciones */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-sand-200">
-        <div className="text-xs text-sand-600 space-y-0.5">
-          <p className="font-semibold text-sand-900">
-            Abonás directamente en el alojamiento al ingresar.
-          </p>
-          <p className="text-sand-500">
-            Reserva directa oficial sin comisiones de intermediarios ni recargos adicionales.
-          </p>
+      {/* Desglose Tarifario y Condiciones de Pago */}
+      <div className="pt-2 border-t border-sand-200 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-amber-50/50 border border-amber-200/80">
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Total Estadía Pactada</span>
+            <span className="font-display font-black text-xl text-sand-900">
+              ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-sand-600">ARS</span>
+            </span>
+          </div>
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Seña Requerida ({downPaymentPercentage}%)</span>
+            <span className="font-display font-black text-xl text-amber-900">
+              ${downPaymentAmount.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-amber-800">ARS</span>
+            </span>
+          </div>
+          <div>
+            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Saldo al Ingreso</span>
+            <span className="font-display font-black text-xl text-emerald-800">
+              ${remainingBalance.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-emerald-700">ARS</span>
+            </span>
+          </div>
         </div>
 
-        <div className="text-right shrink-0">
-          <span className="text-xs text-sand-500 uppercase font-semibold block">Total pactado</span>
-          <span className="font-display font-black text-2xl sm:text-3xl text-sand-950">
-            ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')}{' '}
-            <span className="text-xs font-bold text-sand-600 font-sans">ARS</span>
-          </span>
+        {/* Datos Bancarios para la Seña */}
+        <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 space-y-3">
+          <div className="border-b border-sand-200 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <h4 className="font-display font-bold text-sm text-sand-900">
+              Datos para el Depósito de la Seña Bancaria
+            </h4>
+            <span className="text-[11px] text-sand-500 font-medium">
+              Transferencia directa al anfitrión prestador
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-[10px] text-sand-500 uppercase font-bold block">Titular de la Cuenta</span>
+              <span className="font-semibold text-sand-900 block">{voucher.bankAccountHolder || 'Administración Cabañas Capilla'}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-sand-500 uppercase font-bold block">Entidad Bancaria</span>
+              <span className="font-semibold text-sand-900 block">{voucher.bankName || 'Banco de la Nación Argentina'}</span>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[10px] text-sand-500 uppercase font-bold block">CBU / CVU</span>
+                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+                  {voucher.bankCbu || '0110485530048500123456'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(voucher.bankCbu || '0110485530048500123456', 'cbu')}
+                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
+              >
+                {copied === 'cbu' ? '¡Copiado!' : 'Copiar'}
+              </button>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[10px] text-sand-500 uppercase font-bold block">Alias Bancario</span>
+                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+                  {voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL', 'alias')}
+                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
+              >
+                {copied === 'alias' ? '¡Copiado!' : 'Copiar'}
+              </button>
+            </div>
+          </div>
+          <p className="text-[11px] text-sand-500 italic pt-1">
+            Una vez realizada la transferencia de la seña, enviá el comprobante al anfitrión para validar y garantizar tu lugar.
+          </p>
         </div>
       </div>
 
       {/* Acciones del Voucher (Ocultas al imprimir con @media print) */}
+      {resendMessage && (
+        <div
+          role="status"
+          className={`flex items-start gap-2 p-3 rounded-xl border text-xs font-semibold print:hidden ${
+            resendState === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+              : 'bg-rose-50 border-rose-200 text-rose-900'
+          }`}
+        >
+          {resendState === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          )}
+          <span>{resendMessage}</span>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-sand-200 print:hidden">
+        {canReview && (
+          <Link
+            to={`/resenas/nueva?code=${encodeURIComponent(voucher.code)}`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white transition-colors"
+          >
+            <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
+            <span>Calificar Estadía</span>
+          </Link>
+        )}
+
+        <button
+          type="button"
+          onClick={handleResendVoucher}
+          disabled={resendState === 'sending'}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        >
+          {resendState === 'sending' ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Mail className="w-4 h-4 text-terracotta-500" />
+          )}
+          <span>{resendState === 'sending' ? 'Reenviando...' : 'Reenviar voucher por email'}</span>
+        </button>
+
         <a
           href={whatsappUrl}
           target="_blank"

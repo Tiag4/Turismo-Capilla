@@ -31,9 +31,8 @@ export function useAdminInvitations() {
   }, []);
 
   const revokeInvitation = useCallback(async (id: string, reason: string) => {
-    const updated = await invitationsService.revoke(id, reason);
-    setInvitations((prev) => prev.map((item) => (item.id === id ? updated : item)));
-    return updated;
+    await invitationsService.revoke(id, reason);
+    setInvitations((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   return {

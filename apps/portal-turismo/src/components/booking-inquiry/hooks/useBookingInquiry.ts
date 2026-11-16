@@ -60,6 +60,8 @@ export function useBookingInquiry() {
       setError(null);
 
       (async () => {
+        let apiLookupFailed = false;
+
         if (email.trim()) {
           try {
             const apiRes = await api.lookupBooking(cleanCode, email.trim());
@@ -67,6 +69,11 @@ export function useBookingInquiry() {
               const nameParts = (apiRes.guestName || '').split(' ');
               const firstName = nameParts[0] || 'Turista';
               const lastName = nameParts.slice(1).join(' ') || '';
+              const totalAmount = Number(apiRes.totalAmount) || 0;
+              const downPct = apiRes.downPaymentPercentage ?? apiRes.accommodation?.downPaymentPercentage ?? 50;
+              const downAmt = apiRes.downPaymentAmount != null ? Number(apiRes.downPaymentAmount) : Math.round(totalAmount * (downPct / 100));
+              const remBal = apiRes.remainingBalance != null ? Number(apiRes.remainingBalance) : Math.max(0, totalAmount - downAmt);
+
               const mappedVoucher: BookingVoucherRecord = {
                 code: apiRes.bookingCode,
                 accommodationId: apiRes.accommodation?.id || 'acc-1',
@@ -77,16 +84,29 @@ export function useBookingInquiry() {
                 firstName,
                 lastName,
                 email: email.trim(),
-                phone: '',
+                phone: apiRes.guestPhone || '',
                 checkIn: apiRes.checkIn,
                 checkOut: apiRes.checkOut,
                 nightsCount: apiRes.totalNights,
                 adults: 2,
                 children: 0,
                 rooms: 1,
-                finalPrice: Number(apiRes.totalAmount) || 0,
-                status: apiRes.status === 'CONFIRMED' ? 'CONFIRMED' : 'PENDING_CONFIRMATION',
+                finalPrice: totalAmount,
+                downPaymentPercentage: downPct,
+                downPaymentAmount: downAmt,
+                remainingBalance: remBal,
+                bankAccountHolder: apiRes.bankAccountHolder || apiRes.accommodation?.bankAccountHolder || 'Administración Cabañas Capilla',
+                bankCbu: apiRes.bankCbu || apiRes.accommodation?.bankCbu || '0110485530048500123456',
+                bankAlias: apiRes.bankAlias || apiRes.accommodation?.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
+                bankName: apiRes.bankName || apiRes.accommodation?.bankName || 'Banco de la Nación Argentina',
+                status:
+                  apiRes.status === 'CONFIRMED' ||
+                  apiRes.status === 'COMPLETED' ||
+                  apiRes.status === 'CANCELLED'
+                    ? apiRes.status
+                    : 'PENDING_CONFIRMATION',
                 createdAt: new Date().toISOString(),
+                isDemo: false,
               };
               setVoucher(mappedVoucher);
               setIsLoading(false);
@@ -94,7 +114,7 @@ export function useBookingInquiry() {
               return;
             }
           } catch {
-            // Fallback to seed lookup
+            apiLookupFailed = true;
           }
         }
 
@@ -107,11 +127,17 @@ export function useBookingInquiry() {
           setError(null);
         } else {
           setVoucher(null);
-          setError(
-            `No encontramos reservas para el código "${cleanCode}"${
-              email ? ` asociado al email ${email}` : ''
-            }. Verificá los datos e intentá de nuevo.`,
-          );
+          if (apiLookupFailed) {
+            setError(
+              `No se pudo verificar la reserva en el servidor para el código "${cleanCode}". Verificá que el backend esté en ejecución e intentá de nuevo.`,
+            );
+          } else {
+            setError(
+              `No encontramos reservas para el código "${cleanCode}"${
+                email ? ` asociado al email ${email}` : ''
+              }. Verificá los datos e intentá de nuevo.`,
+            );
+          }
         }
       })();
     },

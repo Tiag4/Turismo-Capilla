@@ -3,6 +3,8 @@ import { ShieldCheck } from 'lucide-react';
 import { usePhotoModeration } from '../../hooks/usePhotoModeration.ts';
 import { ModerationCard } from './ModerationCard.tsx';
 import { ObservationModal } from './ObservationModal.tsx';
+import { ReviewModerationSection } from './ReviewModerationSection.tsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type { ModerationItem, ModerationStatus } from '../../types/moderation.types.ts';
 
 export const ContentModerationView: React.FC = () => {
@@ -16,6 +18,7 @@ export const ContentModerationView: React.FC = () => {
   } = usePhotoModeration();
 
   const [selectedItem, setSelectedItem] = useState<ModerationItem | null>(null);
+  const [photoToApprove, setPhotoToApprove] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,13 +47,18 @@ export const ContentModerationView: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
-          Supervisión y Moderación de Contenidos
-        </h2>
-        <p className="text-xs text-[var(--color-sand-400)] font-medium">
-          Control de calidad de fotografías y fichas publicadas por cabañeros en el portal oficial
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-[var(--color-sand-900)] font-['Outfit']">
+            Supervisión y Moderación de Contenidos
+          </h2>
+          <p className="text-xs text-[var(--color-sand-400)] font-medium">
+            Control de calidad de fotografías, fichas y reseñas publicadas en el portal oficial
+          </p>
+        </div>
+        <span className="self-start sm:self-auto px-3 py-1 rounded-full text-[11px] font-bold bg-amber-600 text-white shadow-2xs">
+          Prototipo de Interfaz (Almacenamiento Local)
+        </span>
       </div>
 
       {/* Filter Tabs */}
@@ -59,7 +67,7 @@ export const ContentModerationView: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               filter === tab.id
                 ? 'bg-[var(--color-emerald-portal-600)] text-white shadow-xs'
                 : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)]'
@@ -91,12 +99,28 @@ export const ContentModerationView: React.FC = () => {
             <ModerationCard
               key={item.id}
               item={item}
-              onApprove={approvePhoto}
+              onApprove={(id) => setPhotoToApprove(id)}
               onRequestObservation={handleOpenObservation}
             />
           ))}
         </div>
       )}
+
+      {/* Approve Photo Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(photoToApprove)}
+        onClose={() => setPhotoToApprove(null)}
+        onConfirm={() => {
+          if (photoToApprove) {
+            approvePhoto(photoToApprove);
+            setPhotoToApprove(null);
+          }
+        }}
+        variant="emerald"
+        title="Aprobar Fotografía para el Portal"
+        description="¿Confirmás la aprobación de esta fotografía? Pasará a ser visible públicamente de inmediato en la ficha del alojamiento en el portal turístico."
+        confirmLabel="Aprobar Fotografía"
+      />
 
       {/* Observation Modal */}
       <ObservationModal
@@ -106,6 +130,8 @@ export const ContentModerationView: React.FC = () => {
         onSubmit={handleSubmitObservation}
         isLoading={isSubmitting}
       />
+
+      <ReviewModerationSection />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useSmartFloating } from './useSmartFloating';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence';
 
 export interface CustomDatePickerProps {
   label: string;
@@ -8,6 +9,7 @@ export interface CustomDatePickerProps {
   value: string; // ISO format: YYYY-MM-DD
   onChange: (date: string) => void;
   minDate?: string; // ISO format: YYYY-MM-DD
+  blockedRanges?: Array<{ startDate: string; endDate: string }>;
   placeholder?: string;
   className?: string;
   preferredPlacement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
@@ -26,11 +28,13 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   value,
   onChange,
   minDate,
+  blockedRanges = [],
   placeholder = 'Seleccionar fecha',
   className = '',
   preferredPlacement = 'auto',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 150);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -92,10 +96,16 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     }
   };
 
+  const isDateStringDisabled = (dateStr: string) => {
+    if (minDate && dateStr < minDate) return true;
+    return blockedRanges.some(
+      (range) => range.startDate <= dateStr && dateStr < range.endDate,
+    );
+  };
+
   const isDateDisabled = (day: number) => {
-    if (!minDate) return false;
     const currentStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return currentStr < minDate;
+    return isDateStringDisabled(currentStr);
   };
 
   const isDateSelected = (day: number) => {
@@ -103,6 +113,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const currentStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return currentStr === value;
   };
+
+  const todayValue = (() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  })();
+  const isTodayDisabled = isDateStringDisabled(todayValue);
 
   const handleSelectDay = (day: number) => {
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -147,14 +163,14 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
       </button>
 
       {/* Calendario Inteligente renderizado en document.body (Inmune a Cortes, Solapamientos y Viewport Clipping) */}
-      {isOpen && isMounted && coords && createPortal(
+      {shouldRender && isMounted && coords && createPortal(
         coords.isModal ? (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0 duration-150">
+          <div className={`fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity duration-150 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <div
               ref={popoverRef}
               role="dialog"
               aria-label="Calendario de selección de fecha"
-              className="w-full max-w-[340px] bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 text-stone-900 animate-in zoom-in-95 duration-150"
+              className={`w-full max-w-[340px] bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 text-stone-900 transition-all duration-150 ease-out ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
             >
               {/* Header del Calendario */}
               <div className="flex items-center justify-between mb-4">
@@ -226,13 +242,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
                 <button
                   type="button"
+                  disabled={isTodayDisabled}
                   onClick={() => {
-                    const today = new Date();
-                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                    onChange(todayStr);
+                    onChange(todayValue);
                     setIsOpen(false);
                   }}
-                  className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer"
+                  className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer disabled:text-stone-300 disabled:cursor-not-allowed"
                 >
                   Hoy
                 </button>
@@ -266,6 +281,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             style={{
               position: 'fixed',
               top: coords.top !== undefined ? `${coords.top}px` : undefined,
+              bottom: coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
               left: coords.left !== undefined ? `${coords.left}px` : undefined,
               width: '320px',
               maxWidth: '94vw',
@@ -273,7 +289,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               overflowY: 'auto',
               zIndex: 99999,
             }}
-            className="bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 text-stone-900 animate-in fade-in-0 zoom-in-95 duration-150"
+            className={`bg-white rounded-3xl shadow-2xl border border-stone-200 p-5 text-stone-900 ${coords.placement === 'top' ? 'origin-bottom' : 'origin-top'} transition-all duration-150 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : `opacity-0 scale-95 ${coords.placement === 'top' ? 'translate-y-1' : '-translate-y-1'} pointer-events-none`}`}
           >
             {/* Header del Calendario */}
             <div className="flex items-center justify-between mb-4">
@@ -345,13 +361,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
               <button
                 type="button"
+                disabled={isTodayDisabled}
                 onClick={() => {
-                  const today = new Date();
-                  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                  onChange(todayStr);
+                  onChange(todayValue);
                   setIsOpen(false);
                 }}
-                className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer"
+                className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700 transition-colors cursor-pointer disabled:text-stone-300 disabled:cursor-not-allowed"
               >
                 Hoy
               </button>

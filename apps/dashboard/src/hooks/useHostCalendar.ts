@@ -44,7 +44,18 @@ function formatDateKey(d: Date): string {
 export function useHostCalendar() {
   const { bookings, isLoading: isLoadingBookings, updateBookingStatus, refresh } = useHostBookings();
   const { accommodations, isLoading: isLoadingAccommodations } = useHostAccommodations();
-  const { blocks: dateBlocks, createBlock, deleteBlock } = useDateBlock();
+  const accommodationIds = useMemo(
+    () => accommodations.map((accommodation) => accommodation.id),
+    [accommodations],
+  );
+  const {
+    blocks: dateBlocks,
+    createBlock,
+    deleteBlock,
+    isLoading: isLoadingDateBlocks,
+    error: dateBlocksError,
+    isUsingLocalFallback,
+  } = useDateBlock(accommodationIds);
 
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [selectedAccommodationId, setSelectedAccommodationId] = useState<string>('ALL');
@@ -164,7 +175,7 @@ export function useHostCalendar() {
         if (selectedAccommodationId !== 'ALL' && block.accommodationId !== selectedAccommodationId) {
           return false;
         }
-        return block.startDate <= cell.dateKey && cell.dateKey <= block.endDate;
+        return block.startDate <= cell.dateKey && cell.dateKey < block.endDate;
       });
     }
 
@@ -201,7 +212,9 @@ export function useHostCalendar() {
     dateBlocks,
     createBlock,
     deleteBlock,
-    isLoading: isLoadingBookings || isLoadingAccommodations,
+    dateBlocksError,
+    isUsingLocalFallback,
+    isLoading: isLoadingBookings || isLoadingAccommodations || isLoadingDateBlocks,
     updateBookingStatus,
     refresh,
   };

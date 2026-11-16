@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import {
-  BarChart3,
+  LayoutDashboard,
   Home,
+  Compass,
   KeyRound,
   FileSpreadsheet,
   ShieldCheck,
   Image,
-  Settings,
+  CalendarRange,
   X,
   LogOut,
-  Shield,
+  ExternalLink,
+  CalendarDays,
+  LayoutTemplate,
+  ShieldAlert,
 } from 'lucide-react';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import { PORTAL_URL } from '../../config/navigation.ts';
+import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock.ts';
 
 export interface AdminSidebarProps {
   currentTab: DashboardTab;
@@ -21,7 +28,6 @@ export interface AdminSidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   onLogout: () => void;
-  onSwitchRole: (role: UserRole) => void;
 }
 
 interface NavItem {
@@ -31,13 +37,17 @@ interface NavItem {
 }
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
-  { id: 'overview', label: 'Centro de Control', icon: BarChart3 },
+  { id: 'overview', label: 'Inicio', icon: LayoutDashboard },
+  { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
+  { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
+  { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
+  { id: 'emergencies', label: 'Guardias y Farmacias', icon: ShieldAlert },
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
-  { id: 'invitations', label: 'Tokens de Invitación', icon: KeyRound },
+  { id: 'invitations', label: 'Invitaciones a Prestadores', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría de Actividad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', icon: Image },
-  { id: 'settings', label: 'Configuración Oficial', icon: Settings },
+  { id: 'settings', label: 'Temporadas Oficiales', icon: CalendarRange },
 ];
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
@@ -47,17 +57,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
   onLogout,
-  onSwitchRole,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { shouldRender: shouldRenderMobile, isVisible: isMobileVisible } = useAnimatedPresence(isOpenMobile, 220);
+  useBodyScrollLock(shouldRenderMobile);
 
-  // Mandatory body scroll lock when mobile sidebar drawer is open
+
   useEffect(() => {
     if (isOpenMobile) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+
+
       return () => {
-        document.body.style.overflow = prev;
+
       };
     }
   }, [isOpenMobile]);
@@ -86,12 +97,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   Turismo Capilla
                 </span>
                 <span className="text-[10px] text-[var(--color-emerald-portal-600)] font-bold uppercase tracking-wider block truncate">
-                  Comisión Municipal
+                  Cámara de Turismo
                 </span>
               </div>
             )}
           </div>
-          {isOpenMobile && (
+          {shouldRenderMobile && (
             <button
               onClick={onCloseMobile}
               className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer md:hidden"
@@ -102,39 +113,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           )}
         </div>
 
-        {/* 2. Role Switcher inside collapsible sidebar */}
-        {expanded && (
-          <div className="bg-[var(--color-sand-100)] p-1 rounded-xl border border-[var(--color-sand-200)] animate-in fade-in duration-200">
-            <div className="grid grid-cols-2 gap-1 text-[11px] font-bold">
-              <button
-                type="button"
-                onClick={() => onSwitchRole('HOST')}
-                className={`py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  user.role === 'HOST'
-                    ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                    : 'text-[var(--color-sand-500)] hover:text-[var(--color-sand-800)]'
-                }`}
-              >
-                <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)]" />
-                <span className="truncate">Cabañero</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('ADMIN')}
-                className={`py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  user.role === 'ADMIN'
-                    ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                    : 'text-[var(--color-sand-500)] hover:text-[var(--color-sand-800)]'
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)]" />
-                <span className="truncate">Comisión</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 3. Navigation Links */}
+        {/* 2. Navigation Links */}
         <nav className="space-y-1" aria-label="Menú de gestión municipal">
           {ADMIN_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -168,10 +147,39 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
       </div>
 
-      {/* 4. Operator Profile & Logout */}
+      {/* 3. Operator Profile, External Link & Logout */}
       <div className="pt-3 border-t border-[var(--color-sand-200)] mt-auto space-y-2">
-        {expanded ? (
-          <div className="bg-[var(--color-sand-50)] p-2.5 rounded-xl border border-[var(--color-sand-200)] animate-in fade-in duration-200">
+        {/* Link al Portal Público */}
+        <a
+          href={PORTAL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={!expanded ? 'Ver Portal Turístico' : undefined}
+          className={`w-full flex items-center gap-2.5 py-2 rounded-xl text-xs font-semibold text-[var(--color-sand-700)] hover:text-[var(--color-sand-900)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer group ${
+            expanded ? 'px-3' : 'justify-center px-1'
+          }`}
+        >
+          <ExternalLink className="w-4 h-4 shrink-0 text-[var(--color-sand-500)] group-hover:text-[var(--color-sand-800)]" />
+          {expanded && (
+            <div className="flex items-center justify-between flex-1 min-w-0">
+              <span className="truncate">Ver Portal Público</span>
+              <span className="text-[10px] text-[var(--color-sand-400)] font-normal uppercase tracking-wider ml-1">Sitio</span>
+            </div>
+          )}
+        </a>
+
+        {/* User Card with click to Profile */}
+        <button
+          type="button"
+          onClick={() => handleSelectTab('profile')}
+          title={!expanded ? 'Ver Mi Perfil y Seguridad' : undefined}
+          className={`w-full text-left transition-colors cursor-pointer rounded-xl ${
+            currentTab === 'profile'
+              ? 'bg-[var(--color-sand-200)] ring-1 ring-[var(--color-emerald-portal-600)]'
+              : 'hover:bg-[var(--color-sand-100)]'
+          } ${expanded ? 'p-2' : 'p-1'}`}
+        >
+          {expanded ? (
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-[var(--color-emerald-portal-600)] text-white font-bold flex items-center justify-center text-xs shrink-0">
                 {initials}
@@ -180,22 +188,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 <p className="text-xs font-bold text-[var(--color-sand-900)] truncate">
                   {user.name} {user.lastName}
                 </p>
-                <p className="text-[10px] text-[var(--color-sand-400)] truncate">
-                  {user.email}
+                <p className="text-[10px] text-[var(--color-emerald-portal-600)] font-semibold truncate">
+                  Mi Perfil & Seguridad
                 </p>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <div
-              title={`${user.name} ${user.lastName}`}
-              className="w-9 h-9 rounded-lg bg-[var(--color-emerald-portal-600)] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs cursor-default"
-            >
-              {initials}
+          ) : (
+            <div className="flex justify-center">
+              <div
+                title={`${user.name} ${user.lastName} — Mi Perfil`}
+                className="w-9 h-9 rounded-lg bg-[var(--color-emerald-portal-600)] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs"
+              >
+                {initials}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </button>
 
         <button
           onClick={onLogout}
@@ -229,14 +237,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       </div>
 
       {/* Mobile Drawer */}
-      {isOpenMobile && (
+      {shouldRenderMobile && (
         <div className="fixed inset-0 z-50 md:hidden flex" role="dialog" aria-modal="true">
           <div
             onClick={onCloseMobile}
-            className="fixed inset-0 bg-[#22201E]/60 backdrop-blur-xs transition-opacity duration-300 ease-out"
+            className={`fixed inset-0 bg-[#22201E]/60 backdrop-blur-xs transition-opacity duration-220 ease-out ${isMobileVisible ? 'opacity-100' : 'opacity-0'}`}
             aria-hidden="true"
           />
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10 animate-in slide-in-from-left duration-200 ease-out">
+          <div className={`relative w-72 max-w-[85vw] h-full shadow-2xl z-10 transition-transform duration-220 ease-out ${isMobileVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             {renderContent(true)}
           </div>
         </div>

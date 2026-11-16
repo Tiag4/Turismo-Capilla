@@ -1,6 +1,7 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Filter, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Lock } from 'lucide-react';
 import type { Accommodation } from '../../types/accommodation.types.ts';
+import { CustomSelect } from '../ui/CustomSelect.tsx';
 
 export interface CalendarHeaderProps {
   monthLabel: string;
@@ -29,6 +30,11 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   monthStats,
   onOpenBlockModal,
 }) => {
+  const accommodationOptions = [
+    { value: 'ALL', label: `Todas las cabañas (${accommodations.length})` },
+    ...accommodations.map((acc) => ({ value: acc.id, label: acc.name })),
+  ];
+
   return (
     <div className="bg-white rounded-2xl p-5 border border-[var(--color-sand-200)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
       {/* Title & Month Navigation */}
@@ -69,33 +75,24 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
       {/* Accommodation Filter & Month Summary */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Accommodation Dropdown Filter */}
-        <div className="flex items-center gap-2 bg-[var(--color-sand-50)] px-3 py-1.5 rounded-xl border border-[var(--color-sand-200)]">
-          <Filter className="w-4 h-4 text-[var(--color-sand-400)] shrink-0" />
-          <select
+        <div className="w-56">
+          <CustomSelect
             value={selectedAccommodationId}
-            onChange={(e) => onSelectAccommodation(e.target.value)}
-            className="bg-transparent text-xs font-bold text-[var(--color-sand-800)] outline-hidden cursor-pointer"
-            aria-label="Filtrar por cabaña"
-          >
-            <option value="ALL">Todas las cabañas ({accommodations.length})</option>
-            {accommodations.map((acc) => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name}
-              </option>
-            ))}
-          </select>
+            onChange={onSelectAccommodation}
+            options={accommodationOptions}
+          />
         </div>
 
         {/* Badges de balance del mes */}
         <div className="flex items-center gap-2 text-xs font-bold">
           <span
-            className="px-2.5 py-1 rounded-lg bg-[#005530] text-white shadow-xs"
+            className="px-2.5 py-2 rounded-xl bg-[#005530] text-white shadow-xs"
             title="Reservas confirmadas para este mes"
           >
             {monthStats.confirmedCount} confirmadas
           </span>
           <span
-            className="px-2.5 py-1 rounded-lg bg-amber-600 text-white shadow-xs"
+            className="px-2.5 py-2 rounded-xl bg-amber-600 text-white shadow-xs"
             title="Reservas pendientes para este mes"
           >
             {monthStats.pendingCount} pendientes
@@ -106,7 +103,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         {onOpenBlockModal && (
           <button
             onClick={onOpenBlockModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 text-white text-xs font-bold hover:bg-zinc-700 active:scale-98 transition-all cursor-pointer shadow-xs"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-zinc-800 text-white text-xs font-bold hover:bg-zinc-700 active:scale-98 transition-all cursor-pointer shadow-xs"
             title="Bloquear fechas administrativamente"
           >
             <Lock className="w-3.5 h-3.5 text-amber-400" />

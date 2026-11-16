@@ -68,10 +68,10 @@ export const BookingVoucherPrint: React.FC<BookingVoucherPrintProps> = ({
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-600)] block">
                 Código de Reserva
               </span>
-              <span className="text-xl font-black font-['Outfit'] text-[var(--color-terracotta-600)] tracking-tight block">
+              <span className="text-xl font-black font-['Outfit'] tabular-nums text-[var(--color-terracotta-600)] tracking-tight block">
                 {booking.bookingCode}
               </span>
               <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-[var(--color-sand-100)] text-[var(--color-sand-800)] border border-[var(--color-sand-200)]">
@@ -164,7 +164,7 @@ export const BookingVoucherPrint: React.FC<BookingVoucherPrintProps> = ({
           {/* Check-in rules and sign areas */}
           <div className="pt-4 border-t border-[var(--color-sand-200)] space-y-6">
             <p className="text-[10px] text-[var(--color-sand-400)] leading-relaxed text-center">
-              Horario habitual: Check-In 14:00 hs — Check-Out 10:00 hs. Capilla del Monte promueve el cuidado del agua serrana y la separación de residuos en origen. Queda prohibido hacer fuego en áreas no habilitadas.
+              Horario habitual: Ingreso 14:00 hs — Egreso 10:00 hs. Capilla del Monte promueve el cuidado del agua serrana y la separación de residuos en origen. Queda prohibido hacer fuego en áreas no habilitadas.
             </p>
 
             <div className="grid grid-cols-2 gap-8 pt-6">

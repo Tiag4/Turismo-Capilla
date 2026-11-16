@@ -126,7 +126,7 @@ export const BookingWizardStep2Fields: React.FC<BookingWizardStep2FieldsProps> =
         <h4 className="font-display font-bold text-sm text-stone-900 flex items-center gap-2">
           <Clock className="w-4 h-4 text-stone-500" /> Tu hora de llegada aproximada
         </h4>
-        <p className="text-xs text-stone-500">Podés hacer el check-in entre las 14:00 y las 21:00 hs.</p>
+        <p className="text-xs text-stone-500">Podés hacer el ingreso entre las 14:00 y las 21:00 hs.</p>
         <div className="w-full sm:w-72">
           <CustomSelect
             variant="compact"

@@ -73,9 +73,9 @@ export const HeroSearchBar: React.FC = () => {
             }
           />
 
-          {/* Check-In Custom */}
+          {/* Ingreso Custom */}
           <CustomDatePicker
-            label="Check-in"
+            label="Ingreso"
             value={checkIn}
             onChange={(date) => {
               setCheckIn(date);
@@ -95,10 +95,10 @@ export const HeroSearchBar: React.FC = () => {
             }
           />
 
-          {/* Check-Out Custom con indicador visual de noches (Steve Krug & Nielsen #1) */}
+          {/* Egreso Custom con indicador visual de noches (Steve Krug & Nielsen #1) */}
           <div className="relative">
             <CustomDatePicker
-              label="Check-out"
+              label="Egreso"
               value={checkOut}
               onChange={setCheckOut}
               minDate={checkIn || todayStr}
@@ -164,16 +164,16 @@ export const HeroSearchBar: React.FC = () => {
             Con piscina climatizada
           </a>
           <a
+            href="/alojamientos?amenity=desayuno"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-800 font-semibold transition-colors border border-stone-300"
+          >
+            Con desayuno
+          </a>
+          <a
             href="/atractivos/uritorco"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-800 font-semibold transition-colors border border-stone-300"
           >
             Guías Uritorco
-          </a>
-          <a
-            href="/atractivos/el-zapato"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-800 font-semibold transition-colors border border-stone-300"
-          >
-            Paseo El Zapato
           </a>
           <a
             href="/alojamientos?zone=falda-del-uritorco"

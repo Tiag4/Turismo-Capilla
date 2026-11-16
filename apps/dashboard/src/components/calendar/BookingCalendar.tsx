@@ -3,12 +3,17 @@ import { useHostCalendar, WEEKDAYS_ES } from '../../hooks/useHostCalendar.ts';
 import { CalendarHeader } from './CalendarHeader.tsx';
 import { CalendarDayCell } from './CalendarDayCell.tsx';
 import { BookingDetailModal } from '../bookings/BookingDetailModal.tsx';
-import { DateBlockModal } from './DateBlockModal.tsx';
 import { DateBlockDetailModal } from './DateBlockDetailModal.tsx';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
-import type { DateBlock, CreateDateBlockDto } from '../../types/date-block.types.ts';
+import type { DateBlock } from '../../types/date-block.types.ts';
 
-export const BookingCalendar: React.FC = () => {
+export interface BookingCalendarProps {
+  onNavigateCreateBlock?: () => void;
+}
+
+export const BookingCalendar: React.FC<BookingCalendarProps> = ({
+  onNavigateCreateBlock,
+}) => {
   const {
     calendarDays,
     monthLabel,
@@ -19,18 +24,20 @@ export const BookingCalendar: React.FC = () => {
     setSelectedAccommodationId,
     accommodations,
     monthStats,
-    createBlock,
     deleteBlock,
+    dateBlocksError,
+    isUsingLocalFallback,
     isLoading,
     updateBookingStatus,
   } = useHostCalendar();
 
+  // Booking detail modal state
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  const [isBlockModalOpen, setIsBlockModalOpen] = useState<boolean>(false);
+  // Date block detail modal state
   const [selectedBlock, setSelectedBlock] = useState<DateBlock | null>(null);
-  const [isBlockDetailOpen, setIsBlockDetailOpen] = useState<boolean>(false);
+  const [isBlockDetailOpen, setIsBlockDetailOpen] = useState(false);
 
   const handleSelectBooking = (booking: Booking) => {
     setSelectedBooking(booking);
@@ -42,11 +49,8 @@ export const BookingCalendar: React.FC = () => {
     setSelectedBooking(null);
   };
 
-  const handleUpdateStatus = async (id: string, status: BookingStatus) => {
-    await updateBookingStatus(id, status);
-    if (selectedBooking && selectedBooking.id === id) {
-      setSelectedBooking((prev) => (prev ? { ...prev, status } : null));
-    }
+  const handleUpdateStatus = (bookingId: string, status: BookingStatus) => {
+    updateBookingStatus(bookingId, status);
   };
 
   const handleSelectDateBlock = (block: DateBlock) => {
@@ -54,16 +58,24 @@ export const BookingCalendar: React.FC = () => {
     setIsBlockDetailOpen(true);
   };
 
-  const handleCreateBlock = (dto: CreateDateBlockDto) => {
-    createBlock(dto);
-  };
-
   const handleDeleteBlock = (id: string) => {
-    deleteBlock(id);
+    return deleteBlock(id);
   };
 
   return (
     <div className="space-y-6">
+      {isUsingLocalFallback && (
+        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
+          Modo demostración: no se pudo conectar con la API y los bloqueos se muestran desde el almacenamiento local.
+        </div>
+      )}
+
+      {dateBlocksError && (
+        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-900">
+          {dateBlocksError}
+        </div>
+      )}
+
       {/* Calendar Header with Navigation, Filters and Block Action */}
       <CalendarHeader
         monthLabel={monthLabel}
@@ -74,7 +86,7 @@ export const BookingCalendar: React.FC = () => {
         onSelectAccommodation={setSelectedAccommodationId}
         accommodations={accommodations}
         monthStats={monthStats}
-        onOpenBlockModal={() => setIsBlockModalOpen(true)}
+        onOpenBlockModal={() => onNavigateCreateBlock?.()}
       />
 
       {/* Main Calendar Grid Container */}
@@ -114,19 +126,18 @@ export const BookingCalendar: React.FC = () => {
           </div>
         )}
 
-        {/* Legend / Status Guide Footer */}
-        <div className="bg-[var(--color-sand-50)] p-4 border-t border-[var(--color-sand-200)] flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="font-bold text-[var(--color-sand-800)]">Referencias:</span>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-xs bg-[#005530]" />
-              <span className="text-[var(--color-sand-800)] font-medium">Reserva Confirmada</span>
+        {/* Legend Footer */}
+        <div className="bg-[var(--color-sand-50)] border-t border-[var(--color-sand-200)] px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-xs bg-[var(--color-emerald-portal-600)]" />
+              <span className="text-[var(--color-sand-800)] font-medium">Confirmada</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-xs bg-amber-600" />
-              <span className="text-[var(--color-sand-800)] font-medium">Reserva Pendiente</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-xs bg-[var(--color-terracotta-500)]" />
+              <span className="text-[var(--color-sand-800)] font-medium">Pendiente</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-xs bg-zinc-700" />
               <span className="text-[var(--color-sand-800)] font-medium">Bloqueo Administrativo (TDR-10)</span>
             </div>
@@ -145,15 +156,6 @@ export const BookingCalendar: React.FC = () => {
         onUpdateStatus={handleUpdateStatus}
       />
 
-      {/* Date Block Modal (Crear Bloqueo) */}
-      <DateBlockModal
-        isOpen={isBlockModalOpen}
-        onClose={() => setIsBlockModalOpen(false)}
-        accommodations={accommodations}
-        preselectedAccommodationId={selectedAccommodationId}
-        onCreateBlock={handleCreateBlock}
-      />
-
       {/* Date Block Detail Modal (Ver/Eliminar Bloqueo) */}
       <DateBlockDetailModal
         block={selectedBlock}
@@ -167,4 +169,3 @@ export const BookingCalendar: React.FC = () => {
     </div>
   );
 };
-

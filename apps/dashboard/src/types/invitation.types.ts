@@ -22,3 +22,10 @@ export interface CreateInvitationDto {
 export interface RevokeInvitationDto {
   reason: string;
 }
+
+export interface ValidateInvitationResponse {
+  valid: boolean;
+  email: string;
+  expiresAt: string;
+  message: string;
+}

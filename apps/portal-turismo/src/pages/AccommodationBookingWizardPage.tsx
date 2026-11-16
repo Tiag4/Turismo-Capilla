@@ -6,10 +6,7 @@ import { BookingWizardContainer } from '../components/booking-wizard/BookingWiza
 
 function mapApiToPlace(item: Accommodation): MapPlace {
   const price = typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
-  const mainImage =
-    item.images?.find((img) => img.isMain)?.url ||
-    item.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80';
+  const mainImage = item.images?.find((img) => img.isMain)?.url || item.images?.[0]?.url || '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
 
   const typeMap: Record<string, string> = {
     CABIN: 'Cabaña de Montaña',
@@ -25,8 +22,8 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     title: item.name,
     subtitle: item.description,
     category: typeMap[item.type] || 'Alojamiento',
-    lat: -30.857,
-    lng: -64.515,
+    lat: item.latitude ?? -30.857,
+    lng: item.longitude ?? -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
     rating: 4.9,
     reviewCount: 20,
@@ -37,6 +34,11 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     capacity: `Hasta ${item.maxGuests} personas`,
     zone: item.locality || 'Capilla del Monte',
     ctaUrl: `/alojamientos/${item.id}`,
+    downPaymentPercentage: item.downPaymentPercentage ?? 50,
+    bankAccountHolder: item.bankAccountHolder || 'Administración Cabañas Capilla',
+    bankCbu: item.bankCbu || '0110485530048500123456',
+    bankAlias: item.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
+    bankName: item.bankName || 'Banco de la Nación Argentina',
   };
 }
 
@@ -48,7 +50,6 @@ export const AccommodationBookingWizardPage: React.FC = () => {
   const [loading, setLoading] = useState(!place);
 
   useEffect(() => {
-    if (place) return;
     let active = true;
     async function loadData() {
       try {

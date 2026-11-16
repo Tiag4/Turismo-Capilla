@@ -16,7 +16,7 @@ export const AccommodationsEmptyState: React.FC<AccommodationsEmptyStateProps> =
           No encontramos alojamientos con esos criterios
         </h3>
         <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
-          Probá buscando en otra zona, cambiando las fechas de check-in o quitando algunas de las comodidades seleccionadas.
+          Probá buscando en otra zona, cambiando las fechas de ingreso o quitando algunas de las comodidades seleccionadas.
         </p>
       </div>
       <div className="pt-2">

@@ -28,3 +28,33 @@ export interface AuthResponse {
   type?: string;
   user: User;
 }
+
+export interface RegisterHostPayload {
+  token: string;
+  email: string;
+  password: string;
+  name: string;
+  lastName: string;
+  phone?: string;
+}
+
+export interface UpdateProfilePayload {
+  name: string;
+  lastName: string;
+  phone?: string | null;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  code: string;
+  newPassword: string;
+}

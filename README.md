@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Frontend-React%2019.3%20%2B%20Vite%208-61dafb?style=for-the-badge&logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/Router-React%20Router%20v7-ca4245?style=for-the-badge&logo=reactrouter" alt="React Router">
   <img src="https://img.shields.io/badge/Estilos-Tailwind%20CSS%20v4-38bdf8?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Backend%20Roadmap-Java%2017%20%2B%20Spring%20Boot-orange?style=for-the-badge&logo=openjdk" alt="Java Backend">
+  <img src="https://img.shields.io/badge/Backend-Java%2017%20%2B%20Spring%20Boot%203-orange?style=for-the-badge&logo=openjdk" alt="Java Backend">
   <img src="https://img.shields.io/badge/Estado-Desarrollo%20Activo-brightgreen?style=for-the-badge" alt="Estado">
 </p>
 
@@ -15,15 +15,29 @@ Plataforma web oficial para la promoción turística, catálogo de atractivos y 
 
 ## 1. Arquitectura Multirepo del Proyecto
 
+A continuación, se detalla el flujo de interacción de los distintos actores con las aplicaciones de la plataforma y su conexión unificada al cerebro central de datos.
+
+![Diagrama de Arquitectura de Sistema y Flujo de Datos](./docs/architecture.png)
+
+* **Actores (El "Quién"):** Se diferencian tres perfiles clave. El **Turista** (usuario final público), el **Cabañero** (administrador de su oferta), y la **Comisión de Turismo** (ente regulador y aprobador).
+* **Frontend (El "Dónde"):** La capa de presentación está dividida en dos aplicaciones. Un **Portal Turístico** público (Vite + React) orientado a conversión, y un **Dashboard de Gestión** privado (React + Tailwind).
+* **Backend (El "Cerebro"):** Ambas aplicaciones consumen la misma **API REST Central** y base de datos, garantizando que cuando la Comisión aprueba una cabaña en el Dashboard, esta impacte instantáneamente en el Portal público.
+
 El sistema se encuentra estructurado bajo una arquitectura **Multirepo** desacoplada en dos repositorios independientes:
 
 1. **Frontend (Este Repositorio — `Turismo-Capilla`):**
    * **Tecnologías:** React 19.3, Vite 8 (Rolldown), React Router v7, Tailwind CSS v4, Lucide React, GSAP.
-   * **Puerto por defecto:** `http://localhost:5173`
-   * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas y asistente multi-paso de reserva.
-2. **Backend (`Turismo-Capilla-Backend` — En Construcción):**
-   * **Tecnologías Objetivo:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 16.
+   * **Puertos por defecto:** Portal `http://localhost:5173` | Dashboard `http://localhost:5174`
+   * **Responsabilidad:** Experiencia del turista, landing institucional, catálogo con filtros interactivos, visualización de mapas, motor de reservas y dashboards protegidos por rol.
+2. **Backend (`backend-capilla-turismo`):**
+   * **Tecnologías:** Java 17, Spring Boot 3, Spring Data JPA (Hibernate), PostgreSQL 18, Cloudinary CDN.
    * **Responsabilidad:** Lógica de negocio, autenticación JWT con Spring Security, prevención transaccional de overbooking y persistencia relacional estricta.
+
+### 1.1 Prevención de Solapamiento (Flujo de Reserva)
+
+Para garantizar la fiabilidad del sistema y evitar cualquier riesgo de sobreventa (doble reserva para las mismas fechas), la plataforma implementa una verificación estricta a nivel de la API y la Base de Datos antes de confirmar cualquier solicitud del turista.
+
+![Diagrama de Secuencia de Reserva](./docs/sequence-booking.jpg)
 
 ---
 
@@ -35,28 +49,27 @@ Turismo-Capilla/
 │   ├── AGENTS.md                  # Reglas maestras para agentes y programadores
 │   └── skills/                    # Principios SOLID, reglas de React, commits y UI
 ├── apps/
-│   └── portal-turismo/            # Aplicación SPA React 19 + Vite
-│       ├── public/                # Assets estáticos y favicons
+│   ├── portal-turismo/            # Aplicación SPA React 19 + Vite (Portal Turístico Público)
+│   │   ├── src/
+│   │   │   ├── components/        # Componentes desacoplados (Container-Presentational)
+│   │   │   ├── pages/             # Vistas montadas por React Router v7
+│   │   │   └── services/          # Cliente HTTP API REST
+│   │   └── vite.config.ts         # Puerto 5173
+│   └── dashboard/                 # Panel de Control Oficial (Admin Comisión & Cabañeros)
 │       ├── src/
-│       │   ├── components/        # Componentes desacoplados (Container-Presentational)
-│       │   │   ├── accommodations/ # Catálogo de alojamientos, tabs, pills y cards (HU-04)
-│       │   │   ├── home/          # Secciones modulares de la Landing Page (HU-01)
-│       │   │   ├── layout/        # AppLayout, navbar responsive y footer
-│       │   │   └── ui/            # DatePickers, CustomSelects y modales accesibles
-│       │   ├── data/              # Mock data con tipado estricto (mock-places.ts)
-│       │   ├── pages/             # Vistas principales montadas por React Router v7
-│       │   ├── services/          # Cliente HTTP para comunicación con el backend (api.ts)
-│       │   ├── styles/            # Tokens visuales y configuración Tailwind v4
-│       │   ├── App.tsx            # Árbol central de rutas SPA
-│       │   └── main.tsx           # Entry point de React 19
-│       ├── index.html             # HTML con OpenGraph y marcado Schema.org JSON-LD
-│       └── vite.config.ts         # Configuración de Vite con code-splitting funcional
-├── docs/                          # Documentación arquitectónica, técnica y de QA
-│   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
+│       │   ├── components/        # Vistas de gestión, perfil, reservas, tarifas y CMS
+│       │   ├── hooks/             # useAuth, useDashboardRouter (RBAC estricto)
+│       │   └── services/          # Clientes de API autenticados con JWT
+│       └── vite.config.ts         # Puerto 5174
+├── docs/                          # Documentación arquitectónica, técnica, de QA y manuales
+│   ├── user-manual.md             # Manual de Usuario Oficial (Turistas, Prestadores, Comisión)
+│   ├── test-credentials.md        # Catálogo unificado de credenciales de prueba y datos sembrados
 │   ├── architecture.md            # Blueprint del ecosistema (Frontend React + Backend Java)
-│   ├── api-reference.md           # Referencia de contratos de la API REST
+│   ├── frontend-architecture.md   # Arquitectura detallada de la SPA y patrones SOLID
+│   ├── api-reference.md           # Referencia completa de contratos de la API REST
+│   ├── endpoints.md               # Mapeo de rutas de la API a Historias de Usuario
 │   └── manual-testing-guide.md    # Guías de testing manual de integración
-├── package.json                   # Scripts unificados de ejecución
+├── package.json                   # Scripts unificados de ejecución monorepo
 └── pnpm-workspace.yaml            # Configuración de workspaces
 ```
 
@@ -108,15 +121,34 @@ cd Turismo-Capilla
 # 2. Instalar dependencias
 pnpm install
 
-# 3. Iniciar el portal en modo desarrollo
+# 3. Iniciar ambas aplicaciones en modo desarrollo (paralelo)
 pnpm dev
+
+# O iniciar individualmente cada aplicación:
+pnpm dev:portal      # Portal Turístico (Turistas) -> http://localhost:5173
+pnpm dev:dashboard   # Dashboard de Gestión (Admin / Host) -> http://localhost:5174
 ```
 
-* **Portal Web:** [http://localhost:5173](http://localhost:5173)
+* **Portal Turístico Público:** [http://localhost:5173](http://localhost:5173)
+* **Dashboard de Gestión Oficial:** [http://localhost:5174](http://localhost:5174)
 * **Compilación de Producción:**
   ```bash
   pnpm build
   ```
+
+### 5.3 Credenciales de Acceso Oficial y Demostración (Dashboard)
+
+El sistema implementa control de acceso estricto basado en roles (**RBAC**). Al autenticarse, la plataforma inspecciona el claim `role` del token JWT y redirige automáticamente al usuario a su panel correspondiente:
+
+| Rol | Correo Electrónico | Contraseña | Panel Destino (RBAC) | Funcionalidad Principal |
+| :--- | :--- | :--- | :--- | :--- |
+| **Comisión de Turismo (`ADMIN`)** | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | `/overview` *(Centro de Control)* | Gestión de prestadores, suspensión preventiva, tokens de invitación, agenda cultural, alertas y temporadas. |
+| **Cabañero / Prestador (`HOST`)** | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Cabaña unifamiliar (*"Cabañas Pircas del Uritorco"*), fotos Cloudinary, tarifas y reservas recibidas. |
+| **Prestadora Hostería (`HOST`)** | `marcela.rossi@capillaturismo.com.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Inventario multi-unidad (*"Hostería Boutique Los Nogales"*), tipos de habitación y planes tarifarios. |
+| **Prestador Refugio (`HOST`)** | `carlos.benitez@capillaturismo.com.ar` | `HostCapilla2026!` | `/reservas` *(Panel Operativo)* | Monoambiente de montaña (*"Refugio Los Alazanes"*), deck privado y seña al 40%. |
+
+> [!TIP]
+> **Acceso Rápido en Login:** La pantalla de inicio de sesión (`/login`) cuenta con botones de *Acceso Rápido de Demostración* para autocompletar estas credenciales con un solo clic. Para ver todas las cuentas y datos bancarios detallados, consultá [`docs/test-credentials.md`](./docs/test-credentials.md).
 
 ---
 
@@ -131,6 +163,9 @@ pnpm dev
 | `HU-05` | Ficha de Detalle de Alojamiento y Comodidades | ✅ Implementado |
 | `HU-06` | Motor y Asistente de Reserva de Alojamiento | ✅ Implementado |
 | `HU-08` | Ubicación y Mapa Interactivo de Capilla del Monte | ✅ Implementado |
+| `HU-20` | Inventario Multi-unidad y Selección de Habitaciones | ✅ Implementado |
+| `HU-27` | RBAC & Seguridad: Separación estricta de paneles y Módulo de Perfil | ✅ Implementado |
+| `HU-29` | Elaboración del Manual de Usuario Oficial (Prestadores y Comisión) | ✅ Implementado |
 
 ---
 
@@ -147,10 +182,14 @@ pnpm dev
 
 ## 8. 📚 Documentación y Recursos
 
-* **Documento de Arquitectura Frontend:** [`docs/frontend-architecture.md`](./docs/frontend-architecture.md)
-* **Blueprint del Sistema:** [`docs/architecture.md`](./docs/architecture.md)
-* **Google Drive:** Almacena la documentación académica y entregables formales.  
-  [Acceder a la carpeta del proyecto en Google Drive](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E)
+* 📘 [**Manual de Usuario Oficial:**](./docs/user-manual.md) Guía completa para Turistas, Prestadores y la Comisión.
+* 🔑 [**Credenciales de Prueba y Datos Sembrados:**](./docs/test-credentials.md) Cuentas, contraseñas, CBU/Alias y servicios de prueba.
+* 🏛️ [**Blueprint del Sistema y Arquitectura:**](./docs/architecture.md) Arquitectura Multirepo, Spring Boot 3 y React 19.
+* ⚛️ [**Documento de Arquitectura Frontend:**](./docs/frontend-architecture.md) Patrones SOLID, Container-Presentational y custom hooks.
+* 🔌 [**Referencia Oficial de la API REST:**](./docs/api-reference.md) Contratos OpenAPI, Swagger y códigos de respuesta.
+* 🗺️ [**Endpoints y Mapeo de HU:**](./docs/endpoints.md) Rutas organizadas por módulo funcional.
+* 🧪 [**Guía de Testing Manual:**](./docs/manual-testing-guide.md) Casos de prueba en Swagger UI y PostgreSQL.
+* 📂 [**Google Drive:**](https://drive.google.com/drive/u/1/folders/1KQLWydgsWH7hCD0RqfqIrFO5AzJRqB5E) Documentación académica y entregables formales.
 
 ---
 

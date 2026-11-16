@@ -14,10 +14,16 @@ export const FinalCtaSection: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/40" />
 
       <div className="relative z-10 max-w-4xl mx-auto space-y-5 text-center">
-        <h2 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] drop-shadow-sm">
+        <h2
+          data-cta-title
+          className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] drop-shadow-sm"
+        >
           ¿Listo para descubrir Capilla del Monte?
         </h2>
-        <p className="text-lg sm:text-2xl text-sand-100/90 font-normal max-w-2xl mx-auto leading-relaxed">
+        <p
+          data-cta-subtitle
+          className="text-lg sm:text-2xl text-sand-100/90 font-normal max-w-2xl mx-auto leading-relaxed"
+        >
           Encontrá tu próximo lugar favorito y empezá a planificar tu visita.
         </p>
 
@@ -26,7 +32,7 @@ export const FinalCtaSection: React.FC = () => {
             to="/alojamientos"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-base tracking-wide transition-colors shadow-xl shadow-primary-500/30 cursor-pointer"
           >
-            <span>Explorar ahora</span>
+            <span data-cta-button>Explorar ahora</span>
             <span>→</span>
           </Link>
           <button

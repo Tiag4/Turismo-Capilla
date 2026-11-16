@@ -4,38 +4,44 @@ import { useHostAccommodations } from '../../hooks/useHostAccommodations.ts';
 import { useAdminAudit } from '../../hooks/useAdminAudit.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
 import { AccommodationCard } from './AccommodationCard.tsx';
-import { AccommodationModal } from './AccommodationModal.tsx';
 import { AccommodationAuditModal } from './AccommodationAuditModal.tsx';
 import { Button } from '../ui/Button.tsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
 import type {
   Accommodation,
-  CreateAccommodationDto,
   ComplianceStatus,
   ComplianceChecklist,
 } from '../../types/accommodation.types.ts';
 
 type FilterStatus = 'ALL' | 'ACTIVE' | 'IN_REVIEW';
 
-export const AccommodationList: React.FC = () => {
+export interface AccommodationListProps {
+  onNavigateCreate?: () => void;
+  onNavigateEdit?: (id: string) => void;
+}
+
+export const AccommodationList: React.FC<AccommodationListProps> = ({
+  onNavigateCreate,
+  onNavigateEdit,
+}) => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
 
   const {
     accommodations,
     isLoading,
-    createAccommodation,
-    updateAccommodation,
     toggleActive,
   } = useHostAccommodations();
 
   const { saveAudit, getSavedAudits, isSubmitting: isAuditSubmitting } = useAdminAudit();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAccommodation, setEditingAccommodation] = useState<Accommodation | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [filter, setFilter] = useState<FilterStatus>('ALL');
 
-  // Audit state
+  // Confirmation dialog state for toggle active
+  const [targetAccommodation, setTargetAccommodation] = useState<Accommodation | null>(null);
+  const [isToggling, setIsToggling] = useState(false);
+
+  // Audit modal state (admin only)
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [auditingAccommodation, setAuditingAccommodation] = useState<Accommodation | null>(null);
   const [auditRevision, setAuditRevision] = useState(0);
@@ -66,33 +72,9 @@ export const AccommodationList: React.FC = () => {
     return enrichedAccommodations;
   }, [enrichedAccommodations, filter]);
 
-  const handleOpenCreate = () => {
-    setEditingAccommodation(null);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (acc: Accommodation) => {
-    setEditingAccommodation(acc);
-    setIsModalOpen(true);
-  };
-
   const handleOpenAudit = (acc: Accommodation) => {
     setAuditingAccommodation(acc);
     setIsAuditModalOpen(true);
-  };
-
-  const handleSubmit = async (dto: CreateAccommodationDto) => {
-    setIsSubmitting(true);
-    try {
-      if (editingAccommodation) {
-        await updateAccommodation(editingAccommodation.id, dto);
-      } else {
-        await createAccommodation(dto);
-      }
-      setIsModalOpen(false);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleSaveAudit = async (
@@ -105,6 +87,17 @@ export const AccommodationList: React.FC = () => {
     setAuditRevision((prev) => prev + 1);
   };
 
+  const handleConfirmToggleActive = async () => {
+    if (!targetAccommodation) return;
+    setIsToggling(true);
+    try {
+      await toggleActive(targetAccommodation.id);
+      setTargetAccommodation(null);
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
   const activeCount = enrichedAccommodations.filter((a) => a.isActive).length;
   const inReviewCount = enrichedAccommodations.filter((a) => a.complianceStatus === 'IN_REVIEW').length;
 
@@ -113,14 +106,9 @@ export const AccommodationList: React.FC = () => {
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[var(--color-sand-200)]">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
-              {isAdmin ? 'Prestadores y Alojamientos' : 'Mis Cabañas y Hospedajes'}
-            </h2>
-            <span className="text-xs font-bold text-[var(--color-terracotta-600)] bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] px-2.5 py-0.5 rounded-full">
-              {enrichedAccommodations.length} {enrichedAccommodations.length === 1 ? 'unidad' : 'unidades'}
-            </span>
-          </div>
+          <h2 className="text-2xl font-black text-[var(--color-sand-900)] font-['Outfit'] tracking-tight">
+            {isAdmin ? 'Prestadores y Alojamientos' : 'Mis Cabañas y Hospedajes'}
+          </h2>
           <p className="text-xs text-[var(--color-sand-500)] font-medium mt-1">
             {isAdmin
               ? 'Padrón de prestadores y fiscalización de habilitaciones técnicas municipales'
@@ -128,15 +116,17 @@ export const AccommodationList: React.FC = () => {
           </p>
         </div>
 
-        <Button
-          variant={isAdmin ? 'emerald' : 'terracotta'}
-          onClick={handleOpenCreate}
-          size="md"
-          className="shadow-xs font-bold flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{isAdmin ? 'Registrar Prestador' : 'Nuevo Alojamiento'}</span>
-        </Button>
+        {onNavigateCreate && (
+          <Button
+            variant={isAdmin ? 'emerald' : 'terracotta'}
+            onClick={onNavigateCreate}
+            size="md"
+            className="shadow-xs font-bold flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{isAdmin ? 'Registrar Prestador' : 'Nuevo Alojamiento'}</span>
+          </Button>
+        )}
       </div>
 
       {/* Filter Chips Bar */}
@@ -199,8 +189,8 @@ export const AccommodationList: React.FC = () => {
               ? 'Registrá tu primera cabaña u hospedaje para comenzar a recibir solicitudes de reserva directas.'
               : 'Probá seleccionando otro filtro o creá un nuevo alojamiento.'}
           </p>
-          {filter === 'ALL' && (
-            <Button variant="terracotta" size="sm" onClick={handleOpenCreate} className="mt-2 font-bold">
+          {filter === 'ALL' && onNavigateCreate && (
+            <Button variant="terracotta" size="sm" onClick={onNavigateCreate} className="mt-2 font-bold">
               Crear el primer alojamiento
             </Button>
           )}
@@ -211,8 +201,8 @@ export const AccommodationList: React.FC = () => {
             <AccommodationCard
               key={acc.id}
               accommodation={acc}
-              onEdit={handleOpenEdit}
-              onToggleActive={toggleActive}
+              onEdit={(target) => onNavigateEdit?.(target.id)}
+              onToggleActive={(target) => setTargetAccommodation(target)}
               isAdmin={isAdmin}
               onAudit={handleOpenAudit}
             />
@@ -220,15 +210,28 @@ export const AccommodationList: React.FC = () => {
         </div>
       )}
 
-      {/* Modals */}
-      <AccommodationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        accommodation={editingAccommodation}
-        onSubmit={handleSubmit}
-        isLoading={isSubmitting}
+      {/* Confirmation Dialog for Pausing/Activating */}
+      <ConfirmDialog
+        isOpen={Boolean(targetAccommodation)}
+        onClose={() => setTargetAccommodation(null)}
+        onConfirm={handleConfirmToggleActive}
+        isLoading={isToggling}
+        variant={targetAccommodation?.isActive ? 'warning' : 'emerald'}
+        title={
+          targetAccommodation?.isActive
+            ? `¿Pausar publicación de "${targetAccommodation.name}"?`
+            : `¿Activar publicación de "${targetAccommodation?.name}"?`
+        }
+        description={
+          targetAccommodation?.isActive
+            ? 'El alojamiento dejará de figurar en el buscador del portal turístico de Capilla del Monte y los turistas no podrán enviar nuevas solicitudes de reserva hasta que lo reactives.'
+            : 'El alojamiento volverá a estar visible públicamente en el catálogo turístico y comenzará a recibir solicitudes de reserva con las tarifas vigentes.'
+        }
+        confirmLabel={targetAccommodation?.isActive ? 'Pausar publicación' : 'Activar publicación'}
+        cancelLabel="Volver sin cambios"
       />
 
+      {/* Audit Modal (Admin Only) */}
       <AccommodationAuditModal
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}

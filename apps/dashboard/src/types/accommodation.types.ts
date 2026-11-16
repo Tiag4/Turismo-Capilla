@@ -5,6 +5,11 @@ export interface AccommodationImage {
   url: string;
   publicId?: string;
   isMain: boolean;
+  /**
+   * Archivo local pendiente de subida. Solo existe en el cliente antes de
+   * guardar; se sube al storage recién al confirmar el formulario.
+   */
+  file?: File;
 }
 
 export type ComplianceStatus = 'APPROVED' | 'IN_REVIEW' | 'REJECTED';
@@ -25,19 +30,50 @@ export interface AccommodationAuditRecord {
   auditedBy?: string;
 }
 
+export type InventoryMode = 'SINGLE_UNIT' | 'MULTI_ROOM';
+
+export interface RoomTypeConfig {
+  id: string;
+  name: string;
+  maxGuests: number;
+  bedsSummary: string;
+  pricePerNight: number;
+  totalStock: number;
+  breakfastIncluded: boolean;
+}
+
 export interface Accommodation {
   id: string;
   name: string;
   description: string;
   type: AccommodationType;
+  inventoryMode?: InventoryMode;
+  roomTypes?: RoomTypeConfig[];
   address: string;
   locality: string;
   latitude?: number | null;
   longitude?: number | null;
   pricePerNight: number;
   maxGuests: number;
+  unitTitle?: string;
+  surfaceSqm?: number;
+  bedroomsSummary?: string;
+  phone?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  petPolicy?: string;
+  cancellationPolicy?: string;
+  licenseNumber?: string;
+  responseTime?: string;
+  hasBreakfast?: boolean;
+  breakfastType?: string;
   amenities: string[];
   isActive: boolean;
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   complianceStatus?: ComplianceStatus;
   auditRecord?: AccommodationAuditRecord;
   images: AccommodationImage[];
@@ -50,12 +86,31 @@ export interface CreateAccommodationDto {
   name: string;
   description: string;
   type: AccommodationType;
+  inventoryMode?: InventoryMode;
+  roomTypes?: RoomTypeConfig[];
   address: string;
   locality?: string;
   latitude?: number | null;
   longitude?: number | null;
   pricePerNight: number;
   maxGuests: number;
+  unitTitle?: string;
+  surfaceSqm?: number;
+  bedroomsSummary?: string;
+  phone?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  petPolicy?: string;
+  cancellationPolicy?: string;
+  licenseNumber?: string;
+  responseTime?: string;
+  hasBreakfast?: boolean;
+  breakfastType?: string;
   amenities: string[];
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   images?: string[] | AccommodationImage[];
 }

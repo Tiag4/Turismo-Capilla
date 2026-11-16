@@ -2,26 +2,27 @@ import React, { useEffect, useRef } from 'react';
 import {
   LogOut,
   Home,
-  Shield,
+  User as UserIcon,
   CalendarCheck,
   Calendar,
   Tag,
   BarChart3,
+  LayoutDashboard,
   KeyRound,
   FileSpreadsheet,
   ShieldCheck,
   Image,
-  Settings,
+  CalendarRange,
   ChevronRight,
 } from 'lucide-react';
-import type { User, UserRole } from '../../types/auth.types.ts';
+import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
+import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
 
 export interface UserMenuDropdownProps {
   user: User;
   currentTab?: DashboardTab;
   onTabChange?: (tab: DashboardTab) => void;
-  onSwitchRole: (role: UserRole) => void;
   onLogout: () => void;
   isOpen: boolean;
   onClose: () => void;
@@ -43,28 +44,27 @@ const HOST_SHORTCUTS: NavShortcut[] = [
 ];
 
 const ADMIN_SHORTCUTS: NavShortcut[] = [
-  { id: 'overview', label: 'Centro de Control', desc: 'Métricas del destino', icon: BarChart3 },
+  { id: 'overview', label: 'Inicio', desc: 'Métricas del destino y accesos rápidos', icon: LayoutDashboard },
   { id: 'bookings', label: 'Reservas', desc: 'Gestión integral', icon: CalendarCheck },
   { id: 'accommodations', label: 'Prestadores Adheridos', desc: 'Catálogo oficial', icon: Home },
-  { id: 'invitations', label: 'Tokens de Invitación', desc: 'Acceso y habilitación', icon: KeyRound },
+  { id: 'invitations', label: 'Invitaciones a Prestadores', desc: 'Habilitación de cabañeros', icon: KeyRound },
   { id: 'reports', label: 'Reportes Turísticos', desc: 'Estadísticas oficiales', icon: FileSpreadsheet },
   { id: 'audit', label: 'Auditoría', desc: 'Trazabilidad y seguridad', icon: ShieldCheck },
   { id: 'moderation', label: 'Moderación de Fotos', desc: 'Revisión visual', icon: Image },
-  { id: 'settings', label: 'Configuración Oficial', desc: 'Parámetros del sistema', icon: Settings },
+  { id: 'settings', label: 'Temporadas Oficiales', desc: 'Calendario y tarifas sugeridas', icon: CalendarRange },
 ];
 
 export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
   user,
   currentTab,
   onTabChange,
-  onSwitchRole,
   onLogout,
   isOpen,
   onClose,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 160);
 
-  // Click outside and escape key handling
   useEffect(() => {
     if (!isOpen) return;
 
@@ -89,7 +89,7 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const shortcuts = user.role === 'ADMIN' ? ADMIN_SHORTCUTS : HOST_SHORTCUTS;
   const initials = `${user.name?.[0] ?? 'U'}${user.lastName?.[0] ?? ''}`.toUpperCase();
@@ -101,15 +101,10 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
     onClose();
   };
 
-  const handleRoleChange = (role: UserRole) => {
-    onSwitchRole(role);
-    onClose();
-  };
-
   return (
     <div
       ref={menuRef}
-      className="absolute right-0 top-full mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-[var(--color-sand-200)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+      className={`absolute right-0 top-full mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-[var(--color-sand-200)] z-50 overflow-hidden origin-top-right transition-all duration-160 ease-out ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1.5 pointer-events-none'}`}
       role="menu"
       aria-label="Panel de usuario y navegación"
     >
@@ -141,40 +136,31 @@ export const UserMenuDropdown: React.FC<UserMenuDropdownProps> = ({
         </div>
       </div>
 
-      {/* 2. Fast Role Switcher */}
-      <div className="p-3 border-b border-[var(--color-sand-200)]">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block px-1 mb-1.5">
-          Modo de Gestión
-        </span>
-        <div className="grid grid-cols-2 gap-1.5 bg-[var(--color-sand-100)] p-1 rounded-xl border border-[var(--color-sand-200)]">
-          <button
-            type="button"
-            onClick={() => handleRoleChange('HOST')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              user.role === 'HOST'
-                ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)]'
-            }`}
-          >
-            <Home className="w-3.5 h-3.5 text-[var(--color-terracotta-500)] shrink-0" />
-            <span>Cabañero</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleRoleChange('ADMIN')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              user.role === 'ADMIN'
-                ? 'bg-white text-[var(--color-sand-900)] shadow-xs'
-                : 'text-[var(--color-sand-600)] hover:text-[var(--color-sand-900)]'
-            }`}
-          >
-            <Shield className="w-3.5 h-3.5 text-[var(--color-emerald-portal-600)] shrink-0" />
-            <span>Comisión</span>
-          </button>
-        </div>
+      {/* 2. Profile & Security Action */}
+      <div className="p-2 border-b border-[var(--color-sand-200)]">
+        <button
+          type="button"
+          onClick={() => handleSelectNav('profile')}
+          className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+            currentTab === 'profile'
+              ? 'bg-[var(--color-sand-100)] text-[var(--color-sand-900)] font-bold'
+              : 'text-[var(--color-sand-800)] hover:bg-[var(--color-sand-50)]'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-sand-100)] text-[var(--color-sand-700)] flex items-center justify-center">
+              <UserIcon className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold block leading-tight">Mi Perfil y Seguridad</span>
+              <span className="text-[10px] text-[var(--color-sand-500)] block leading-tight">Datos personales y clave</span>
+            </div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-[var(--color-sand-400)]" />
+        </button>
       </div>
 
-      {/* 3. Navigation Shortcuts (Reservas, Mis Cabañas, etc.) */}
+      {/* 3. Navigation Shortcuts */}
       <div className="p-2 border-b border-[var(--color-sand-200)] max-h-56 overflow-y-auto">
         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-400)] block px-2 py-1">
           Módulos de Gestión

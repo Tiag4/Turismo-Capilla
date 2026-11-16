@@ -1,78 +1,130 @@
 import { apiClient } from './api.client.ts';
-import type { AuthResponse, LoginCredentials, User } from '../types/auth.types.ts';
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterHostPayload,
+  User,
+  UpdateProfilePayload,
+  ChangePasswordPayload,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
+} from '../types/auth.types.ts';
 
 const TOKEN_KEY = 'turismo_capilla_token';
 const USER_KEY = 'turismo_capilla_user';
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const json = decodeURIComponent(
+      atob(padded)
+        .split('')
+        .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+        .join('')
+    );
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function isSessionTokenValid(token: string | null): boolean {
+  if (!token) return false;
+
+  const payload = decodeJwtPayload(token);
+  if (!payload) return false;
+
+  if (typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()) {
+    return false;
+  }
+
+  return true;
+}
+
+function clearSession(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+}
+
+function persistSession(data: AuthResponse): AuthResponse {
+  const jwt = data.token || data.accessToken || '';
+
+  if (!isSessionTokenValid(jwt)) {
+    throw new Error('La respuesta del servidor no contiene un token de sesión válido');
+  }
+
+  localStorage.setItem(TOKEN_KEY, jwt);
+  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+  return {
+    ...data,
+    accessToken: jwt,
+    token: jwt,
+  };
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    try {
-      const data = await apiClient.post<AuthResponse>('/auth/login', credentials);
-      const jwt = data.token || data.accessToken || '';
-      localStorage.setItem(TOKEN_KEY, jwt);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      return {
-        ...data,
-        accessToken: jwt,
-        token: jwt,
-      };
-    } catch {
-      // Offline / Local fallback demo users for instant preview
-      if (credentials.email === 'admin@capilladelmonte.gov.ar') {
-        const demoUser: User = {
-          id: 'admin-01',
-          email: 'admin@capilladelmonte.gov.ar',
-          name: 'Comisión',
-          lastName: 'Turismo',
-          role: 'ADMIN',
-          createdAt: new Date().toISOString(),
-        };
-        const demoResponse: AuthResponse = {
-          accessToken: 'demo-admin-token',
-          token: 'demo-admin-token',
-          user: demoUser,
-        };
-        localStorage.setItem(TOKEN_KEY, demoResponse.accessToken);
-        localStorage.setItem(USER_KEY, JSON.stringify(demoUser));
-        return demoResponse;
-      }
+    const data = await apiClient.post<AuthResponse>('/auth/login', credentials);
+    return persistSession(data);
+  },
 
-      const demoHost: User = {
-        id: 'host-01',
-        email: credentials.email || 'host@capilladelmonte.gov.ar',
-        name: 'Roberto',
-        lastName: 'Gómez (Cabañas del Uritorco)',
-        role: 'HOST',
-        phone: '+54 9 3548 456789',
-        createdAt: new Date().toISOString(),
-      };
-      const demoResponse: AuthResponse = {
-        accessToken: 'demo-host-token',
-        token: 'demo-host-token',
-        user: demoHost,
-      };
-      localStorage.setItem(TOKEN_KEY, demoResponse.accessToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(demoHost));
-      return demoResponse;
-    }
+  async registerHost(payload: RegisterHostPayload): Promise<AuthResponse> {
+    const data = await apiClient.post<AuthResponse>('/auth/register-host', payload);
+    return persistSession(data);
   },
 
   getCurrentUser(): User | null {
+    if (!isSessionTokenValid(localStorage.getItem(TOKEN_KEY))) {
+      clearSession();
+      return null;
+    }
+
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) return null;
+
     try {
-      return JSON.parse(raw);
+      return JSON.parse(raw) as User;
     } catch {
+      clearSession();
       return null;
     }
   },
 
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (!isSessionTokenValid(token)) {
+      if (token) clearSession();
+      return null;
+    }
+
+    return token;
+  },
+
+  async updateProfile(payload: UpdateProfilePayload): Promise<User> {
+    const updatedUser = await apiClient.put<User>('/auth/profile', payload);
+    localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+    return updatedUser;
+  },
+
+  async changePassword(payload: ChangePasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/change-password', payload);
+  },
+
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/forgot-password', payload);
+  },
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<{ message: string }> {
+    return await apiClient.post<{ message: string }>('/auth/reset-password', payload);
   },
 
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    clearSession();
   },
 };

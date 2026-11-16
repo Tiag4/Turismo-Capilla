@@ -1,7 +1,8 @@
 export type BookingVoucherStatus =
   | 'CONFIRMED'
   | 'PENDING_CONFIRMATION'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'COMPLETED';
 
 export interface BookingVoucherRecord {
   code: string;
@@ -22,7 +23,15 @@ export interface BookingVoucherRecord {
   childAges?: (number | null)[];
   rooms: number;
   finalPrice: number;
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number;
+  remainingBalance?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   status: BookingVoucherStatus;
   createdAt: string;
   hostPhone?: string;
+  isDemo?: boolean;
 }

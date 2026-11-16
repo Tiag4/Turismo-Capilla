@@ -5,6 +5,9 @@ export interface AccommodationImage {
   url: string;
   publicId?: string;
   isMain: boolean;
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
+  moderatedAt?: string;
   /**
    * Archivo local pendiente de subida. Solo existe en el cliente antes de
    * guardar; se sube al storage recién al confirmar el formulario.

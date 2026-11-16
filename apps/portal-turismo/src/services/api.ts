@@ -1,274 +1,276 @@
-export const API_BASE_URL =
-  (typeof import.meta !== 'undefined' &&
-    (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
-  (import.meta.env?.DEV
-    ? 'http://localhost:8080/api/v1'
-    : 'https://turismo-capilla-backend.onrender.com/api/v1');
-
-export class ApiRequestError extends Error {
-  readonly status: number;
-
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = 'ApiRequestError';
-    this.status = status;
-  }
-}
-
-export type AttractionStatus = 'OPEN' | 'WEATHER_RESTRICTED' | 'CLOSED';
-
-export interface Attraction {
-  id: string;
-  name: string;
-  description: string;
-  category: 'HILL' | 'RIVER_BEACH' | 'CULTURAL' | 'NIGHT' | 'NATURE_TRAIL';
-  difficulty?: string | null;
-  estimatedDuration?: string | null;
-  howToGet?: string | null;
-  requiresGuide: boolean;
-  admissionFee?: number | string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  images: { id?: string; url: string; publicId?: string }[];
-  status?: AttractionStatus;
-  statusNotice?: string | null;
-  isFeatured?: boolean;
-  elevationGainMeters?: number | null;
-  maxElevationMsnm?: number | null;
-  distanceKm?: number | null;
-  trailType?: string | null;
-  terrainType?: string | null;
-  openingHours?: string | null;
-  cutoffTime?: string | null;
-  hydrationRequirement?: string | null;
-  highlights?: string[];
-  recommendedGear?: string[];
-  safetyWarnings?: string[];
-}
-
-export interface RoomTypeApiDto {
-  id: string;
-  name: string;
-  description?: string;
-  baseCapacity?: number;
-  maxCapacity?: number;
-  beds?: number;
-  bedsSummary?: string;
-  sizeSqm?: number;
-  totalUnits?: number;
-  availableUnits?: number;
-  basePricePerNight?: number | string;
-  amenities?: string[];
-  ratePlans?: {
-    id: string;
-    name: string;
-    pricePerNight: number | string;
-    breakfastIncluded: boolean;
-  }[];
-}
-
-export interface Accommodation {
-  id: string;
-  name: string;
-  description: string;
-  type: 'CABIN' | 'HOTEL' | 'APARTMENT' | 'HOSTEL' | 'CAMPING';
-  address: string;
-  locality: string;
-  latitude?: number | null;
-  longitude?: number | null;
-  pricePerNight: number | string;
-  maxGuests: number;
-  unitTitle?: string;
-  surfaceSqm?: number;
-  bedroomsSummary?: string;
-  phone?: string;
-  checkInTime?: string;
-  checkOutTime?: string;
-  petPolicy?: string;
-  cancellationPolicy?: string;
-  licenseNumber?: string;
-  responseTime?: string;
-  inventoryMode?: 'SINGLE_UNIT' | 'MULTI_ROOM';
-  roomTypes?: RoomTypeApiDto[];
-  amenities: string[];
-  isActive: boolean;
-  hasBreakfast?: boolean;
-  isFeatured?: boolean;
-  images: { id: string; url: string; publicId: string; isMain: boolean }[];
-  downPaymentPercentage?: number;
-  bankAccountHolder?: string | null;
-  bankCbu?: string | null;
-  bankAlias?: string | null;
-  bankName?: string | null;
-  hostId?: string;
-  hostName?: string;
-  host?: {
-    id: string;
-    name: string;
-    lastName: string;
-    email: string;
-    phone?: string | null;
-    createdAt?: string;
-  };
-}
-
-export interface BookingPayload {
-  accommodationId: string;
-  checkIn: string;
-  checkOut: string;
-  guestCount: number;
-  guestName: string;
-  guestEmail: string;
-  guestPhone: string;
-  guestOrigin?: string;
-  notes?: string;
-}
-
-export interface BookingResult {
-  id: string;
-  bookingCode: string;
-  checkIn: string;
-  checkOut: string;
-  totalNights: number;
-  totalAmount: number | string;
-  downPaymentPercentage?: number;
-  downPaymentAmount?: number | string;
-  remainingBalance?: number | string;
-  bankAccountHolder?: string;
-  bankCbu?: string;
-  bankAlias?: string;
-  bankName?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
-  guestName: string;
-  guestPhone?: string;
-  accommodation?: Accommodation;
-}
-
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { ...options, signal: controller.signal });
-    return res;
-  } finally {
-    clearTimeout(id);
-  }
-}
-
-export const api = {
-  async getHealth() {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
-    if (!res.ok) throw new Error('Error de conexión con el servidor');
-    return res.json();
-  },
-
-  async getAttractions(params?: {
-    category?: string;
-    search?: string;
-    difficulty?: string;
-    requiresGuide?: boolean;
-  }): Promise<Attraction[]> {
-    const query = new URLSearchParams();
-    if (params?.category) query.set('category', params.category);
-    if (params?.search) query.set('search', params.search);
-    if (params?.difficulty) query.set('difficulty', params.difficulty);
-    if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
-
-    const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetchWithTimeout(url);
-    if (!res.ok) throw new Error('Error al obtener los atractivos');
-    return res.json();
-  },
-
-  async getAttractionById(id: string): Promise<Attraction> {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/attractions/${id}`);
-    if (!res.ok) throw new Error('Atractivo no encontrado');
-    return res.json();
-  },
-
-  async getAccommodations(params?: {
-    checkIn?: string;
-    checkOut?: string;
-    guests?: number;
-    type?: string;
-    search?: string;
-  }): Promise<Accommodation[]> {
-    const query = new URLSearchParams();
-    if (params?.checkIn) query.set('checkIn', params.checkIn);
-    if (params?.checkOut) query.set('checkOut', params.checkOut);
-    if (params?.guests) query.set('guests', params.guests.toString());
-    if (params?.type) query.set('type', params.type);
-    if (params?.search) query.set('search', params.search);
-
-    const url = `${API_BASE_URL}/accommodations${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetchWithTimeout(url);
-    if (!res.ok) throw new Error('Error al consultar alojamientos');
-    return res.json();
-  },
-
-  async getAccommodationById(id: string): Promise<Accommodation> {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/accommodations/${id}`);
-    if (!res.ok) throw new Error('Alojamiento no encontrado');
-    return res.json();
-  },
-
-  async createBooking(payload: BookingPayload): Promise<BookingResult> {
-    const res = await fetch(`${API_BASE_URL}/bookings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new ApiRequestError(data.message || 'Error al procesar la reserva', res.status);
-    }
-    return data;
-  },
-
-  async lookupBooking(code: string, email: string): Promise<BookingResult> {
-    const query = new URLSearchParams({ code, email });
-    const res = await fetch(`${API_BASE_URL}/bookings/lookup?${query.toString()}`);
-    if (!res.ok) throw new Error('Reserva no encontrada');
-    return res.json();
-  },
-
-  async resendVoucher(code: string, email: string): Promise<{ message: string }> {
-    const res = await fetch(`${API_BASE_URL}/bookings/resend-voucher`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, email }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data.message || 'No se pudo reenviar el voucher por email');
-    }
-    return data;
-  },
-
-  async getActiveAlert(): Promise<PublicAlert | null> {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
-      if (res.status === 204 || res.status === 404) return null;
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  },
-};
-
-export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
-
-export interface PublicAlert {
-  id: string;
-  title: string;
-  message: string;
-  severity: AlertSeverity;
-  linkUrl?: string | null;
-  linkText?: string | null;
-  isActive: boolean;
-  expiresAt?: string | null;
-  createdAt: string;
-}
+export const API_BASE_URL =
+  (typeof import.meta !== 'undefined' &&
+    (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
+  (import.meta.env?.DEV
+    ? 'http://localhost:8080/api/v1'
+    : 'https://turismo-capilla-backend.onrender.com/api/v1');
+
+export class ApiRequestError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+  }
+}
+
+export type AttractionStatus = 'OPEN' | 'WEATHER_RESTRICTED' | 'CLOSED';
+
+export interface Attraction {
+  id: string;
+  name: string;
+  description: string;
+  category: 'HILL' | 'RIVER_BEACH' | 'CULTURAL' | 'NIGHT' | 'NATURE_TRAIL';
+  difficulty?: string | null;
+  estimatedDuration?: string | null;
+  howToGet?: string | null;
+  requiresGuide: boolean;
+  admissionFee?: number | string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  images: { id?: string; url: string; publicId?: string }[];
+  status?: AttractionStatus;
+  statusNotice?: string | null;
+  isFeatured?: boolean;
+  featuredBadgeTheme?: 'DARK' | 'LIGHT' | null;
+  elevationGainMeters?: number | null;
+  maxElevationMsnm?: number | null;
+  distanceKm?: number | null;
+  trailType?: string | null;
+  terrainType?: string | null;
+  openingHours?: string | null;
+  cutoffTime?: string | null;
+  hydrationRequirement?: string | null;
+  highlights?: string[];
+  recommendedGear?: string[];
+  safetyWarnings?: string[];
+}
+
+export interface RoomTypeApiDto {
+  id: string;
+  name: string;
+  description?: string;
+  baseCapacity?: number;
+  maxCapacity?: number;
+  beds?: number;
+  bedsSummary?: string;
+  sizeSqm?: number;
+  totalUnits?: number;
+  availableUnits?: number;
+  basePricePerNight?: number | string;
+  amenities?: string[];
+  ratePlans?: {
+    id: string;
+    name: string;
+    pricePerNight: number | string;
+    breakfastIncluded: boolean;
+  }[];
+}
+
+export interface Accommodation {
+  id: string;
+  name: string;
+  description: string;
+  type: 'CABIN' | 'HOTEL' | 'APARTMENT' | 'HOSTEL' | 'CAMPING';
+  address: string;
+  locality: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  pricePerNight: number | string;
+  maxGuests: number;
+  unitTitle?: string;
+  surfaceSqm?: number;
+  bedroomsSummary?: string;
+  phone?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  petPolicy?: string;
+  cancellationPolicy?: string;
+  licenseNumber?: string;
+  responseTime?: string;
+  inventoryMode?: 'SINGLE_UNIT' | 'MULTI_ROOM';
+  roomTypes?: RoomTypeApiDto[];
+  amenities: string[];
+  isActive: boolean;
+  hasBreakfast?: boolean;
+  isFeatured?: boolean;
+  featuredBadgeTheme?: 'DARK' | 'LIGHT' | null;
+  images: { id: string; url: string; publicId: string; isMain: boolean }[];
+  downPaymentPercentage?: number;
+  bankAccountHolder?: string | null;
+  bankCbu?: string | null;
+  bankAlias?: string | null;
+  bankName?: string | null;
+  hostId?: string;
+  hostName?: string;
+  host?: {
+    id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    phone?: string | null;
+    createdAt?: string;
+  };
+}
+
+export interface BookingPayload {
+  accommodationId: string;
+  checkIn: string;
+  checkOut: string;
+  guestCount: number;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  guestOrigin?: string;
+  notes?: string;
+}
+
+export interface BookingResult {
+  id: string;
+  bookingCode: string;
+  checkIn: string;
+  checkOut: string;
+  totalNights: number;
+  totalAmount: number | string;
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number | string;
+  remainingBalance?: number | string;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  guestName: string;
+  guestPhone?: string;
+  accommodation?: Accommodation;
+}
+
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+export const api = {
+  async getHealth() {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
+    if (!res.ok) throw new Error('Error de conexión con el servidor');
+    return res.json();
+  },
+
+  async getAttractions(params?: {
+    category?: string;
+    search?: string;
+    difficulty?: string;
+    requiresGuide?: boolean;
+  }): Promise<Attraction[]> {
+    const query = new URLSearchParams();
+    if (params?.category) query.set('category', params.category);
+    if (params?.search) query.set('search', params.search);
+    if (params?.difficulty) query.set('difficulty', params.difficulty);
+    if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
+
+    const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
+    const res = await fetchWithTimeout(url);
+    if (!res.ok) throw new Error('Error al obtener los atractivos');
+    return res.json();
+  },
+
+  async getAttractionById(id: string): Promise<Attraction> {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/attractions/${id}`);
+    if (!res.ok) throw new Error('Atractivo no encontrado');
+    return res.json();
+  },
+
+  async getAccommodations(params?: {
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
+    type?: string;
+    search?: string;
+  }): Promise<Accommodation[]> {
+    const query = new URLSearchParams();
+    if (params?.checkIn) query.set('checkIn', params.checkIn);
+    if (params?.checkOut) query.set('checkOut', params.checkOut);
+    if (params?.guests) query.set('guests', params.guests.toString());
+    if (params?.type) query.set('type', params.type);
+    if (params?.search) query.set('search', params.search);
+
+    const url = `${API_BASE_URL}/accommodations${query.toString() ? `?${query.toString()}` : ''}`;
+    const res = await fetchWithTimeout(url);
+    if (!res.ok) throw new Error('Error al consultar alojamientos');
+    return res.json();
+  },
+
+  async getAccommodationById(id: string): Promise<Accommodation> {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/accommodations/${id}`);
+    if (!res.ok) throw new Error('Alojamiento no encontrado');
+    return res.json();
+  },
+
+  async createBooking(payload: BookingPayload): Promise<BookingResult> {
+    const res = await fetch(`${API_BASE_URL}/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new ApiRequestError(data.message || 'Error al procesar la reserva', res.status);
+    }
+    return data;
+  },
+
+  async lookupBooking(code: string, email: string): Promise<BookingResult> {
+    const query = new URLSearchParams({ code, email });
+    const res = await fetch(`${API_BASE_URL}/bookings/lookup?${query.toString()}`);
+    if (!res.ok) throw new Error('Reserva no encontrada');
+    return res.json();
+  },
+
+  async resendVoucher(code: string, email: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE_URL}/bookings/resend-voucher`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, email }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.message || 'No se pudo reenviar el voucher por email');
+    }
+    return data;
+  },
+
+  async getActiveAlert(): Promise<PublicAlert | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
+      if (res.status === 204 || res.status === 404) return null;
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+};
+
+export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
+
+export interface PublicAlert {
+  id: string;
+  title: string;
+  message: string;
+  severity: AlertSeverity;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  isActive: boolean;
+  expiresAt?: string | null;
+  createdAt: string;
+}

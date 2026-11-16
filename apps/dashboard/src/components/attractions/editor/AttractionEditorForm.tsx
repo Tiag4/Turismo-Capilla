@@ -78,6 +78,9 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
   const [status, setStatus] = useState<AttractionStatus>(initialData?.status ?? 'OPEN');
   const [statusNotice, setStatusNotice] = useState(initialData?.statusNotice ?? '');
   const [isFeatured, setIsFeatured] = useState(Boolean(initialData?.isFeatured));
+  const [featuredBadgeTheme, setFeaturedBadgeTheme] = useState<'DARK' | 'LIGHT'>(
+    initialData?.featuredBadgeTheme === 'LIGHT' ? 'LIGHT' : 'DARK',
+  );
   const [images, setImages] = useState<string[]>(initialData?.images?.map((img) => img.url) ?? []);
 
   // Telemetría de Montaña
@@ -179,6 +182,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
       status,
       statusNotice: status !== 'OPEN' && statusNotice.trim() ? statusNotice.trim() : undefined,
       isFeatured,
+      featuredBadgeTheme: isFeatured ? featuredBadgeTheme : 'DARK',
       images,
       // Telemetría
       elevationGainMeters: elevationGainMeters === '' ? null : Number(elevationGainMeters),
@@ -671,10 +675,54 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               onClick={() => setIsFeatured(!isFeatured)}
               className="text-xs font-bold text-sand-800 cursor-pointer"
             >
-              Destacar en Portada del Portal Turístico
+              Destacar en Portada del Portal Turístico (★ Destacado)
             </label>
           </div>
         </div>
+
+        {isFeatured && (
+          <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 space-y-2.5">
+            <span className="text-xs font-bold text-sand-800 block">
+              Color de la etiqueta de destacado en el portal:
+            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setFeaturedBadgeTheme('DARK')}
+                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                  featuredBadgeTheme === 'DARK'
+                    ? 'bg-sand-950 text-white border-sand-950 ring-2 ring-emerald-600/40 shadow-xs'
+                    : 'bg-white text-sand-700 border-sand-300 hover:border-sand-400'
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-sand-900 border border-sand-600" />
+                <span>Etiqueta Oscura</span>
+                <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-sand-900 text-amber-300 border border-sand-700 font-extrabold">
+                  ★ Destacado
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFeaturedBadgeTheme('LIGHT')}
+                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                  featuredBadgeTheme === 'LIGHT'
+                    ? 'bg-white text-sand-900 border-sand-400 ring-2 ring-emerald-600/40 shadow-xs'
+                    : 'bg-sand-100 text-sand-700 border-sand-300 hover:border-sand-400'
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-white border border-sand-400" />
+                <span>Etiqueta Clara</span>
+                <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white text-amber-950 border border-amber-300 font-extrabold shadow-xs">
+                  ★ Destacado
+                </span>
+              </button>
+            </div>
+            <p className="text-[11px] text-sand-500">
+              Usa <strong>Etiqueta Oscura</strong> si la foto de portada es clara o luminosa, o <strong>Etiqueta Clara</strong> si la foto es oscura o de montaña para asegurar que la insignia resalte y no se pierda.
+            </p>
+          </div>
+        )}
 
         {status !== 'OPEN' && (
           <Input

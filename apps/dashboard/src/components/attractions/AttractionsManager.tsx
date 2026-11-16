@@ -72,6 +72,16 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
     }
   };
 
+  // Handle Quick Toggle Featured Theme
+  const handleToggleBadgeTheme = async (attraction: Attraction) => {
+    try {
+      await attractionsService.toggleFeaturedTheme(attraction.id);
+      await loadAttractions();
+    } catch (err) {
+      console.error('Error al cambiar contraste de etiqueta:', err);
+    }
+  };
+
   // Handle Quick Status Change
   const handleQuickStatusChange = async (attraction: Attraction, newStatus: AttractionStatus) => {
     try {
@@ -302,6 +312,7 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
               key={item.id}
               item={item}
               onToggleFeatured={handleToggleFeatured}
+              onToggleBadgeTheme={handleToggleBadgeTheme}
               onQuickStatusChange={handleQuickStatusChange}
               onEdit={(att) => onNavigateEdit?.(att.id)}
               onDelete={(att) => setDeletingAttraction(att)}

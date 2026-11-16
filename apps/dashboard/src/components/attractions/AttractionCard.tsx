@@ -20,6 +20,7 @@ const STATUS_BADGES: Record<AttractionStatus, { label: string; badgeClass: strin
 export interface AttractionCardProps {
   item: Attraction;
   onToggleFeatured: (item: Attraction) => void;
+  onToggleBadgeTheme?: (item: Attraction) => void;
   onQuickStatusChange: (item: Attraction, newStatus: AttractionStatus) => void;
   onEdit: (item: Attraction) => void;
   onDelete: (item: Attraction) => void;
@@ -28,6 +29,7 @@ export interface AttractionCardProps {
 export const AttractionCard: React.FC<AttractionCardProps> = ({
   item,
   onToggleFeatured,
+  onToggleBadgeTheme,
   onEdit,
   onDelete,
 }) => {
@@ -47,20 +49,40 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
             loading="lazy"
           />
 
-          {/* Featured Toggle Button */}
-          <button
-            type="button"
-            onClick={() => onToggleFeatured(item)}
-            title={item.isFeatured ? 'Quitar de destacados' : 'Destacar en portada'}
-            className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs ${
-              item.isFeatured
-                ? 'bg-amber-400 text-sand-950'
-                : 'bg-black/60 text-sand-200 hover:text-white'
-            }`}
-          >
-            <Star className={`w-3.5 h-3.5 ${item.isFeatured ? 'fill-sand-950' : ''}`} />
-            <span>{item.isFeatured ? 'Destacado' : 'Destacar'}</span>
-          </button>
+          {/* Featured Toggle Button & Theme Switcher */}
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onToggleFeatured(item)}
+              title={item.isFeatured ? 'Quitar de destacados' : 'Destacar en portada'}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs ${
+                item.isFeatured
+                  ? 'bg-amber-400 text-sand-950 hover:bg-amber-300'
+                  : 'bg-black/60 text-sand-200 hover:text-white'
+              }`}
+            >
+              <Star className={`w-3.5 h-3.5 ${item.isFeatured ? 'fill-sand-950' : ''}`} />
+              <span>{item.isFeatured ? 'Destacado' : 'Destacar'}</span>
+            </button>
+
+            {item.isFeatured && onToggleBadgeTheme && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleBadgeTheme(item);
+                }}
+                title={`Etiqueta actual: ${item.featuredBadgeTheme === 'LIGHT' ? 'Clara' : 'Oscura'}. Clic para alternar contraste`}
+                className={`px-2 py-1 rounded-md text-[10px] font-black border transition-all cursor-pointer shadow-xs ${
+                  item.featuredBadgeTheme === 'LIGHT'
+                    ? 'bg-white text-amber-950 border-amber-300 hover:bg-amber-50'
+                    : 'bg-sand-950 text-amber-300 border-sand-700 hover:bg-sand-900'
+                }`}
+              >
+                {item.featuredBadgeTheme === 'LIGHT' ? '☀️ Clara' : '🌙 Oscura'}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Card Body */}

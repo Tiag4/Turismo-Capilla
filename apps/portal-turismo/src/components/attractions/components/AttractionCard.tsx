@@ -59,8 +59,17 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
         <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between gap-2 pointer-events-none">
           <div>
             {item.isFeatured && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sand-950/85 text-amber-300 backdrop-blur-xs shadow-xs">
-                ★ Destacado
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-wide backdrop-blur-md shadow-md border transition-all ${
+                  item.featuredBadgeTheme === 'LIGHT'
+                    ? 'bg-white/95 text-amber-950 border-amber-300 shadow-sand-900/15'
+                    : 'bg-sand-950/90 text-amber-300 border-sand-800 shadow-black/35'
+                }`}
+              >
+                <span className={item.featuredBadgeTheme === 'LIGHT' ? 'text-amber-600' : 'text-amber-400'}>
+                  ★
+                </span>
+                <span>Destacado</span>
               </span>
             )}
           </div>

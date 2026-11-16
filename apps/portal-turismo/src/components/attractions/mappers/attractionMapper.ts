@@ -189,6 +189,7 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
     status: apiItem.status || matchedMock?.status || 'OPEN',
     statusNotice: apiItem.statusNotice ?? matchedMock?.statusNotice ?? null,
     isFeatured: typeof apiItem.isFeatured === 'boolean' ? apiItem.isFeatured : Boolean(matchedMock?.isFeatured ?? false),
+    featuredBadgeTheme: (apiItem.featuredBadgeTheme as 'DARK' | 'LIGHT') || 'DARK',
   };
 
   return mappedItem;

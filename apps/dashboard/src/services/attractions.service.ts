@@ -266,6 +266,7 @@ export const attractionsService = {
       highlights: dto.highlights || [],
       recommendedGear: dto.recommendedGear || [],
       safetyWarnings: dto.safetyWarnings || [],
+      featuredBadgeTheme: dto.featuredBadgeTheme || 'DARK',
     };
 
     try {
@@ -276,6 +277,7 @@ export const attractionsService = {
           status: dto.status || 'OPEN',
           statusNotice: dto.statusNotice || null,
           isFeatured: Boolean(dto.isFeatured),
+          featuredBadgeTheme: created.featuredBadgeTheme || dto.featuredBadgeTheme || 'DARK',
         };
         localAttractions = [fullItem, ...localAttractions];
         saveToLocalStorage();
@@ -312,6 +314,7 @@ export const attractionsService = {
       highlights: dto.highlights || [],
       recommendedGear: dto.recommendedGear || [],
       safetyWarnings: dto.safetyWarnings || [],
+      featuredBadgeTheme: dto.featuredBadgeTheme || 'DARK',
       createdAt: new Date().toISOString(),
     };
 
@@ -367,6 +370,7 @@ export const attractionsService = {
           status: dto.status !== undefined ? dto.status : updated.status || 'OPEN',
           statusNotice: dto.statusNotice !== undefined ? dto.statusNotice : updated.statusNotice,
           isFeatured: dto.isFeatured !== undefined ? dto.isFeatured : updated.isFeatured ?? false,
+          featuredBadgeTheme: dto.featuredBadgeTheme !== undefined ? dto.featuredBadgeTheme : (updated.featuredBadgeTheme || 'DARK'),
         };
         const index = localAttractions.findIndex((a) => a.id === id);
         if (index !== -1) {
@@ -433,5 +437,27 @@ export const attractionsService = {
 
     const existing = localAttractions.find((a) => a.id === id);
     return this.update(id, { isFeatured: !existing?.isFeatured });
+  },
+
+  async toggleFeaturedTheme(id: string): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured-theme`, {});
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured-theme no disponible, usando fallback PUT/local:', err);
+    }
+
+    const existing = localAttractions.find((a) => a.id === id);
+    const nextTheme = existing?.featuredBadgeTheme === 'LIGHT' ? 'DARK' : 'LIGHT';
+    return this.update(id, { featuredBadgeTheme: nextTheme });
   },
 };

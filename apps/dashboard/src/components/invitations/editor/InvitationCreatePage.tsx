@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button.tsx';
 import { Input } from '../../ui/Input.tsx';
 import { Select } from '../../ui/Select.tsx';
 import { invitationsService } from '../../../services/invitations.service.ts';
+import { useToast } from '../../../context/ToastContext.tsx';
 import type { CreateInvitationDto } from '../../../types/invitation.types.ts';
 
 export interface InvitationCreatePageProps {
@@ -15,6 +16,7 @@ export const InvitationCreatePage: React.FC<InvitationCreatePageProps> = ({
   onBack,
   onSuccess,
 }) => {
+  const { showSuccess, showError } = useToast();
   const [email, setEmail] = useState('');
   const [expiresInDays, setExpiresInDays] = useState('7');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,9 +37,12 @@ export const InvitationCreatePage: React.FC<InvitationCreatePageProps> = ({
         expiresInDays: Number(expiresInDays),
       };
       await invitationsService.create(dto);
+      showSuccess(`Invitación generada y correo despachado a ${email.trim()}`);
       onSuccess();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Error al emitir la invitación oficial.');
+      const msg = err instanceof Error ? err.message : 'Error al emitir la invitación oficial.';
+      setError(msg);
+      showError(msg);
     } finally {
       setIsSubmitting(false);
     }

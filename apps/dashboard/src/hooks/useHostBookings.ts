@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { bookingsService } from '../services/bookings.service.ts';
+import { useToast } from '../context/ToastContext.tsx';
 import type { Booking, BookingStatus } from '../types/booking.types.ts';
 
 export function useHostBookings() {
+  const { showSuccess, showError } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -31,16 +33,24 @@ export function useHostBookings() {
     try {
       const updated = await bookingsService.updateStatus(id, status);
       setBookings((prev) => prev.map((b) => (b.id === id ? updated : b)));
+      if (status === 'CONFIRMED') {
+        showSuccess('Reserva confirmada. Se despachó el correo de confirmación al huésped.');
+      } else if (status === 'CANCELLED') {
+        showSuccess('Reserva cancelada. Se notificó al huésped por correo electrónico.');
+      } else if (status === 'COMPLETED') {
+        showSuccess('Reserva marcada como completada.');
+      }
       return updated;
     } catch (err) {
-      setError(
+      const message =
         err instanceof Error
           ? err.message
-          : 'No se pudo actualizar el estado de la reserva.'
-      );
+          : 'No se pudo actualizar el estado de la reserva.';
+      setError(message);
+      showError(message);
       return null;
     }
-  }, []);
+  }, [showSuccess, showError]);
 
   const filteredBookings = useMemo(() => {
     return bookings.filter((b) => {

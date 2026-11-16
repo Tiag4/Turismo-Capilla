@@ -74,7 +74,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
               className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
                 item.isFeatured
                   ? item.featuredBadgeTheme === 'LIGHT'
-                    ? 'bg-white/90 text-amber-600 hover:bg-white border border-amber-300 shadow-xs'
+                    ? 'bg-black/40 text-amber-400 hover:bg-black/60 border border-white/25 backdrop-blur-md shadow-xs'
                     : 'bg-neutral-950 text-amber-300 hover:bg-neutral-900 border border-neutral-800 shadow-neutral-950/20'
                   : 'bg-black/65 text-sand-200 hover:text-white backdrop-blur-xs'
               }`}
@@ -84,7 +84,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
                 className={`w-3.5 h-3.5 ${
                   item.isFeatured
                     ? item.featuredBadgeTheme === 'LIGHT'
-                      ? 'fill-amber-500 text-amber-500'
+                      ? 'fill-amber-400 text-amber-400'
                       : 'fill-amber-300'
                     : ''
                 }`}
@@ -143,7 +143,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-amber-500 border border-amber-300 shadow-xs shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/40 text-amber-400 border border-white/20 shadow-xs shrink-0">
                       ★ Claro
                     </span>
                     <span className="text-xs font-bold leading-tight text-sand-900">Destacado Claro</span>

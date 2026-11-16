@@ -62,7 +62,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({ item }) => {
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md shadow-xs transition-colors ${
                   item.featuredBadgeTheme === 'LIGHT'
-                    ? 'bg-white/80 text-amber-500 border border-white/60 shadow-xs'
+                    ? 'bg-black/25 text-amber-400 border border-white/20 shadow-xs'
                     : 'bg-neutral-950/85 text-amber-300 border border-white/10 shadow-xs'
                 }`}
               >

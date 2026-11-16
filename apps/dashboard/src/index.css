@@ -49,6 +49,7 @@ html, body {
   --color-sand-700: #4f4b43;
   --color-sand-800: #3c3833;
   --color-sand-900: #22201e;
+  --color-sand-950: #121110;
 
   /* Tipografías Oficiales */
   --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;

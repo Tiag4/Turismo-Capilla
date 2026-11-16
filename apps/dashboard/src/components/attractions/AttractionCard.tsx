@@ -75,7 +75,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
                 item.isFeatured
                   ? item.featuredBadgeTheme === 'LIGHT'
                     ? 'bg-amber-400 text-sand-950 hover:bg-amber-300'
-                    : 'bg-sand-950 text-amber-300 hover:bg-sand-900 border border-sand-700'
+                    : 'bg-neutral-950 text-amber-300 hover:bg-neutral-900 border border-neutral-800 shadow-neutral-950/20'
                   : 'bg-black/65 text-sand-200 hover:text-white backdrop-blur-xs'
               }`}
               title="Configurar opciones de destacado"
@@ -119,7 +119,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sand-950 text-amber-300 shadow-xs shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-neutral-950 text-amber-300 shadow-xs shrink-0 border border-neutral-800">
                       ★ Oscuro
                     </span>
                     <span className="text-xs font-bold leading-tight text-sand-900">Destacado Oscuro</span>
@@ -143,7 +143,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-sand-950 shadow-xs shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-neutral-950 shadow-xs shrink-0">
                       ★ Claro
                     </span>
                     <span className="text-xs font-bold leading-tight text-sand-900">Destacado Claro</span>

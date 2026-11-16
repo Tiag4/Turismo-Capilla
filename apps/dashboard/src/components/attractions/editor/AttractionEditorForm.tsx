@@ -697,12 +697,12 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               }}
               className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 isFeatured && featuredBadgeTheme !== 'LIGHT'
-                  ? 'bg-sand-900 text-white border-sand-950 ring-2 ring-emerald-600/30 shadow-xs'
+                  ? 'bg-neutral-950 text-white border-neutral-900 ring-2 ring-emerald-600/30 shadow-xs'
                   : 'bg-white border-sand-200 hover:border-sand-300'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sand-950 text-amber-300 shadow-xs">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-950 text-amber-300 shadow-xs border border-neutral-800">
                   ★ Oscuro
                 </span>
                 {isFeatured && featuredBadgeTheme !== 'LIGHT' && (
@@ -734,7 +734,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-sand-950 shadow-xs">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-neutral-950 shadow-xs">
                   ★ Claro
                 </span>
                 {isFeatured && featuredBadgeTheme === 'LIGHT' && (

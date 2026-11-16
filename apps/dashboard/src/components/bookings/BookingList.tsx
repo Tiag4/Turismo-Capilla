@@ -153,10 +153,11 @@ export const BookingList: React.FC = () => {
       <ConfirmDialog
         isOpen={Boolean(pendingStatusChange)}
         onClose={() => setPendingStatusChange(null)}
-        onConfirm={() => {
+        onConfirm={async () => {
           if (pendingStatusChange) {
-            updateBookingStatus(pendingStatusChange.booking.id, pendingStatusChange.status);
+            const target = pendingStatusChange;
             setPendingStatusChange(null);
+            await updateBookingStatus(target.booking.id, target.status);
           }
         }}
         variant={pendingStatusChange?.status === 'CONFIRMED' ? 'emerald' : 'danger'}

@@ -16,11 +16,19 @@ export interface Booking {
   guestOrigin?: string | null;
   notes?: string | null;
   accommodationId: string;
+  accommodationName?: string;
   accommodation?: {
     id: string;
     name: string;
     locality?: string;
   };
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number;
+  remainingBalance?: number;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
   createdAt: string;
   updatedAt?: string;
 }

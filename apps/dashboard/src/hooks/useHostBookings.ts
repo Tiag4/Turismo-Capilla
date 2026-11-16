@@ -3,12 +3,27 @@ import { bookingsService } from '../services/bookings.service.ts';
 import { useToast } from '../context/ToastContext.tsx';
 import type { Booking, BookingStatus } from '../types/booking.types.ts';
 
+function normalizeBooking(dto: any): Booking {
+  return {
+    ...dto,
+    totalAmount: Number(dto.totalAmount ?? 0),
+    pricePerNight: Number(dto.pricePerNight ?? 0),
+    accommodationName: dto.accommodationName || dto.accommodation?.name || 'Alojamiento',
+    accommodation: {
+      id: dto.accommodationId || dto.accommodation?.id || '',
+      name: dto.accommodationName || dto.accommodation?.name || 'Alojamiento',
+      locality: dto.locality || dto.accommodation?.locality || 'Capilla del Monte',
+    },
+  };
+}
+
 export function useHostBookings() {
   const { showSuccess, showError } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchBookings = useCallback(async () => {
@@ -16,7 +31,8 @@ export function useHostBookings() {
     setError(null);
     try {
       const data = await bookingsService.getMyBookings();
-      setBookings(data);
+      const normalized = (Array.isArray(data) ? data : []).map(normalizeBooking);
+      setBookings(normalized);
     } catch (err: any) {
       setError(err.message || 'Error al cargar las reservas');
     } finally {
@@ -28,13 +44,15 @@ export function useHostBookings() {
     fetchBookings();
   }, [fetchBookings]);
 
-  const updateBookingStatus = useCallback(async (id: string, status: BookingStatus) => {
+  const updateBookingStatus = useCallback(async (id: string, status: BookingStatus): Promise<Booking | null> => {
     setError(null);
+    setIsUpdating(true);
     try {
-      const updated = await bookingsService.updateStatus(id, status);
+      const rawUpdated = await bookingsService.updateStatus(id, status);
+      const updated = normalizeBooking(rawUpdated);
       setBookings((prev) => prev.map((b) => (b.id === id ? updated : b)));
       if (status === 'CONFIRMED') {
-        showSuccess('Reserva confirmada. Se despachó el correo de confirmación al huésped.');
+        showSuccess('Reserva confirmada con éxito. Se despachó el correo de confirmación al huésped.');
       } else if (status === 'CANCELLED') {
         showSuccess('Reserva cancelada. Se notificó al huésped por correo electrónico.');
       } else if (status === 'COMPLETED') {
@@ -49,6 +67,8 @@ export function useHostBookings() {
       setError(message);
       showError(message);
       return null;
+    } finally {
+      setIsUpdating(false);
     }
   }, [showSuccess, showError]);
 
@@ -61,7 +81,7 @@ export function useHostBookings() {
         b.bookingCode.toLowerCase().includes(q) ||
         b.guestName.toLowerCase().includes(q) ||
         b.guestEmail.toLowerCase().includes(q) ||
-        (b.accommodation?.name || '').toLowerCase().includes(q);
+        (b.accommodationName || b.accommodation?.name || '').toLowerCase().includes(q);
       return matchesStatus && matchesSearch;
     });
   }, [bookings, filterStatus, searchQuery]);
@@ -86,6 +106,7 @@ export function useHostBookings() {
     searchQuery,
     setSearchQuery,
     isLoading,
+    isUpdating,
     error,
     refresh: fetchBookings,
     updateBookingStatus,

@@ -108,6 +108,12 @@ export interface BookingPayload {
   guestPhone: string;
   guestOrigin?: string;
   notes?: string;
+  items?: Array<{
+    roomTypeId: string;
+    ratePlanId?: string;
+    quantity: number;
+    guests: number;
+  }>;
 }
 
 export interface BookingResult {

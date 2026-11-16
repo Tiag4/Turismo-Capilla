@@ -138,6 +138,27 @@ export function useBookingWizard(data: AccommodationDetailData) {
     let finalCode = '';
 
     try {
+      // Parse multi-unit room selection if specified
+      let items: Array<{ roomTypeId: string; quantity: number; guests: number }> | undefined = undefined;
+      if (initialParams.roomSelection) {
+        const parsed = initialParams.roomSelection
+          .split(',')
+          .map((entry) => {
+            const [roomTypeId, quantityStr] = entry.split(':');
+            const quantity = Math.max(1, parseInt(quantityStr, 10) || 1);
+            if (!roomTypeId) return null;
+            return {
+              roomTypeId,
+              quantity,
+              guests: initialParams.adults + initialParams.children,
+            };
+          })
+          .filter(Boolean) as Array<{ roomTypeId: string; quantity: number; guests: number }>;
+        if (parsed.length > 0) {
+          items = parsed;
+        }
+      }
+
       const payload = {
         accommodationId: data.id,
         checkIn: initialParams.checkIn,
@@ -148,6 +169,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
         guestPhone: form.phone,
         guestOrigin: form.country,
         notes: form.specialRequests,
+        ...(items ? { items } : {}),
       };
       const apiResult = await api.createBooking(payload);
       if (apiResult?.bookingCode) {

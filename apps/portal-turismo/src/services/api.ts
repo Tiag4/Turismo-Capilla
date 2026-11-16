@@ -80,6 +80,7 @@ export interface Accommodation {
   amenities: string[];
   isActive: boolean;
   hasBreakfast?: boolean;
+  isFeatured?: boolean;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string | null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, MapPin, Edit3, Power, Camera, ShieldCheck, Coffee } from 'lucide-react';
+import { Users, MapPin, Edit3, Power, Camera, ShieldCheck, Coffee, Star } from 'lucide-react';
 import type { Accommodation } from '../../types/accommodation.types.ts';
 import { Button } from '../ui/Button.tsx';
 import { ComplianceStatusBadge } from './ComplianceStatusBadge.tsx';
@@ -8,6 +8,7 @@ export interface AccommodationCardProps {
   accommodation: Accommodation;
   onEdit: (accommodation: Accommodation) => void;
   onToggleActive: (accommodation: Accommodation) => void;
+  onToggleFeatured?: (accommodation: Accommodation) => void;
   isAdmin?: boolean;
   onAudit?: (accommodation: Accommodation) => void;
 }
@@ -24,6 +25,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
   accommodation,
   onEdit,
   onToggleActive,
+  onToggleFeatured,
   isAdmin = false,
   onAudit,
 }) => {
@@ -53,6 +55,12 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
             <span className="bg-[#1C1A18]/90 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg uppercase tracking-wider border border-white/10 shadow-xs">
               {TYPE_LABELS[accommodation.type] || 'Alojamiento'}
             </span>
+            {accommodation.isFeatured && (
+              <span className="bg-amber-500 text-sand-950 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-xs border border-amber-300">
+                <Star className="w-3 h-3 fill-current text-sand-950" />
+                <span>Destacado</span>
+              </span>
+            )}
             {hasBreakfast && (
               <span className="bg-amber-600 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-xs">
                 <Coffee className="w-3 h-3 text-white" />
@@ -117,15 +125,40 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
       </div>
 
       <div className="p-3 sm:px-5 sm:py-3 bg-[var(--color-sand-50)] border-t border-[var(--color-sand-200)] flex items-center justify-between gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onToggleActive(accommodation)}
-          className="text-xs"
-        >
-          <Power className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
-          <span>{accommodation.isActive ? 'Pausar' : 'Activar'}</span>
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleActive(accommodation)}
+            className="text-xs"
+          >
+            <Power className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
+            <span>{accommodation.isActive ? 'Pausar' : 'Activar'}</span>
+          </Button>
+
+          {isAdmin && onToggleFeatured && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onToggleFeatured(accommodation)}
+              className={`text-xs ${
+                accommodation.isFeatured
+                  ? 'text-amber-700 bg-amber-50 border-amber-300 hover:bg-amber-100 font-bold'
+                  : 'text-[var(--color-sand-700)] hover:text-amber-600'
+              }`}
+              title={accommodation.isFeatured ? 'Quitar de destacados en portada' : 'Destacar en portada del portal'}
+            >
+              <Star
+                className={`w-3.5 h-3.5 ${
+                  accommodation.isFeatured ? 'fill-current text-amber-500' : 'text-stone-400'
+                }`}
+              />
+              <span className="hidden sm:inline">
+                {accommodation.isFeatured ? 'Destacado' : 'Destacar'}
+              </span>
+            </Button>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           {isAdmin && onAudit && (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useHostAccommodations } from '../../../hooks/useHostAccommodations.ts';
+import { useAuth } from '../../../hooks/useAuth.ts';
 import { accommodationsService } from '../../../services/accommodations.service.ts';
 import { mediaService } from '../../../services/media.service.ts';
 import type {
@@ -23,6 +24,8 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
   onBack,
   onSuccess,
 }) => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const { createAccommodation, updateAccommodation } = useHostAccommodations();
   const [initialData, setInitialData] = useState<Accommodation | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(mode === 'edit');
@@ -171,6 +174,7 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
         </div>
       )}
       <AccommodationEditorForm
+        isAdmin={isAdmin}
         initialData={initialData}
         mode={mode}
         onSubmit={handleSubmit}

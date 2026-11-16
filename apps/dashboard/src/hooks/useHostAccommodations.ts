@@ -36,6 +36,12 @@ export function useHostAccommodations() {
     return updated;
   }, []);
 
+  const toggleFeatured = useCallback(async (id: string) => {
+    const updated = await accommodationsService.toggleFeatured(id);
+    setAccommodations((prev) => prev.map((item) => (item.id === id ? updated : item)));
+    return updated;
+  }, []);
+
   const toggleActive = useCallback(async (id: string) => {
     const updated = await accommodationsService.toggleActive(id);
     setAccommodations((prev) => prev.map((item) => (item.id === id ? updated : item)));
@@ -50,5 +56,6 @@ export function useHostAccommodations() {
     createAccommodation,
     updateAccommodation,
     toggleActive,
+    toggleFeatured,
   };
 }

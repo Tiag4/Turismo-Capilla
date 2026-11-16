@@ -20,6 +20,7 @@ import { PhotoGalleryDropzone } from './PhotoGalleryDropzone.tsx';
 export interface AccommodationEditorFormProps {
   initialData?: Accommodation | null;
   mode: 'create' | 'edit';
+  isAdmin?: boolean;
   onSubmit: (dto: CreateAccommodationDto) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
@@ -28,10 +29,12 @@ export interface AccommodationEditorFormProps {
 export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = ({
   initialData,
   mode,
+  isAdmin = false,
   onSubmit,
   onCancel,
   isLoading,
 }) => {
+  const [isFeatured, setIsFeatured] = useState<boolean>(Boolean(initialData?.isFeatured));
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [type, setType] = useState<AccommodationType>(initialData?.type || 'CABIN');
@@ -162,6 +165,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       bankCbu: bankCbu.trim() || undefined,
       bankAlias: bankAlias.trim() || undefined,
       bankName: bankName.trim() || undefined,
+      isFeatured,
       images,
     });
   };
@@ -214,6 +218,9 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       {/* Main Sections */}
       <div className="flex flex-col gap-6">
         <GeneralInfoSection
+          isAdmin={isAdmin}
+          isFeatured={isFeatured}
+          setIsFeatured={setIsFeatured}
           name={name}
           setName={setName}
           type={type}

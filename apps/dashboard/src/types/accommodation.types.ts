@@ -69,6 +69,7 @@ export interface Accommodation {
   breakfastType?: string;
   amenities: string[];
   isActive: boolean;
+  isFeatured?: boolean;
   downPaymentPercentage?: number;
   bankAccountHolder?: string;
   bankCbu?: string;
@@ -113,4 +114,5 @@ export interface CreateAccommodationDto {
   bankAlias?: string;
   bankName?: string;
   images?: string[] | AccommodationImage[];
+  isFeatured?: boolean;
 }

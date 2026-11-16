@@ -18,6 +18,7 @@ export interface MapPlace {
   address: string;
   verified?: boolean;
   hasBreakfast?: boolean;
+  isFeatured?: boolean;
   amenities?: string[];
   capacity?: string;
   maxGuests?: number;
@@ -50,6 +51,7 @@ export const MOCK_PLACES: MapPlace[] = [
   {
     id: 'acc-1',
     hasBreakfast: false,
+    isFeatured: true,
     type: 'accommodation',
     title: 'Cabañas El Aguaribay',
     subtitle: 'Cabañas de tronco y piedra con gran parque arbolado, piscina y asadores individuales',
@@ -97,6 +99,7 @@ export const MOCK_PLACES: MapPlace[] = [
   {
     id: 'acc-2',
     hasBreakfast: false,
+    isFeatured: true,
     type: 'accommodation',
     title: 'Cabañas Alpa Sierras',
     subtitle: 'Vistas panorámicas directas al Cerro Uritorco con piscina, solárium y amplio parque',

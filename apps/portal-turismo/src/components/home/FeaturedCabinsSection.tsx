@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import { MOCK_PLACES, type MapPlace } from '../../data/mock-places';
 import { api, type Accommodation } from '../../services/api';
 
@@ -34,6 +35,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     address: item.address,
     verified: item.isActive,
     hasBreakfast: item.hasBreakfast ?? item.amenities?.some((a) => a.toLowerCase().includes('desayuno')),
+    isFeatured: Boolean(item.isFeatured),
     amenities: item.amenities ?? [],
     capacity: `Hasta ${item.maxGuests} personas`,
     zone: item.locality || 'Capilla del Monte',
@@ -44,7 +46,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
 
 export const FeaturedCabinsSection: React.FC = () => {
   const [cabins, setCabins] = useState<MapPlace[]>(() =>
-    MOCK_PLACES.filter((p) => p.type === 'accommodation')
+    MOCK_PLACES.filter((p) => p.type === 'accommodation').sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0))
   );
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export const FeaturedCabinsSection: React.FC = () => {
       .getAccommodations()
       .then((data) => {
         if (isMounted && Array.isArray(data) && data.length > 0) {
-          setCabins(data.map(mapApiToPlace));
+          setCabins(data.map(mapApiToPlace).sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0)));
         }
       })
       .catch((err) => {
@@ -100,6 +102,14 @@ export const FeaturedCabinsSection: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                {cabin.isFeatured && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/95 backdrop-blur-xs text-sand-950 text-xs font-black tracking-wide shadow-md border border-amber-300">
+                      <Star className="w-3.5 h-3.5 fill-current text-sand-950" />
+                      <span>Destacado</span>
+                    </span>
+                  </div>
+                )}
                 <div className="absolute bottom-3 left-4 text-white">
                   <span className="text-xs text-sand-200 font-medium block">
                     {cabin.category} · {cabin.zone}

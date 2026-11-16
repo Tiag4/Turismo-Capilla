@@ -650,79 +650,115 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
         <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
           Operatividad y Exhibición
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <Select
             label="Estado Operativo Actual"
             value={status}
             onChange={(val) => setStatus(val as AttractionStatus)}
             options={STATUS_OPTIONS}
           />
-          <div className="flex items-center gap-2.5 pt-6">
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={isFeatured}
-              onClick={() => setIsFeatured(!isFeatured)}
-              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
-                isFeatured
-                  ? 'bg-emerald-700 border-emerald-700 text-white'
-                  : 'border-sand-300 bg-white hover:border-sand-400'
-              }`}
-            >
-              {isFeatured && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-            </button>
-            <label
-              onClick={() => setIsFeatured(!isFeatured)}
-              className="text-xs font-bold text-sand-800 cursor-pointer"
-            >
-              Destacar en Portada del Portal Turístico (★ Destacado)
-            </label>
-          </div>
         </div>
 
-        {isFeatured && (
-          <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 space-y-2.5">
-            <span className="text-xs font-bold text-sand-800 block">
-              Color de la etiqueta de destacado en el portal:
-            </span>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setFeaturedBadgeTheme('DARK')}
-                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                  featuredBadgeTheme === 'DARK'
-                    ? 'bg-sand-950 text-white border-sand-950 ring-2 ring-emerald-600/40 shadow-xs'
-                    : 'bg-white text-sand-700 border-sand-300 hover:border-sand-400'
-                }`}
-              >
-                <span className="w-2.5 h-2.5 rounded-full bg-sand-900 border border-sand-600" />
-                <span>Etiqueta Oscura</span>
-                <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-sand-900 text-amber-300 border border-sand-700 font-extrabold">
-                  ★ Destacado
+        <div className="space-y-3 pt-2">
+          <label className="block text-xs font-bold text-sand-800 uppercase tracking-wider">
+            Exhibición y Estado de Destacado en Portada
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Opción 1: No destacar */}
+            <button
+              type="button"
+              onClick={() => setIsFeatured(false)}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                !isFeatured
+                  ? 'bg-sand-100/90 border-sand-400 ring-2 ring-sand-400/20 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sand-200 text-sand-700">
+                  Estándar
                 </span>
-              </button>
+                {!isFeatured && <Check className="w-4 h-4 text-sand-700 stroke-[3]" />}
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-sand-900">No destacar</span>
+                <span className="block text-[11px] text-sand-500 mt-0.5">
+                  Paseo regular del catálogo sin etiqueta
+                </span>
+              </div>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setFeaturedBadgeTheme('LIGHT')}
-                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                  featuredBadgeTheme === 'LIGHT'
-                    ? 'bg-white text-sand-900 border-sand-400 ring-2 ring-emerald-600/40 shadow-xs'
-                    : 'bg-sand-100 text-sand-700 border-sand-300 hover:border-sand-400'
-                }`}
-              >
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-sand-400" />
-                <span>Etiqueta Clara</span>
-                <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white text-amber-950 border border-amber-300 font-extrabold shadow-xs">
+            {/* Opción 2: Destacado Oscuro */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsFeatured(true);
+                setFeaturedBadgeTheme('DARK');
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                isFeatured && featuredBadgeTheme !== 'LIGHT'
+                  ? 'bg-sand-900 text-white border-sand-950 ring-2 ring-emerald-600/30 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sand-950 text-amber-300 shadow-xs">
                   ★ Destacado
                 </span>
-              </button>
-            </div>
-            <p className="text-[11px] text-sand-500">
-              Usa <strong>Etiqueta Oscura</strong> si la foto de portada es clara o luminosa, o <strong>Etiqueta Clara</strong> si la foto es oscura o de montaña para asegurar que la insignia resalte y no se pierda.
-            </p>
+                {isFeatured && featuredBadgeTheme !== 'LIGHT' && (
+                  <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+                )}
+              </div>
+              <div>
+                <span
+                  className={`block text-xs font-bold ${
+                    isFeatured && featuredBadgeTheme !== 'LIGHT' ? 'text-white' : 'text-sand-900'
+                  }`}
+                >
+                  Destacado Oscuro
+                </span>
+                <span
+                  className={`block text-[11px] mt-0.5 ${
+                    isFeatured && featuredBadgeTheme !== 'LIGHT' ? 'text-sand-300' : 'text-sand-500'
+                  }`}
+                >
+                  Etiqueta carbón / Recomendada para fotos claras
+                </span>
+              </div>
+            </button>
+
+            {/* Opción 3: Destacado Claro */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsFeatured(true);
+                setFeaturedBadgeTheme('LIGHT');
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                isFeatured && featuredBadgeTheme === 'LIGHT'
+                  ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-500/20 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-sand-950 shadow-xs">
+                  ★ Destacado
+                </span>
+                {isFeatured && featuredBadgeTheme === 'LIGHT' && (
+                  <Check className="w-4 h-4 text-amber-800 stroke-[3]" />
+                )}
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-sand-900">
+                  Destacado Claro
+                </span>
+                <span className="block text-[11px] text-sand-500 mt-0.5">
+                  Etiqueta dorada cálida / Recomendada para fotos oscuras
+                </span>
+              </div>
+            </button>
           </div>
-        )}
+        </div>
 
         {status !== 'OPEN' && (
           <Input

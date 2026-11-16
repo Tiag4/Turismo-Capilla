@@ -62,23 +62,17 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
     loadAttractions();
   }, [loadAttractions]);
 
-  // Handle Quick Toggle Featured
-  const handleToggleFeatured = async (attraction: Attraction) => {
+  // Handle Setting Featured State (Claro, Oscuro, No destacar)
+  const handleSetFeatured = async (
+    attraction: Attraction,
+    isFeatured: boolean,
+    theme: 'DARK' | 'LIGHT' = 'DARK',
+  ) => {
     try {
-      await attractionsService.toggleFeatured(attraction.id);
+      await attractionsService.setFeatured(attraction.id, isFeatured, theme);
       await loadAttractions();
     } catch (err) {
-      console.error('Error al alternar destacado:', err);
-    }
-  };
-
-  // Handle Quick Toggle Featured Theme
-  const handleToggleBadgeTheme = async (attraction: Attraction) => {
-    try {
-      await attractionsService.toggleFeaturedTheme(attraction.id);
-      await loadAttractions();
-    } catch (err) {
-      console.error('Error al cambiar contraste de etiqueta:', err);
+      console.error('Error al actualizar estado de destacado:', err);
     }
   };
 
@@ -311,8 +305,7 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
             <AttractionCard
               key={item.id}
               item={item}
-              onToggleFeatured={handleToggleFeatured}
-              onToggleBadgeTheme={handleToggleBadgeTheme}
+              onSetFeatured={handleSetFeatured}
               onQuickStatusChange={handleQuickStatusChange}
               onEdit={(att) => onNavigateEdit?.(att.id)}
               onDelete={(att) => setDeletingAttraction(att)}

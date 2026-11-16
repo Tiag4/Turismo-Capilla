@@ -418,6 +418,29 @@ export const attractionsService = {
     return this.update(id, { status, statusNotice });
   },
 
+  async setFeatured(id: string, isFeatured: boolean, theme: 'DARK' | 'LIGHT' = 'DARK'): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured`, {
+        isFeatured,
+        featuredBadgeTheme: theme,
+      });
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured failed, falling back to update:', err);
+    }
+
+    return this.update(id, { isFeatured, featuredBadgeTheme: theme });
+  },
+
   async toggleFeatured(id: string): Promise<Attraction> {
     try {
       const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured`, {});

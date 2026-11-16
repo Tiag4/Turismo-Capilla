@@ -22,7 +22,7 @@ export const BookingRow: React.FC<BookingRowProps> = ({
           {booking.bookingCode}
         </span>
         <span className="text-[11px] text-[var(--color-sand-500)] block">
-          {booking.accommodation?.name || 'Alojamiento'}
+          {booking.accommodationName || booking.accommodation?.name || 'Alojamiento'}
         </span>
       </td>
       <td className="py-3.5 px-3 sm:px-4 text-xs sm:text-sm">

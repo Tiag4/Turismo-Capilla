@@ -12,7 +12,7 @@ export interface BookingDetailModalProps {
   booking: Booking | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateStatus: (id: string, status: BookingStatus) => void;
+  onUpdateStatus: (id: string, status: BookingStatus) => Promise<Booking | null> | void;
 }
 
 export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
@@ -23,6 +23,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
 }) => {
   const [isVoucherOpen, setIsVoucherOpen] = useState(false);
   const [confirmStatus, setConfirmStatus] = useState<BookingStatus | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Preserve booking data while closing to avoid abrupt unmount during exit transition
   const [cachedBooking, setCachedBooking] = useState<Booking | null>(booking);
@@ -36,11 +37,18 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   const activeBooking = booking || cachedBooking;
   if (!activeBooking) return null;
 
-  const handleConfirmAction = () => {
-    if (!confirmStatus) return;
-    onUpdateStatus(activeBooking.id, confirmStatus);
-    setConfirmStatus(null);
-    onClose();
+  const handleConfirmAction = async () => {
+    if (!confirmStatus || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await onUpdateStatus(activeBooking.id, confirmStatus);
+      if (result) {
+        setConfirmStatus(null);
+        onClose();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -49,7 +57,7 @@ export const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         title={`Reserva ${activeBooking.bookingCode}`}
-        subtitle={`Establecimiento: ${activeBooking.accommodation?.name || 'Alojamiento'}`}
+        subtitle={`Establecimiento: ${activeBooking.accommodationName || activeBooking.accommodation?.name || 'Alojamiento'}`}
         maxWidth="lg"
       >
         <div className="flex flex-col gap-6">

@@ -111,11 +111,12 @@ export const culturalEventsService = {
   fetchActiveEvents: async (): Promise<CulturalEvent[]> => {
     try {
       const res = await fetch(`${API_BASE_URL}/events?activeOnly=true`, {
+        cache: 'no-store',
         signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           } catch {

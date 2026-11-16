@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { culturalEventsService } from '../../services/culturalEvents.service';
 import type { CulturalEvent, CreateCulturalEventDTO } from '../../types/culturalEvent.types';
+import { useToast } from '../../context/ToastContext.tsx';
 import { EventEditorForm } from './EventEditorForm';
 
 export interface EventEditorPageProps {
@@ -16,6 +17,7 @@ export const EventEditorPage: React.FC<EventEditorPageProps> = ({
   onBack,
   onSuccess,
 }) => {
+  const { showSuccess, showError } = useToast();
   const [initialData, setInitialData] = useState<CulturalEvent | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(mode === 'edit');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -52,15 +54,23 @@ export const EventEditorPage: React.FC<EventEditorPageProps> = ({
 
   const handleSubmit = async (dto: CreateCulturalEventDTO) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       if (mode === 'edit' && eventId) {
         await culturalEventsService.updateEvent(eventId, dto);
       } else {
         await culturalEventsService.createEvent(dto);
       }
+      showSuccess(
+        dto.isActive
+          ? 'Evento cultural guardado y publicado exitosamente en el portal'
+          : 'Evento cultural guardado como borrador (pausado)'
+      );
       onSuccess();
     } catch (err: any) {
-      setError(err?.message || 'Error al persistir el evento en la agenda.');
+      const message = err?.message || 'No se pudo guardar el evento. Intentá nuevamente.';
+      setError(message);
+      showError(message);
     } finally {
       setIsSubmitting(false);
     }

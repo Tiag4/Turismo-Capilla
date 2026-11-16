@@ -303,6 +303,12 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
                     heroConfig: { ...prev.heroConfig, subtitle },
                   }))
                 }
+                onChangeHeroImageUrl={(imageUrl) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    heroConfig: { ...prev.heroConfig, imageUrl },
+                  }))
+                }
                 onChangeCtaTitle={(title) =>
                   setConfig((prev) => ({
                     ...prev,

@@ -248,6 +248,9 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
           </div>
           <button
             type="button"
+            role="switch"
+            aria-checked={hasBreakfast}
+            aria-label="Servicio de Desayuno Incluido"
             onClick={() => setHasBreakfast(!hasBreakfast)}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border select-none ${
               hasBreakfast

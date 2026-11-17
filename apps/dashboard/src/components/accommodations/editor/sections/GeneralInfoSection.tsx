@@ -80,10 +80,11 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
+        <label htmlFor="accommodation-description" className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
           Descripción del establecimiento
         </label>
         <textarea
+          id="accommodation-description"
           rows={5}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -139,6 +140,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
           type="button"
           role="switch"
           aria-checked={isActive}
+          aria-label="Disponibilidad y Publicación en el Portal"
           onClick={() => setIsActive?.(!isActive)}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)] focus:ring-offset-2 ${
             isActive ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-sand-300)]'

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
+import { CustomDatePicker } from '../../../ui/CustomDatePicker.tsx';
 import { Button } from '../../../ui/Button.tsx';
 import { ConfirmDialog } from '../../../ui/ConfirmDialog.tsx';
 import { Tooltip, InfoTooltip } from '../../../ui/Tooltip.tsx';
@@ -277,11 +278,13 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
             </span>
           </div>
 
-          <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1.5 pt-1">
+          <div role="tablist" aria-label="Filtrar reservas y bloqueos por habitación" className="flex items-stretch gap-2.5 overflow-x-auto pb-1.5 pt-1">
             {/* Card "Todo el Complejo" */}
             <Tooltip content="Ver todas las reservas y bloqueos de todo el establecimiento" position="top">
               <button
                 type="button"
+                role="tab"
+                aria-selected={selectedRoomTypeId === ''}
                 onClick={() => {
                   setSelectedRoomTypeId('');
                   setUnitsBlocked(1);
@@ -347,6 +350,8 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                 >
                   <button
                     type="button"
+                    role="tab"
+                    aria-selected={isSelected}
                     onClick={() => {
                       setSelectedRoomTypeId(rt.id);
                       setUnitsBlocked(1);
@@ -464,21 +469,24 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Input
-              type="date"
+            <CustomDatePicker
               label="Fecha de inicio"
               tooltip="Primer día en que el alojamiento o habitación queda bloqueado."
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
+              onChange={(val) => {
+                setStartDate(val);
+                if (endDate && val && endDate < val) {
+                  setEndDate('');
+                }
+              }}
+              minDate={new Date().toISOString().substring(0, 10)}
             />
-            <Input
-              type="date"
+            <CustomDatePicker
               label="Fecha de fin"
               tooltip="Último día del bloqueo. La disponibilidad se restablece al día siguiente."
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
+              onChange={(val) => setEndDate(val)}
+              minDate={startDate || new Date().toISOString().substring(0, 10)}
             />
             <div>
               <CustomSelect
@@ -551,7 +559,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
 
           {/* Barra de Filtro de Fechas */}
           <div className="p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] flex flex-col gap-2.5">
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div role="group" aria-label="Filtro rápido de fechas" className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-500)] mr-1 flex items-center gap-1">
                 <Filter className="w-3 h-3" />
                 <span>Rango:</span>
@@ -566,6 +574,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                   key={preset.id}
                   type="button"
                   onClick={() => handlePresetClick(preset.id as any)}
+                  aria-pressed={dateFilterPreset === preset.id}
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
                     dateFilterPreset === preset.id
                       ? 'bg-[var(--color-sand-900)] text-white shadow-xs'
@@ -577,35 +586,28 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--color-sand-200)]/60">
-              <div>
-                <label className="text-[10px] font-semibold text-[var(--color-sand-600)] block mb-1">
-                  Desde fecha
-                </label>
-                <input
-                  type="date"
-                  value={dateFilterFrom}
-                  onChange={(e) => {
-                    setDateFilterFrom(e.target.value);
-                    setDateFilterPreset('CUSTOM');
-                  }}
-                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-[var(--color-sand-200)] rounded-lg text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)]"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-semibold text-[var(--color-sand-600)] block mb-1">
-                  Hasta fecha
-                </label>
-                <input
-                  type="date"
-                  value={dateFilterTo}
-                  onChange={(e) => {
-                    setDateFilterTo(e.target.value);
-                    setDateFilterPreset('CUSTOM');
-                  }}
-                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-[var(--color-sand-200)] rounded-lg text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)]"
-                />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[var(--color-sand-200)]/60">
+              <CustomDatePicker
+                label="Desde fecha"
+                value={dateFilterFrom}
+                onChange={(val) => {
+                  setDateFilterFrom(val);
+                  setDateFilterPreset('CUSTOM');
+                }}
+                clearable
+                placeholder="dd/mm/aaaa"
+              />
+              <CustomDatePicker
+                label="Hasta fecha"
+                value={dateFilterTo}
+                onChange={(val) => {
+                  setDateFilterTo(val);
+                  setDateFilterPreset('CUSTOM');
+                }}
+                minDate={dateFilterFrom}
+                clearable
+                placeholder="dd/mm/aaaa"
+              />
             </div>
           </div>
 

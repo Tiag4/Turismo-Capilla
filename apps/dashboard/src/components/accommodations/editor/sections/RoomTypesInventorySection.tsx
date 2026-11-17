@@ -56,9 +56,11 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
         </div>
 
         {/* Selector de Modalidad */}
-        <div className="flex items-center gap-2 bg-[var(--color-sand-100)] p-1.5 rounded-xl">
+        <div role="radiogroup" aria-label="Modalidad de inventario" className="flex items-center gap-2 bg-[var(--color-sand-100)] p-1.5 rounded-xl">
           <button
             type="button"
+            role="radio"
+            aria-checked={inventoryMode === 'SINGLE_UNIT'}
             onClick={() => setInventoryMode('SINGLE_UNIT')}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               inventoryMode === 'SINGLE_UNIT'
@@ -66,12 +68,14 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 : 'text-[var(--color-sand-700)] hover:text-[var(--color-sand-900)]'
             }`}
           >
-            <Home className="w-3.5 h-3.5" />
+            <Home className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Unidad Única</span>
           </button>
 
           <button
             type="button"
+            role="radio"
+            aria-checked={inventoryMode === 'MULTI_ROOM'}
             onClick={() => setInventoryMode('MULTI_ROOM')}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               inventoryMode === 'MULTI_ROOM'
@@ -79,7 +83,7 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 : 'text-[var(--color-sand-700)] hover:text-[var(--color-sand-900)]'
             }`}
           >
-            <Building2 className="w-3.5 h-3.5" />
+            <Building2 className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Multi-Habitación / Complejo</span>
           </button>
         </div>
@@ -126,14 +130,15 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
               >
                 <div className="md:col-span-3">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                    <label htmlFor={`room-${room.id}-name`} className="block text-[11px] font-bold text-[var(--color-sand-700)]">
                       Categoría / Unidad
                     </label>
                     <InfoTooltip content="Nombre representativo de la tipología (ej. Doble Standard, Superior)." />
                   </div>
                   <div className="relative">
-                    <BedDouble className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <BedDouble className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
+                      id={`room-${room.id}-name`}
                       type="text"
                       value={room.name}
                       onChange={(e) => handleUpdateRoom(room.id, 'name', e.target.value)}
@@ -144,12 +149,13 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
 
                 <div className="md:col-span-3">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                    <label htmlFor={`room-${room.id}-beds`} className="block text-[11px] font-bold text-[var(--color-sand-700)]">
                       Camas
                     </label>
                     <InfoTooltip content="Configuración y tipos de sommiers (ej. 1 King + 1 Individual)." />
                   </div>
                   <input
+                    id={`room-${room.id}-beds`}
                     type="text"
                     value={room.bedsSummary}
                     onChange={(e) => handleUpdateRoom(room.id, 'bedsSummary', e.target.value)}
@@ -160,14 +166,15 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
 
                 <div className="md:col-span-2">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                    <label htmlFor={`room-${room.id}-price`} className="block text-[11px] font-bold text-[var(--color-sand-700)]">
                       Tarifa / Noche ($)
                     </label>
                     <InfoTooltip content="Precio por noche para esta tipología de habitación." />
                   </div>
                   <div className="relative">
-                    <DollarSign className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <DollarSign className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
+                      id={`room-${room.id}-price`}
                       type="number"
                       min={1000}
                       step={1000}
@@ -182,14 +189,15 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
 
                 <div className="md:col-span-1">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                    <label htmlFor={`room-${room.id}-guests`} className="block text-[11px] font-bold text-[var(--color-sand-700)]">
                       Plazas
                     </label>
                     <InfoTooltip content="Máximo de personas permitidas en esta habitación." />
                   </div>
                   <div className="relative">
-                    <Users className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Users className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
+                      id={`room-${room.id}-guests`}
                       type="number"
                       min={1}
                       max={12}
@@ -204,14 +212,15 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
 
                 <div className="md:col-span-2">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                    <label htmlFor={`room-${room.id}-stock`} className="block text-[11px] font-bold text-[var(--color-sand-700)]">
                       Habitaciones
                     </label>
                     <InfoTooltip content="Cantidad total de habitaciones físicas disponibles de esta misma categoría." />
                   </div>
                   <div className="relative">
-                    <Layers className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Layers className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
+                      id={`room-${room.id}-stock`}
                       type="number"
                       min={1}
                       max={50}
@@ -229,7 +238,7 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                     type="button"
                     onClick={() => handleRemoveRoomType(room.id)}
                     disabled={roomTypes.length <= 1}
-                    aria-label="Eliminar categoría de habitación"
+                    aria-label={`Eliminar categoría ${room.name}`}
                     className="p-2 rounded-xl text-rose-700 hover:bg-rose-100 disabled:opacity-30 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />

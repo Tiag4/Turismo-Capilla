@@ -3,6 +3,7 @@ import { useBookingInquiry } from './hooks/useBookingInquiry';
 import { BookingInquirySearchForm } from './components/BookingInquirySearchForm';
 import { BookingVoucherCard } from './components/BookingVoucherCard';
 import { BookingInquiryEmptyState } from './components/BookingInquiryEmptyState';
+import { BookingVoucherSkeleton } from './components/BookingVoucherSkeleton';
 
 export const BookingInquiryContainer: React.FC = () => {
   const {
@@ -16,7 +17,6 @@ export const BookingInquiryContainer: React.FC = () => {
     voucher,
     isLoading,
     error,
-    hasSearched,
   } = useBookingInquiry();
 
   return (
@@ -35,11 +35,13 @@ export const BookingInquiryContainer: React.FC = () => {
         />
       </div>
 
-      {/* Visualización del Voucher Oficial */}
-      {voucher ? (
+      {/* Visualización del Voucher Oficial o Estado */}
+      {isLoading ? (
+        <BookingVoucherSkeleton />
+      ) : voucher ? (
         <BookingVoucherCard voucher={voucher} onPrint={printVoucher} />
       ) : (
-        !hasSearched && <BookingInquiryEmptyState />
+        <BookingInquiryEmptyState />
       )}
     </div>
   );

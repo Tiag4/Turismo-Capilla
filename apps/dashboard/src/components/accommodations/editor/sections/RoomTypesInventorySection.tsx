@@ -1,5 +1,6 @@
 import React from 'react';
 import { Building2, Home, Plus, Trash2, BedDouble, Users, DollarSign, Layers } from 'lucide-react';
+import { InfoTooltip } from '../../../ui/Tooltip.tsx';
 import type { InventoryMode, RoomTypeConfig } from '../../../../types/accommodation.types.ts';
 
 interface RoomTypesInventorySectionProps {
@@ -101,9 +102,12 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[var(--color-sand-700)]">
-              Categorías de habitación y cupos (Allotment) ({roomTypes.length})
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-[var(--color-sand-700)]">
+                Tipos de Habitación y Capacidad ({roomTypes.length})
+              </span>
+              <InfoTooltip content="Configurá las diferentes tipologías de habitación disponibles (ej. Standard, Suite) y cuántas unidades físicas tiene cada una." />
+            </div>
             <button
               type="button"
               onClick={handleAddRoomType}
@@ -120,10 +124,13 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 key={room.id}
                 className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] grid grid-cols-1 md:grid-cols-12 gap-3 items-end"
               >
-                <div className="md:col-span-4">
-                  <label className="block text-[11px] font-bold text-[var(--color-sand-700)] mb-1">
-                    Nombre de Categoría / Unidad
-                  </label>
+                <div className="md:col-span-3">
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                      Categoría / Unidad
+                    </label>
+                    <InfoTooltip content="Nombre representativo de la tipología (ej. Doble Standard, Superior)." />
+                  </div>
                   <div className="relative">
                     <BedDouble className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
@@ -136,9 +143,12 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 </div>
 
                 <div className="md:col-span-3">
-                  <label className="block text-[11px] font-bold text-[var(--color-sand-700)] mb-1">
-                    Configuración de Camas
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                      Camas
+                    </label>
+                    <InfoTooltip content="Configuración y tipos de sommiers (ej. 1 King + 1 Individual)." />
+                  </div>
                   <input
                     type="text"
                     value={room.bedsSummary}
@@ -149,9 +159,12 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-[11px] font-bold text-[var(--color-sand-700)] mb-1">
-                    Tarifa / Noche ($)
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                      Tarifa / Noche ($)
+                    </label>
+                    <InfoTooltip content="Precio por noche para esta tipología de habitación." />
+                  </div>
                   <div className="relative">
                     <DollarSign className="w-3.5 h-3.5 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input
@@ -168,9 +181,12 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                 </div>
 
                 <div className="md:col-span-1">
-                  <label className="block text-[11px] font-bold text-[var(--color-sand-700)] mb-1">
-                    Capacidad
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                      Plazas
+                    </label>
+                    <InfoTooltip content="Máximo de personas permitidas en esta habitación." />
+                  </div>
                   <div className="relative">
                     <Users className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input
@@ -186,10 +202,13 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
                   </div>
                 </div>
 
-                <div className="md:col-span-1">
-                  <label className="block text-[11px] font-bold text-[var(--color-sand-700)] mb-1">
-                    Cupo (Stock)
-                  </label>
+                <div className="md:col-span-2">
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-[11px] font-bold text-[var(--color-sand-700)]">
+                      Habitaciones
+                    </label>
+                    <InfoTooltip content="Cantidad total de habitaciones físicas disponibles de esta misma categoría." />
+                  </div>
                   <div className="relative">
                     <Layers className="w-3 h-3 text-[var(--color-sand-500)] absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input

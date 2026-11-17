@@ -15,6 +15,7 @@ import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
 import { Button } from '../../../ui/Button.tsx';
 import { ConfirmDialog } from '../../../ui/ConfirmDialog.tsx';
+import { Tooltip, InfoTooltip } from '../../../ui/Tooltip.tsx';
 import { useHostBookings } from '../../../../hooks/useHostBookings.ts';
 import { useToast } from '../../../../context/ToastContext.tsx';
 import { dateBlocksService } from '../../../../services/date-blocks.service.ts';
@@ -140,9 +141,15 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
     return cabinBookings.filter((b) => {
       // 1. Room type filter
       if (selectedRoomTypeId) {
-        const hasRoom = b.items && b.items.length > 0
-          ? b.items.some((i) => i.roomTypeId === selectedRoomTypeId)
-          : true;
+        const hasRoom = Boolean(
+          b.items &&
+          b.items.length > 0 &&
+          b.items.some(
+            (i) =>
+              i.roomTypeId === selectedRoomTypeId ||
+              (selectedRoom && i.roomTypeName && i.roomTypeName.toLowerCase().trim() === selectedRoom.name.toLowerCase().trim())
+          )
+        );
         if (!hasRoom) return false;
       }
 
@@ -152,7 +159,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
 
       return true;
     });
-  }, [cabinBookings, selectedRoomTypeId, dateFilterFrom, dateFilterTo]);
+  }, [cabinBookings, selectedRoomTypeId, selectedRoom, dateFilterFrom, dateFilterTo]);
 
   // Filtered date blocks based on room selection
   const filteredBlocks = useMemo(() => {
@@ -224,9 +231,12 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
         <div className="flex items-center gap-2.5">
           <CalendarRange className="w-5 h-5 text-[var(--color-terracotta-500)] shrink-0" />
           <div>
-            <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
-              Disponibilidad de Fechas, Ocupación y Bloqueos
-            </h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-base font-bold text-[var(--color-sand-900)] font-['Outfit']">
+                Disponibilidad de Fechas, Ocupación y Bloqueos
+              </h3>
+              <InfoTooltip content="Consultá las fechas con reservas vigentes y administrá bloqueos manuales por mantenimiento, remodelación o uso propio." />
+            </div>
             <p className="text-xs text-[var(--color-sand-500)]">
               Consultá las fechas con reservas vigentes y administrá bloqueos manuales para este alojamiento
             </p>
@@ -260,111 +270,125 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-900)]">
                 Filtrar por Habitación e Inventario
               </span>
+              <InfoTooltip content="Hacé clic en una habitación para ver sus reservas específicas o registrar un bloqueo que afecte únicamente a sus unidades disponibles." />
             </div>
             <span className="text-[11px] text-[var(--color-sand-500)]">
-              Hacé clic en una habitación para ver sus reservas específicas o bloquear su cupo individual
+              Hacé clic en una habitación para ver sus reservas específicas o bloquear sus unidades
             </span>
           </div>
 
           <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1.5 pt-1">
             {/* Card "Todo el Complejo" */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedRoomTypeId('');
-                setUnitsBlocked(1);
-              }}
-              className={`shrink-0 w-52 sm:w-60 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
-                selectedRoomTypeId === ''
-                  ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
-                  : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                      selectedRoomTypeId === ''
-                        ? 'bg-[var(--color-terracotta-500)] text-white'
-                        : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
-                    }`}
-                  >
-                    <Building2 className="w-4 h-4" />
+            <Tooltip content="Ver todas las reservas y bloqueos de todo el establecimiento" position="top">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedRoomTypeId('');
+                  setUnitsBlocked(1);
+                }}
+                className={`shrink-0 w-52 sm:w-60 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                  selectedRoomTypeId === ''
+                    ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
+                    : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                        selectedRoomTypeId === ''
+                          ? 'bg-[var(--color-terracotta-500)] text-white'
+                          : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
+                      }`}
+                    >
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs text-[var(--color-sand-900)] block font-['Outfit']">
+                        Todo el Complejo
+                      </span>
+                      <span className="text-[10px] text-[var(--color-sand-500)]">
+                        Todas las habitaciones
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-bold text-xs text-[var(--color-sand-900)] block font-['Outfit']">
-                      Todo el Complejo
-                    </span>
-                    <span className="text-[10px] text-[var(--color-sand-500)]">
-                      Todas las habitaciones
-                    </span>
-                  </div>
+                  {selectedRoomTypeId === '' && (
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
+                  )}
                 </div>
-                {selectedRoomTypeId === '' && (
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
-                )}
-              </div>
 
-              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
-                <span>{cabinBookings.length} {cabinBookings.length === 1 ? 'reserva' : 'reservas'}</span>
-                <span>·</span>
-                <span>{dateBlocks.length} {dateBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
-              </div>
-            </button>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
+                  <span>{cabinBookings.length} {cabinBookings.length === 1 ? 'reserva' : 'reservas'}</span>
+                  <span>·</span>
+                  <span>{dateBlocks.length} {dateBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
+                </div>
+              </button>
+            </Tooltip>
 
             {/* Cards por RoomType */}
             {roomTypes?.map((rt) => {
               const roomBookings = cabinBookings.filter(
-                (b) => b.items && b.items.some((i) => i.roomTypeId === rt.id),
+                (b) =>
+                  b.items &&
+                  b.items.some(
+                    (i) =>
+                      i.roomTypeId === rt.id ||
+                      (i.roomTypeName && i.roomTypeName.toLowerCase().trim() === rt.name.toLowerCase().trim()),
+                  ),
               );
               const roomBlocks = dateBlocks.filter((blk) => blk.roomTypeId === rt.id);
               const isSelected = selectedRoomTypeId === rt.id;
 
               return (
-                <button
-                  type="button"
+                <Tooltip
                   key={rt.id}
-                  onClick={() => {
-                    setSelectedRoomTypeId(rt.id);
-                    setUnitsBlocked(1);
-                  }}
-                  className={`shrink-0 w-56 sm:w-64 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
-                    isSelected
-                      ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
-                      : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
-                  }`}
+                  content={`Ver reservas y bloqueos para ${rt.name} (${rt.totalStock || 1} ${rt.totalStock === 1 ? 'unidad' : 'unidades'})`}
+                  position="top"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                          isSelected
-                            ? 'bg-[var(--color-terracotta-500)] text-white'
-                            : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
-                        }`}
-                      >
-                        <Bed className="w-4 h-4" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedRoomTypeId(rt.id);
+                      setUnitsBlocked(1);
+                    }}
+                    className={`shrink-0 w-56 sm:w-64 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                      isSelected
+                        ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
+                        : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isSelected
+                              ? 'bg-[var(--color-terracotta-500)] text-white'
+                              : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
+                          }`}
+                        >
+                          <Bed className="w-4 h-4" />
+                        </div>
+                        <div className="truncate">
+                          <span className="font-bold text-xs text-[var(--color-sand-900)] block truncate font-['Outfit']">
+                            {rt.name}
+                          </span>
+                          <span className="text-[10px] text-[var(--color-sand-500)] block">
+                            {rt.totalStock || 1} {rt.totalStock === 1 ? 'unidad disponible' : 'unidades disponibles'}
+                          </span>
+                        </div>
                       </div>
-                      <div className="truncate">
-                        <span className="font-bold text-xs text-[var(--color-sand-900)] block truncate font-['Outfit']">
-                          {rt.name}
-                        </span>
-                        <span className="text-[10px] text-[var(--color-sand-500)] block">
-                          Cupo: {rt.totalStock || 1} {rt.totalStock === 1 ? 'unidad' : 'unidades'}
-                        </span>
-                      </div>
+                      {isSelected && (
+                        <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
+                      )}
                     </div>
-                    {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
-                    )}
-                  </div>
 
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
-                    <span>{roomBookings.length} {roomBookings.length === 1 ? 'reserva' : 'reservas'}</span>
-                    <span>·</span>
-                    <span>{roomBlocks.length} {roomBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
-                  </div>
-                </button>
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
+                      <span>{roomBookings.length} {roomBookings.length === 1 ? 'reserva' : 'reservas'}</span>
+                      <span>·</span>
+                      <span>{roomBlocks.length} {roomBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
+                    </div>
+                  </button>
+                </Tooltip>
               );
             })}
           </div>
@@ -400,7 +424,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                         Bloqueando habitación: {selectedRoom.name}
                       </span>
                       <span className="text-[11px] text-[var(--color-sand-500)]">
-                        Cupo total habilitado: {selectedRoom.totalStock || 1} unidades
+                        Unidades totales: {selectedRoom.totalStock || 1} {selectedRoom.totalStock === 1 ? 'habitación' : 'habitaciones'}
                       </span>
                     </div>
                   </>
@@ -428,6 +452,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                     min="1"
                     max={String(selectedRoom.totalStock || 1)}
                     label="Unidades a bloquear"
+                    tooltip="Cantidad de habitaciones de esta categoría que no podrán ser reservadas durante este rango."
                     value={String(unitsBlocked)}
                     onChange={(e) => setUnitsBlocked(Math.max(1, Number(e.target.value) || 1))}
                     required
@@ -442,6 +467,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
             <Input
               type="date"
               label="Fecha de inicio"
+              tooltip="Primer día en que el alojamiento o habitación queda bloqueado."
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               required
@@ -449,6 +475,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
             <Input
               type="date"
               label="Fecha de fin"
+              tooltip="Último día del bloqueo. La disponibilidad se restablece al día siguiente."
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               required
@@ -456,6 +483,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
             <div>
               <CustomSelect
                 label="Motivo del bloqueo"
+                tooltip="Razón por la cual se bloquea el calendario (mantenimiento, uso propio, etc.)."
                 value={reason}
                 onChange={(val) => setReason(val as DateBlockReason)}
                 options={REASON_OPTIONS}
@@ -506,6 +534,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
                 Fechas Solicitadas por Huéspedes ({filteredCabinBookings.length})
               </span>
+              <InfoTooltip content="Reservas efectuadas por turistas en el portal que ocupan fechas en este establecimiento." />
             </div>
 
             {(dateFilterFrom || dateFilterTo || dateFilterPreset !== 'ALL') && (
@@ -649,6 +678,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
                 Fechas Bloqueadas Manualmente ({filteredBlocks.length})
               </span>
+              <InfoTooltip content="Períodos donde inhabilitaste manualmente la recepción de reservas para este alojamiento o habitación." />
             </div>
             {selectedRoom && (
               <span className="text-[10px] font-semibold text-[var(--color-terracotta-600)]">

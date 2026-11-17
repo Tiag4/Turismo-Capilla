@@ -9,10 +9,13 @@ import { useToast } from '../../../../context/ToastContext.tsx';
 import { dateBlocksService } from '../../../../services/date-blocks.service.ts';
 import type { DateBlock, DateBlockReason } from '../../../../types/date-block.types.ts';
 import { DATE_BLOCK_REASON_LABELS } from '../../../../types/date-block.types.ts';
+import type { InventoryMode, RoomTypeConfig } from '../../../../types/accommodation.types.ts';
 
 export interface AccommodationDateAvailabilitySectionProps {
   accommodationId: string;
   accommodationName: string;
+  inventoryMode?: InventoryMode;
+  roomTypes?: RoomTypeConfig[];
 }
 
 const REASON_OPTIONS = Object.entries(DATE_BLOCK_REASON_LABELS).map(([value, label]) => ({
@@ -23,9 +26,15 @@ const REASON_OPTIONS = Object.entries(DATE_BLOCK_REASON_LABELS).map(([value, lab
 export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAvailabilitySectionProps> = ({
   accommodationId,
   accommodationName,
+  inventoryMode,
+  roomTypes,
 }) => {
   const { bookings, isLoading: isLoadingBookings } = useHostBookings();
   const { showSuccess, showError } = useToast();
+
+  const isMultiRoom = inventoryMode === 'MULTI_ROOM' && Boolean(roomTypes && roomTypes.length > 0);
+  const [selectedRoomTypeId, setSelectedRoomTypeId] = useState<string>('');
+  const [unitsBlocked, setUnitsBlocked] = useState<number>(1);
 
   const [dateBlocks, setDateBlocks] = useState<DateBlock[]>([]);
   const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
@@ -88,6 +97,8 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
       await dateBlocksService.create({
         accommodationId,
         accommodationName,
+        roomTypeId: selectedRoomTypeId || undefined,
+        unitsBlocked: selectedRoomTypeId ? unitsBlocked : undefined,
         startDate,
         endDate,
         reason,
@@ -95,6 +106,8 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
       });
       showSuccess(`Fechas bloqueadas con éxito del ${startDate} al ${endDate}.`);
       setNotes('');
+      setSelectedRoomTypeId('');
+      setUnitsBlocked(1);
       setShowBlockForm(false);
       await fetchBlocks();
     } catch (err: unknown) {
@@ -196,6 +209,50 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               />
             </div>
           </div>
+
+          {isMultiRoom && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-white border border-[var(--color-sand-200)]">
+              <div>
+                <label className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
+                  Ámbito del bloqueo
+                </label>
+                <CustomSelect
+                  value={selectedRoomTypeId}
+                  onChange={(val) => {
+                    setSelectedRoomTypeId(val);
+                    setUnitsBlocked(1);
+                  }}
+                  options={[
+                    { value: '', label: 'Toda la propiedad (Cierre general / Fuera de temporada)' },
+                    ...(roomTypes || []).map((rt) => ({
+                      value: rt.id,
+                      label: `${rt.name} (Cupo total: ${rt.totalStock || 1})`,
+                    })),
+                  ]}
+                  helperText="Elegí si cerrás todo el complejo o solo una tipología."
+                />
+              </div>
+
+              {selectedRoomTypeId ? (
+                <div>
+                  <Input
+                    type="number"
+                    min="1"
+                    max={String(roomTypes?.find((r) => r.id === selectedRoomTypeId)?.totalStock || 1)}
+                    label="Unidades / Habitaciones a bloquear"
+                    value={String(unitsBlocked)}
+                    onChange={(e) => setUnitsBlocked(Math.max(1, Number(e.target.value) || 1))}
+                    required
+                    helperText={`Cupo total de esta habitación: ${roomTypes?.find((r) => r.id === selectedRoomTypeId)?.totalStock || 1} unidades.`}
+                  />
+                </div>
+              ) : (
+                <div className="text-xs text-[var(--color-sand-600)] p-3 rounded-lg bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] flex items-center self-end mb-1">
+                  <span>Bloqueará todo el complejo e impedirá reservas en cualquier categoría.</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-3">
             <div className="flex-1">
@@ -315,8 +372,17 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                         {blk.startDate} al {blk.endDate}
                       </span>
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[var(--color-sand-800)] text-white uppercase">
-                        {DATE_BLOCK_REASON_LABELS[blk.reason || 'OTHER']}
+                        {DATE_BLOCK_REASON_LABELS[blk.reason || 'MAINTENANCE']}
                       </span>
+                      {blk.roomTypeName ? (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[var(--color-terracotta-500)] text-white">
+                          Habitación: {blk.roomTypeName} ({blk.unitsBlocked ?? 1} {blk.unitsBlocked === 1 ? 'unidad' : 'unidades'})
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[var(--color-sand-200)] text-[var(--color-sand-800)]">
+                          Toda la propiedad
+                        </span>
+                      )}
                     </div>
                     {blk.notes && (
                       <span className="text-[11px] text-[var(--color-sand-600)] block mt-0.5 italic">

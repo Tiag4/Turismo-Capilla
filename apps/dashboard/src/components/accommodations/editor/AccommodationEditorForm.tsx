@@ -237,6 +237,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           <AccommodationDateAvailabilitySection
             accommodationId={initialData.id}
             accommodationName={initialData.name}
+            inventoryMode={inventoryMode}
+            roomTypes={roomTypes}
           />
         )}
 

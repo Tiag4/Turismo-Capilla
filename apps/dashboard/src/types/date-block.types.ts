@@ -10,6 +10,9 @@ export interface DateBlock {
   id: string;
   accommodationId: string;
   accommodationName: string;
+  roomTypeId?: string;
+  roomTypeName?: string;
+  unitsBlocked?: number;
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
   reason: DateBlockReason;
@@ -20,6 +23,8 @@ export interface DateBlock {
 export interface CreateDateBlockDto {
   accommodationId: string;
   accommodationName: string;
+  roomTypeId?: string;
+  unitsBlocked?: number;
   startDate: string;
   endDate: string;
   reason: DateBlockReason;

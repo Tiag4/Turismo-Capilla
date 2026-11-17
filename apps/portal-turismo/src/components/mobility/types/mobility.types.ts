@@ -95,6 +95,7 @@ export interface MobilityPoint {
 export interface MobilityConfig {
   version: number;
   updatedAt: string;
+  showArsCurrency: boolean;
   transitAlert: TransitAlertConfig;
   tolls: TollDetail[];
   train: TrainConfig;

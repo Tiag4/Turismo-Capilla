@@ -13,6 +13,7 @@ import {
   Ticket,
   Info,
   AlertOctagon,
+  Coins,
 } from 'lucide-react';
 import { mobilityConfigService } from '../../services/mobilityConfig.service';
 import type {
@@ -21,6 +22,8 @@ import type {
   TrainScheduleRow,
 } from '../../types/mobility.types';
 import { PORTAL_URL } from '../../config/navigation';
+import { PriceInputField } from './PriceInputField';
+import { formatPriceWithCurrency } from '../../utils/priceFormat';
 
 type ActiveTab = 'tolls' | 'train' | 'buses' | 'alert';
 
@@ -70,6 +73,40 @@ export const MobilityManagerView: React.FC = () => {
     }
   };
 
+  // Conmutador global de moneda ARS
+  const handleToggleArsCurrency = (checked: boolean) => {
+    setConfig((prev) => {
+      const tolls = prev.tolls.map((t) => ({
+        ...t,
+        estimatedFee: formatPriceWithCurrency(t.estimatedFee, checked),
+      }));
+
+      const train = {
+        ...prev.train,
+        fareRange: formatPriceWithCurrency(prev.train.fareRange, checked),
+      };
+
+      const originsData = prev.originsData.map((cat) => ({
+        ...cat,
+        routes: cat.routes.map((rt) => ({
+          ...rt,
+          tolls: rt.tolls.map((t) => ({
+            ...t,
+            estimatedFee: formatPriceWithCurrency(t.estimatedFee, checked),
+          })),
+        })),
+      }));
+
+      return {
+        ...prev,
+        showArsCurrency: checked,
+        tolls,
+        train,
+        originsData,
+      };
+    });
+  };
+
   // Helper para Tolls
   const handleUpdateToll = (index: number, updated: Partial<TollDetail>) => {
     setConfig((prev) => {
@@ -102,12 +139,13 @@ export const MobilityManagerView: React.FC = () => {
   };
 
   const handleAddToll = () => {
+    const isArs = config.showArsCurrency ?? true;
     const newToll: TollDetail = {
       id: `toll-${Date.now()}`,
       name: 'Nueva Estación de Peaje',
       road: 'Ruta Nacional / Provincial',
       operator: 'Caminos de las Sierras',
-      estimatedFee: '$1.000',
+      estimatedFee: formatPriceWithCurrency('1.000', isArs),
       paymentMethods: ['Efectivo', 'TelePASE'],
       notes: 'Información general del peaje.',
     };
@@ -222,6 +260,8 @@ export const MobilityManagerView: React.FC = () => {
   const [newInterurbanInput, setNewInterurbanInput] = useState('');
   const [newLongDistanceInput, setNewLongDistanceInput] = useState('');
 
+  const isArs = config.showArsCurrency ?? true;
+
   return (
     <div className="space-y-6 pb-16">
       {/* Header */}
@@ -298,6 +338,45 @@ export const MobilityManagerView: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Control Global de Moneda Pesos Argentinos (ARS) */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-amber-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-amber-50/40 to-white">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-900 font-extrabold text-sm border border-amber-300 shadow-2xs shrink-0">
+            <Coins className="w-5 h-5 text-amber-800" />
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-sand-900 font-['Outfit']">
+                Moneda Oficial: Pesos Argentinos (ARS)
+              </h3>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                isArs
+                  ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                  : 'bg-sand-100 text-sand-700 border-sand-300'
+              }`}>
+                {isArs ? 'ARS VISIBLE EN TODAS LAS TARIFAS' : 'SOLO SÍMBOLO $'}
+              </span>
+            </div>
+            <p className="text-xs text-sand-600">
+              Garantiza que todas las tarifas indiquen expresamente "ARS" (ej: $1.000 ARS) para que turistas nacionales y extranjeros identifiquen claramente la moneda.
+            </p>
+          </div>
+        </div>
+
+        <label className="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-center">
+          <input
+            type="checkbox"
+            checked={isArs}
+            onChange={(e) => handleToggleArsCurrency(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-emerald-portal-600)]" />
+          <span className="ml-3 text-xs font-bold text-sand-800 whitespace-nowrap">
+            {isArs ? 'Mostrar ARS en todos los precios' : 'Ocultar ARS (solo $)'}
+          </span>
+        </label>
+      </div>
 
       {/* Navigation Tabs */}
       <div className="flex gap-2 p-1.5 bg-[var(--color-sand-100)] rounded-2xl border border-[var(--color-sand-200)] overflow-x-auto">
@@ -434,18 +513,15 @@ export const MobilityManagerView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="block text-[11px] font-bold text-amber-900 uppercase">
-                    Tarifa Estimada Vigente (Categoría 2)
-                  </label>
-                  <input
-                    type="text"
-                    value={toll.estimatedFee}
-                    onChange={(e) => handleUpdateToll(idx, { estimatedFee: e.target.value })}
-                    placeholder="$1.000"
-                    className="w-full text-sm font-extrabold text-terracotta-700 bg-amber-50/50 border border-amber-300 rounded-lg p-2 focus:ring-1 focus:ring-amber-500"
-                  />
-                </div>
+                {/* Campo de Tarifa con Símbolo $ Fijo e Imposible de Borrar */}
+                <PriceInputField
+                  label="Tarifa Estimada Vigente (Categoría 2)"
+                  value={toll.estimatedFee}
+                  onChange={(newFee) => handleUpdateToll(idx, { estimatedFee: newFee })}
+                  showArs={isArs}
+                  placeholder="1.000"
+                  helperText="El símbolo $ no puede borrarse. Los cambios se sincronizan en todas las rutas."
+                />
 
                 <div className="space-y-1">
                   <label className="block text-[11px] font-bold text-[var(--color-sand-500)] uppercase">
@@ -530,23 +606,20 @@ export const MobilityManagerView: React.FC = () => {
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[var(--color-sand-600)] uppercase">
-                  Tarifa Oficial por Tramo (Visualización al turista)
-                </label>
-                <input
-                  type="text"
-                  value={config.train.fareRange}
-                  onChange={(e) =>
-                    setConfig((prev) => ({
-                      ...prev,
-                      train: { ...prev.train, fareRange: e.target.value },
-                    }))
-                  }
-                  placeholder="$250 - $400 ARS"
-                  className="w-full text-sm font-extrabold text-emerald-800 bg-emerald-50/50 border border-emerald-300 rounded-lg p-2.5 focus:ring-1 focus:ring-emerald-500"
-                />
-              </div>
+              {/* Campo de Tarifa del Tren con Símbolo $ Fijo e Imposible de Borrar */}
+              <PriceInputField
+                label="Tarifa Oficial por Tramo (Visualización al turista)"
+                value={config.train.fareRange}
+                onChange={(newFare) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    train: { ...prev.train, fareRange: newFare },
+                  }))
+                }
+                showArs={isArs}
+                placeholder="250 - 400"
+                helperText="El símbolo $ es fijo y no se puede borrar. Podés ingresar un importe único o un rango (ej: 250 - 400)."
+              />
 
               <div className="space-y-1">
                 <label className="block text-[11px] font-bold text-[var(--color-sand-600)] uppercase">

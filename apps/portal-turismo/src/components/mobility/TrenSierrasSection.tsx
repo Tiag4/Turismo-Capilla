@@ -2,13 +2,15 @@ import React from 'react';
 import { Train, ExternalLink, Calendar, MapPin, Ticket, Sparkles, AlertCircle } from 'lucide-react';
 import type { TrainConfig } from './types/mobility.types';
 import { TRAIN_STATIONS_LIST, TRAIN_SCHEDULES } from './data/mobilityData';
+import { formatPriceWithCurrency } from './utils/priceFormat';
 
 export interface TrenSierrasSectionProps {
   train?: TrainConfig;
+  showArs?: boolean;
 }
 
-export const TrenSierrasSection: React.FC<TrenSierrasSectionProps> = ({ train }) => {
-  const fareRange = train?.fareRange || '$250 - $400 ARS';
+export const TrenSierrasSection: React.FC<TrenSierrasSectionProps> = ({ train, showArs = true }) => {
+  const fareRange = formatPriceWithCurrency(train?.fareRange || '$250 - $400', showArs);
   const bookingUrl = train?.bookingUrl || 'https://webventas.sofse.gob.ar/';
   const stationName = train?.stationName || 'Estación Capilla del Monte (Destino Final)';
   const stationAddress = train?.stationAddress || 'Predio del Ferrocarril / Centro Cívico (Av. Pueyrredón e Hipólito Yrigoyen)';

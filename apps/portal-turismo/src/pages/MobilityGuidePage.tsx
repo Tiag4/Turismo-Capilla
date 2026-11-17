@@ -9,14 +9,15 @@ import { useMobilityData } from '../components/mobility/hooks/useMobilityData';
 
 export const MobilityGuidePage: React.FC = () => {
   const { config } = useMobilityData();
+  const showArs = config.showArsCurrency ?? true;
 
   return (
     <div className="py-10 sm:py-16 bg-sand-50/60 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
         <MobilityHeader />
         {config.transitAlert && <TransitAlertBanner alert={config.transitAlert} />}
-        <RouteOriginsTabs originsData={config.originsData} />
-        <TrenSierrasSection train={config.train} />
+        <RouteOriginsTabs originsData={config.originsData} showArs={showArs} />
+        <TrenSierrasSection train={config.train} showArs={showArs} />
         <BusCompaniesSection busTerminal={config.busTerminal} />
         <MobilityInteractiveMap />
       </div>

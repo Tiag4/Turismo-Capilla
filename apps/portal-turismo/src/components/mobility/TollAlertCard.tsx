@@ -1,13 +1,15 @@
 import React from 'react';
 import { CreditCard, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import type { TollDetail } from './types/mobility.types';
+import { formatPriceWithCurrency } from './utils/priceFormat';
 
 interface TollAlertCardProps {
   tolls: TollDetail[];
   precautions?: string;
+  showArs?: boolean;
 }
 
-export const TollAlertCard: React.FC<TollAlertCardProps> = ({ tolls, precautions }) => {
+export const TollAlertCard: React.FC<TollAlertCardProps> = ({ tolls, precautions, showArs = true }) => {
   return (
     <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 space-y-4">
       <div className="flex items-center gap-2.5">
@@ -34,7 +36,7 @@ export const TollAlertCard: React.FC<TollAlertCardProps> = ({ tolls, precautions
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <span className="text-sm font-bold text-sand-900">{toll.name}</span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-terracotta-100 text-terracotta-800 self-start sm:self-auto">
-                  {toll.estimatedFee} aprox.
+                  {formatPriceWithCurrency(toll.estimatedFee, showArs)} aprox.
                 </span>
               </div>
               <div className="text-xs text-sand-600 space-y-1">

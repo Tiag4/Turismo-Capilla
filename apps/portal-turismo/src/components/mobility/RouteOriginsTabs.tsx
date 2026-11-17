@@ -6,9 +6,10 @@ import { TollAlertCard } from './TollAlertCard';
 
 export interface RouteOriginsTabsProps {
   originsData?: OriginCategory[];
+  showArs?: boolean;
 }
 
-export const RouteOriginsTabs: React.FC<RouteOriginsTabsProps> = ({ originsData }) => {
+export const RouteOriginsTabs: React.FC<RouteOriginsTabsProps> = ({ originsData, showArs = true }) => {
   const [activeOriginId, setActiveOriginId] = useState<OriginId>('cordoba');
 
   const categories = originsData && originsData.length > 0 ? originsData : ORIGINS_DATA;
@@ -117,7 +118,7 @@ export const RouteOriginsTabs: React.FC<RouteOriginsTabsProps> = ({ originsData 
             </div>
 
             {/* Desglose de Peajes de la Ruta */}
-            <TollAlertCard tolls={route.tolls} precautions={route.precautions} />
+            <TollAlertCard tolls={route.tolls} precautions={route.precautions} showArs={showArs} />
           </div>
         ))}
       </div>

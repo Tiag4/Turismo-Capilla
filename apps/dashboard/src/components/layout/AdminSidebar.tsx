@@ -14,6 +14,7 @@ import {
   CalendarDays,
   LayoutTemplate,
   ShieldAlert,
+  Navigation,
 } from 'lucide-react';
 import { PORTAL_URL } from '../../config/navigation.ts';
 import type { User } from '../../types/auth.types.ts';
@@ -39,6 +40,7 @@ interface NavItem {
 const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'overview', label: 'Inicio', icon: LayoutDashboard },
   { id: 'portal_cms', label: 'Personalizador Portal', icon: LayoutTemplate },
+  { id: 'mobility', label: 'Cómo Llegar y Movilidad', icon: Navigation },
   { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
   { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
   { id: 'emergencies', label: 'Guardias y Farmacias', icon: ShieldAlert },

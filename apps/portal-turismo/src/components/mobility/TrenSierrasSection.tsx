@@ -1,8 +1,22 @@
 import React from 'react';
 import { Train, ExternalLink, Calendar, MapPin, Ticket, Sparkles, AlertCircle } from 'lucide-react';
+import type { TrainConfig } from './types/mobility.types';
 import { TRAIN_STATIONS_LIST, TRAIN_SCHEDULES } from './data/mobilityData';
 
-export const TrenSierrasSection: React.FC = () => {
+export interface TrenSierrasSectionProps {
+  train?: TrainConfig;
+}
+
+export const TrenSierrasSection: React.FC<TrenSierrasSectionProps> = ({ train }) => {
+  const fareRange = train?.fareRange || '$250 - $400 ARS';
+  const bookingUrl = train?.bookingUrl || 'https://webventas.sofse.gob.ar/';
+  const stationName = train?.stationName || 'Estación Capilla del Monte (Destino Final)';
+  const stationAddress = train?.stationAddress || 'Predio del Ferrocarril / Centro Cívico (Av. Pueyrredón e Hipólito Yrigoyen)';
+  const stationMapsUrl = train?.stationMapsUrl || 'https://maps.google.com/?q=Estacion+Capilla+del+Monte+Cordoba';
+  const alertNote = train?.alertNote;
+  const stations = train?.stations && train.stations.length > 0 ? train.stations : TRAIN_STATIONS_LIST;
+  const schedules = train?.schedules && train.schedules.length > 0 ? train.schedules : TRAIN_SCHEDULES;
+
   return (
     <section className="bg-gradient-to-br from-emerald-900 to-sand-900 text-white rounded-3xl p-6 sm:p-10 shadow-lg space-y-8 relative overflow-hidden">
       {/* Detalle decorativo de fondo */}
@@ -30,10 +44,10 @@ export const TrenSierrasSection: React.FC = () => {
             <span>Tarifa Oficial por Tramo</span>
           </div>
           <div className="text-2xl font-extrabold font-display text-white">
-            $250 - $400 <span className="text-xs font-normal text-sand-300">ARS</span>
+            {fareRange}
           </div>
           <a
-            href="https://webventas.sofse.gob.ar/"
+            href={bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer"
@@ -51,12 +65,12 @@ export const TrenSierrasSection: React.FC = () => {
             <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white font-display">Estación Capilla del Monte (Destino Final)</h4>
-            <p className="text-xs text-sand-300">Predio del Ferrocarril / Centro Cívico (Av. Pueyrredón e Hipólito Yrigoyen)</p>
+            <h4 className="text-sm font-bold text-white font-display">{stationName}</h4>
+            <p className="text-xs text-sand-300">{stationAddress}</p>
           </div>
         </div>
         <a
-          href="https://maps.google.com/?q=Estacion+Capilla+del+Monte+Cordoba"
+          href={stationMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs text-emerald-300 hover:text-emerald-200 underline underline-offset-4"
@@ -72,7 +86,7 @@ export const TrenSierrasSection: React.FC = () => {
           Recorrido de Estaciones (Corredor Punilla):
         </span>
         <div className="flex flex-wrap items-center gap-2">
-          {TRAIN_STATIONS_LIST.map((st, i) => (
+          {stations.map((st, i) => (
             <div
               key={i}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 ${
@@ -111,7 +125,7 @@ export const TrenSierrasSection: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10 text-sand-200">
-              {TRAIN_SCHEDULES.map((row, idx) => (
+              {schedules.map((row, idx) => (
                 <tr key={idx} className="hover:bg-white/5 transition-colors">
                   <td className="py-3 px-4 font-bold text-emerald-300">{row.serviceId}</td>
                   <td className="py-3 px-4">
@@ -140,7 +154,11 @@ export const TrenSierrasSection: React.FC = () => {
         <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
         <p>
           <strong className="font-bold text-white">Consejo del Viajero: </strong>
-          Se recomienda adquirir los pasajes con <strong className="text-white">3 a 5 días de anticipación</strong> a través de la web oficial de Trenes Argentinos, especialmente para los viajes de fin de semana debido a la alta concurrencia turística. El coche motor cuenta con butacas reclinables y aire acondicionado.
+          {alertNote || (
+            <>
+              Se recomienda adquirir los pasajes con <strong className="text-white">3 a 5 días de anticipación</strong> a través de la web oficial de Trenes Argentinos, especialmente para los viajes de fin de semana debido a la alta concurrencia turística. El coche motor cuenta con butacas reclinables y aire acondicionado.
+            </>
+          )}
         </p>
       </div>
     </section>

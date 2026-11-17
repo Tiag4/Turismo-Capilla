@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Globe, PauseCircle } from 'lucide-react';
 import { Button } from '../../ui/Button.tsx';
 import type {
   Accommodation,
@@ -210,6 +210,79 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
             <Save className="w-4 h-4" />
             <span>{actionLabel}</span>
           </Button>
+        </div>
+      </div>
+
+      {/* Banner Principal de Disponibilidad y Publicación */}
+      <div
+        className={`rounded-2xl p-4 sm:p-5 border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+          isActive
+            ? 'bg-emerald-50/70 border-emerald-200 shadow-xs'
+            : 'bg-amber-50/80 border-amber-200 shadow-xs'
+        }`}
+      >
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div
+            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs ${
+              isActive
+                ? 'bg-[var(--color-emerald-portal-600)] text-white'
+                : 'bg-amber-500 text-white'
+            }`}
+          >
+            {isActive ? <Globe className="w-5 h-5" /> : <PauseCircle className="w-5 h-5" />}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-black font-['Outfit'] text-[var(--color-sand-900)]">
+                Disponibilidad en el Portal:
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide ${
+                  isActive
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    isActive ? 'bg-emerald-600 animate-pulse' : 'bg-amber-500'
+                  }`}
+                />
+                {isActive ? 'Publicado y Disponible para Reservas' : 'Pausado (Fuera de Catálogo)'}
+              </span>
+            </div>
+            <p className="text-xs text-[var(--color-sand-600)] mt-1 max-w-2xl leading-relaxed">
+              {isActive
+                ? 'El establecimiento se encuentra visible en el catálogo de Capilla del Monte y acepta reservas online con tarifas vigentes.'
+                : 'El establecimiento está pausado. No figurará en los resultados de búsqueda del portal ni admitirá solicitudes de reserva.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 sm:border-l sm:border-[var(--color-sand-200)] sm:pl-5">
+          <div className="text-right hidden sm:block">
+            <span className="text-xs font-bold text-[var(--color-sand-900)] block">
+              {isActive ? 'Pausar publicación' : 'Activar publicación'}
+            </span>
+            <span className="text-[11px] text-[var(--color-sand-500)] block">
+              {isActive ? 'Ocultar del portal' : 'Mostrar en el portal'}
+            </span>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isActive}
+            onClick={() => setIsActive(!isActive)}
+            className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)] focus:ring-offset-2 ${
+              isActive ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-sand-400)]'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                isActive ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
         </div>
       </div>
 

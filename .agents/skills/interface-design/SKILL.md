@@ -211,6 +211,9 @@ A hundred small details compound into "feels great." These are the highest-lever
 
 ## Static polish
 
+- **Tablas y Datos en Mobile (Cero Tablas en Viewports Móviles - MANDATORIA)**:
+  - **EN MOBILE NUNCA SE DEBEN UTILIZAR TABLAS (`<table>`)**: En viewports móviles (`< md` o pantallas táctiles estrechas), las tablas comprimen las columnas horizontalmente resultando en textos ilegibles o scroll horizontal defectuoso.
+  - **SIEMPRE TRANSFORMAR A CARDS ROW**: En pantallas móviles, todo listado tabular DEBE renderizarse obligatoriamente como **stacked card rows** (filas de tarjetas estructuradas verticales). Cada card row agrupa los datos del registro en un flujo vertical limpio con jerarquía clara (código/ID, entidad o nombre principal, badge de estado sólido, detalles de fecha/ocupación, montos formateados en tabular-nums y botones de acción táctiles con hit area mínima de 44px). En desktop (`md:` o `lg:` en adelante) se mantiene la tabla tradicional optimizada.
 - **Concentric radius.** Nested rounded elements: `outerRadius = innerRadius + padding`. Same radius on parent and child is the most common thing that makes UI feel off.
 - **Tabular numbers.** Any dynamic number (counters, prices, timers, table columns) gets `font-variant-numeric: tabular-nums` to prevent layout shift.
 - **Optical alignment.** When geometric centering looks off, fix it optically — icon-side padding ≈ text-side − 2px; nudge play triangles ~2px right.

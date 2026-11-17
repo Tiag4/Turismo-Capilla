@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Calendar, CheckCircle2, Clock, DollarSign } from 'lucide-react';
+import { Search, Calendar, CheckCircle2, Clock, DollarSign, Eye, Check, X } from 'lucide-react';
 import { useHostBookings } from '../../hooks/useHostBookings.ts';
 import { BookingRow } from './BookingRow.tsx';
+import { BookingStatusBadge } from './BookingStatusBadge.tsx';
 import { BookingDetailModal } from './BookingDetailModal.tsx';
 import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx';
+import { Button } from '../ui/Button.tsx';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 
 export const BookingList: React.FC = () => {
@@ -109,8 +111,112 @@ export const BookingList: React.FC = () => {
         </div>
       </div>
 
-      {/* Bookings Table (Direct on canvas, zero floating white card) */}
-      <div className="overflow-x-auto border-y border-[var(--color-sand-300)]">
+      {/* Mobile View: Stacked Card Rows (Zero Tables on Mobile, Strict interface-design Rule) */}
+      <div className="block md:hidden divide-y divide-[var(--color-sand-200)] border-y border-[var(--color-sand-300)]">
+        {isLoading ? (
+          <div className="py-8 text-center text-xs text-[var(--color-sand-400)]">
+            Cargando reservas del sistema...
+          </div>
+        ) : bookings.length === 0 ? (
+          <div className="py-8 text-center text-xs text-[var(--color-sand-400)]">
+            No se encontraron reservas con los filtros seleccionados.
+          </div>
+        ) : (
+          bookings.map((booking) => (
+            <div
+              key={booking.id}
+              className="py-3.5 px-3 flex flex-col gap-2.5 bg-white hover:bg-[var(--color-sand-50)] transition-colors"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="font-['Outfit'] font-bold tabular-nums tracking-wide text-xs text-[var(--color-sand-900)] block">
+                    {booking.bookingCode}
+                  </span>
+                  <span className="text-[11px] font-semibold text-[var(--color-sand-600)] block mt-0.5">
+                    {booking.accommodationName || booking.accommodation?.name || 'Alojamiento'}
+                  </span>
+                </div>
+                <BookingStatusBadge status={booking.status} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs py-1.5 border-y border-[var(--color-sand-100)]">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-sand-400)] tracking-wider block">
+                    Huésped
+                  </span>
+                  <span className="font-semibold text-[var(--color-sand-800)] block truncate">
+                    {booking.guestName}
+                  </span>
+                  {booking.guestPhone && (
+                    <span className="text-[11px] text-[var(--color-sand-500)] block truncate">
+                      {booking.guestPhone}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-sand-400)] tracking-wider block">
+                    Fechas y Ocupación
+                  </span>
+                  <span className="font-medium text-[var(--color-sand-800)] block text-[11px]">
+                    {booking.checkIn} al {booking.checkOut}
+                  </span>
+                  <span className="text-[10px] text-[var(--color-sand-500)] tabular-nums">
+                    {booking.totalNights} {booking.totalNights === 1 ? 'noche' : 'noches'} · {booking.guestCount} pers.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-0.5">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-sand-400)] tracking-wider block">
+                    Total
+                  </span>
+                  <span className="text-sm font-black text-[var(--color-sand-900)] font-['Outfit'] tabular-nums">
+                    ${(booking.totalAmount ?? 0).toLocaleString('es-AR')}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedBooking(booking)}
+                    className="px-2.5 py-1 text-xs font-semibold flex items-center gap-1"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-[var(--color-sand-700)]" />
+                    <span>Ficha</span>
+                  </Button>
+                  {booking.status === 'PENDING' && (
+                    <>
+                      <Button
+                        variant="emerald"
+                        size="sm"
+                        onClick={() => setPendingStatusChange({ booking, status: 'CONFIRMED' })}
+                        className="px-2.5 py-1 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Confirmar</span>
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => setPendingStatusChange({ booking, status: 'CANCELLED' })}
+                        className="px-2 py-1 text-xs font-bold"
+                        title="Rechazar reserva"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop View: Traditional Data Table */}
+      <div className="hidden md:block overflow-x-auto border-y border-[var(--color-sand-300)]">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-[var(--color-sand-300)] text-[11px] font-bold uppercase tracking-wider text-[var(--color-sand-500)]">

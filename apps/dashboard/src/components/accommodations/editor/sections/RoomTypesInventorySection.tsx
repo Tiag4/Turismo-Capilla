@@ -88,7 +88,7 @@ export const RoomTypesInventorySection: React.FC<RoomTypesInventorySectionProps>
         <div className="p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] text-xs text-[var(--color-sand-700)] flex items-center justify-between gap-4">
           <div>
             <span className="font-bold text-[var(--color-sand-900)] block">
-              Alquiler de Unidad Completa (SINGLE_UNIT)
+              Alquiler de Cabaña o Propiedad Completa
             </span>
             <span>
               El turista reserva el establecimiento entero utilizando la tarifa base y capacidad máxima general.

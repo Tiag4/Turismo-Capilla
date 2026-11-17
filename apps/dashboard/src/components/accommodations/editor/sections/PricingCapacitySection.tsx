@@ -25,11 +25,31 @@ export interface PricingCapacitySectionProps {
   setCheckIn: (val: string) => void;
   checkOut: string;
   setCheckOut: (val: string) => void;
+  preparationDays?: number;
+  setPreparationDays?: (val: number) => void;
   hasBreakfast: boolean;
   setHasBreakfast: (val: boolean) => void;
   breakfastType: string;
   setBreakfastType: (val: string) => void;
 }
+
+const PREPARATION_OPTIONS = [
+  {
+    value: '0',
+    label: '0 días (Mismo día con ventana horaria estándar)',
+    description: 'El nuevo huésped puede ingresar el mismo día tras el horario de salida (habitual en hoteles y cabañas con recambio rápido).',
+  },
+  {
+    value: '1',
+    label: '1 día de descanso (Bloqueo de 24 hs para desinfección)',
+    description: 'El sistema bloquea automáticamente la fecha de salida para que no ingrese otra estadía hasta el día siguiente.',
+  },
+  {
+    value: '2',
+    label: '2 días de descanso (Bloqueo de 48 hs para acondicionamiento)',
+    description: 'Recomendado para estancias prolongadas o propiedades que requieren revisión técnica o limpieza profunda.',
+  },
+];
 
 const BREAKFAST_OPTIONS = [
   'Desayuno serrano casero',
@@ -44,6 +64,8 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
   maxGuests, setMaxGuests,
   checkIn, setCheckIn,
   checkOut, setCheckOut,
+  preparationDays = 0,
+  setPreparationDays,
   hasBreakfast, setHasBreakfast,
   breakfastType, setBreakfastType,
   unitTitle, setUnitTitle,
@@ -100,6 +122,25 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
           onChange={(val) => setCheckOut(val)}
           helperText="Horario límite de egreso."
         />
+      </div>
+
+      {/* Tiempo de preparación / Colchón de limpieza */}
+      <div className="pt-4 border-t border-[var(--color-sand-200)] flex flex-col lg:flex-row items-start justify-between gap-4">
+        <div className="w-full lg:max-w-lg">
+          <CustomSelect
+            label="Tiempo de preparación entre estadías (Colchón de limpieza)"
+            value={String(preparationDays)}
+            onChange={(val) => setPreparationDays?.(Number(val) || 0)}
+            options={PREPARATION_OPTIONS}
+            helperText="Define el intervalo que el motor de reservas protegerá automáticamente entre reservas consecutivas."
+          />
+        </div>
+        <div className="text-xs text-[var(--color-sand-600)] p-3.5 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] lg:max-w-sm self-stretch flex flex-col justify-center">
+          <span className="font-bold text-[var(--color-sand-800)] block mb-1">
+            Flexibilidad de recambio
+          </span>
+          Para recambio el mismo día con ventana horaria estándar (ej. hoteles o cabañas con servicio de mucama), seleccioná 0 días. Para desinfección profunda entre huéspedes, seleccioná 1 o 2 días.
+        </div>
       </div>
 
       {/* Distribución y Configuración de Unidad (Ficha de Hospedaje) */}

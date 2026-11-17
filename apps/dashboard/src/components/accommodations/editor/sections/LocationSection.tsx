@@ -70,6 +70,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="ej. Camino a Los Terrones Km 3.5 o Los Quebrachos 120"
+          tooltip="Calle y altura o referencia clara para que el huésped llegue sin inconvenientes."
           required
         />
         <CustomSelect
@@ -77,6 +78,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
           value={locality}
           onChange={(val) => setLocality(val)}
           options={CAPILLA_ZONES}
+          tooltip="Zona turística o paraje serrano para los filtros del mapa y del catálogo."
         />
       </div>
 
@@ -103,6 +105,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             value={latitude}
             onChange={(e) => setLatitude(e.target.value)}
             placeholder="-30.8654"
+            tooltip="Coordenada geográfica de latitud sur (ej. -30.8640)."
           />
           <span className="text-[10px] text-[var(--color-sand-400)] mt-1 block">
             Latitud sur (ej. -30.8570)
@@ -116,6 +119,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             value={longitude}
             onChange={(e) => setLongitude(e.target.value)}
             placeholder="-64.5241"
+            tooltip="Coordenada geográfica de longitud oeste (ej. -64.5310)."
           />
           <span className="text-[10px] text-[var(--color-sand-400)] mt-1 block">
             Longitud oeste (ej. -64.5150)

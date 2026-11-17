@@ -97,6 +97,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
           onChange={(e) => setPricePerNight(e.target.value)}
           placeholder="85000"
           required
+          tooltip="Precio base en pesos argentinos por noche para temporada regular."
           helperText={numericPrice > 0 ? `Equivale a $${numericPrice.toLocaleString('es-AR')} por noche` : undefined}
         />
         <Input
@@ -108,18 +109,21 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
           onChange={(e) => setMaxGuests(e.target.value)}
           placeholder="4"
           required
+          tooltip="Cantidad total máxima de personas adultas y menores que pueden alojarse según las plazas registradas."
           helperText="Total de plazas y camas habilitadas."
         />
         <CustomTimePicker
           label="Horario de Ingreso"
           value={checkIn || '14:00 hs'}
           onChange={(val) => setCheckIn(val)}
+          tooltip="Hora a partir de la cual el huésped puede ingresar a la propiedad (check-in)."
           helperText="Horario de ingreso al complejo."
         />
         <CustomTimePicker
           label="Horario de Egreso"
           value={checkOut || '10:00 hs'}
           onChange={(val) => setCheckOut(val)}
+          tooltip="Hora límite en que el huésped debe liberar la unidad (check-out)."
           helperText="Horario límite de egreso."
         />
       </div>
@@ -132,6 +136,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={String(preparationDays)}
             onChange={(val) => setPreparationDays?.(Number(val) || 0)}
             options={PREPARATION_OPTIONS}
+            tooltip="Intervalo de horas o días que el motor de reservas protege automáticamente entre reservas consecutivas para limpieza y desinfección."
             helperText="Define el intervalo que el motor de reservas protegerá automáticamente entre reservas consecutivas."
           />
         </div>
@@ -162,6 +167,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={unitTitle || ''}
             onChange={(e) => setUnitTitle?.(e.target.value)}
             placeholder="Ej. Chalet de montaña 2 dormitorios"
+            tooltip="Nombre descriptivo de la cabaña, loft o departamento visible en la ficha pública."
             helperText="Ej. Cabaña completa, Suite con vista, Loft"
           />
           <Input
@@ -172,6 +178,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={surfaceSqm || ''}
             onChange={(e) => setSurfaceSqm?.(e.target.value)}
             placeholder="Ej. 45"
+            tooltip="Metros cuadrados totales de construcción cerrada y techada."
             helperText="Metros cuadrados construidos."
           />
           <Input
@@ -180,6 +187,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={bedroomsSummary || ''}
             onChange={(e) => setBedroomsSummary?.(e.target.value)}
             placeholder="Dormitorio 1: 1 cama doble | Dormitorio 2: 2 camas individuales"
+            tooltip="Detalle de dormitorios y tipos de sommiers. Usá una barra vertical (|) para separar ambientes."
             helperText="Usa '|' para separar dormitorios."
           />
         </div>
@@ -204,6 +212,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={phone || ''}
             onChange={(e) => setPhone?.(e.target.value)}
             placeholder="Ej. +54 9 3548 481234"
+            tooltip="Número telefónico completo con código de área para botón de contacto directo por WhatsApp."
             helperText="Número con código de área para botón de WhatsApp."
           />
           <Input
@@ -212,6 +221,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={petPolicy || ''}
             onChange={(e) => setPetPolicy?.(e.target.value)}
             placeholder="Ej. Mascotas bienvenidas con previo aviso"
+            tooltip="Condiciones y pautas sobre admisión de mascotas en el predio."
             helperText="Condiciones sobre admisión de mascotas."
           />
           <Input
@@ -220,6 +230,7 @@ export const PricingCapacitySection: React.FC<PricingCapacitySectionProps> = ({
             value={cancellationPolicy || ''}
             onChange={(e) => setCancellationPolicy?.(e.target.value)}
             placeholder="Ej. Cancelación flexible hasta 7 días antes"
+            tooltip="Plazos y penalizaciones en caso de cancelación o modificación de estadía."
             helperText="Plazo y condiciones de cancelación o reembolso."
           />
         </div>

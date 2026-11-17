@@ -2,6 +2,7 @@ import React from 'react';
 import { Home } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
+import { InfoTooltip } from '../../../ui/Tooltip.tsx';
 import type { AccommodationType } from '../../../../types/accommodation.types.ts';
 
 export interface GeneralInfoSectionProps {
@@ -63,6 +64,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="ej. Cabañas Pircas del Uritorco"
+            tooltip="Nombre oficial o de fantasía con el que los turistas reconocen tu alojamiento."
             required
           />
         </div>
@@ -72,6 +74,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={type}
             onChange={(val) => setType(val as AccommodationType)}
             options={ACCOMMODATION_TYPE_OPTIONS}
+            tooltip="Categoría municipal oficial del complejo o propiedad."
           />
         </div>
       </div>
@@ -101,6 +104,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={licenseNumber}
             onChange={(e) => setLicenseNumber?.(e.target.value)}
             placeholder="ej. H-4829 / Res. 104-2023"
+            tooltip="Número de registro otorgado por el Municipio de Capilla del Monte que certifica la habilitación oficial."
             helperText="Aparecerá en el portal con el sello oficial de prestador habilitado."
           />
         </div>
@@ -110,6 +114,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={responseTime}
             onChange={(e) => setResponseTime?.(e.target.value)}
             placeholder="ej. Responde habitualmente en el día"
+            tooltip="Estimación del tiempo que te toma confirmar consultas o solicitudes a los turistas."
             helperText="Informa al turista la rapidez de atención para consultas y reservas."
           />
         </div>
@@ -118,9 +123,12 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
       {/* Control de Disponibilidad y Publicación */}
       <div className="pt-4 border-t border-[var(--color-sand-200)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
         <div>
-          <span className="text-sm font-bold text-[var(--color-sand-900)] block font-['Outfit']">
-            Disponibilidad y Publicación en el Portal
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-[var(--color-sand-900)] block font-['Outfit']">
+              Disponibilidad y Publicación en el Portal
+            </span>
+            <InfoTooltip content="Permite pausar temporalmente todo el establecimiento del catálogo oficial sin perder las reservas previas." />
+          </div>
           <span className="text-xs text-[var(--color-sand-600)] block mt-0.5">
             {isActive
               ? 'El alojamiento está activo y visible públicamente para recibir reservas en el portal.'

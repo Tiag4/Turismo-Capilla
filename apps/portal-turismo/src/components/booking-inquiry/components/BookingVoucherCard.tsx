@@ -56,7 +56,16 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
     }
   };
 
-  const whatsappUrl = `https://wa.me/${(voucher.hostPhone || '5493548401122').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+  const cleanPhone = (voucher.hostPhone || '5493548401122').replace(/[^0-9]/g, '');
+  const formattedWhatsappNumber = cleanPhone.startsWith('549')
+    ? cleanPhone
+    : cleanPhone.startsWith('54')
+      ? `549${cleanPhone.slice(2)}`
+      : cleanPhone.startsWith('0')
+        ? `549${cleanPhone.slice(1)}`
+        : `549${cleanPhone}`;
+
+  const whatsappUrl = `https://wa.me/${formattedWhatsappNumber}?text=${encodeURIComponent(
     `Hola! Me comunico respecto a mi reserva oficial *${voucher.code}* en *${voucher.accommodationTitle}* a nombre de *${voucher.firstName} ${voucher.lastName}*.`,
   )}`;
 

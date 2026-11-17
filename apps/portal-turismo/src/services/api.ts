@@ -126,24 +126,31 @@ export interface BookingPayload {
   notes?: string;
 }
 
-export interface BookingResult {
-  id: string;
-  bookingCode: string;
-  checkIn: string;
-  checkOut: string;
-  totalNights: number;
-  totalAmount: number | string;
-  downPaymentPercentage?: number;
-  downPaymentAmount?: number | string;
-  remainingBalance?: number | string;
-  bankAccountHolder?: string;
-  bankCbu?: string;
-  bankAlias?: string;
-  bankName?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
-  guestName: string;
-  guestPhone?: string;
-  accommodation?: Accommodation;
+export interface BookingResult {
+  id: string;
+  bookingCode: string;
+  accommodationId?: string;
+  accommodationName?: string;
+  checkIn: string;
+  checkOut: string;
+  totalNights: number;
+  guestCount?: number;
+  pricePerNight?: number | string;
+  totalAmount: number | string;
+  downPaymentPercentage?: number;
+  downPaymentAmount?: number | string;
+  remainingBalance?: number | string;
+  bankAccountHolder?: string;
+  bankCbu?: string;
+  bankAlias?: string;
+  bankName?: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'PENDING_CONFIRMATION';
+  guestName: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  hostPhone?: string;
+  accommodation?: Accommodation | any;
+  createdAt?: string;
 }
 
 async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
@@ -228,25 +235,38 @@ export const api = {
     return data;
   },
 
-  async lookupBooking(code: string, email: string): Promise<BookingResult> {
-    const query = new URLSearchParams({ code, email });
-    const res = await fetch(`${API_BASE_URL}/bookings/lookup?${query.toString()}`);
-    if (!res.ok) throw new Error('Reserva no encontrada');
-    return res.json();
-  },
-
-  async resendVoucher(code: string, email: string): Promise<{ message: string }> {
-    const res = await fetch(`${API_BASE_URL}/bookings/resend-voucher`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, email }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data.message || 'No se pudo reenviar el voucher por email');
-    }
-    return data;
+  async lookupBooking(code: string, email: string): Promise<BookingResult> {
+    const query = new URLSearchParams({ code: code.trim(), email: email.trim() });
+    const res = await fetchWithTimeout(`${API_BASE_URL}/bookings/lookup?${query.toString()}`, {}, 8000);
+    if (!res.ok) {
+      let errorMessage = 'Reserva no encontrada';
+      try {
+        const errorData = await res.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch {
+        // use default message
+      }
+      throw new ApiRequestError(errorMessage, res.status);
+    }
+    return res.json();
+  },
+
+  async resendVoucher(code: string, email: string): Promise<{ message: string }> {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/bookings/resend-voucher`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code.trim(), email: email.trim() }),
+      },
+      8000,
+    );
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      throw new ApiRequestError(data?.message || 'Error al reenviar el voucher', res.status);
+    }
+    return data || { message: 'Voucher reenviado por correo electrónico' };
   },
 
   async getActiveAlert(): Promise<PublicAlert | null> {

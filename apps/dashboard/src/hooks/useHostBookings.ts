@@ -6,6 +6,7 @@ import type { Booking, BookingStatus } from '../types/booking.types.ts';
 function normalizeBooking(dto: any): Booking {
   return {
     ...dto,
+    items: Array.isArray(dto.items) ? dto.items : [],
     totalAmount: Number(dto.totalAmount ?? 0),
     pricePerNight: Number(dto.pricePerNight ?? 0),
     accommodationName: dto.accommodationName || dto.accommodation?.name || 'Alojamiento',

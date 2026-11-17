@@ -1,5 +1,17 @@
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 
+export interface BookingItem {
+  id: string;
+  roomTypeId: string;
+  roomTypeName?: string;
+  ratePlanId?: string;
+  ratePlanName?: string;
+  quantity: number;
+  guests: number;
+  pricePerNight: number;
+  subtotal: number;
+}
+
 export interface Booking {
   id: string;
   bookingCode: string;
@@ -22,6 +34,7 @@ export interface Booking {
     name: string;
     locality?: string;
   };
+  items?: BookingItem[];
   downPaymentPercentage?: number;
   downPaymentAmount?: number;
   remainingBalance?: number;

@@ -1,5 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { CalendarRange, Lock, Unlock, CalendarCheck, Plus } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  CalendarRange,
+  Lock,
+  Unlock,
+  CalendarCheck,
+  Plus,
+  Building2,
+  Bed,
+  Filter,
+  X,
+  Layers,
+} from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
 import { Button } from '../../../ui/Button.tsx';
@@ -33,8 +44,15 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
   const { showSuccess, showError } = useToast();
 
   const isMultiRoom = inventoryMode === 'MULTI_ROOM' && Boolean(roomTypes && roomTypes.length > 0);
+
+  // Selected room filter: '' means "Todo el complejo", string is roomTypeId
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState<string>('');
   const [unitsBlocked, setUnitsBlocked] = useState<number>(1);
+
+  const selectedRoom = useMemo(
+    () => roomTypes?.find((r) => r.id === selectedRoomTypeId),
+    [roomTypes, selectedRoomTypeId],
+  );
 
   const [dateBlocks, setDateBlocks] = useState<DateBlock[]>([]);
   const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
@@ -50,6 +68,11 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
   const [notes, setNotes] = useState('');
   const [isCreatingBlock, setIsCreatingBlock] = useState(false);
   const [showBlockForm, setShowBlockForm] = useState(false);
+
+  // Date filters for bookings list
+  const [dateFilterPreset, setDateFilterPreset] = useState<'ALL' | 'UPCOMING' | 'THIS_MONTH' | 'PAST' | 'CUSTOM'>('ALL');
+  const [dateFilterFrom, setDateFilterFrom] = useState<string>('');
+  const [dateFilterTo, setDateFilterTo] = useState<string>('');
 
   // Deletion confirm dialog
   const [targetBlockToDelete, setTargetBlockToDelete] = useState<DateBlock | null>(null);
@@ -74,12 +97,71 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
   }, [fetchBlocks]);
 
   // Filter bookings for this accommodation
-  const cabinBookings = bookings.filter((b) => {
-    if (b.status === 'CANCELLED') return false;
-    const matchesId = b.accommodationId === accommodationId || b.accommodation?.id === accommodationId;
-    const matchesName = b.accommodationName === accommodationName || b.accommodation?.name === accommodationName;
-    return matchesId || matchesName;
-  });
+  const cabinBookings = useMemo(() => {
+    return bookings.filter((b) => {
+      if (b.status === 'CANCELLED') return false;
+      const matchesId = b.accommodationId === accommodationId || b.accommodation?.id === accommodationId;
+      const matchesName = b.accommodationName === accommodationName || b.accommodation?.name === accommodationName;
+      return matchesId || matchesName;
+    });
+  }, [bookings, accommodationId, accommodationName]);
+
+  // Date filter presets handler
+  const handlePresetClick = (preset: 'ALL' | 'UPCOMING' | 'THIS_MONTH' | 'PAST') => {
+    setDateFilterPreset(preset);
+    const today = new Date().toISOString().substring(0, 10);
+
+    if (preset === 'ALL') {
+      setDateFilterFrom('');
+      setDateFilterTo('');
+    } else if (preset === 'UPCOMING') {
+      setDateFilterFrom(today);
+      setDateFilterTo('');
+    } else if (preset === 'THIS_MONTH') {
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().substring(0, 10);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().substring(0, 10);
+      setDateFilterFrom(firstDay);
+      setDateFilterTo(lastDay);
+    } else if (preset === 'PAST') {
+      setDateFilterFrom('');
+      setDateFilterTo(today);
+    }
+  };
+
+  const handleClearDateFilter = () => {
+    setDateFilterPreset('ALL');
+    setDateFilterFrom('');
+    setDateFilterTo('');
+  };
+
+  // Filtered bookings applying room card filter and date range filter
+  const filteredCabinBookings = useMemo(() => {
+    return cabinBookings.filter((b) => {
+      // 1. Room type filter
+      if (selectedRoomTypeId) {
+        const hasRoom = b.items && b.items.length > 0
+          ? b.items.some((i) => i.roomTypeId === selectedRoomTypeId)
+          : true;
+        if (!hasRoom) return false;
+      }
+
+      // 2. Date filters
+      if (dateFilterFrom && b.checkOut < dateFilterFrom) return false;
+      if (dateFilterTo && b.checkIn > dateFilterTo) return false;
+
+      return true;
+    });
+  }, [cabinBookings, selectedRoomTypeId, dateFilterFrom, dateFilterTo]);
+
+  // Filtered date blocks based on room selection
+  const filteredBlocks = useMemo(() => {
+    return dateBlocks.filter((blk) => {
+      if (!selectedRoomTypeId) return true;
+      // Show blocks that target this room or general blocks that close the property
+      return blk.roomTypeId === selectedRoomTypeId || !blk.roomTypeId;
+    });
+  }, [dateBlocks, selectedRoomTypeId]);
 
   const handleCreateBlock = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,9 +186,10 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
         reason,
         notes: notes.trim() || undefined,
       });
-      showSuccess(`Fechas bloqueadas con éxito del ${startDate} al ${endDate}.`);
+
+      const scopeName = selectedRoom ? selectedRoom.name : 'toda la propiedad';
+      showSuccess(`Fechas bloqueadas con éxito para ${scopeName} (${startDate} al ${endDate}).`);
       setNotes('');
-      setSelectedRoomTypeId('');
       setUnitsBlocked(1);
       setShowBlockForm(false);
       await fetchBlocks();
@@ -168,7 +251,127 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
         </Button>
       </div>
 
-      {/* Formulario rápido para Bloquear Rango de Fechas */}
+      {/* Selector Visual de Habitaciones (Carrusel / Cards Row para Multi-Habitación) */}
+      {isMultiRoom && (
+        <div className="flex flex-col gap-2.5 p-3.5 sm:p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div className="flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-[var(--color-terracotta-500)]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-900)]">
+                Filtrar por Habitación e Inventario
+              </span>
+            </div>
+            <span className="text-[11px] text-[var(--color-sand-500)]">
+              Hacé clic en una habitación para ver sus reservas específicas o bloquear su cupo individual
+            </span>
+          </div>
+
+          <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1.5 pt-1">
+            {/* Card "Todo el Complejo" */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedRoomTypeId('');
+                setUnitsBlocked(1);
+              }}
+              className={`shrink-0 w-52 sm:w-60 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                selectedRoomTypeId === ''
+                  ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
+                  : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      selectedRoomTypeId === ''
+                        ? 'bg-[var(--color-terracotta-500)] text-white'
+                        : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-xs text-[var(--color-sand-900)] block font-['Outfit']">
+                      Todo el Complejo
+                    </span>
+                    <span className="text-[10px] text-[var(--color-sand-500)]">
+                      Todas las habitaciones
+                    </span>
+                  </div>
+                </div>
+                {selectedRoomTypeId === '' && (
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
+                <span>{cabinBookings.length} {cabinBookings.length === 1 ? 'reserva' : 'reservas'}</span>
+                <span>·</span>
+                <span>{dateBlocks.length} {dateBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
+              </div>
+            </button>
+
+            {/* Cards por RoomType */}
+            {roomTypes?.map((rt) => {
+              const roomBookings = cabinBookings.filter(
+                (b) => b.items && b.items.some((i) => i.roomTypeId === rt.id),
+              );
+              const roomBlocks = dateBlocks.filter((blk) => blk.roomTypeId === rt.id);
+              const isSelected = selectedRoomTypeId === rt.id;
+
+              return (
+                <button
+                  type="button"
+                  key={rt.id}
+                  onClick={() => {
+                    setSelectedRoomTypeId(rt.id);
+                    setUnitsBlocked(1);
+                  }}
+                  className={`shrink-0 w-56 sm:w-64 p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                    isSelected
+                      ? 'bg-white border-[var(--color-terracotta-500)] shadow-xs ring-2 ring-[var(--color-terracotta-500)]/15'
+                      : 'bg-white/80 border-[var(--color-sand-200)] hover:border-[var(--color-sand-400)] hover:bg-white'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                          isSelected
+                            ? 'bg-[var(--color-terracotta-500)] text-white'
+                            : 'bg-[var(--color-sand-100)] text-[var(--color-sand-700)]'
+                        }`}
+                      >
+                        <Bed className="w-4 h-4" />
+                      </div>
+                      <div className="truncate">
+                        <span className="font-bold text-xs text-[var(--color-sand-900)] block truncate font-['Outfit']">
+                          {rt.name}
+                        </span>
+                        <span className="text-[10px] text-[var(--color-sand-500)] block">
+                          Cupo: {rt.totalStock || 1} {rt.totalStock === 1 ? 'unidad' : 'unidades'}
+                        </span>
+                      </div>
+                    </div>
+                    {isSelected && (
+                      <span className="w-2 h-2 rounded-full bg-[var(--color-terracotta-500)] shrink-0 mt-1" />
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-sand-600)] pt-2 border-t border-[var(--color-sand-100)]">
+                    <span>{roomBookings.length} {roomBookings.length === 1 ? 'reserva' : 'reservas'}</span>
+                    <span>·</span>
+                    <span>{roomBlocks.length} {roomBlocks.length === 1 ? 'bloqueo' : 'bloqueos'}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Formulario para Bloquear Rango de Fechas */}
       {showBlockForm && (
         <form
           onSubmit={handleCreateBlock}
@@ -182,6 +385,58 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               Las fechas seleccionadas quedarán deshabilitadas en el motor de reservas y los turistas no podrán solicitarlas.
             </span>
           </div>
+
+          {/* Contexto de la habitación que se va a bloquear */}
+          {isMultiRoom && (
+            <div className="p-3 rounded-xl bg-white border border-[var(--color-sand-200)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                {selectedRoom ? (
+                  <>
+                    <div className="w-8 h-8 rounded-lg bg-[var(--color-terracotta-500)] text-white flex items-center justify-center shrink-0">
+                      <Bed className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-[var(--color-sand-900)] block">
+                        Bloqueando habitación: {selectedRoom.name}
+                      </span>
+                      <span className="text-[11px] text-[var(--color-sand-500)]">
+                        Cupo total habilitado: {selectedRoom.totalStock || 1} unidades
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-8 h-8 rounded-lg bg-[var(--color-sand-800)] text-white flex items-center justify-center shrink-0">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-[var(--color-sand-900)] block">
+                        Bloqueando: Todo el Complejo (Cierre General)
+                      </span>
+                      <span className="text-[11px] text-[var(--color-sand-500)]">
+                        Inhabilitará reservas en todas las habitaciones en ese período
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {selectedRoom && (
+                <div className="w-full sm:w-48 shrink-0">
+                  <Input
+                    type="number"
+                    min="1"
+                    max={String(selectedRoom.totalStock || 1)}
+                    label="Unidades a bloquear"
+                    value={String(unitsBlocked)}
+                    onChange={(e) => setUnitsBlocked(Math.max(1, Number(e.target.value) || 1))}
+                    required
+                    helperText={`Máximo: ${selectedRoom.totalStock || 1}`}
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
@@ -199,60 +454,14 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               required
             />
             <div>
-              <label className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
-                Motivo del bloqueo
-              </label>
               <CustomSelect
+                label="Motivo del bloqueo"
                 value={reason}
                 onChange={(val) => setReason(val as DateBlockReason)}
                 options={REASON_OPTIONS}
               />
             </div>
           </div>
-
-          {isMultiRoom && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-white border border-[var(--color-sand-200)]">
-              <div>
-                <label className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
-                  Ámbito del bloqueo
-                </label>
-                <CustomSelect
-                  value={selectedRoomTypeId}
-                  onChange={(val) => {
-                    setSelectedRoomTypeId(val);
-                    setUnitsBlocked(1);
-                  }}
-                  options={[
-                    { value: '', label: 'Toda la propiedad (Cierre general / Fuera de temporada)' },
-                    ...(roomTypes || []).map((rt) => ({
-                      value: rt.id,
-                      label: `${rt.name} (Cupo total: ${rt.totalStock || 1})`,
-                    })),
-                  ]}
-                  helperText="Elegí si cerrás todo el complejo o solo una tipología."
-                />
-              </div>
-
-              {selectedRoomTypeId ? (
-                <div>
-                  <Input
-                    type="number"
-                    min="1"
-                    max={String(roomTypes?.find((r) => r.id === selectedRoomTypeId)?.totalStock || 1)}
-                    label="Unidades / Habitaciones a bloquear"
-                    value={String(unitsBlocked)}
-                    onChange={(e) => setUnitsBlocked(Math.max(1, Number(e.target.value) || 1))}
-                    required
-                    helperText={`Cupo total de esta habitación: ${roomTypes?.find((r) => r.id === selectedRoomTypeId)?.totalStock || 1} unidades.`}
-                  />
-                </div>
-              ) : (
-                <div className="text-xs text-[var(--color-sand-600)] p-3 rounded-lg bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] flex items-center self-end mb-1">
-                  <span>Bloqueará todo el complejo e impedirá reservas en cualquier categoría.</span>
-                </div>
-              )}
-            </div>
-          )}
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-3">
             <div className="flex-1">
@@ -278,7 +487,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                 variant="terracotta"
                 size="md"
                 isLoading={isCreatingBlock}
-                className="font-bold shadow-xs"
+                className="font-bold shadow-xs cursor-pointer"
               >
                 Confirmar bloqueo
               </Button>
@@ -288,15 +497,86 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
       )}
 
       {/* Grid de 2 columnas: 1) Reservas Solicitadas / Ocupadas | 2) Bloqueos Manuales */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
         {/* Columna A: Reservas Activas y Solicitadas */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <CalendarCheck className="w-4 h-4 text-[var(--color-emerald-portal-600)]" />
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
-                Fechas Solicitadas por Huéspedes ({cabinBookings.length})
+                Fechas Solicitadas por Huéspedes ({filteredCabinBookings.length})
               </span>
+            </div>
+
+            {(dateFilterFrom || dateFilterTo || dateFilterPreset !== 'ALL') && (
+              <button
+                type="button"
+                onClick={handleClearDateFilter}
+                className="text-[11px] text-[var(--color-terracotta-600)] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <X className="w-3 h-3" />
+                <span>Limpiar filtro</span>
+              </button>
+            )}
+          </div>
+
+          {/* Barra de Filtro de Fechas */}
+          <div className="p-3 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)] flex flex-col gap-2.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sand-500)] mr-1 flex items-center gap-1">
+                <Filter className="w-3 h-3" />
+                <span>Rango:</span>
+              </span>
+              {[
+                { id: 'ALL', label: 'Todas' },
+                { id: 'UPCOMING', label: 'Próximas' },
+                { id: 'THIS_MONTH', label: 'Este mes' },
+                { id: 'PAST', label: 'Históricas' },
+              ].map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handlePresetClick(preset.id as any)}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+                    dateFilterPreset === preset.id
+                      ? 'bg-[var(--color-sand-900)] text-white shadow-xs'
+                      : 'bg-white border border-[var(--color-sand-200)] text-[var(--color-sand-700)] hover:border-[var(--color-sand-400)]'
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--color-sand-200)]/60">
+              <div>
+                <label className="text-[10px] font-semibold text-[var(--color-sand-600)] block mb-1">
+                  Desde fecha
+                </label>
+                <input
+                  type="date"
+                  value={dateFilterFrom}
+                  onChange={(e) => {
+                    setDateFilterFrom(e.target.value);
+                    setDateFilterPreset('CUSTOM');
+                  }}
+                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-[var(--color-sand-200)] rounded-lg text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-[var(--color-sand-600)] block mb-1">
+                  Hasta fecha
+                </label>
+                <input
+                  type="date"
+                  value={dateFilterTo}
+                  onChange={(e) => {
+                    setDateFilterTo(e.target.value);
+                    setDateFilterPreset('CUSTOM');
+                  }}
+                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-[var(--color-sand-200)] rounded-lg text-[var(--color-sand-900)] focus:outline-none focus:border-[var(--color-terracotta-500)]"
+                />
+              </div>
             </div>
           </div>
 
@@ -305,12 +585,14 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               <div className="p-4 text-center text-xs text-[var(--color-sand-400)]">
                 Consultando reservas...
               </div>
-            ) : cabinBookings.length === 0 ? (
+            ) : filteredCabinBookings.length === 0 ? (
               <div className="p-4 text-center text-xs text-[var(--color-sand-500)]">
-                No hay solicitudes de reserva activas para esta cabaña.
+                {selectedRoom
+                  ? `No hay reservas registradas para la habitación "${selectedRoom.name}" con los filtros actuales.`
+                  : 'No hay solicitudes de reserva activas para este alojamiento con los filtros actuales.'}
               </div>
             ) : (
-              cabinBookings.map((b) => (
+              filteredCabinBookings.map((b) => (
                 <div key={b.id} className="p-3 sm:p-3.5 flex flex-col gap-1.5 hover:bg-[var(--color-sand-50)] transition-colors">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-['Outfit'] font-bold text-xs tabular-nums text-[var(--color-sand-900)]">
@@ -326,9 +608,25 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                       {b.status === 'CONFIRMED' ? 'Confirmada' : 'Pendiente'}
                     </span>
                   </div>
+
                   <div className="text-xs text-[var(--color-sand-800)] font-medium">
                     <span>{b.guestName}</span> · <span className="text-[var(--color-sand-500)]">{b.guestPhone || b.guestEmail}</span>
                   </div>
+
+                  {/* Detalle de unidades reservadas en multi-habitación */}
+                  {b.items && b.items.length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                      {b.items.map((it) => (
+                        <span
+                          key={it.id || it.roomTypeId}
+                          className="px-2 py-0.5 rounded-md bg-[var(--color-sand-100)] text-[var(--color-sand-800)] text-[10px] font-bold"
+                        >
+                          {it.quantity}x {it.roomTypeName || 'Habitación'}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between text-xs text-[var(--color-sand-600)] pt-1 border-t border-[var(--color-sand-100)]">
                     <span className="font-semibold text-[var(--color-sand-900)]">
                       {b.checkIn} al {b.checkOut}
@@ -349,9 +647,14 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
             <div className="flex items-center gap-1.5">
               <Lock className="w-4 h-4 text-amber-600" />
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
-                Fechas Bloqueadas Manualmente ({dateBlocks.length})
+                Fechas Bloqueadas Manualmente ({filteredBlocks.length})
               </span>
             </div>
+            {selectedRoom && (
+              <span className="text-[10px] font-semibold text-[var(--color-terracotta-600)]">
+                Mostrando: {selectedRoom.name}
+              </span>
+            )}
           </div>
 
           <div className="divide-y divide-[var(--color-sand-200)] border border-[var(--color-sand-200)] rounded-xl overflow-hidden bg-white">
@@ -359,12 +662,14 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
               <div className="p-4 text-center text-xs text-[var(--color-sand-400)]">
                 Consultando bloqueos...
               </div>
-            ) : dateBlocks.length === 0 ? (
+            ) : filteredBlocks.length === 0 ? (
               <div className="p-4 text-center text-xs text-[var(--color-sand-500)]">
-                No hay bloqueos manuales. Todas las fechas libres admiten reservas online.
+                {selectedRoom
+                  ? `No hay bloqueos manuales activos para la habitación "${selectedRoom.name}".`
+                  : 'No hay bloqueos manuales. Todas las fechas libres admiten reservas online.'}
               </div>
             ) : (
-              dateBlocks.map((blk) => (
+              filteredBlocks.map((blk) => (
                 <div key={blk.id} className="p-3 sm:p-3.5 flex items-center justify-between gap-3 hover:bg-[var(--color-sand-50)] transition-colors">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -380,7 +685,7 @@ export const AccommodationDateAvailabilitySection: React.FC<AccommodationDateAva
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[var(--color-sand-200)] text-[var(--color-sand-800)]">
-                          Toda la propiedad
+                          Todo el complejo
                         </span>
                       )}
                     </div>

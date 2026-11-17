@@ -65,14 +65,15 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   const formattedDisplay = value ? (value.includes('hs') ? value : `${value} hs`) : 'Seleccionar horario';
 
   return (
-    <div className={`flex flex-col gap-1.5 w-full relative ${className}`} ref={containerRef}>
+    <div className={`flex flex-col gap-1.5 w-full ${className}`} ref={containerRef}>
       {label && (
         <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
           {label}
         </label>
       )}
 
-      <button
+      <div className="relative w-full">
+        <button
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
@@ -91,9 +92,6 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
         </span>
         <Clock className={`w-4 h-4 text-[var(--color-sand-500)] shrink-0 ${isOpen ? 'text-[var(--color-terracotta-500)]' : ''}`} />
       </button>
-
-      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
-      {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
 
       {/* Popover Dropdown */}
       {shouldRender && (
@@ -182,6 +180,10 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
           </div>
         </div>
       )}
+      </div>
+
+      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
+      {helperText && !error && <span className="text-xs text-[var(--color-sand-400)]">{helperText}</span>}
     </div>
   );
 };

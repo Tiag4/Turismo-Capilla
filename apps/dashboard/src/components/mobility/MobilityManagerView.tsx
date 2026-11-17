@@ -350,12 +350,12 @@ export const MobilityManagerView: React.FC = () => {
               <h3 className="text-sm font-bold text-sand-900 font-['Outfit']">
                 Moneda Oficial: Pesos Argentinos (ARS)
               </h3>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
+              <span className={`inline-flex items-center justify-center w-16 px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
                 isArs
                   ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                  : 'bg-sand-100 text-sand-700 border-sand-300'
+                  : 'bg-sand-100 text-sand-600 border-sand-300'
               }`}>
-                {isArs ? 'ARS VISIBLE EN TODAS LAS TARIFAS' : 'SOLO SÍMBOLO $'}
+                {isArs ? 'Activo' : 'Inactivo'}
               </span>
             </div>
             <p className="text-xs text-sand-600">
@@ -373,7 +373,7 @@ export const MobilityManagerView: React.FC = () => {
           />
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-emerald-portal-600)]" />
           <span className="ml-3 text-xs font-bold text-sand-800 whitespace-nowrap">
-            {isArs ? 'Mostrar ARS en todos los precios' : 'Ocultar ARS (solo $)'}
+            Mostrar denominación ARS
           </span>
         </label>
       </div>
@@ -401,7 +401,7 @@ export const MobilityManagerView: React.FC = () => {
           }`}
         >
           <Train className="w-4 h-4 text-emerald-600" />
-          <span>Tren de las Sierras ({config.train.fareRange})</span>
+          <span>Tren de las Sierras</span>
         </button>
 
         <button

@@ -54,15 +54,16 @@ export const PriceInputField: React.FC<PriceInputFieldProps> = ({
           className="w-full text-sm font-black text-sand-900 px-3 py-2 bg-transparent outline-none placeholder:text-sand-400 placeholder:font-normal"
         />
 
-        {/* Sufijo ARS Opcional */}
-        {showArs && (
-          <span
-            className="inline-flex items-center px-2 py-0.5 text-[11px] font-black tracking-wider text-amber-900 bg-amber-100/90 rounded-md border border-amber-300 select-none mr-2 shrink-0 shadow-2xs"
-            title="Pesos Argentinos (ARS)"
-          >
-            ARS
-          </span>
-        )}
+        {/* Sufijo ARS con espacio fijo reservado para evitar que el input o texto se mueva */}
+        <span
+          className={`inline-flex items-center px-2 py-0.5 text-[11px] font-black tracking-wider text-amber-900 bg-amber-100/90 rounded-md border border-amber-300 select-none mr-2 shrink-0 shadow-2xs transition-opacity duration-150 ${
+            showArs ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          title="Pesos Argentinos (ARS)"
+          aria-hidden={!showArs}
+        >
+          ARS
+        </span>
       </div>
 
       {helperText && (

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
+import { InfoTooltip } from './Tooltip.tsx';
 
 export interface CustomSelectOption {
   value: string;
@@ -16,6 +17,7 @@ export interface CustomSelectProps {
   placeholder?: string;
   error?: string;
   helperText?: string;
+  tooltip?: React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
@@ -28,6 +30,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   placeholder = 'Seleccionar...',
   error,
   helperText,
+  tooltip,
   className = '',
   disabled = false,
 }) => {
@@ -67,9 +70,12 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
-          {label}
-        </label>
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
+            {label}
+          </label>
+          {tooltip && <InfoTooltip content={tooltip} />}
+        </div>
       )}
 
       <div className="relative w-full">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
+import { InfoTooltip } from './Tooltip.tsx';
 
 export interface CustomTimePickerProps {
   label?: string;
@@ -8,6 +9,7 @@ export interface CustomTimePickerProps {
   onChange: (value: string) => void;
   error?: string;
   helperText?: string;
+  tooltip?: React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
@@ -21,6 +23,7 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   onChange,
   error,
   helperText,
+  tooltip,
   className = '',
   disabled = false,
 }) => {
@@ -67,9 +70,12 @@ export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
-          {label}
-        </label>
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-sand-800)]">
+            {label}
+          </label>
+          {tooltip && <InfoTooltip content={tooltip} />}
+        </div>
       )}
 
       <div className="relative w-full">

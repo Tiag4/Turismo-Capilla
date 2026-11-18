@@ -4,7 +4,7 @@ import { PORTAL_URL } from '../../config/navigation.ts';
 import { HostSidebar } from './HostSidebar.tsx';
 import { AdminSidebar } from './AdminSidebar.tsx';
 import type { DashboardTab } from './DashboardNav.tsx';
-import type { User } from '../../types/auth.types.ts';
+import type { User, UserRole } from '../../types/auth.types.ts';
 
 export interface DashboardLayoutProps {
   currentTab: DashboardTab;
@@ -12,6 +12,10 @@ export interface DashboardLayoutProps {
   user: User;
   onLogout: () => void;
   children: React.ReactNode;
+  effectiveRole?: UserRole;
+  isDualRole?: boolean;
+  onSwitchWorkspace?: (ws: 'ADMIN' | 'HOST') => void;
+  onOpenWorkspaceSelector?: () => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -20,15 +24,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   user,
   onLogout,
   children,
+  effectiveRole,
+  isDualRole,
+  onSwitchWorkspace,
+  onOpenWorkspaceSelector,
 }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const isAdmin = user.role === 'ADMIN';
+  const isAdminMode = (effectiveRole ?? user.role) === 'ADMIN';
   const isCmsMode = currentTab === 'portal_cms';
 
   return (
     <div className="min-h-screen bg-[var(--color-sand-50)] flex">
       {/* 1. Left Collapsible Hover Sidebar (Desktop Rail w-[72px] expanding on hover to w-72, Drawer on mobile) */}
-      {isAdmin ? (
+      {isAdminMode ? (
         <AdminSidebar
           currentTab={currentTab}
           onTabChange={onTabChange}
@@ -36,6 +44,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
+          isDualRole={isDualRole}
+          onSwitchWorkspace={onSwitchWorkspace}
+          onOpenWorkspaceSelector={onOpenWorkspaceSelector}
         />
       ) : (
         <HostSidebar
@@ -45,6 +56,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           onLogout={onLogout}
+          isDualRole={isDualRole}
+          onSwitchWorkspace={onSwitchWorkspace}
+          onOpenWorkspaceSelector={onOpenWorkspaceSelector}
         />
       )}
 
@@ -63,7 +77,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="flex items-center gap-2">
               <div
                 className={`w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold font-['Outfit'] ${
-                  isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
+                  isAdminMode ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
                 }`}
               >
                 CM
@@ -71,6 +85,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <span className="text-xs font-extrabold uppercase tracking-tight text-[var(--color-sand-900)] font-['Outfit']">
                 Turismo Capilla
               </span>
+              {isDualRole && (
+                <span
+                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded text-white ${
+                    isAdminMode ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
+                  }`}
+                >
+                  {isAdminMode ? 'Admin' : 'Cabañero'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -90,7 +113,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onClick={() => onTabChange('profile')}
               title="Ver Mi Perfil y Seguridad"
               className={`w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center cursor-pointer transition-transform active:scale-95 ${
-                isAdmin ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
+                isAdminMode ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-terracotta-500)]'
               }`}
             >
               {user.name.charAt(0)}{user.lastName.charAt(0)}

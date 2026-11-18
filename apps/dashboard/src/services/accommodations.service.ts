@@ -1,5 +1,6 @@
 import { apiClient } from './api.client.ts';
 import { resolveMediaUrl } from '../utils/media-url.ts';
+import { pricingService } from './pricing.service.ts';
 import type {
   Accommodation,
   AccommodationImage,
@@ -10,9 +11,25 @@ function normalizeImage(image: AccommodationImage): AccommodationImage {
   return { ...image, url: resolveMediaUrl(image.url) };
 }
 
+function syncPricingScheme(accommodationId: string, minNights?: number, pricePerNight?: number): void {
+  if (minNights === undefined && pricePerNight === undefined) return;
+  const scheme = pricingService.getByAccommodationId(accommodationId);
+  pricingService.save({
+    ...scheme,
+    basePricePerNight: pricePerNight !== undefined ? Number(pricePerNight) : scheme.basePricePerNight,
+    minNightsBase: minNights !== undefined ? Number(minNights) : scheme.minNightsBase,
+  });
+}
+
 function normalizeAccommodation(accommodation: Accommodation): Accommodation {
+  const minNights =
+    accommodation.minNights ??
+    pricingService.getByAccommodationId(accommodation.id)?.minNightsBase ??
+    1;
+
   return {
     ...accommodation,
+    minNights,
     images: (accommodation.images ?? []).map(normalizeImage),
   };
 }
@@ -31,6 +48,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     longitude: -64.5241,
     pricePerNight: 85000,
     maxGuests: 5,
+    minNights: 2,
     unitTitle: 'Chalet de Montaña 2 Dormitorios',
     surfaceSqm: 58,
     bedroomsSummary: 'Dormitorio 1: 1 cama matrimonial King | Dormitorio 2: 3 camas individuales',
@@ -94,6 +112,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     longitude: -64.5283,
     pricePerNight: 120000,
     maxGuests: 4,
+    minNights: 2,
     amenities: ['Desayuno serrano', 'Wi-Fi', 'Calefacción central', 'Jardín con frutales', 'Guía de senderismo'],
     isActive: true,
     hostId: 'host-01',
@@ -115,6 +134,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
     longitude: -64.5389,
     pricePerNight: 65000,
     maxGuests: 2,
+    minNights: 1,
     amenities: ['Wi-Fi', 'Deck privado', 'Parrilla', 'Cocina equipada', 'Pet friendly'],
     isActive: true,
     hostId: 'host-01',
@@ -134,9 +154,12 @@ export const accommodationsService = {
       const userRaw = localStorage.getItem('turismo_capilla_user');
       const user = userRaw ? JSON.parse(userRaw) : null;
       const token = localStorage.getItem('turismo_capilla_token');
-      // ADMIN consulta todo el catálogo municipal; HOST consulta sus propios establecimientos
-      const isHost = user?.role === 'HOST';
-      const endpoint = (token && isHost) ? '/accommodations/my-accommodations' : '/accommodations';
+      // ADMIN en modo municipal consulta todo el catálogo; HOST o ADMIN en modo host consulta sus propios alojamientos
+      const activeWorkspace = typeof window !== 'undefined'
+        ? (sessionStorage.getItem('turismo_active_workspace') || localStorage.getItem('turismo_active_workspace'))
+        : null;
+      const isHostMode = user?.role === 'HOST' || activeWorkspace === 'HOST';
+      const endpoint = (token && isHostMode) ? '/accommodations/my-accommodations' : '/accommodations';
       const response = await apiClient.get<any>(endpoint);
       const items = Array.isArray(response) ? response : response.data || [];
       if (Array.isArray(items)) {
@@ -210,6 +233,7 @@ export const accommodationsService = {
       licenseNumber: dto.licenseNumber,
       responseTime: dto.responseTime,
       preparationDays: dto.preparationDays !== undefined ? dto.preparationDays : 0,
+      minNights: dto.minNights !== undefined ? Number(dto.minNights) : 1,
       hasBreakfast: Boolean(dto.hasBreakfast),
       breakfastType: dto.hasBreakfast ? dto.breakfastType : undefined,
       amenities: dto.amenities || [],
@@ -222,9 +246,17 @@ export const accommodationsService = {
       images: formattedImages,
     };
 
+    const resolvedMinNights = dto.minNights !== undefined ? Number(dto.minNights) : 1;
+
     try {
       const created = await apiClient.post<Accommodation>('/accommodations', payload);
-      if (created) return normalizeAccommodation(created);
+      if (created) {
+        syncPricingScheme(created.id, resolvedMinNights, Number(dto.pricePerNight));
+        return normalizeAccommodation({
+          ...created,
+          minNights: created.minNights ?? resolvedMinNights,
+        });
+      }
     } catch (err) {
       console.warn('Fallo guardado en backend, usando fallback local:', err);
     }
@@ -253,6 +285,7 @@ export const accommodationsService = {
       licenseNumber: dto.licenseNumber,
       responseTime: dto.responseTime,
       preparationDays: dto.preparationDays !== undefined ? dto.preparationDays : 0,
+      minNights: dto.minNights !== undefined ? Number(dto.minNights) : 1,
       hasBreakfast: Boolean(dto.hasBreakfast),
       breakfastType: dto.hasBreakfast ? dto.breakfastType : undefined,
       amenities: dto.amenities,
@@ -267,6 +300,7 @@ export const accommodationsService = {
       createdAt: new Date().toISOString(),
     };
     localAccommodations = [newAcc, ...localAccommodations];
+    syncPricingScheme(newAcc.id, resolvedMinNights, Number(dto.pricePerNight));
     return normalizeAccommodation(newAcc);
   },
 
@@ -296,10 +330,24 @@ export const accommodationsService = {
     if (generalData.maxGuests !== undefined) {
       payload.maxGuests = Number(generalData.maxGuests);
     }
+    if (generalData.minNights !== undefined) {
+      payload.minNights = Number(generalData.minNights);
+    }
+
+    syncPricingScheme(
+      id,
+      generalData.minNights !== undefined ? Number(generalData.minNights) : undefined,
+      generalData.pricePerNight !== undefined ? Number(generalData.pricePerNight) : undefined
+    );
 
     try {
       const updated = await apiClient.put<Accommodation>(`/accommodations/${id}`, payload);
-      if (updated) return normalizeAccommodation(updated);
+      if (updated) {
+        return normalizeAccommodation({
+          ...updated,
+          minNights: generalData.minNights !== undefined ? Number(generalData.minNights) : updated.minNights,
+        });
+      }
     } catch (err) {
       console.warn('Fallo actualizacion en backend, usando fallback local:', err);
     }

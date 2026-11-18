@@ -70,6 +70,7 @@ export interface Accommodation {
   responseTime?: string;
   hostingSinceYear?: number;
   preparationDays?: number;
+  minNights?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;
   amenities: string[];
@@ -111,6 +112,7 @@ export interface CreateAccommodationDto {
   responseTime?: string;
   hostingSinceYear?: number;
   preparationDays?: number;
+  minNights?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;
   isActive?: boolean;

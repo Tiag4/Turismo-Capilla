@@ -95,6 +95,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [responseTime, setResponseTime] = useState(initialData?.responseTime || 'Responde habitualmente en el día');
   const [hostingSinceYear, setHostingSinceYear] = useState<number | null>(initialData?.hostingSinceYear ?? null);
   const [preparationDays, setPreparationDays] = useState<number>(initialData?.preparationDays ?? 0);
+  const [minNights, setMinNights] = useState<number>(initialData?.minNights ?? 1);
   const [hasBreakfast, setHasBreakfast] = useState<boolean>(
     initialData?.hasBreakfast ??
       (initialData?.amenities?.some((a) => a.toLowerCase().includes('desayuno')) || false)
@@ -160,6 +161,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       responseTime: responseTime.trim() || undefined,
       hostingSinceYear: hostingSinceYear || undefined,
       preparationDays,
+      minNights,
       isActive,
       hasBreakfast,
       breakfastType: hasBreakfast ? breakfastType : undefined,
@@ -280,6 +282,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setCheckOut={setCheckOut}
           preparationDays={preparationDays}
           setPreparationDays={setPreparationDays}
+          minNights={minNights}
+          setMinNights={setMinNights}
           hasBreakfast={hasBreakfast}
           setHasBreakfast={setHasBreakfast}
           breakfastType={breakfastType}

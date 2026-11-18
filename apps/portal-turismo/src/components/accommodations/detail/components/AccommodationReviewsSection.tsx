@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Star,
   ShieldCheck,
-  Sparkles,
-  KeyRound,
-  MessageSquare,
-  MapPin,
-  Tag,
   MessageSquarePlus,
   AlertCircle,
   ChevronDown,
@@ -19,6 +14,7 @@ import type { ReviewStats, CreateReviewInput, SubmitReviewResult } from '../hook
 import { REVIEW_ASPECT_OPTIONS } from '../data/mockReviews';
 import { isValidBookingCodeFormat } from '../hooks/useAccommodationReviews';
 import { AccommodationAllReviewsModal } from './AccommodationAllReviewsModal';
+import { AccommodationRatingDimensionsStrip } from './AccommodationRatingDimensionsStrip';
 
 interface AccommodationReviewsSectionProps {
   reviews: ReviewItem[];
@@ -251,40 +247,6 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
   const averageRating = stats?.averageRating ?? 0;
   const ratingFormatted = averageRating > 0 ? averageRating.toFixed(2).replace('.', ',') : '0,0';
 
-  // 6 dimension scores
-  const dimensions = [
-    {
-      label: 'Limpieza',
-      score: (stats?.cleanlinessAverage ?? 5.0).toFixed(1).replace('.', ','),
-      Icon: Sparkles,
-    },
-    {
-      label: 'Veracidad',
-      score: (stats?.accuracyAverage ?? 5.0).toFixed(1).replace('.', ','),
-      Icon: ShieldCheck,
-    },
-    {
-      label: 'Check-in',
-      score: (stats?.checkInAverage ?? 5.0).toFixed(1).replace('.', ','),
-      Icon: KeyRound,
-    },
-    {
-      label: 'Comunicación',
-      score: (stats?.hostAverage ?? 5.0).toFixed(1).replace('.', ','),
-      Icon: MessageSquare,
-    },
-    {
-      label: 'Ubicación',
-      score: (stats?.locationAverage ?? 5.0).toFixed(1).replace('.', ','),
-      Icon: MapPin,
-    },
-    {
-      label: 'Precio según calidad',
-      score: (stats?.valueAverage ?? 4.8).toFixed(1).replace('.', ','),
-      Icon: Tag,
-    },
-  ];
-
   return (
     <section
       id="opiniones-huespedes"
@@ -351,58 +313,14 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
              - En mobile (< md) se OCULTA totalmente (hidden md:flex) para evitar
                scrolls horizontales inaceptables en pantallas pequeñas.
              - En desktop/tablet (md en adelante) es 100% fluido (w-full flex)
-               sin scrollbars verticales ni horizontales.
+               sin scrollbars y con el histograma sin cortes de texto.
          ========================================================================= */}
       {totalReviews > 0 && (
-        <div className="hidden md:flex w-full items-center justify-between py-2">
-          {/* Columna 1: Histograma de calificación general */}
-          <div className="flex-1 pr-3 lg:pr-4 flex flex-col justify-between h-28 text-left min-w-0">
-            <span className="text-xs lg:text-sm font-semibold text-stone-900 block truncate">
-              Calificación general
-            </span>
-            <div className="space-y-1 my-auto">
-              {[5, 4, 3, 2, 1].map((star) => {
-                const count = stats?.distribution?.[star as 1 | 2 | 3 | 4 | 5] || 0;
-                const pct = totalReviews > 0 ? (count / totalReviews) * 100 : star === 5 ? 100 : 0;
-                return (
-                  <div key={star} className="flex items-center gap-1.5 lg:gap-2 text-[10px] lg:text-[11px] text-stone-600 font-medium">
-                    <span className="w-2 tabular-nums">{star}</span>
-                    <div className="w-16 lg:w-20 h-1 rounded-full bg-stone-200 overflow-hidden">
-                      <div
-                        className="h-full bg-stone-900 rounded-full transition-all duration-300"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Separador vertical con margen */}
-          <div className="w-px h-16 bg-stone-200 shrink-0 self-center mx-2 lg:mx-3" aria-hidden="true" />
-
-          {/* Columnas 2 a 7: Dimensiones individuales */}
-          {dimensions.map((dim, idx) => {
-            const Icon = dim.Icon;
-            return (
-              <React.Fragment key={dim.label}>
-                <div className="flex-1 px-2 lg:px-3 flex flex-col justify-between h-28 text-left min-w-0">
-                  <span className="text-xs lg:text-sm font-semibold text-stone-900 block leading-tight truncate">
-                    {dim.label}
-                  </span>
-                  <span className="font-['Outfit'] font-black text-xl lg:text-2xl text-stone-900 tabular-nums my-auto">
-                    {dim.score}
-                  </span>
-                  <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-stone-800 shrink-0 stroke-[1.75]" aria-hidden="true" />
-                </div>
-                {idx < dimensions.length - 1 && (
-                  <div className="w-px h-16 bg-stone-200 shrink-0 self-center mx-2 lg:mx-3" aria-hidden="true" />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
+        <AccommodationRatingDimensionsStrip
+          stats={stats}
+          totalReviews={totalReviews}
+          className="hidden md:flex"
+        />
       )}
 
       {/* Línea horizontal divisoria debajo de las dimensiones */}

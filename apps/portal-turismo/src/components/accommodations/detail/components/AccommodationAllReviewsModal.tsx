@@ -6,17 +6,13 @@ import {
   X,
   ArrowLeft,
   Search,
-  Sparkles,
-  KeyRound,
-  MessageSquare,
-  MapPin,
-  Tag,
 } from 'lucide-react';
 import type { ReviewItem, ReviewAspect } from '../types';
 import type { ReviewStats } from '../hooks/useAccommodationReviews';
 import { REVIEW_ASPECT_OPTIONS } from '../data/mockReviews';
 import { useAnimatedPresence } from '../../../../hooks/useAnimatedPresence';
 import { useBodyScrollLock } from '../../../../hooks/useBodyScrollLock';
+import { AccommodationRatingDimensionsStrip } from './AccommodationRatingDimensionsStrip';
 
 interface AccommodationAllReviewsModalProps {
   isOpen: boolean;
@@ -98,15 +94,6 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
   const averageRating = stats?.averageRating ?? 0;
   const ratingFormatted = averageRating > 0 ? averageRating.toFixed(2).replace('.', ',') : '0,0';
 
-  const dimensions = [
-    { label: 'Limpieza', score: (stats?.cleanlinessAverage ?? 5.0).toFixed(1).replace('.', ','), Icon: Sparkles },
-    { label: 'Veracidad', score: (stats?.accuracyAverage ?? 5.0).toFixed(1).replace('.', ','), Icon: ShieldCheck },
-    { label: 'Check-in', score: (stats?.checkInAverage ?? 5.0).toFixed(1).replace('.', ','), Icon: KeyRound },
-    { label: 'Comunicación', score: (stats?.hostAverage ?? 5.0).toFixed(1).replace('.', ','), Icon: MessageSquare },
-    { label: 'Ubicación', score: (stats?.locationAverage ?? 5.0).toFixed(1).replace('.', ','), Icon: MapPin },
-    { label: 'Precio según calidad', score: (stats?.valueAverage ?? 4.8).toFixed(1).replace('.', ','), Icon: Tag },
-  ];
-
   return createPortal(
     <div
       className={`fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 transition-opacity duration-200 ${
@@ -171,27 +158,12 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
             </div>
           </div>
 
-          {/* Desglose de 6 Dimensiones (Grid limpio sin tarjetitis) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 pb-6 border-b border-stone-200/80">
-            {dimensions.map((dim) => {
-              const Icon = dim.Icon;
-              return (
-                <div
-                  key={dim.label}
-                  className="p-3 rounded-2xl bg-sand-50/80 border border-sand-200/60 flex flex-col justify-between h-24"
-                >
-                  <span className="text-xs font-semibold text-stone-700 block truncate">
-                    {dim.label}
-                  </span>
-                  <div className="flex items-center justify-between">
-                    <span className="font-['Outfit'] font-black text-lg text-stone-900 tabular-nums">
-                      {dim.score}
-                    </span>
-                    <Icon className="w-4 h-4 text-stone-700" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                </div>
-              );
-            })}
+          {/* Desglose de 6 Dimensiones (Idéntico al modelo de la ficha principal) */}
+          <div className="pb-4 border-b border-stone-200/80">
+            <AccommodationRatingDimensionsStrip
+              stats={stats}
+              totalReviews={totalReviews}
+            />
           </div>
 
           {/* Barra de Búsqueda y Filtros de Aspectos */}

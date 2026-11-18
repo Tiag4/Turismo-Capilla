@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, Home, ChevronRight, LogOut } from 'lucide-react';
 import type { User } from '../../types/auth.types.ts';
+import officialLogo from '../../assets/logo-capilla-del-monte.png';
 
 export interface WorkspaceSelectorPageProps {
   user: User;
@@ -18,11 +19,13 @@ export const WorkspaceSelectorPage: React.FC<WorkspaceSelectorPageProps> = ({
       {/* Top minimal bar */}
       <header className="w-full max-w-md flex items-center justify-between py-2">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[var(--color-emerald-portal-600)] text-white flex items-center justify-center font-extrabold text-xs font-['Outfit'] shadow-2xs">
-            CM
-          </div>
+          <img
+            src={officialLogo}
+            alt="Cámara de Turismo — Capilla del Monte"
+            className="h-8 w-auto object-contain"
+          />
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] font-['Outfit']">
-            Turismo Capilla del Monte
+            Cámara de Turismo
           </span>
         </div>
 

@@ -37,8 +37,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           <div className="flex items-center justify-between gap-4">
             <img
               src={officialLogo}
-              alt="Turismo Capilla del Monte"
-              className="h-11 w-auto object-contain"
+              alt="Cámara de Turismo — Capilla del Monte"
+              className="h-14 w-auto object-contain"
             />
 
             <a

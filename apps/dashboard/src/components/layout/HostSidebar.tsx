@@ -16,6 +16,7 @@ import type { User } from '../../types/auth.types.ts';
 import type { DashboardTab } from './DashboardNav.tsx';
 import { useAnimatedPresence } from '../../hooks/useAnimatedPresence.ts';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock.ts';
+import officialLogo from '../../assets/logo-capilla-del-monte.png';
 
 export interface HostSidebarProps {
   currentTab: DashboardTab;
@@ -127,9 +128,11 @@ export const HostSidebar: React.FC<HostSidebarProps> = ({
       {/* 1. Header & Brand (shrink-0) */}
       <div className="shrink-0 flex items-center justify-between pb-3 border-b border-[var(--color-sand-200)]">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-terracotta-500)] flex items-center justify-center text-white font-extrabold text-sm font-['Outfit'] shadow-xs shrink-0">
-            CM
-          </div>
+          <img
+            src={officialLogo}
+            alt="Cámara de Turismo"
+            className="w-9 h-9 object-contain shrink-0"
+          />
           {expanded && (
             <div className="min-w-0 animate-in fade-in duration-200">
               <span className="text-xs font-black tracking-wider uppercase text-[var(--color-sand-900)] font-['Outfit'] block truncate">

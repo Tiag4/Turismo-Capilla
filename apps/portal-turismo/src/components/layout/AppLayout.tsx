@@ -47,12 +47,12 @@ export const AppLayout: React.FC = () => {
             to="/"
             onClick={closeMobileMenu}
             className="flex items-center group py-1"
-            aria-label="Capilla del Monte — Pueblo Uritorco"
+            aria-label="Cámara de Turismo — Capilla del Monte"
           >
             <img
               src="/cropped-logo-capilla-del-monte-2024.png"
-              alt="Capilla del Monte — Pueblo Uritorco"
-              className="h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+              alt="Cámara de Turismo — Capilla del Monte"
+              className="h-12 sm:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
               loading="eager"
             />
           </Link>

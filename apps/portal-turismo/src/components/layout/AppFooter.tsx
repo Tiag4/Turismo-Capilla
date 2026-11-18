@@ -36,8 +36,8 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onMapaClick, onOpenEmergen
           <div className="flex items-center gap-3">
             <img
               src="/cropped-logo-capilla-del-monte-2024.png"
-              alt="Capilla del Monte — Pueblo Uritorco"
-              className="h-11 w-auto object-contain bg-white/95 px-2.5 py-1.5 rounded-xl shadow-sm"
+              alt="Cámara de Turismo — Capilla del Monte"
+              className="h-12 w-auto object-contain bg-white/95 px-2 py-1.5 rounded-xl shadow-sm"
               loading="lazy"
             />
             <div>

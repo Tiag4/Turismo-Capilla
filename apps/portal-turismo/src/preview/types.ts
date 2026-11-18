@@ -10,6 +10,12 @@ export interface PortalCMSPreviewPayload {
     subtitle?: string;
     imageUrl?: string;
   };
+  duoAccessConfig?: {
+    whatToDoImageUrl?: string;
+    whatToDoSubtitle?: string;
+    whereToSleepImageUrl?: string;
+    whereToSleepSubtitle?: string;
+  };
   finalCtaConfig?: {
     title?: string;
     subtitle?: string;

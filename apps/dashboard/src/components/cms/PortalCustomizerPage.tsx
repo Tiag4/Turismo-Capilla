@@ -309,6 +309,42 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
                     heroConfig: { ...prev.heroConfig, imageUrl },
                   }))
                 }
+                onChangeDuoWhatToDoImageUrl={(whatToDoImageUrl) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    duoAccessConfig: {
+                      ...prev.duoAccessConfig,
+                      whatToDoImageUrl,
+                    },
+                  }))
+                }
+                onChangeDuoWhatToDoSubtitle={(whatToDoSubtitle) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    duoAccessConfig: {
+                      ...prev.duoAccessConfig,
+                      whatToDoSubtitle,
+                    },
+                  }))
+                }
+                onChangeDuoWhereToSleepImageUrl={(whereToSleepImageUrl) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    duoAccessConfig: {
+                      ...prev.duoAccessConfig,
+                      whereToSleepImageUrl,
+                    },
+                  }))
+                }
+                onChangeDuoWhereToSleepSubtitle={(whereToSleepSubtitle) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    duoAccessConfig: {
+                      ...prev.duoAccessConfig,
+                      whereToSleepSubtitle,
+                    },
+                  }))
+                }
                 onChangeCtaTitle={(title) =>
                   setConfig((prev) => ({
                     ...prev,

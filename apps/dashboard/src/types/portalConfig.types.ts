@@ -5,6 +5,13 @@ export interface HomeSectionItem {
   category: 'core' | 'content' | 'marketing';
 }
 
+export interface DuoAccessConfig {
+  whatToDoImageUrl?: string;
+  whatToDoSubtitle?: string;
+  whereToSleepImageUrl?: string;
+  whereToSleepSubtitle?: string;
+}
+
 export interface PortalCMSConfig {
   sectionsOrder: string[];
   sectionsVisibility: Record<string, boolean>;
@@ -13,6 +20,7 @@ export interface PortalCMSConfig {
     subtitle: string;
     imageUrl?: string;
   };
+  duoAccessConfig?: DuoAccessConfig;
   finalCtaConfig?: {
     title: string;
     subtitle: string;
@@ -108,6 +116,12 @@ export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
     title: 'El valle del Uritorco, directo y sin intermediarios.',
     subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
     imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+  },
+  duoAccessConfig: {
+    whatToDoImageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    whatToDoSubtitle: '12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones, ollas de agua en La Toma y espejos del dique El Cajón.',
+    whereToSleepImageUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
+    whereToSleepSubtitle: 'Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época. Trato directo con el prestador, sin comisiones ni sobreprecios.',
   },
   finalCtaConfig: {
     title: '¿Listo para descubrir Capilla del Monte?',

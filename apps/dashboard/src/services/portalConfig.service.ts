@@ -19,6 +19,10 @@ export const portalConfigService = {
             ...DEFAULT_PORTAL_CONFIG.heroConfig,
             ...(parsed.heroConfig || {}),
           },
+          duoAccessConfig: {
+            ...DEFAULT_PORTAL_CONFIG.duoAccessConfig,
+            ...(parsed.duoAccessConfig || {}),
+          },
           finalCtaConfig: {
             ...DEFAULT_PORTAL_CONFIG.finalCtaConfig,
             ...(parsed.finalCtaConfig || {}),

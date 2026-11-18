@@ -22,6 +22,7 @@ export function usePreviewCommunication({
         sectionsOrder: config.sectionsOrder,
         sectionsVisibility: config.sectionsVisibility,
         heroConfig: config.heroConfig,
+        duoAccessConfig: config.duoAccessConfig,
         finalCtaConfig: config.finalCtaConfig,
         uritorcoConfig: config.uritorcoConfig,
         events: events,

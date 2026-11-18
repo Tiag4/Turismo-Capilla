@@ -16,6 +16,8 @@ export interface GeneralInfoSectionProps {
   setLicenseNumber?: (val: string) => void;
   responseTime?: string;
   setResponseTime?: (val: string) => void;
+  hostingSinceYear?: number | null;
+  setHostingSinceYear?: (val: number | null) => void;
   isActive?: boolean;
   setIsActive?: (val: boolean) => void;
 }
@@ -39,6 +41,8 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
   setLicenseNumber,
   responseTime = '',
   setResponseTime,
+  hostingSinceYear,
+  setHostingSinceYear,
   isActive = true,
   setIsActive,
 }) => {
@@ -98,7 +102,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[var(--color-sand-100)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-[var(--color-sand-100)]">
         <div>
           <Input
             label="N° de Habilitación / Matrícula Municipal"
@@ -107,6 +111,22 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             placeholder="ej. H-4829 / Res. 104-2023"
             tooltip="Número de registro otorgado por el Municipio de Capilla del Monte que certifica la habilitación oficial."
             helperText="Aparecerá en el portal con el sello oficial de prestador habilitado."
+          />
+        </div>
+        <div>
+          <Input
+            label="Año de inicio de actividad"
+            type="number"
+            min={1950}
+            max={new Date().getFullYear()}
+            value={hostingSinceYear ? String(hostingSinceYear) : ''}
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : null;
+              setHostingSinceYear?.(val && !isNaN(val) ? val : null);
+            }}
+            placeholder="ej. 2014"
+            tooltip="Año en que el establecimiento o prestador inició formalmente su actividad habilitada en Capilla del Monte."
+            helperText="Define la antigüedad que verán los turistas en la ficha oficial."
           />
         </div>
         <div>

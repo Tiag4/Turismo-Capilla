@@ -68,6 +68,7 @@ export interface Accommodation {
   cancellationPolicy?: string;
   licenseNumber?: string;
   responseTime?: string;
+  hostingSinceYear?: number;
   preparationDays?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;
@@ -108,6 +109,7 @@ export interface CreateAccommodationDto {
   cancellationPolicy?: string;
   licenseNumber?: string;
   responseTime?: string;
+  hostingSinceYear?: number;
   preparationDays?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;

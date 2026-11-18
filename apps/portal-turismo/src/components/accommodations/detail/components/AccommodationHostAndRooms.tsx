@@ -38,7 +38,7 @@ export const AccommodationHostAndRooms: React.FC<AccommodationHostAndRoomsProps>
           </div>
           <div className="flex items-center gap-1.5">
             <Award className="w-4 h-4 text-primary-600" />
-            <span>{data.host.yearsHosting} años como prestador</span>
+            <span>{data.host.yearsHosting} {data.host.yearsHosting === 1 ? 'año' : 'años'} como prestador</span>
           </div>
         </div>
       </div>

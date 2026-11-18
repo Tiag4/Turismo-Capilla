@@ -89,6 +89,12 @@ export interface ReviewItem {
   authorOrigin?: string;
   stayDate: string;
   rating: number;
+  cleanlinessRating?: number;
+  accuracyRating?: number;
+  checkInRating?: number;
+  hostRating?: number;
+  locationRating?: number;
+  valueRating?: number;
   comment: string;
   aspects: ReviewAspect[];
   verifiedBooking: boolean;

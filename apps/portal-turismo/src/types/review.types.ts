@@ -17,8 +17,11 @@ export interface CreateReviewPayload {
   bookingCode: string;
   rating: number;
   cleanlinessRating: number;
+  accuracyRating?: number;
+  checkInRating?: number;
   hostRating: number;
   locationRating: number;
+  valueRating?: number;
   comment: string;
   guestOrigin?: string;
   stayDate?: string;
@@ -35,8 +38,11 @@ export interface Review {
   stayDate?: string | null;
   rating: number;
   cleanlinessRating: number;
+  accuracyRating?: number;
+  checkInRating?: number;
   hostRating: number;
   locationRating: number;
+  valueRating?: number;
   comment: string;
   status: ReviewStatus;
   moderationNotes?: string | null;
@@ -49,6 +55,9 @@ export interface AccommodationReviews {
   totalReviews: number;
   averageRating: number;
   cleanlinessAverage: number;
+  accuracyAverage?: number;
+  checkInAverage?: number;
   hostAverage: number;
   locationAverage: number;
+  valueAverage?: number;
 }

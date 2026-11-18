@@ -73,9 +73,11 @@ function mapApiToPlace(item: Accommodation): MapPlace {
           }))
         : undefined,
     hostName: item.hostName || (item.host ? `${item.host.name} ${item.host.lastName}`.trim() : undefined),
-    hostYearsHosting: item.host?.createdAt
-      ? Math.max(1, new Date().getFullYear() - new Date(item.host.createdAt).getFullYear())
-      : undefined,
+    hostYearsHosting: item.hostingSinceYear
+      ? Math.max(1, new Date().getFullYear() - item.hostingSinceYear)
+      : item.host?.createdAt
+        ? Math.max(1, new Date().getFullYear() - new Date(item.host.createdAt).getFullYear())
+        : undefined,
     zone: item.locality || 'Capilla del Monte',
     ctaUrl: `/alojamientos/${item.id}`,
   };

@@ -107,7 +107,12 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           isLoading={reviewsCtrl.isLoading}
           submitSuccess={reviewsCtrl.submitSuccess}
           pendingModeration={reviewsCtrl.pendingModeration}
-          onOpenReviewModal={reviewsCtrl.openModal}
+          isSubmitting={reviewsCtrl.isSubmitting}
+          isFormExpanded={reviewsCtrl.isFormExpanded}
+          onToggleForm={() => reviewsCtrl.setIsFormExpanded((prev) => !prev)}
+          initialBookingCode={reviewsCtrl.initialBookingCode}
+          onSubmitReview={reviewsCtrl.addReview}
+          onCheckEligibility={reviewsCtrl.checkEligibility}
         />
       </div>
 

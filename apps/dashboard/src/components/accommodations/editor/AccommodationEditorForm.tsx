@@ -93,6 +93,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [cancellationPolicy, setCancellationPolicy] = useState(initialData?.cancellationPolicy || '');
   const [licenseNumber, setLicenseNumber] = useState(initialData?.licenseNumber || '');
   const [responseTime, setResponseTime] = useState(initialData?.responseTime || 'Responde habitualmente en el día');
+  const [hostingSinceYear, setHostingSinceYear] = useState<number | null>(initialData?.hostingSinceYear ?? null);
   const [preparationDays, setPreparationDays] = useState<number>(initialData?.preparationDays ?? 0);
   const [hasBreakfast, setHasBreakfast] = useState<boolean>(
     initialData?.hasBreakfast ??
@@ -157,6 +158,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       cancellationPolicy: cancellationPolicy.trim() || undefined,
       licenseNumber: licenseNumber.trim() || undefined,
       responseTime: responseTime.trim() || undefined,
+      hostingSinceYear: hostingSinceYear || undefined,
       preparationDays,
       isActive,
       hasBreakfast,
@@ -229,6 +231,8 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setLicenseNumber={setLicenseNumber}
           responseTime={responseTime}
           setResponseTime={setResponseTime}
+          hostingSinceYear={hostingSinceYear}
+          setHostingSinceYear={setHostingSinceYear}
           isActive={isActive}
           setIsActive={setIsActive}
         />

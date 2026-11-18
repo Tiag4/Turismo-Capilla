@@ -5,7 +5,7 @@ const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const dateBlocksService = {
-  async getByAccommodation(accommodationId: string): Promise<DateBlockRange[]> {
+  async getByAccommodation(accommodationId: string, roomTypeId?: string): Promise<DateBlockRange[]> {
     if (!UUID_PATTERN.test(accommodationId)) {
       return [];
     }
@@ -14,13 +14,21 @@ export const dateBlocksService = {
     const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     try {
+      const queryParam = roomTypeId ? `?roomTypeId=${encodeURIComponent(roomTypeId)}` : '';
       const response = await fetch(
-        `${API_BASE_URL}/accommodations/${accommodationId}/date-blocks`,
+        `${API_BASE_URL}/accommodations/${accommodationId}/calendar-availability${queryParam}`,
         { signal: controller.signal },
       );
 
       if (!response.ok) {
-        return [];
+        // Fallback a endpoint legacy de date-blocks si el backend no cuenta con calendar-availability
+        const fallback = await fetch(
+          `${API_BASE_URL}/accommodations/${accommodationId}/date-blocks`,
+          { signal: controller.signal },
+        );
+        if (!fallback.ok) return [];
+        const data = await fallback.json();
+        return Array.isArray(data) ? data : [];
       }
 
       const data = await response.json();

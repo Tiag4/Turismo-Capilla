@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import {
   Star,
   ShieldCheck,
-  CheckCircle2,
+  Sparkles,
   KeyRound,
   MessageSquare,
   MapPin,
   Tag,
-  Calendar,
   MessageSquarePlus,
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  CheckCircle2,
 } from 'lucide-react';
 import type { ReviewItem, ReviewAspect } from '../types';
 import type { ReviewStats, CreateReviewInput, SubmitReviewResult } from '../hooks/useAccommodationReviews';
@@ -31,31 +31,6 @@ interface AccommodationReviewsSectionProps {
   onSubmitReview: (input: CreateReviewInput) => Promise<SubmitReviewResult> | SubmitReviewResult;
   onCheckEligibility?: (bookingCode: string) => Promise<any>;
 }
-
-// Laurel wreath branches flanking the hero score
-const LaurelBranchLeft: React.FC = () => (
-  <svg
-    className="w-8 h-14 sm:w-10 sm:h-16 text-stone-800 select-none shrink-0"
-    viewBox="0 0 36 64"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M28 4c-2 6-7 10-14 11 3-5 8-8 14-11zm-8 12c-4 5-11 7-18 6 4-5 10-7 18-6zm-4 13c-4 5-11 6-16 4 4-5 10-6 16-4zm0 13c-3 5-9 6-14 4 4-4 9-5 14-4zm5 12c-2 4-6 5-10 4 3-4 7-5 10-4z" />
-    <path d="M30 6c-1 15-5 32-15 48" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-  </svg>
-);
-
-const LaurelBranchRight: React.FC = () => (
-  <svg
-    className="w-8 h-14 sm:w-10 sm:h-16 text-stone-800 select-none shrink-0 scale-x-[-1]"
-    viewBox="0 0 36 64"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M28 4c-2 6-7 10-14 11 3-5 8-8 14-11zm-8 12c-4 5-11 7-18 6 4-5 10-7 18-6zm-4 13c-4 5-11 6-16 4 4-5 10-6 16-4zm0 13c-3 5-9 6-14 4 4-4 9-5 14-4zm5 12c-2 4-6 5-10 4 3-4 7-5 10-4z" />
-    <path d="M30 6c-1 15-5 32-15 48" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-  </svg>
-);
 
 // Accessible Star Picker Component (WCAG 2.2 AA compliant, 44x44px touch targets)
 interface StarRatingInputProps {
@@ -265,39 +240,33 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
   const dimensions = [
     {
       label: 'Limpieza',
-      score: (stats?.cleanlinessAverage ?? 4.9).toFixed(1),
-      Icon: CheckCircle2,
-      desc: 'Higiene de ambientes y vajilla',
+      score: (stats?.cleanlinessAverage ?? 5.0).toFixed(1).replace('.', ','),
+      Icon: Sparkles,
     },
     {
       label: 'Veracidad',
-      score: (stats?.accuracyAverage ?? 4.9).toFixed(1),
+      score: (stats?.accuracyAverage ?? 5.0).toFixed(1).replace('.', ','),
       Icon: ShieldCheck,
-      desc: 'Fotos y servicios 100% reales',
     },
     {
       label: 'Check-in',
-      score: (stats?.checkInAverage ?? 4.9).toFixed(1),
+      score: (stats?.checkInAverage ?? 5.0).toFixed(1).replace('.', ','),
       Icon: KeyRound,
-      desc: 'Puntualidad en la entrega de llave',
     },
     {
       label: 'Comunicación',
-      score: (stats?.hostAverage ?? 4.8).toFixed(1),
+      score: (stats?.hostAverage ?? 5.0).toFixed(1).replace('.', ','),
       Icon: MessageSquare,
-      desc: 'Atención y trato del anfitrión',
     },
     {
       label: 'Ubicación',
-      score: (stats?.locationAverage ?? 4.9).toFixed(1),
+      score: (stats?.locationAverage ?? 5.0).toFixed(1).replace('.', ','),
       Icon: MapPin,
-      desc: 'Entorno serrano y accesibilidad',
     },
     {
-      label: 'Calidad-Precio',
-      score: (stats?.valueAverage ?? 4.8).toFixed(1),
+      label: 'Precio según calidad',
+      score: (stats?.valueAverage ?? 4.8).toFixed(1).replace('.', ','),
       Icon: Tag,
-      desc: 'Tarifa oficial sin comisiones',
     },
   ];
 
@@ -305,37 +274,46 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
     <section
       id="opiniones-huespedes"
       aria-labelledby="reviews-section-heading"
-      className="space-y-8 pt-8 border-t border-stone-200/80"
+      className="space-y-10 pt-10 border-t border-stone-200/80"
     >
       {/* =========================================================================
-          1. HERO HEADER: RATING & BADGE (Estilo editorial con identidad serrana)
+          1. HERO HEADER: RATING & BADGE (Limpio, tipográfico, sin laureles)
          ========================================================================= */}
       <div className="flex flex-col items-center text-center space-y-3 py-4">
-        {/* Número grande flanqueado por laureles */}
-        <div className="flex items-center justify-center gap-3 sm:gap-5">
-          <LaurelBranchLeft />
-          <div className="flex flex-col items-center">
-            <span className="font-['Outfit'] font-black text-5xl sm:text-6xl text-stone-900 tracking-tight leading-none">
-              {ratingFormatted}
-            </span>
-          </div>
-          <LaurelBranchRight />
-        </div>
+        {totalReviews > 0 ? (
+          <>
+            <div className="flex items-center justify-center">
+              <span className="font-['Outfit'] font-black text-5xl sm:text-6xl text-stone-900 tracking-tight leading-none">
+                {ratingFormatted}
+              </span>
+            </div>
 
-        {/* Título de mérito institucional */}
-        <div className="space-y-1.5 max-w-xl mx-auto">
-          <h2
-            id="reviews-section-heading"
-            className="font-['Outfit'] font-black text-xl sm:text-2xl text-stone-900"
-          >
-            Destacado por Huéspedes
-          </h2>
-          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-            {totalReviews > 0
-              ? `Este alojamiento cuenta con ${totalReviews} ${totalReviews === 1 ? 'evaluación oficial' : 'evaluaciones oficiales'} de turistas que verificaron su estadía en Capilla del Monte.`
-              : 'Establecimiento formalmente auditado. Sé el primer turista en compartir tu experiencia tras completar tu estadía.'}
-          </p>
-        </div>
+            <div className="space-y-1.5 max-w-xl mx-auto">
+              <h2
+                id="reviews-section-heading"
+                className="font-['Outfit'] font-black text-xl sm:text-2xl text-stone-900"
+              >
+                Favorito entre huéspedes
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Este alojamiento es uno de los preferidos entre los huéspedes según las calificaciones,
+                las evaluaciones y la fiabilidad de sus servicios en Capilla del Monte.
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-1.5 max-w-xl mx-auto">
+            <h2
+              id="reviews-section-heading"
+              className="font-['Outfit'] font-black text-xl sm:text-2xl text-stone-900"
+            >
+              Evaluaciones de Huéspedes
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Establecimiento formalmente auditado por la Secretaría de Turismo. Sé el primer turista en compartir tu experiencia tras completar tu estadía.
+            </p>
+          </div>
+        )}
 
         {/* Botón de acción para desplegar el formulario INLINE */}
         <div className="pt-2">
@@ -354,33 +332,65 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
       </div>
 
       {/* =========================================================================
-          2. INLINE STAT STRIP: 6 DIMENSIONES (Anti-vibecoded: divide-x, sin card-itis)
+          2. INLINE STAT STRIP: 6 DIMENSIONES (Estilo Airbnb: líneas con margen,
+             sin líneas externas por fuera ni tarjetitis)
          ========================================================================= */}
-      <div className="rounded-2xl border border-sand-200 bg-sand-50/90 shadow-xs overflow-hidden">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-sand-200">
-          {dimensions.map((dim) => {
-            const Icon = dim.Icon;
-            return (
-              <div key={dim.label} className="p-4 sm:p-5 flex flex-col justify-between gap-3 text-left">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-stone-800 block">
-                    {dim.label}
-                  </span>
-                  <span className="text-[11px] text-stone-500 leading-snug line-clamp-2">
-                    {dim.desc}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="font-['Outfit'] font-black text-xl text-stone-900 tabular-nums">
-                    {dim.score}
-                  </span>
-                  <Icon className="w-4 h-4 text-terracotta-600 shrink-0" aria-hidden="true" />
-                </div>
+      {totalReviews > 0 && (
+        <div className="w-full overflow-x-auto no-scrollbar py-2">
+          <div className="min-w-[760px] flex items-center justify-between">
+            {/* Columna 1: Histograma de calificación general */}
+            <div className="flex-1 pr-4 flex flex-col justify-between h-28 text-left">
+              <span className="text-xs sm:text-sm font-semibold text-stone-900 block">
+                Calificación general
+              </span>
+              <div className="space-y-1 my-auto">
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const count = stats?.distribution?.[star as 1 | 2 | 3 | 4 | 5] || 0;
+                  const pct = totalReviews > 0 ? (count / totalReviews) * 100 : star === 5 ? 100 : 0;
+                  return (
+                    <div key={star} className="flex items-center gap-2 text-[11px] text-stone-600 font-medium">
+                      <span className="w-2 tabular-nums">{star}</span>
+                      <div className="w-20 sm:w-24 h-1 rounded-full bg-stone-200 overflow-hidden">
+                        <div
+                          className="h-full bg-stone-900 rounded-full transition-all duration-300"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+
+            {/* Separador vertical con margen */}
+            <div className="w-px h-16 bg-stone-200 shrink-0 self-center mx-3 sm:mx-4" aria-hidden="true" />
+
+            {/* Columnas 2 a 7: Dimensiones individuales */}
+            {dimensions.map((dim, idx) => {
+              const Icon = dim.Icon;
+              return (
+                <React.Fragment key={dim.label}>
+                  <div className="flex-1 px-3 sm:px-4 flex flex-col justify-between h-28 text-left">
+                    <span className="text-xs sm:text-sm font-semibold text-stone-900 block leading-tight">
+                      {dim.label}
+                    </span>
+                    <span className="font-['Outfit'] font-black text-xl sm:text-2xl text-stone-900 tabular-nums my-auto">
+                      {dim.score}
+                    </span>
+                    <Icon className="w-6 h-6 text-stone-800 shrink-0 stroke-[1.75]" aria-hidden="true" />
+                  </div>
+                  {idx < dimensions.length - 1 && (
+                    <div className="w-px h-16 bg-stone-200 shrink-0 self-center mx-3 sm:mx-4" aria-hidden="true" />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Línea horizontal divisoria debajo de las dimensiones */}
+      <div className="border-b border-stone-200/80 my-8" />
 
       {/* Feedback Banner post-publicación */}
       {submitSuccess && (
@@ -632,73 +642,67 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
       )}
 
       {/* =========================================================================
-          4. LISTADO DE RESEÑAS DE HUÉSPEDES
+          4. LISTADO DE RESEÑAS DE HUÉSPEDES (Estilo Airbnb: sin cajas ni bordes
+             alrededor de cada reseña, 2 columnas limpias y tipográficas)
          ========================================================================= */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" aria-busy="true">
-          {[1, 2].map((skeleton) => (
-            <div
-              key={skeleton}
-              className="p-5 rounded-2xl bg-sand-50 border border-sand-200 animate-pulse space-y-3 h-40"
-            >
-              <div className="h-4 w-1/3 bg-sand-200 rounded" />
-              <div className="h-3 w-1/4 bg-sand-200 rounded" />
-              <div className="h-12 w-full bg-sand-200 rounded" />
-            </div>
-          ))}
-        </div>
-      ) : reviews.length === 0 ? (
-        /* Estado Vacío */
-        <div className="p-8 rounded-2xl bg-sand-50 border border-sand-200 text-center space-y-3">
-          <Star className="w-8 h-8 text-amber-500 mx-auto" />
-          <div className="space-y-1">
-            <h3 className="font-['Outfit'] font-bold text-base text-stone-900">
-              Sé el primero en compartir tu experiencia
-            </h3>
-            <p className="text-xs text-stone-600 max-w-md mx-auto">
-              ¿Te hospedaste en este establecimiento? Hacé clic en el botón superior e ingresá tu código de reserva oficial.
-            </p>
-          </div>
-        </div>
-      ) : (
-        /* Grilla de Reseñas */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {reviews.map((review) => (
-            <article
-              key={review.id}
-              className="p-5 rounded-2xl bg-sand-50 border border-sand-200 flex flex-col justify-between space-y-4 shadow-xs"
-            >
-              <div className="space-y-3">
-                {/* Encabezado: Autor, Origen, Fecha, Estrellas */}
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-['Outfit'] font-bold text-sm text-stone-900">
-                        {review.authorName}
-                      </h3>
-                      {review.verifiedBooking && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-uritorco-600 text-white text-[10px] font-extrabold">
-                          <ShieldCheck className="w-3 h-3 shrink-0" />
-                          <span>Huésped Verificado</span>
-                        </span>
-                      )}
-                    </div>
+      <div className="space-y-6">
+        <h3 className="font-['Outfit'] font-black text-xl sm:text-2xl text-stone-900">
+          Dicho por los huéspedes
+        </h3>
 
-                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-stone-500 font-medium mt-1">
-                      {review.authorOrigin && (
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-terracotta-600 shrink-0" />
-                          {review.authorOrigin}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-stone-400 shrink-0" />
-                        Estadía: {review.stayDate}
-                      </span>
-                    </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10" aria-busy="true">
+            {[1, 2].map((skeleton) => (
+              <div key={skeleton} className="animate-pulse space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-sand-200" />
+                  <div className="space-y-1.5 flex-1">
+                    <div className="h-4 w-1/3 bg-sand-200 rounded" />
+                    <div className="h-3 w-1/4 bg-sand-200 rounded" />
                   </div>
+                </div>
+                <div className="h-3 w-1/2 bg-sand-200 rounded" />
+                <div className="h-14 w-full bg-sand-200 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : reviews.length === 0 ? (
+          /* Estado Vacío: sin caja ni tarjetitis */
+          <div className="py-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-sand-100 flex items-center justify-center mx-auto text-amber-500">
+              <Star className="w-6 h-6 fill-amber-500" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-['Outfit'] font-bold text-base text-stone-900">
+                Sé el primero en compartir tu experiencia
+              </h4>
+              <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto">
+                ¿Te hospedaste en este establecimiento? Hacé clic en el botón superior e ingresá tu código de reserva oficial.
+              </p>
+            </div>
+          </div>
+        ) : (
+          /* Grilla de Reseñas: 2 columnas sin cajas ni bordes de tarjeta */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10 sm:gap-y-12">
+            {reviews.map((review) => (
+              <article key={review.id} className="space-y-3 text-left">
+                {/* Perfil del Huésped */}
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-full bg-stone-800 text-white font-['Outfit'] font-bold text-sm flex items-center justify-center shrink-0 uppercase shadow-xs">
+                    {review.authorName.charAt(0)}
+                  </div>
+                  <div className="leading-tight">
+                    <h4 className="font-['Outfit'] font-bold text-sm sm:text-base text-stone-900">
+                      {review.authorName}
+                    </h4>
+                    <p className="text-xs text-stone-500 font-normal mt-0.5">
+                      {review.authorOrigin || 'Turista Visitante'}
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Estrellas numéricas */}
+                {/* Estrellas + Fecha + Badge verificado */}
+                <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
                   <div
                     className="flex items-center gap-0.5 shrink-0"
                     aria-label={`Calificación: ${review.rating} de 5 estrellas`}
@@ -708,37 +712,48 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
                         key={star}
                         className={`w-3.5 h-3.5 ${
                           star <= review.rating
-                            ? 'fill-amber-500 text-amber-500'
+                            ? 'fill-stone-900 text-stone-900'
                             : 'fill-transparent text-stone-300'
                         }`}
                       />
                     ))}
                   </div>
+                  <span className="text-stone-300">·</span>
+                  <span className="font-medium text-stone-700">{review.stayDate}</span>
+                  {review.verifiedBooking && (
+                    <>
+                      <span className="text-stone-300">·</span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        Huésped Verificado
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                {/* Comentario del Huésped */}
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                {/* Comentario del Huésped (sin fondo ni borde) */}
+                <p className="text-sm text-stone-800 leading-relaxed font-normal">
                   {review.comment}
                 </p>
-              </div>
 
-              {/* Aspectos Valorados */}
-              {review.aspects && review.aspects.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-sand-200">
-                  {review.aspects.map((aspect) => (
-                    <span
-                      key={aspect}
-                      className="px-2.5 py-1 rounded-lg bg-stone-800 text-white text-[10px] font-bold"
-                    >
-                      {aspect}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      )}
+                {/* Aspectos Destacados como sutiles badges planos */}
+                {review.aspects && review.aspects.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {review.aspects.map((aspect) => (
+                      <span
+                        key={aspect}
+                        className="px-2.5 py-0.5 rounded-md bg-sand-100 text-stone-700 text-[11px] font-medium"
+                      >
+                        {aspect}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 };

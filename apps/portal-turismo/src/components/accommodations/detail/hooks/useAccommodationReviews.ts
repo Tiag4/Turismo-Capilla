@@ -211,35 +211,41 @@ export function useAccommodationReviews(
     }
 
     const cleanlinessAverage =
-      apiSummary?.cleanlinessAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.cleanlinessRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.9);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.cleanlinessAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.cleanlinessRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
     const accuracyAverage =
-      apiSummary?.accuracyAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.accuracyRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.9);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.accuracyAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.accuracyRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
     const checkInAverage =
-      apiSummary?.checkInAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.checkInRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.9);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.checkInAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.checkInRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
     const hostAverage =
-      apiSummary?.hostAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.hostRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.8);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.hostAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.hostRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
     const locationAverage =
-      apiSummary?.locationAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.locationRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.9);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.locationAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.locationRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
     const valueAverage =
-      apiSummary?.valueAverage ??
-      (allReviews.length > 0
-        ? Number((allReviews.reduce((acc, r) => acc + (r.valueRating ?? r.rating), 0) / allReviews.length).toFixed(1))
-        : 4.8);
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.valueAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.valueRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
 
     if (isRealAccommodation) {
       const totalReviews = apiSummary?.totalReviews ?? allReviews.length;

@@ -3,7 +3,7 @@ export const API_BASE_URL =
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
   (import.meta.env?.DEV
     ? 'http://localhost:8080/api/v1'
-    : 'https://turismo-capilla-backend.onrender.com/api/v1');
+    : 'https://services.equarys.com/turismo-api/api/v1');
 
 const DEFAULT_TIMEOUT_MS = 6000;
 // Uploads can carry files up to 5 MB; allow more time than JSON requests.

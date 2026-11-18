@@ -49,6 +49,7 @@ export interface RoomTypeInventoryItem {
 }
 
 export interface AccommodationDetailData extends MapPlace {
+  minNights?: number;
   inventoryMode: InventoryMode;
   roomTypes: RoomTypeInventoryItem[];
   gallery: string[];

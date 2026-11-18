@@ -76,6 +76,7 @@ export interface Accommodation {
   licenseNumber?: string;
   responseTime?: string;
   hostingSinceYear?: number;
+  minNights?: number;
   inventoryMode?: 'SINGLE_UNIT' | 'MULTI_ROOM';
   roomTypes?: RoomTypeApiDto[];
   amenities: string[];

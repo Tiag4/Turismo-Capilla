@@ -98,8 +98,23 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     };
   }, [data.id, selectedRoomId]);
 
+  // Calculate nights count
+  const nightsCount = useMemo(() => {
+    if (!checkIn || !checkOut) return null;
+    const d1 = new Date(checkIn);
+    const d2 = new Date(checkOut);
+    const diffTime = d2.getTime() - d1.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : null;
+  }, [checkIn, checkOut]);
+
   const dateRangeError = useMemo(() => {
     if (!checkIn || !checkOut) return null;
+
+    const minNightsRequired = Math.max(1, data.minNights ?? 1);
+    if (nightsCount !== null && nightsCount < minNightsRequired) {
+      return `La estadía mínima requerida para este alojamiento es de ${minNightsRequired} noches.`;
+    }
 
     const conflictingBlock = blockedRanges.find(
       (block) => checkIn < block.endDate && checkOut > block.startDate,
@@ -114,7 +129,7 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
       return 'El rango seleccionado incluye días de desinfección y preparación posterior a otra estadía.';
     }
     return 'El rango seleccionado incluye fechas no disponibles por mantenimiento o uso propio del alojamiento.';
-  }, [blockedRanges, checkIn, checkOut]);
+  }, [blockedRanges, checkIn, checkOut, nightsCount, data.minNights]);
 
   const totalSelectedCapacity = useMemo(
     () => selectedRoomsList.reduce((acc, item) => acc + item.room.maxGuests * item.quantity, 0),
@@ -128,16 +143,6 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     if (selectedRoomsList.length === 0) return data?.pricePerNight ?? 0;
     return selectedRoomsList.reduce((acc, item) => acc + item.room.pricePerNight * item.quantity, 0);
   }, [selectedRoomsList, data?.pricePerNight]);
-
-  // Calculate nights count
-  const nightsCount = useMemo(() => {
-    if (!checkIn || !checkOut) return null;
-    const d1 = new Date(checkIn);
-    const d2 = new Date(checkOut);
-    const diffTime = d2.getTime() - d1.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : null;
-  }, [checkIn, checkOut]);
 
   // Calculate total price and deposit
   const effectiveNightlyRate = nightlyRateFromRooms || (data?.pricePerNight ?? 0);

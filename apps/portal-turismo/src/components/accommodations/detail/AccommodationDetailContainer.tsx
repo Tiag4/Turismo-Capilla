@@ -68,8 +68,8 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
-      {/* Desktop (>= 768px): Grilla Fija 3 Columnas Top */}
-      <div className="hidden md:grid detail-bento-grid pt-2">
+      {/* Desktop (>= 768px): Grilla Fija Top con separación limpia */}
+      <div className="hidden md:grid detail-bento-grid gap-y-6 pt-2">
         <AccommodationLeftCol
           data={data}
           averageRating={reviewsCtrl.stats.averageRating}

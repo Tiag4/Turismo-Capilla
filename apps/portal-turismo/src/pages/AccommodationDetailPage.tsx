@@ -48,6 +48,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     cancellationPolicy: item.cancellationPolicy,
     licenseNumber: item.licenseNumber,
     responseTime: item.responseTime,
+    minNights: item.minNights,
     inventoryMode: item.inventoryMode,
     roomTypes:
       item.roomTypes && item.roomTypes.length > 0

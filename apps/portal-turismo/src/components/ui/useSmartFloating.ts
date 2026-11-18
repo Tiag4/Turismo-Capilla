@@ -39,8 +39,8 @@ export function useSmartFloating({
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
 
-    // Mobile / Narrow screen (< 640px): Center as modal for 100% visibility
-    if (viewportWidth < 640) {
+    // Mobile / Narrow screen (< 640px) or restricted height: Center as modal for 100% visibility
+    if (viewportWidth < 640 || viewportHeight < estimatedHeight + 40) {
       setCoords({
         placement: 'center',
         align: 'center',
@@ -83,13 +83,14 @@ export function useSmartFloating({
     let calculatedBottom: number | undefined;
     let calculatedLeft: number;
     const targetWidth = Math.max(estimatedWidth, rect.width);
+    const effectiveHeight = popoverRef.current?.offsetHeight || estimatedHeight;
 
     if (placement === 'left') {
       calculatedLeft = rect.left - targetWidth - 8;
-      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - estimatedHeight - padding));
+      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - effectiveHeight - padding));
     } else if (placement === 'right') {
       calculatedLeft = rect.right + 8;
-      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - estimatedHeight - padding));
+      calculatedTop = Math.max(padding, Math.min(rect.top, viewportHeight - effectiveHeight - padding));
     } else if (placement === 'top') {
       // Anchor via bottom so actual popover height never creates a floating gap above trigger
       calculatedBottom = Math.max(padding, Math.round(viewportHeight - rect.top + 6));
@@ -99,7 +100,7 @@ export function useSmartFloating({
       }
     } else {
       // bottom
-      calculatedTop = Math.max(padding, Math.min(rect.bottom + 6, viewportHeight - estimatedHeight - padding));
+      calculatedTop = Math.max(padding, Math.min(rect.bottom + 6, viewportHeight - effectiveHeight - padding));
       calculatedLeft = rect.left;
       if (calculatedLeft + targetWidth > viewportWidth - padding) {
         calculatedLeft = Math.max(padding, rect.right - targetWidth);

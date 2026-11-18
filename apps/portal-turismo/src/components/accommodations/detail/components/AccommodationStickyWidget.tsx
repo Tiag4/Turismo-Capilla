@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MessageSquare } from 'lucide-react';
-import { CustomDatePicker } from '../../../ui/CustomDatePicker';
+import { MessageSquare } from 'lucide-react';
+import { DateRangePicker } from '../../../ui/DateRangePicker';
 import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
 import type { AccommodationDetailData } from '../types';
 import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
@@ -56,31 +56,19 @@ export const AccommodationStickyWidget: React.FC<AccommodationStickyWidgetProps>
         </div>
       </div>
 
-      {/* Selectores de Fechas y Ocupación */}
+      {/* Selector de Rango de Fechas (Estilo Airbnb Oficial) y Ocupación */}
       <div className="space-y-3 pt-1">
-        <div className="grid grid-cols-2 gap-2.5 items-stretch">
-          <CustomDatePicker
-            label="Llegada"
-            value={checkIn}
-            onChange={(d) => {
-              setCheckIn(d);
-              if (checkOut && d >= checkOut) setCheckOut('');
-            }}
-            minDate={todayStr}
-            blockedRanges={blockedRanges}
-            placeholder="Llegada"
-            icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
-          />
-          <CustomDatePicker
-            label="Salida"
-            value={checkOut}
-            onChange={setCheckOut}
-            minDate={checkIn || todayStr}
-            blockedRanges={blockedRanges}
-            placeholder="Salida"
-            icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
-          />
-        </div>
+        <DateRangePicker
+          checkIn={checkIn}
+          checkOut={checkOut}
+          onCheckInChange={setCheckIn}
+          onCheckOutChange={setCheckOut}
+          minDate={todayStr}
+          minNights={data.minNights ?? 1}
+          blockedRanges={blockedRanges}
+          checkInLabel="Llegada"
+          checkOutLabel="Salida"
+        />
 
         {dateRangeError && (
           <div

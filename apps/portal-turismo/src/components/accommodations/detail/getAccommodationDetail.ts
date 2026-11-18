@@ -246,6 +246,7 @@ export function getAccommodationDetail(place: MapPlace): AccommodationDetailData
 
   return {
     ...place,
+    minNights: place.minNights ?? 1,
     inventoryMode,
     roomTypes,
     gallery,

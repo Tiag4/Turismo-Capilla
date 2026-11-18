@@ -8,6 +8,7 @@ export interface MapPlace {
   lat: number;
   lng: number;
   pricePerNight?: number;
+  minNights?: number;
   difficulty?: 'Baja' | 'Media' | 'Alta';
   duration?: string;
   distanceFromCenter?: string;

@@ -63,6 +63,7 @@
   --color-sand-700: #4f4b43;
   --color-sand-800: #3c3833;
   --color-sand-900: #22201e;
+  --color-sand-950: #121110;
 
   /* Alias semánticos para coherencia */
   --color-primary-500: var(--color-terracotta-500);

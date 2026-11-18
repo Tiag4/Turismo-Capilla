@@ -31,6 +31,7 @@ export const AccommodationList: React.FC<AccommodationListProps> = ({
     accommodations,
     isLoading,
     toggleActive,
+    toggleFeatured,
   } = useHostAccommodations();
 
   const { saveAudit, getSavedAudits, isSubmitting: isAuditSubmitting } = useAdminAudit();
@@ -95,6 +96,14 @@ export const AccommodationList: React.FC<AccommodationListProps> = ({
       setTargetAccommodation(null);
     } finally {
       setIsToggling(false);
+    }
+  };
+
+  const handleToggleFeatured = async (acc: Accommodation) => {
+    try {
+      await toggleFeatured(acc.id);
+    } catch (err) {
+      console.error('Error al alternar estado destacado:', err);
     }
   };
 
@@ -203,6 +212,7 @@ export const AccommodationList: React.FC<AccommodationListProps> = ({
               accommodation={acc}
               onEdit={(target) => onNavigateEdit?.(target.id)}
               onToggleActive={(target) => setTargetAccommodation(target)}
+              onToggleFeatured={handleToggleFeatured}
               isAdmin={isAdmin}
               onAudit={handleOpenAudit}
             />

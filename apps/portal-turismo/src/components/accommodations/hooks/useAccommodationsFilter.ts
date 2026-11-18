@@ -33,6 +33,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     galleryImages: item.images?.map((img) => img.url),
     address: item.address,
     verified: item.isActive,
+    isFeatured: Boolean(item.isFeatured),
     hasBreakfast: item.hasBreakfast ?? item.amenities?.some((a) => a.toLowerCase().includes('desayuno')),
     amenities: item.amenities ?? [],
     capacity: `Hasta ${item.maxGuests} personas`,
@@ -203,6 +204,9 @@ export function useAccommodationsFilter() {
     else if (sortOption === 'price-desc') list.sort((a, b) => (b?.pricePerNight ?? 0) - (a?.pricePerNight ?? 0));
     else if (sortOption === 'rating-desc') list.sort((a, b) => (b?.rating ?? 0) - (a?.rating ?? 0));
 
+    if (sortOption === 'recommended') {
+      list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+    }
     return list;
   }, [places, selectedType, guests, selectedAmenities, searchQuery, sortOption]);
 

@@ -255,6 +255,19 @@ export const attractionsService = {
       latitude: dto.latitude !== undefined && dto.latitude !== null ? Number(dto.latitude) : null,
       longitude: dto.longitude !== undefined && dto.longitude !== null ? Number(dto.longitude) : null,
       images: formattedImages.map((img) => ({ url: img.url, publicId: img.publicId })),
+      elevationGainMeters: dto.elevationGainMeters !== undefined && dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null,
+      maxElevationMsnm: dto.maxElevationMsnm !== undefined && dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null,
+      distanceKm: dto.distanceKm !== undefined && dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null,
+      trailType: dto.trailType || null,
+      terrainType: dto.terrainType || null,
+      openingHours: dto.openingHours || null,
+      cutoffTime: dto.cutoffTime || null,
+      hydrationRequirement: dto.hydrationRequirement || null,
+      highlights: dto.highlights || [],
+      recommendedGear: dto.recommendedGear || [],
+      safetyWarnings: dto.safetyWarnings || [],
+      isFeatured: Boolean(dto.isFeatured),
+      featuredBadgeTheme: dto.featuredBadgeTheme || 'DARK',
     };
 
     try {
@@ -265,6 +278,7 @@ export const attractionsService = {
           status: dto.status || 'OPEN',
           statusNotice: dto.statusNotice || null,
           isFeatured: Boolean(dto.isFeatured),
+          featuredBadgeTheme: created.featuredBadgeTheme || dto.featuredBadgeTheme || 'DARK',
         };
         localAttractions = [fullItem, ...localAttractions];
         saveToLocalStorage();
@@ -290,6 +304,18 @@ export const attractionsService = {
       status: dto.status || 'OPEN',
       statusNotice: dto.statusNotice || null,
       isFeatured: Boolean(dto.isFeatured),
+      elevationGainMeters: dto.elevationGainMeters !== undefined && dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null,
+      maxElevationMsnm: dto.maxElevationMsnm !== undefined && dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null,
+      distanceKm: dto.distanceKm !== undefined && dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null,
+      trailType: dto.trailType || null,
+      terrainType: dto.terrainType || null,
+      openingHours: dto.openingHours || null,
+      cutoffTime: dto.cutoffTime || null,
+      hydrationRequirement: dto.hydrationRequirement || null,
+      highlights: dto.highlights || [],
+      recommendedGear: dto.recommendedGear || [],
+      safetyWarnings: dto.safetyWarnings || [],
+      featuredBadgeTheme: dto.featuredBadgeTheme || 'DARK',
       createdAt: new Date().toISOString(),
     };
 
@@ -327,6 +353,15 @@ export const attractionsService = {
     if (dto.longitude !== undefined) {
       payload.longitude = dto.longitude !== null ? Number(dto.longitude) : null;
     }
+    if (dto.elevationGainMeters !== undefined) {
+      payload.elevationGainMeters = dto.elevationGainMeters !== null && (dto.elevationGainMeters as any) !== '' ? Number(dto.elevationGainMeters) : null;
+    }
+    if (dto.maxElevationMsnm !== undefined) {
+      payload.maxElevationMsnm = dto.maxElevationMsnm !== null && (dto.maxElevationMsnm as any) !== '' ? Number(dto.maxElevationMsnm) : null;
+    }
+    if (dto.distanceKm !== undefined) {
+      payload.distanceKm = dto.distanceKm !== null && (dto.distanceKm as any) !== '' ? Number(dto.distanceKm) : null;
+    }
 
     try {
       const updated = await apiClient.put<Attraction>(`/attractions/${id}`, payload);
@@ -336,6 +371,7 @@ export const attractionsService = {
           status: dto.status !== undefined ? dto.status : updated.status || 'OPEN',
           statusNotice: dto.statusNotice !== undefined ? dto.statusNotice : updated.statusNotice,
           isFeatured: dto.isFeatured !== undefined ? dto.isFeatured : updated.isFeatured ?? false,
+          featuredBadgeTheme: dto.featuredBadgeTheme !== undefined ? dto.featuredBadgeTheme : (updated.featuredBadgeTheme || 'DARK'),
         };
         const index = localAttractions.findIndex((a) => a.id === id);
         if (index !== -1) {
@@ -383,9 +419,69 @@ export const attractionsService = {
     return this.update(id, { status, statusNotice });
   },
 
+  async setFeatured(id: string, isFeatured: boolean, theme: 'DARK' | 'LIGHT' = 'DARK'): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured`, {
+        isFeatured,
+        featuredBadgeTheme: theme,
+      });
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured failed, falling back to update:', err);
+    }
+
+    return this.update(id, { isFeatured, featuredBadgeTheme: theme });
+  },
+
   async toggleFeatured(id: string): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured`, {});
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured no disponible, usando fallback PUT/local:', err);
+    }
+
     const existing = localAttractions.find((a) => a.id === id);
-    if (!existing) throw new Error('Atractivo no encontrado');
-    return this.update(id, { isFeatured: !existing.isFeatured });
+    return this.update(id, { isFeatured: !existing?.isFeatured });
+  },
+
+  async toggleFeaturedTheme(id: string): Promise<Attraction> {
+    try {
+      const response = await apiClient.patch<Attraction>(`/attractions/${id}/featured-theme`, {});
+      if (response) {
+        const index = localAttractions.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          localAttractions[index] = { ...localAttractions[index], ...response };
+        } else {
+          localAttractions.push(response);
+        }
+        saveToLocalStorage();
+        return response;
+      }
+    } catch (err) {
+      console.warn('Backend PATCH /attractions/:id/featured-theme no disponible, usando fallback PUT/local:', err);
+    }
+
+    const existing = localAttractions.find((a) => a.id === id);
+    const nextTheme = existing?.featuredBadgeTheme === 'LIGHT' ? 'DARK' : 'LIGHT';
+    return this.update(id, { featuredBadgeTheme: nextTheme });
   },
 };

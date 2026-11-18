@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home } from 'lucide-react';
+import { Home, Star } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
 import type { AccommodationType } from '../../../../types/accommodation.types.ts';
@@ -15,6 +15,9 @@ export interface GeneralInfoSectionProps {
   setLicenseNumber?: (val: string) => void;
   responseTime?: string;
   setResponseTime?: (val: string) => void;
+  isAdmin?: boolean;
+  isFeatured?: boolean;
+  setIsFeatured?: (val: boolean) => void;
 }
 
 const ACCOMMODATION_TYPE_OPTIONS = [
@@ -36,6 +39,9 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
   setLicenseNumber,
   responseTime = '',
   setResponseTime,
+  isAdmin = false,
+  isFeatured = false,
+  setIsFeatured,
 }) => {
   return (
     <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
@@ -110,6 +116,32 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
           />
         </div>
       </div>
+      {isAdmin && setIsFeatured && (
+        <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 flex items-center justify-between gap-4 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+              <Star className="w-4 h-4 text-amber-600 fill-current" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-sand-900 block font-['Outfit']">
+                Alojamiento Destacado en Portada (Comisión de Turismo)
+              </span>
+              <p className="text-[11px] text-sand-600">
+                Al marcarse, este establecimiento figurará prioritariamente en la sección &quot;Cabañas y Posadas del Valle&quot; del inicio.
+              </p>
+            </div>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer shrink-0">
+            <input
+              type="checkbox"
+              checked={Boolean(isFeatured)}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+          </label>
+        </div>
+      )}
     </div>
   );
 };

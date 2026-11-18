@@ -13,6 +13,7 @@ function normalizeImage(image: AccommodationImage): AccommodationImage {
 function normalizeAccommodation(accommodation: Accommodation): Accommodation {
   return {
     ...accommodation,
+    isFeatured: Boolean(accommodation.isFeatured),
     images: (accommodation.images ?? []).map(normalizeImage),
   };
 }
@@ -21,6 +22,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
     id: 'acc-1',
     hasBreakfast: false,
+    isFeatured: true,
     name: 'Cabañas Pircas del Uritorco',
     description: 'Cabaña serrana de piedra y tronco al pie del Cerro Uritorco con vistas panorámicas únicas hacia el valle y las sierras.\n\nEl predio cuenta con parque autóctono arbolado, piscina cercada con solárium, cocheras individuales techadas y asador privado para disfrutar del descanso serrano.\n\nAtención personalizada por sus dueños durante toda la estadía, con recomendaciones sobre senderos, paseos y gastronomía de Capilla del Monte.',
     type: 'CABIN',
@@ -106,6 +108,7 @@ const MOCK_ACCOMMODATIONS: Accommodation[] = [
   {
     id: 'acc-3',
     hasBreakfast: false,
+    isFeatured: true,
     name: 'Refugio Los Alazanes',
     description: 'Monoambiente de montaña con deck privado con vista al atardecer sobre el Dique El Cajón.',
     type: 'APARTMENT',
@@ -259,6 +262,7 @@ export const accommodationsService = {
       bankAlias: dto.bankAlias,
       bankName: dto.bankName,
       isActive: true,
+      isFeatured: Boolean(dto.isFeatured),
       hostId: 'host-01',
       images: formattedImages.map((img, i) => ({ id: `img-${Date.now()}-${i}`, ...img })),
       createdAt: new Date().toISOString(),
@@ -329,6 +333,7 @@ export const accommodationsService = {
       images: updatedImages,
       pricePerNight: dto.pricePerNight ? Number(dto.pricePerNight) : existing.pricePerNight,
       maxGuests: dto.maxGuests ? Number(dto.maxGuests) : existing.maxGuests,
+      isFeatured: dto.isFeatured !== undefined ? Boolean(dto.isFeatured) : existing.isFeatured,
       updatedAt: new Date().toISOString(),
     };
     localAccommodations[index] = updated;
@@ -353,6 +358,24 @@ export const accommodationsService = {
     } catch {
       // Ignorar
     }
+    return normalizeAccommodation({ ...acc });
+  },
+
+  async toggleFeatured(id: string): Promise<Accommodation> {
+    const acc = localAccommodations.find((a) => a.id === id);
+    const newFeatured = acc ? !acc.isFeatured : true;
+    try {
+      const response = await apiClient.patch<Accommodation>(`/accommodations/${id}/featured`, {});
+      if (response) {
+        const idx = localAccommodations.findIndex((a) => a.id === id);
+        if (idx !== -1) localAccommodations[idx] = { ...localAccommodations[idx], isFeatured: response.isFeatured };
+        return normalizeAccommodation(response);
+      }
+    } catch {
+      // Fallback local
+    }
+    if (!acc) throw new Error('Alojamiento no encontrado');
+    acc.isFeatured = newFeatured;
     return normalizeAccommodation({ ...acc });
   },
 };

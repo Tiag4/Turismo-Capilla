@@ -41,6 +41,7 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   settings: '/configuracion',
   events: '/agenda-cultural',
   portal_cms: '/personalizador-portal',
+  mobility: '/movilidad',
   profile: '/perfil',
 };
 
@@ -53,6 +54,10 @@ export const ROUTE_ALIASES: Record<string, DashboardTab> = {
   '/personalizador-portal': 'portal_cms',
   '/cms': 'portal_cms',
   '/personalizador': 'portal_cms',
+  '/movilidad': 'mobility',
+  '/como-llegar': 'mobility',
+  '/peajes': 'mobility',
+  '/tren': 'mobility',
   '/mis-cabanas': 'accommodations',
   '/mis-cabañas': 'accommodations',
   '/alojamientos': 'accommodations',
@@ -89,6 +94,7 @@ export const ROUTE_ALIASES: Record<string, DashboardTab> = {
 export const ADMIN_ONLY_TABS: DashboardTab[] = [
   'overview',
   'portal_cms',
+  'mobility',
   'events',
   'attractions',
   'alerts',

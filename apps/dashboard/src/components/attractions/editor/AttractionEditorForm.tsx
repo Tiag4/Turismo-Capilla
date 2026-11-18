@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
-import { Compass, ArrowLeft, Save, Check } from 'lucide-react';
+import {
+  Compass,
+  ArrowLeft,
+  Save,
+  Check,
+  Plus,
+  Trash2,
+  Mountain,
+  ShieldAlert,
+  Backpack,
+  MapPin,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '../../ui/Button.tsx';
 import { Input } from '../../ui/Input.tsx';
 import { Select } from '../../ui/Select.tsx';
 import { AttractionPhotoDropzone } from './AttractionPhotoDropzone.tsx';
-import type { Attraction, CreateAttractionDto, AttractionCategory, AttractionStatus } from '../../../types/attraction.types.ts';
+import type {
+  Attraction,
+  CreateAttractionDto,
+  AttractionCategory,
+  AttractionStatus,
+} from '../../../types/attraction.types.ts';
 
 const CATEGORY_OPTIONS: { value: AttractionCategory; label: string }[] = [
   { value: 'HILL', label: 'Cerro / Montaña' },
@@ -26,6 +43,14 @@ const STATUS_OPTIONS: { value: AttractionStatus; label: string }[] = [
   { value: 'CLOSED', label: 'Clausurado Temporalmente' },
 ];
 
+const TRAIL_TYPE_OPTIONS = [
+  { value: 'Ida y vuelta', label: 'Ida y vuelta' },
+  { value: 'Circuito cerrado', label: 'Circuito cerrado' },
+  { value: 'Paseo libre', label: 'Paseo libre' },
+  { value: 'Paseo costero', label: 'Paseo costero' },
+  { value: 'Paseo urbano', label: 'Paseo urbano' },
+];
+
 export interface AttractionEditorFormProps {
   initialData?: Attraction | null;
   onSubmit: (dto: CreateAttractionDto) => Promise<void>;
@@ -39,6 +64,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
   onCancel,
   isSubmitting,
 }) => {
+  // Datos Generales
   const [name, setName] = useState(initialData?.name ?? '');
   const [description, setDescription] = useState(initialData?.description ?? '');
   const [category, setCategory] = useState<AttractionCategory>(initialData?.category ?? 'HILL');
@@ -52,8 +78,84 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
   const [status, setStatus] = useState<AttractionStatus>(initialData?.status ?? 'OPEN');
   const [statusNotice, setStatusNotice] = useState(initialData?.statusNotice ?? '');
   const [isFeatured, setIsFeatured] = useState(Boolean(initialData?.isFeatured));
+  const [featuredBadgeTheme, setFeaturedBadgeTheme] = useState<'DARK' | 'LIGHT'>(
+    initialData?.featuredBadgeTheme === 'LIGHT' ? 'LIGHT' : 'DARK',
+  );
   const [images, setImages] = useState<string[]>(initialData?.images?.map((img) => img.url) ?? []);
+
+  // Telemetría de Montaña
+  const [maxElevationMsnm, setMaxElevationMsnm] = useState<number | ''>(
+    initialData?.maxElevationMsnm ?? '',
+  );
+  const [elevationGainMeters, setElevationGainMeters] = useState<number | ''>(
+    initialData?.elevationGainMeters ?? '',
+  );
+  const [distanceKm, setDistanceKm] = useState<number | ''>(initialData?.distanceKm ?? '');
+  const [trailType, setTrailType] = useState<string>(initialData?.trailType ?? 'Ida y vuelta');
+  const [terrainType, setTerrainType] = useState<string>(initialData?.terrainType ?? '');
+
+  // Horarios y Protocolos de Seguridad
+  const [openingHours, setOpeningHours] = useState<string>(initialData?.openingHours ?? '');
+  const [cutoffTime, setCutoffTime] = useState<string>(initialData?.cutoffTime ?? '');
+  const [hydrationRequirement, setHydrationRequirement] = useState<string>(
+    initialData?.hydrationRequirement ?? '',
+  );
+
+  // Listas Dinámicas
+  const [highlights, setHighlights] = useState<string[]>(initialData?.highlights ?? []);
+  const [newHighlight, setNewHighlight] = useState('');
+
+  const [recommendedGear, setRecommendedGear] = useState<string[]>(
+    initialData?.recommendedGear ?? [],
+  );
+  const [newGear, setNewGear] = useState('');
+
+  const [safetyWarnings, setSafetyWarnings] = useState<string[]>(
+    initialData?.safetyWarnings ?? [],
+  );
+  const [newWarning, setNewWarning] = useState('');
+
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Handlers para agregar a listas dinámicas
+  const handleAddHighlight = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const val = newHighlight.trim();
+    if (val && !highlights.includes(val)) {
+      setHighlights([...highlights, val]);
+      setNewHighlight('');
+    }
+  };
+
+  const handleRemoveHighlight = (idx: number) => {
+    setHighlights(highlights.filter((_, i) => i !== idx));
+  };
+
+  const handleAddGear = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const val = newGear.trim();
+    if (val && !recommendedGear.includes(val)) {
+      setRecommendedGear([...recommendedGear, val]);
+      setNewGear('');
+    }
+  };
+
+  const handleRemoveGear = (idx: number) => {
+    setRecommendedGear(recommendedGear.filter((_, i) => i !== idx));
+  };
+
+  const handleAddWarning = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const val = newWarning.trim();
+    if (val && !safetyWarnings.includes(val)) {
+      setSafetyWarnings([...safetyWarnings, val]);
+      setNewWarning('');
+    }
+  };
+
+  const handleRemoveWarning = (idx: number) => {
+    setSafetyWarnings(safetyWarnings.filter((_, i) => i !== idx));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +182,21 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
       status,
       statusNotice: status !== 'OPEN' && statusNotice.trim() ? statusNotice.trim() : undefined,
       isFeatured,
+      featuredBadgeTheme: isFeatured ? featuredBadgeTheme : 'DARK',
       images,
+      // Telemetría
+      elevationGainMeters: elevationGainMeters === '' ? null : Number(elevationGainMeters),
+      maxElevationMsnm: maxElevationMsnm === '' ? null : Number(maxElevationMsnm),
+      distanceKm: distanceKm === '' ? null : Number(distanceKm),
+      trailType: trailType.trim() || undefined,
+      terrainType: terrainType.trim() || undefined,
+      // Protocolos y Horarios
+      openingHours: openingHours.trim() || undefined,
+      cutoffTime: cutoffTime.trim() || undefined,
+      hydrationRequirement: hydrationRequirement.trim() || undefined,
+      highlights,
+      recommendedGear,
+      safetyWarnings,
     };
 
     setValidationError(null);
@@ -115,7 +231,12 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button type="submit" variant="emerald" isLoading={isSubmitting} className="font-bold shadow-xs cursor-pointer">
+          <Button
+            type="submit"
+            variant="emerald"
+            isLoading={isSubmitting}
+            className="font-bold shadow-xs cursor-pointer"
+          >
             <Save className="w-4 h-4 mr-1.5" />
             <span>{initialData ? 'Guardar Cambios' : 'Registrar Atractivo'}</span>
           </Button>
@@ -130,7 +251,9 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
 
       {/* 2. Sección: Datos Principales */}
       <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Información General</h2>
+        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+          Información General
+        </h2>
         <Input
           label="Nombre del Atractivo o Sendero"
           value={name}
@@ -156,7 +279,7 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             label="Duración Estimada"
             value={estimatedDuration}
             onChange={(e) => setEstimatedDuration(e.target.value)}
-            placeholder="Ej: 3 horas ida y vuelta"
+            placeholder="Ej: 7 a 8 horas ida y vuelta"
           />
         </div>
 
@@ -175,9 +298,298 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
         </div>
       </div>
 
-      {/* 3. Sección: Cómo Llegar y Ubicación */}
+      {/* 3. Sección: Telemetría de Montaña y Datos Técnicos */}
       <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Acceso y Localización</h2>
+        <div className="flex items-center gap-2">
+          <Mountain className="w-4 h-4 text-emerald-700" />
+          <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+            Ficha Técnica y Telemetría de Montaña
+          </h2>
+        </div>
+        <p className="text-xs text-sand-500">
+          Datos altimétricos y métricas de recorrido consumidos por la barra de telemetría del portal.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Input
+            label="Cota Máxima (msnm)"
+            type="number"
+            value={maxElevationMsnm}
+            onChange={(e) =>
+              setMaxElevationMsnm(e.target.value === '' ? '' : parseInt(e.target.value, 10))
+            }
+            placeholder="Ej: 1979"
+            helperText="Altitud del punto más alto."
+          />
+          <Input
+            label="Desnivel Positivo (+m)"
+            type="number"
+            value={elevationGainMeters}
+            onChange={(e) =>
+              setElevationGainMeters(e.target.value === '' ? '' : parseInt(e.target.value, 10))
+            }
+            placeholder="Ej: 979"
+            helperText="Ascenso vertical acumulado."
+          />
+          <Input
+            label="Distancia Total (km)"
+            type="number"
+            step="0.1"
+            value={distanceKm}
+            onChange={(e) =>
+              setDistanceKm(e.target.value === '' ? '' : parseFloat(e.target.value))
+            }
+            placeholder="Ej: 11.6"
+            helperText="Longitud total del recorrido."
+          />
+          <Select
+            label="Modalidad de Sendero"
+            value={trailType}
+            onChange={(val) => setTrailType(val)}
+            options={TRAIL_TYPE_OPTIONS}
+          />
+        </div>
+
+        <div>
+          <Input
+            label="Tipo de Terreno"
+            value={terrainType}
+            onChange={(e) => setTerrainType(e.target.value)}
+            placeholder="Ej: Sendero de montaña, piedra granítica suelta y acarreo final"
+            helperText="Describe la superficie predominante y calzado requerido."
+          />
+        </div>
+      </div>
+
+      {/* 4. Sección: Protocolos de Seguridad y Horarios */}
+      <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
+        <div className="flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 text-emerald-700" />
+          <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+            Horarios y Protocolos de Seguridad
+          </h2>
+        </div>
+        <p className="text-xs text-sand-500">
+          Horarios de control, corte obligatorio por guardaparques y normas de hidratación.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Input
+            label="Horario de Apertura / Operatividad"
+            value={openingHours}
+            onChange={(e) => setOpeningHours(e.target.value)}
+            placeholder="Ej: 07:00 a 18:00 hs (todos los días)"
+          />
+          <Input
+            label="Horario Límite de Ingreso (Cutoff)"
+            value={cutoffTime}
+            onChange={(e) => setCutoffTime(e.target.value)}
+            placeholder="Ej: 11:00 hs - Registro límite obligatorio"
+            helperText="Hora máxima en que se permite iniciar el ascenso."
+          />
+          <Input
+            label="Ración de Hidratación Obligatoria"
+            value={hydrationRequirement}
+            onChange={(e) => setHydrationRequirement(e.target.value)}
+            placeholder="Ej: Mínimo 2 litros de agua por persona"
+          />
+        </div>
+
+        {/* Pautas y Advertencias de Seguridad */}
+        <div className="space-y-3 pt-3 border-t border-sand-100">
+          <label className="block text-xs font-bold text-sand-700">
+            Advertencias y Pautas de Seguridad (Guardaparques)
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newWarning}
+              onChange={(e) => setNewWarning(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddWarning();
+                }
+              }}
+              placeholder="Ej: Prohibido el ascenso con calzado liso o sandalias..."
+              className="flex-1 px-3 py-2 text-xs rounded-xl border border-sand-300 bg-sand-50/50 text-sand-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleAddWarning()}
+              className="cursor-pointer shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              Agregar
+            </Button>
+          </div>
+
+          {safetyWarnings.length > 0 ? (
+            <div className="space-y-1.5 pt-1">
+              {safetyWarnings.map((warn, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-amber-50/60 border border-amber-200/80 text-xs text-amber-900"
+                >
+                  <span className="leading-snug">{warn}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveWarning(idx)}
+                    className="p-1 rounded-lg text-amber-700 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                    title="Eliminar advertencia"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-sand-400 italic">No hay advertencias personalizadas.</p>
+          )}
+        </div>
+      </div>
+
+      {/* 5. Sección: Equipamiento y Puntos Destacados */}
+      <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-6">
+        <div className="flex items-center gap-2">
+          <Backpack className="w-4 h-4 text-emerald-700" />
+          <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+            Checklist de Mochila y Puntos Destacados
+          </h2>
+        </div>
+
+        {/* Checklist de Equipamiento */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-sand-800">
+              Equipamiento Recomendado (Checklist Interactivo del Turista)
+            </span>
+            <span className="text-xs text-sand-500 font-normal">
+              ({recommendedGear.length} ítems)
+            </span>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newGear}
+              onChange={(e) => setNewGear(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddGear();
+                }
+              }}
+              placeholder="Ej: Calzado de trekking con suela adherente, linterna frontal..."
+              className="flex-1 px-3 py-2 text-xs rounded-xl border border-sand-300 bg-sand-50/50 text-sand-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleAddGear()}
+              className="cursor-pointer shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              Agregar
+            </Button>
+          </div>
+
+          {recommendedGear.length > 0 ? (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {recommendedGear.map((item, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sand-100 border border-sand-200 text-xs font-medium text-sand-800"
+                >
+                  <span>{item}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveGear(idx)}
+                    className="p-0.5 rounded-md text-sand-400 hover:text-rose-600 transition-colors cursor-pointer"
+                    title="Eliminar elemento"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-sand-400 italic">No hay ítems cargados en el checklist.</p>
+          )}
+        </div>
+
+        {/* Hitos / Puntos Destacados */}
+        <div className="space-y-3 pt-4 border-t border-sand-100">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span className="text-xs font-bold text-sand-800">
+              Puntos Destacados e Hitos del Recorrido
+            </span>
+            <span className="text-xs text-sand-500 font-normal">({highlights.length} hitos)</span>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newHighlight}
+              onChange={(e) => setNewHighlight(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddHighlight();
+                }
+              }}
+              placeholder="Ej: Cumbre a 1.979 msnm con cruz panorámica, Quebrada del Huallpa..."
+              className="flex-1 px-3 py-2 text-xs rounded-xl border border-sand-300 bg-sand-50/50 text-sand-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleAddHighlight()}
+              className="cursor-pointer shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              Agregar
+            </Button>
+          </div>
+
+          {highlights.length > 0 ? (
+            <div className="space-y-1.5 pt-1">
+              {highlights.map((h, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-sand-50 border border-sand-200 text-xs text-sand-800"
+                >
+                  <span className="leading-snug">{h}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveHighlight(idx)}
+                    className="p-1 rounded-lg text-sand-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                    title="Eliminar hito"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-sand-400 italic">No hay hitos destacados cargados.</p>
+          )}
+        </div>
+      </div>
+
+      {/* 6. Sección: Cómo Llegar y Ubicación */}
+      <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
+        <div className="flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-emerald-700" />
+          <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+            Acceso y Localización
+          </h2>
+        </div>
         <Input
           label="Cómo Llegar (Indicaciones viales / peatonales)"
           value={howToGet}
@@ -204,7 +616,9 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
             label="Tarifa de Entrada / Ingreso ($)"
             type="number"
             value={admissionFee}
-            onChange={(e) => setAdmissionFee(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+            onChange={(e) =>
+              setAdmissionFee(e.target.value === '' ? '' : parseInt(e.target.value, 10))
+            }
             helperText="Dejar en 0 si el acceso es libre y gratuito."
           />
           <div className="flex items-center gap-2.5 pt-6">
@@ -214,43 +628,125 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
               aria-checked={requiresGuide}
               onClick={() => setRequiresGuide(!requiresGuide)}
               className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
-                requiresGuide ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+                requiresGuide
+                  ? 'bg-emerald-700 border-emerald-700 text-white'
+                  : 'border-sand-300 bg-white hover:border-sand-400'
               }`}
             >
               {requiresGuide && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </button>
-            <label onClick={() => setRequiresGuide(!requiresGuide)} className="text-xs font-bold text-sand-800 cursor-pointer">
+            <label
+              onClick={() => setRequiresGuide(!requiresGuide)}
+              className="text-xs font-bold text-sand-800 cursor-pointer"
+            >
               Exige Guía Habilitado
             </label>
           </div>
         </div>
       </div>
 
-      {/* 4. Sección: Estado y Portada */}
+      {/* 7. Sección: Estado y Portada */}
       <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
-        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Operatividad y Exhibición</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+          Operatividad y Exhibición
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
           <Select
             label="Estado Operativo Actual"
             value={status}
             onChange={(val) => setStatus(val as AttractionStatus)}
             options={STATUS_OPTIONS}
           />
-          <div className="flex items-center gap-2.5 pt-6">
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <label className="block text-xs font-bold text-sand-800 uppercase tracking-wider">
+            Exhibición y Estado de Destacado en Portada
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Opción 1: No destacar */}
             <button
               type="button"
-              role="checkbox"
-              aria-checked={isFeatured}
-              onClick={() => setIsFeatured(!isFeatured)}
-              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
-                isFeatured ? 'bg-emerald-700 border-emerald-700 text-white' : 'border-sand-300 bg-white hover:border-sand-400'
+              onClick={() => setIsFeatured(false)}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                !isFeatured
+                  ? 'bg-sand-100/90 border-sand-400 ring-2 ring-sand-400/20 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
               }`}
             >
-              {isFeatured && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+              <div className="flex items-center justify-between">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sand-200 text-sand-700">
+                  Estándar
+                </span>
+                {!isFeatured && <Check className="w-4 h-4 text-sand-700 stroke-[3]" />}
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-sand-900">No destacar</span>
+                <span className="block text-[11px] text-sand-500 mt-0.5">
+                  Paseo regular del catálogo sin etiqueta
+                </span>
+              </div>
             </button>
-            <label onClick={() => setIsFeatured(!isFeatured)} className="text-xs font-bold text-sand-800 cursor-pointer">
-              Destacar en Portada del Portal Turístico
-            </label>
+
+            {/* Opción 2: Destacado Oscuro */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsFeatured(true);
+                setFeaturedBadgeTheme('DARK');
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                isFeatured && featuredBadgeTheme !== 'LIGHT'
+                  ? 'bg-neutral-950 text-white border-neutral-900 ring-2 ring-emerald-600/30 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-950 text-amber-300 shadow-xs border border-neutral-800">
+                  ★ Oscuro
+                </span>
+                {isFeatured && featuredBadgeTheme !== 'LIGHT' && (
+                  <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+                )}
+              </div>
+              <div>
+                <span
+                  className={`block text-xs font-bold ${
+                    isFeatured && featuredBadgeTheme !== 'LIGHT' ? 'text-white' : 'text-sand-900'
+                  }`}
+                >
+                  Destacado Oscuro
+                </span>
+              </div>
+            </button>
+
+            {/* Opción 3: Destacado Claro */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsFeatured(true);
+                setFeaturedBadgeTheme('LIGHT');
+              }}
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                isFeatured && featuredBadgeTheme === 'LIGHT'
+                  ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-500/20 shadow-xs'
+                  : 'bg-white border-sand-200 hover:border-sand-300'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-transparent text-amber-600 border border-amber-400/60 shadow-xs">
+                  ★ Claro
+                </span>
+                {isFeatured && featuredBadgeTheme === 'LIGHT' && (
+                  <Check className="w-4 h-4 text-amber-800 stroke-[3]" />
+                )}
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-sand-900">
+                  Destacado Claro
+                </span>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -265,12 +761,16 @@ export const AttractionEditorForm: React.FC<AttractionEditorFormProps> = ({
         )}
       </div>
 
-      {/* 5. Sección: Galería Fotográfica (Carga exclusiva por archivo / Dropzone) */}
+      {/* 8. Sección: Galería Fotográfica */}
       <div className="bg-white p-6 rounded-2xl border border-sand-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between border-b border-sand-100 pb-3">
           <div>
-            <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">Galería Fotográfica</h2>
-            <p className="text-xs text-sand-500">Carga directa de fotografías desde tu dispositivo (arrastrá o seleccioná archivos)</p>
+            <h2 className="text-sm font-bold text-sand-900 uppercase tracking-wider">
+              Galería Fotográfica
+            </h2>
+            <p className="text-xs text-sand-500">
+              Carga directa de fotografías desde tu dispositivo (arrastrá o seleccioná archivos)
+            </p>
           </div>
           <span className="text-xs font-bold text-sand-500">{images.length} / 8 fotos</span>
         </div>

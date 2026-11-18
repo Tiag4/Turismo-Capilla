@@ -52,7 +52,7 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
 
           <div className="space-y-1.5">
             <label htmlFor="booking-email" className="block text-xs font-bold text-sand-800 uppercase tracking-wider">
-              Email del Titular
+              Email del Titular <span className="text-terracotta-600">*</span>
             </label>
             <input
               id="booking-email"
@@ -66,11 +66,14 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
         </div>
 
         {error && (
-          <div className="p-3.5 rounded-xl bg-sand-100 border border-sand-300 text-red-700 text-xs font-medium flex items-start gap-2">
-            <svg className="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div
+            role="alert"
+            className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-start gap-2.5"
+          >
+            <svg className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>{error}</span>
+            <span className="leading-relaxed">{error}</span>
           </div>
         )}
 

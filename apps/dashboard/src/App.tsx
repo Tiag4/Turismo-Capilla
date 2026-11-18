@@ -22,6 +22,7 @@ import { SeasonEditorPage } from './components/settings/editor/SeasonEditorPage.
 import { CulturalAgendaManager } from './components/cms/CulturalAgendaManager.tsx';
 import { EventEditorPage } from './components/cms/EventEditorPage.tsx';
 import { PortalCustomizerPage } from './components/cms/PortalCustomizerPage.tsx';
+import { MobilityManagerView } from './components/mobility/MobilityManagerView.tsx';
 
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { AttractionEditorPage } from './components/attractions/editor/AttractionEditorPage.tsx';
@@ -115,6 +116,10 @@ const DashboardContent: React.FC = () => {
           onNavigateToEvents={() => setCurrentTab('events')}
           onNavigateToAccommodations={() => setCurrentTab('accommodations')}
         />
+      )}
+
+      {currentTab === 'mobility' && user.role === 'ADMIN' && (
+        <MobilityManagerView />
       )}
 
       {currentTab === 'events' && user.role === 'ADMIN' && (

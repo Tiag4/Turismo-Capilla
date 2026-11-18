@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   CalendarRange,
   Compass,
+  Navigation,
   ExternalLink,
 } from 'lucide-react';
 import { InlineStatStrip, type StatItem } from '../ui/InlineStatStrip.tsx';
@@ -73,6 +74,13 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigateTab }) =
       iconColor: 'text-emerald-700',
     },
     {
+      id: 'mobility',
+      title: 'Cómo Llegar y Movilidad',
+      description: 'Actualizá tarifas de peajes, frecuencias del Tren de las Sierras, colectivos y avisos viales de contingencia.',
+      icon: Navigation,
+      iconColor: 'text-indigo-600',
+    },
+    {
       id: 'bookings',
       title: 'Reservas del Destino',
       description: 'Consultá el libro unificado de solicitudes turísticas y verificá la consistencia transaccional de ingresos y egresos.',
@@ -119,54 +127,50 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigateTab }) =
           href="https://turismocapilla.gob.ar"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-900 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sand-600 bg-sand-100 hover:bg-sand-200 transition-colors w-fit"
         >
-          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-          <span>Portal Público en Línea</span>
+          <span>turismocapilla.gob.ar</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </div>
 
-      {/* KPI Stat Strip */}
+      {/* KPI Stats Strip */}
       <InlineStatStrip stats={statItems} />
 
-      {/* Management Modules Grid */}
-      <div className="space-y-3 pt-2">
-        <div>
-          <h2 className="text-base font-bold text-sand-900 font-['Outfit']">
-            Módulos de Gestión Municipal
-          </h2>
-          <p className="text-xs text-sand-500">
-            Accedé directamente a las herramientas de fiscalización y servicios turísticos del portal.
-          </p>
-        </div>
+      {/* Quick Access Modules Grid */}
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-sand-500 font-['Outfit']">
+          Módulos de Gestión Municipal
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {modules.map((mod) => {
-            const Icon = mod.icon;
+          {modules.map((module) => {
+            const Icon = module.icon;
             return (
-              <div
-                key={mod.id}
-                onClick={() => onNavigateTab(mod.id)}
-                className="p-5 rounded-xl border border-sand-300 hover:border-sand-400 bg-white/70 hover:bg-white shadow-xs transition-all cursor-pointer group flex flex-col justify-between gap-4"
+              <button
+                key={module.id}
+                onClick={() => onNavigateTab(module.id)}
+                className="text-left bg-white rounded-xl p-5 border border-sand-200 hover:border-sand-300 hover:shadow-xs transition-all group flex flex-col justify-between cursor-pointer"
               >
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2.5">
-                    <Icon className={`w-4 h-4 ${mod.iconColor} shrink-0`} />
-                    <h3 className="text-sm font-bold text-sand-900 font-['Outfit'] group-hover:text-terracotta-700 transition-colors">
-                      {mod.title}
-                    </h3>
+                <div className="space-y-3">
+                  <div className={`w-10 h-10 rounded-lg bg-sand-100 flex items-center justify-center ${module.iconColor} group-hover:scale-105 transition-transform`}>
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <p className="text-xs text-sand-600 leading-relaxed">
-                    {mod.description}
-                  </p>
+                  <div>
+                    <h3 className="text-base font-semibold text-sand-900 group-hover:text-terracotta-600 transition-colors">
+                      {module.title}
+                    </h3>
+                    <p className="text-xs text-sand-500 mt-1 leading-relaxed">
+                      {module.description}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="pt-2 border-t border-sand-100 flex items-center justify-between text-xs font-semibold text-terracotta-600 group-hover:text-terracotta-700">
-                  <span>Acceder</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <div className="flex items-center gap-1 text-xs font-semibold text-terracotta-600 group-hover:text-terracotta-700 mt-4 pt-3 border-t border-sand-100">
+                  <span>Gestionar</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

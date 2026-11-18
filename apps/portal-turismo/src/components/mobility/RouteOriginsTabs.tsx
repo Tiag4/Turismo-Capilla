@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Compass, CheckCircle, Clock, MapPin } from 'lucide-react';
+import { Compass, Clock, MapPin, CheckCircle } from 'lucide-react';
 import { ORIGINS_DATA } from './data/mobilityData';
-import type { OriginId, RouteOption } from './types/mobility.types';
+import type { OriginCategory, OriginId, RouteOption } from './types/mobility.types';
 import { TollAlertCard } from './TollAlertCard';
 
-export const RouteOriginsTabs: React.FC = () => {
+export interface RouteOriginsTabsProps {
+  originsData?: OriginCategory[];
+  showArs?: boolean;
+}
+
+export const RouteOriginsTabs: React.FC<RouteOriginsTabsProps> = ({ originsData, showArs = true }) => {
   const [activeOriginId, setActiveOriginId] = useState<OriginId>('cordoba');
 
-  const currentCategory = ORIGINS_DATA.find((c) => c.id === activeOriginId) ?? ORIGINS_DATA[0];
+  const categories = originsData && originsData.length > 0 ? originsData : ORIGINS_DATA;
+  const currentCategory = categories.find((c) => c.id === activeOriginId) ?? categories[0];
 
   return (
     <section className="space-y-6">
@@ -23,7 +29,7 @@ export const RouteOriginsTabs: React.FC = () => {
 
       {/* Selector de Pestañas / Procedencias */}
       <div className="flex flex-wrap gap-2 p-1.5 bg-sand-200/60 rounded-2xl border border-sand-300/60">
-        {ORIGINS_DATA.map((cat) => {
+        {categories.map((cat) => {
           const isActive = cat.id === activeOriginId;
           return (
             <button
@@ -112,7 +118,7 @@ export const RouteOriginsTabs: React.FC = () => {
             </div>
 
             {/* Desglose de Peajes de la Ruta */}
-            <TollAlertCard tolls={route.tolls} precautions={route.precautions} />
+            <TollAlertCard tolls={route.tolls} precautions={route.precautions} showArs={showArs} />
           </div>
         ))}
       </div>

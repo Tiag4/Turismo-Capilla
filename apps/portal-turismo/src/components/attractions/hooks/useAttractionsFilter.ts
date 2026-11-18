@@ -92,12 +92,15 @@ export function useAttractionsFilter() {
       });
     }
 
-    // Sorting
+    // Sorting: Atractivos destacados (tanto Claro como Oscuro) SIEMPRE al inicio
     list.sort((a, b) => {
+      const aFeat = Boolean(a.isFeatured) ? 1 : 0;
+      const bFeat = Boolean(b.isFeatured) ? 1 : 0;
+      if (aFeat !== bFeat) {
+        return bFeat - aFeat;
+      }
+
       if (sortBy === 'popular') {
-        if (Boolean(b.isFeatured) !== Boolean(a.isFeatured)) {
-          return b.isFeatured ? 1 : -1;
-        }
         return b.rating * b.reviewCount - a.rating * a.reviewCount;
       }
       if (sortBy === 'cercania') {

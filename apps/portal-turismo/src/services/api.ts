@@ -1,7 +1,9 @@
 export const API_BASE_URL =
   (typeof import.meta !== 'undefined' &&
     (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
-  'https://turismo-capilla-backend.onrender.com/api/v1';
+  (import.meta.env?.DEV
+    ? 'http://localhost:8080/api/v1'
+    : 'https://turismo-capilla-backend.onrender.com/api/v1');
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -31,6 +33,18 @@ export interface Attraction {
   status?: AttractionStatus;
   statusNotice?: string | null;
   isFeatured?: boolean;
+  featuredBadgeTheme?: 'DARK' | 'LIGHT' | null;
+  elevationGainMeters?: number | null;
+  maxElevationMsnm?: number | null;
+  distanceKm?: number | null;
+  trailType?: string | null;
+  terrainType?: string | null;
+  openingHours?: string | null;
+  cutoffTime?: string | null;
+  hydrationRequirement?: string | null;
+  highlights?: string[];
+  recommendedGear?: string[];
+  safetyWarnings?: string[];
 }
 
 export interface RoomTypeApiDto {
@@ -80,6 +94,8 @@ export interface Accommodation {
   amenities: string[];
   isActive: boolean;
   hasBreakfast?: boolean;
+  isFeatured?: boolean;
+  featuredBadgeTheme?: 'DARK' | 'LIGHT' | null;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string | null;
@@ -115,13 +131,16 @@ export interface BookingPayload {
     guests: number;
   }>;
 }
-
 export interface BookingResult {
   id: string;
   bookingCode: string;
+  accommodationId?: string;
+  accommodationName?: string;
   checkIn: string;
   checkOut: string;
   totalNights: number;
+  guestCount?: number;
+  pricePerNight?: number | string;
   totalAmount: number | string;
   downPaymentPercentage?: number;
   downPaymentAmount?: number | string;
@@ -130,137 +149,153 @@ export interface BookingResult {
   bankCbu?: string;
   bankAlias?: string;
   bankName?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'PENDING_CONFIRMATION';
   guestName: string;
+  guestEmail?: string;
   guestPhone?: string;
-  accommodation?: Accommodation;
-}
-
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { ...options, signal: controller.signal });
-    return res;
-  } finally {
-    clearTimeout(id);
-  }
-}
-
-export const api = {
-  async getHealth() {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
-    if (!res.ok) throw new Error('Error de conexión con el servidor');
-    return res.json();
-  },
-
-  async getAttractions(params?: {
-    category?: string;
-    search?: string;
-    difficulty?: string;
-    requiresGuide?: boolean;
-  }): Promise<Attraction[]> {
-    const query = new URLSearchParams();
-    if (params?.category) query.set('category', params.category);
-    if (params?.search) query.set('search', params.search);
-    if (params?.difficulty) query.set('difficulty', params.difficulty);
-    if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
-
-    const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetchWithTimeout(url);
-    if (!res.ok) throw new Error('Error al obtener los atractivos');
-    return res.json();
-  },
-
-  async getAttractionById(id: string): Promise<Attraction> {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/attractions/${id}`);
-    if (!res.ok) throw new Error('Atractivo no encontrado');
-    return res.json();
-  },
-
-  async getAccommodations(params?: {
-    checkIn?: string;
-    checkOut?: string;
-    guests?: number;
-    type?: string;
-    search?: string;
-  }): Promise<Accommodation[]> {
-    const query = new URLSearchParams();
-    if (params?.checkIn) query.set('checkIn', params.checkIn);
-    if (params?.checkOut) query.set('checkOut', params.checkOut);
-    if (params?.guests) query.set('guests', params.guests.toString());
-    if (params?.type) query.set('type', params.type);
-    if (params?.search) query.set('search', params.search);
-
-    const url = `${API_BASE_URL}/accommodations${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetchWithTimeout(url);
-    if (!res.ok) throw new Error('Error al consultar alojamientos');
-    return res.json();
-  },
-
-  async getAccommodationById(id: string): Promise<Accommodation> {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/accommodations/${id}`);
-    if (!res.ok) throw new Error('Alojamiento no encontrado');
-    return res.json();
-  },
-
-  async createBooking(payload: BookingPayload): Promise<BookingResult> {
-    const res = await fetch(`${API_BASE_URL}/bookings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new ApiRequestError(data.message || 'Error al procesar la reserva', res.status);
-    }
-    return data;
-  },
-
+  hostPhone?: string;
+  accommodation?: Accommodation | any;
+  createdAt?: string;
+}
+
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+export const api = {
+  async getHealth() {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
+    if (!res.ok) throw new Error('Error de conexión con el servidor');
+    return res.json();
+  },
+
+  async getAttractions(params?: {
+    category?: string;
+    search?: string;
+    difficulty?: string;
+    requiresGuide?: boolean;
+  }): Promise<Attraction[]> {
+    const query = new URLSearchParams();
+    if (params?.category) query.set('category', params.category);
+    if (params?.search) query.set('search', params.search);
+    if (params?.difficulty) query.set('difficulty', params.difficulty);
+    if (params?.requiresGuide !== undefined) query.set('requiresGuide', String(params.requiresGuide));
+
+    const url = `${API_BASE_URL}/attractions${query.toString() ? `?${query.toString()}` : ''}`;
+    const res = await fetchWithTimeout(url);
+    if (!res.ok) throw new Error('Error al obtener los atractivos');
+    return res.json();
+  },
+
+  async getAttractionById(id: string): Promise<Attraction> {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/attractions/${id}`);
+    if (!res.ok) throw new Error('Atractivo no encontrado');
+    return res.json();
+  },
+
+  async getAccommodations(params?: {
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
+    type?: string;
+    search?: string;
+  }): Promise<Accommodation[]> {
+    const query = new URLSearchParams();
+    if (params?.checkIn) query.set('checkIn', params.checkIn);
+    if (params?.checkOut) query.set('checkOut', params.checkOut);
+    if (params?.guests) query.set('guests', params.guests.toString());
+    if (params?.type) query.set('type', params.type);
+    if (params?.search) query.set('search', params.search);
+
+    const url = `${API_BASE_URL}/accommodations${query.toString() ? `?${query.toString()}` : ''}`;
+    const res = await fetchWithTimeout(url);
+    if (!res.ok) throw new Error('Error al consultar alojamientos');
+    return res.json();
+  },
+
+  async getAccommodationById(id: string): Promise<Accommodation> {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/accommodations/${id}`);
+    if (!res.ok) throw new Error('Alojamiento no encontrado');
+    return res.json();
+  },
+
+  async createBooking(payload: BookingPayload): Promise<BookingResult> {
+    const res = await fetch(`${API_BASE_URL}/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new ApiRequestError(data.message || 'Error al procesar la reserva', res.status);
+    }
+    return data;
+  },
+
   async lookupBooking(code: string, email: string): Promise<BookingResult> {
-    const query = new URLSearchParams({ code, email });
-    const res = await fetch(`${API_BASE_URL}/bookings/lookup?${query.toString()}`);
-    if (!res.ok) throw new Error('Reserva no encontrada');
+    const query = new URLSearchParams({ code: code.trim(), email: email.trim() });
+    const res = await fetchWithTimeout(`${API_BASE_URL}/bookings/lookup?${query.toString()}`, {}, 8000);
+    if (!res.ok) {
+      let errorMessage = 'Reserva no encontrada';
+      try {
+        const errorData = await res.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch {
+        // use default message
+      }
+      throw new ApiRequestError(errorMessage, res.status);
+    }
     return res.json();
   },
 
   async resendVoucher(code: string, email: string): Promise<{ message: string }> {
-    const res = await fetch(`${API_BASE_URL}/bookings/resend-voucher`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, email }),
-    });
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/bookings/resend-voucher`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code.trim(), email: email.trim() }),
+      },
+      8000,
+    );
 
-    const data = await res.json().catch(() => ({}));
+    const data = await res.json().catch(() => null);
     if (!res.ok) {
-      throw new Error(data.message || 'No se pudo reenviar el voucher por email');
+      throw new ApiRequestError(data?.message || 'Error al reenviar el voucher', res.status);
     }
-    return data;
-  },
-
-  async getActiveAlert(): Promise<PublicAlert | null> {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
-      if (res.status === 204 || res.status === 404) return null;
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  },
-};
-
-export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
-
-export interface PublicAlert {
-  id: string;
-  title: string;
-  message: string;
-  severity: AlertSeverity;
-  linkUrl?: string | null;
-  linkText?: string | null;
-  isActive: boolean;
-  expiresAt?: string | null;
-  createdAt: string;
-}
+    return data || { message: 'Voucher reenviado por correo electrónico' };
+  },
+
+  async getActiveAlert(): Promise<PublicAlert | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/alerts/active`, {}, 3000);
+      if (res.status === 204 || res.status === 404) return null;
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+};
+
+export type AlertSeverity = 'INFO' | 'WARNING' | 'DANGER';
+
+export interface PublicAlert {
+  id: string;
+  title: string;
+  message: string;
+  severity: AlertSeverity;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  isActive: boolean;
+  expiresAt?: string | null;
+  createdAt: string;
+}

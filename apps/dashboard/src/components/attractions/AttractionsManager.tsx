@@ -62,13 +62,17 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
     loadAttractions();
   }, [loadAttractions]);
 
-  // Handle Quick Toggle Featured
-  const handleToggleFeatured = async (attraction: Attraction) => {
+  // Handle Setting Featured State (Claro, Oscuro, No destacar)
+  const handleSetFeatured = async (
+    attraction: Attraction,
+    isFeatured: boolean,
+    theme: 'DARK' | 'LIGHT' = 'DARK',
+  ) => {
     try {
-      await attractionsService.toggleFeatured(attraction.id);
+      await attractionsService.setFeatured(attraction.id, isFeatured, theme);
       await loadAttractions();
     } catch (err) {
-      console.error('Error al alternar destacado:', err);
+      console.error('Error al actualizar estado de destacado:', err);
     }
   };
 
@@ -147,7 +151,7 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
 
   // Filtered List
   const filteredAttractions = useMemo(() => {
-    return attractions.filter((item) => {
+    const list = attractions.filter((item) => {
       // Category filter
       if (categoryFilter !== 'ALL' && item.category !== categoryFilter) return false;
 
@@ -169,6 +173,15 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
 
       return true;
     });
+
+    // Los atractivos destacados (tanto Claro como Oscuro) se ordenan prioritariamente arriba en el dashboard
+    list.sort((a, b) => {
+      const aFeat = Boolean(a.isFeatured) ? 1 : 0;
+      const bFeat = Boolean(b.isFeatured) ? 1 : 0;
+      return bFeat - aFeat;
+    });
+
+    return list;
   }, [attractions, categoryFilter, statusFilter, search]);
 
   return (
@@ -301,7 +314,7 @@ export const AttractionsManager: React.FC<AttractionsManagerProps> = ({
             <AttractionCard
               key={item.id}
               item={item}
-              onToggleFeatured={handleToggleFeatured}
+              onSetFeatured={handleSetFeatured}
               onQuickStatusChange={handleQuickStatusChange}
               onEdit={(att) => onNavigateEdit?.(att.id)}
               onDelete={(att) => setDeletingAttraction(att)}

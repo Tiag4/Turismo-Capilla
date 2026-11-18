@@ -129,42 +129,67 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
       lng: apiItem.longitude ?? matchedMock?.coordinates?.lng ?? -64.515,
     },
     overview: apiItem.description || matchedMock?.overview || 'Atractivo natural y cultural serrano.',
-    highlights: matchedMock?.highlights ?? [
-      'Vistas panorámicas serranas de Capilla del Monte',
-      'Acceso señalizado para visitantes y familias',
-      'Entorno natural protegido y autóctono',
-    ],
+    highlights:
+      apiItem.highlights && apiItem.highlights.length > 0
+        ? apiItem.highlights
+        : (matchedMock?.highlights ?? [
+            'Vistas panorámicas serranas de Capilla del Monte',
+            'Acceso señalizado para visitantes y familias',
+            'Entorno natural protegido y autóctono',
+          ]),
     trailSpecs: {
-      elevationGainMeters: matchedMock?.trailSpecs?.elevationGainMeters,
-      maxElevationMsnm: matchedMock?.trailSpecs?.maxElevationMsnm,
-      distanceKm: matchedMock?.trailSpecs?.distanceKm,
-      trailType: matchedMock?.trailSpecs?.trailType ?? 'Circuito cerrado',
+      elevationGainMeters:
+        apiItem.elevationGainMeters !== undefined && apiItem.elevationGainMeters !== null
+          ? apiItem.elevationGainMeters
+          : matchedMock?.trailSpecs?.elevationGainMeters,
+      maxElevationMsnm:
+        apiItem.maxElevationMsnm !== undefined && apiItem.maxElevationMsnm !== null
+          ? apiItem.maxElevationMsnm
+          : matchedMock?.trailSpecs?.maxElevationMsnm,
+      distanceKm:
+        apiItem.distanceKm !== undefined && apiItem.distanceKm !== null
+          ? apiItem.distanceKm
+          : matchedMock?.trailSpecs?.distanceKm,
+      trailType:
+        (apiItem.trailType as any) || matchedMock?.trailSpecs?.trailType || 'Circuito cerrado',
       estimatedDuration,
-      terrainType: matchedMock?.trailSpecs?.terrainType ?? 'Sendero serrano consolidado',
+      terrainType:
+        apiItem.terrainType || matchedMock?.trailSpecs?.terrainType || 'Sendero serrano consolidado',
       guideRequired: apiItem.requiresGuide ?? matchedMock?.trailSpecs?.guideRequired ?? false,
     },
     practicalInfo: {
-      openingHours: matchedMock?.practicalInfo?.openingHours ?? '08:00 a 19:00 hs',
-      cutoffTime: matchedMock?.practicalInfo?.cutoffTime,
+      openingHours:
+        apiItem.openingHours || matchedMock?.practicalInfo?.openingHours || '08:00 a 19:00 hs',
+      cutoffTime: apiItem.cutoffTime || matchedMock?.practicalInfo?.cutoffTime,
       admissionFee: apiItem.admissionFee
         ? `$${Number(apiItem.admissionFee).toLocaleString('es-AR')}`
         : (matchedMock?.practicalInfo?.admissionFee ?? 'Acceso libre y gratuito'),
       parking: matchedMock?.practicalInfo?.parking ?? 'Estacionamiento en el acceso',
       accessHowTo: apiItem.howToGet || matchedMock?.practicalInfo?.accessHowTo || 'Por caminos principales señalizados.',
-      hydrationRequirement: matchedMock?.practicalInfo?.hydrationRequirement ?? '1 litro de agua por persona.',
-      recommendedGear: matchedMock?.practicalInfo?.recommendedGear ?? [
-        'Calzado cómodo para caminata',
-        'Protector solar y agua fresca',
-      ],
-      safetyWarnings: matchedMock?.practicalInfo?.safetyWarnings ?? [
-        'Respetar las indicaciones de los guardaparques y personal municipal.',
-      ],
+      hydrationRequirement:
+        apiItem.hydrationRequirement ||
+        matchedMock?.practicalInfo?.hydrationRequirement ||
+        '1 litro de agua por persona.',
+      recommendedGear:
+        apiItem.recommendedGear && apiItem.recommendedGear.length > 0
+          ? apiItem.recommendedGear
+          : (matchedMock?.practicalInfo?.recommendedGear ?? [
+              'Calzado cómodo para caminata',
+              'Protector solar y agua fresca',
+            ]),
+      safetyWarnings:
+        apiItem.safetyWarnings && apiItem.safetyWarnings.length > 0
+          ? apiItem.safetyWarnings
+          : (matchedMock?.practicalInfo?.safetyWarnings ?? [
+              'Respetar las indicaciones de los guardaparques y personal municipal.',
+            ]),
     },
     isTrekking: categoryMeta.isTrekking,
     ctaUrl: `/atractivos/${slug}`,
     status: apiItem.status || matchedMock?.status || 'OPEN',
     statusNotice: apiItem.statusNotice ?? matchedMock?.statusNotice ?? null,
-    isFeatured: apiItem.isFeatured ?? matchedMock?.isFeatured ?? false,
+    isFeatured: typeof apiItem.isFeatured === 'boolean' ? apiItem.isFeatured : Boolean(matchedMock?.isFeatured ?? false),
+    featuredBadgeTheme: (apiItem.featuredBadgeTheme as 'DARK' | 'LIGHT') || 'DARK',
   };
 
   return mappedItem;

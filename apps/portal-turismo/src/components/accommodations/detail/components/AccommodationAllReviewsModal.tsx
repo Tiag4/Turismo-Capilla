@@ -110,15 +110,15 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
         aria-hidden="true"
       />
 
-      {/* Modal / Drawer Container */}
+      {/* Modal / Drawer Container (Mucho más ancho en desktop para albergar las 7 columnas sin scroll) */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full sm:max-w-3xl lg:max-w-4xl h-[94vh] sm:h-[88vh] max-h-[94vh] sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl bg-white border border-stone-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-200 transform ${
+        className={`relative w-full sm:w-[95vw] md:max-w-5xl lg:max-w-6xl xl:max-w-[1200px] h-[94vh] sm:h-[88vh] max-h-[94vh] sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl bg-white border border-stone-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-200 transform ${
           isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 sm:scale-95 translate-y-8 sm:translate-y-3'
         }`}
       >
         {/* Header fijo */}
-        <div className="shrink-0 flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 border-b border-stone-200/80 bg-white z-10">
+        <div className="shrink-0 flex items-center justify-between px-5 sm:px-8 lg:px-10 py-4 sm:py-5 border-b border-stone-200/80 bg-white z-10">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -141,7 +141,7 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
         {/* Cuerpo scrolleable */}
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto px-5 sm:px-8 py-6 space-y-8"
+          className="flex-1 overflow-y-auto px-5 sm:px-8 lg:px-10 py-6 space-y-8"
         >
           {/* Hero de Calificación General */}
           <div className="flex flex-col items-center text-center space-y-2 pb-4 border-b border-stone-200/80">
@@ -240,16 +240,16 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
                 </p>
               </div>
             ) : (
-              <div className="space-y-8 divide-y divide-stone-200/70">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 pt-2">
                 {filteredReviews.map((review) => {
                   const isHighlighted = highlightedId === review.id;
                   return (
                     <article
                       key={review.id}
                       id={`modal-review-${review.id}`}
-                      className={`pt-6 first:pt-0 space-y-3 transition-colors duration-300 ${
+                      className={`space-y-3 transition-colors duration-300 ${
                         isHighlighted
-                          ? 'p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80'
+                          ? 'p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 -m-2'
                           : ''
                       }`}
                     >

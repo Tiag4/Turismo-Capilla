@@ -54,9 +54,11 @@ export const AccommodationRatingDimensionsStrip: React.FC<AccommodationRatingDim
   ];
 
   return (
-    <div className={`w-full overflow-x-auto no-scrollbar py-2 ${className}`}>
-      <div className="min-w-[760px] md:min-w-0 w-full flex items-center justify-between">
-        {/* Columna 1: Histograma de calificación general (Con ancho y altura generosa para evitar colisiones) */}
+    <div
+      className={`w-full overflow-x-auto md:overflow-x-visible overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2 ${className}`}
+    >
+      <div className="min-w-[740px] md:min-w-0 w-full flex items-center justify-between">
+        {/* Columna 1: Histograma de calificación general */}
         <div className="shrink-0 min-w-[145px] lg:min-w-[160px] pr-2 lg:pr-3 flex flex-col justify-between h-28 text-left">
           <span className="text-xs lg:text-sm font-semibold text-stone-900 block leading-normal whitespace-nowrap pt-0.5">
             Calificación general
@@ -83,13 +85,13 @@ export const AccommodationRatingDimensionsStrip: React.FC<AccommodationRatingDim
         {/* Separador vertical con margen */}
         <div className="w-px h-16 bg-stone-200 shrink-0 self-center mx-2 lg:mx-3" aria-hidden="true" />
 
-        {/* Columnas 2 a 7: Dimensiones individuales con divisores verticales */}
+        {/* Columnas 2 a 7: Dimensiones individuales sin truncate para evitar cortes de texto */}
         {dimensions.map((dim, idx) => {
           const Icon = dim.Icon;
           return (
             <React.Fragment key={dim.label}>
-              <div className="flex-1 min-w-[90px] lg:min-w-[105px] px-2 lg:px-3 flex flex-col justify-between h-28 text-left">
-                <span className="text-xs lg:text-sm font-semibold text-stone-900 block leading-normal whitespace-nowrap pt-0.5 truncate">
+              <div className="flex-1 min-w-[85px] lg:min-w-[105px] px-2 lg:px-3 flex flex-col justify-between h-28 text-left">
+                <span className="text-xs lg:text-sm font-semibold text-stone-900 block leading-normal whitespace-nowrap pt-0.5">
                   {dim.label}
                 </span>
                 <span className="font-['Outfit'] font-black text-xl lg:text-2xl text-stone-900 tabular-nums my-auto">

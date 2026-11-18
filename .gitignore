@@ -40,6 +40,10 @@ tmp/
 scratch/
 *.tmp
 
+# Drive export folder (untracked for security)
+Turismo-Capilla-Drive/
+entrega-drive/
+
 
 # Coverage
 coverage/

@@ -11,7 +11,7 @@ Al iniciar el backend (`.\mvnw.cmd spring-boot:run` o `./dev.ps1`), la base de d
 | Rol del Sistema | Nombre y Apellido / Entidad | Correo Electrónico | Contraseña Oficial | Panel / Producción | Alcance y Permisos |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`ADMIN`** | Comisión Oficial Turismo Capilla | `admin@capilladelmonte.gov.ar` | `AdminCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Gestión integral municipal: Invitaciones a prestadores, directorio, suspensión de prestadores, atractivos, alertas meteorológicas, agenda de eventos y métricas de ocupación. |
-| **`HOST` (Cabañas)** | Roberto Gómez (*Pircas del Uritorco*) | `host@capilladelmonte.gov.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestador con cabaña unifamiliar: tarifas, fotos a Cloudinary, confirmación de reservas recibidas y bloqueo de fechas en calendario. |
+| **`HOST` (Cabañas)** | Eduardo Solana (*Cabañas El Aguaribay*) | `eduardodsolana@gmail.com` | `Demo1234!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestador con cabaña unifamiliar: tarifas, fotos, confirmación de reservas recibidas y bloqueo de fechas en calendario. |
 | **`HOST` (Hostería)** | Marcela Rossi (*Los Nogales*) | `marcela.rossi@capillaturismo.com.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestadora con inventario multi-unidad (habitaciones Standard, Superior y Suite), planes tarifarios con y sin desayuno. |
 | **`HOST` (Refugio)** | Carlos Benítez (*Los Alazanes*) | `carlos.benitez@capillaturismo.com.ar` | `HostCapilla2026!` | [https://turismo-dashboard-tan.vercel.app](https://turismo-dashboard-tan.vercel.app) *(o localhost:5174)* | Prestador de monoambiente de montaña pet friendly con deck privado y seña del 40%. |
 | **`TOURIST`** | Turista de Demostración | `turista@gmail.com` *(o registro libre)* | `TuristaCapilla2026!` | [https://portal-turismo-opal.vercel.app](https://portal-turismo-opal.vercel.app) *(o localhost:5173)* | Búsqueda de disponibilidad en el Portal público, solicitud de reserva directa y consulta pública por código `CAP-YYYY-XXXX`. |
@@ -31,19 +31,19 @@ Al iniciar el backend (`.\mvnw.cmd spring-boot:run` o `./dev.ps1`), la base de d
 
 Cada prestador sembrado cuenta con su establecimiento y datos bancarios para validar el flujo de transferencias bancarias y acreditación de señas:
 
-### 2.1 Cabañas Pircas del Uritorco (Roberto Gómez)
+### 2.1 Cabañas El Aguaribay (Eduardo Solana)
 * **Tipo:** Cabaña serrana (`CABIN`)
-* **Ubicación:** Camino a Los Terrones Km 3.5, Capilla del Monte
+* **Ubicación:** Av. Amadeo Sabattini 1214 (Camino al Cerro Uritorco), Capilla del Monte
 * **Capacidad Máxima:** 5 huéspedes
 * **Precio por Noche:** `$85.000 ARS`
 * **Porcentaje de Seña:** `50%`
 * **Desayuno:** No incluido
-* **Comodidades:** Piscina, Wi-Fi Starlink, Cochera techada, Parrilla individual, Aire acondicionado
+* **Comodidades:** Piscina con solárium, Wi-Fi, Cochera techada, Asador individual, Parque de 2.300 m², Cascada, Aire acondicionado
 * **Datos Bancarios para Transferencia:**
   * **Banco:** Banco de la Nación Argentina
-  * **Titular:** Eduardo Soria - Pircas del Uritorco
+  * **Titular:** Eduardo Solana - Cabañas El Aguaribay
   * **CBU:** `0110485530048500123456`
-  * **Alias:** `PIRCAS.URITORCO.RIO`
+  * **Alias:** `AGUARIBAY.CAPILLA.RIO`
 
 ### 2.2 Hostería Boutique Los Nogales (Marcela Rossi)
 * **Tipo:** Hotel / Hostería (`HOTEL`)

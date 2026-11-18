@@ -68,16 +68,19 @@ export const AccommodationReviewModal: React.FC<AccommodationReviewModalProps> =
   useBodyScrollLock(shouldRender);
 
   useEffect(() => {
-    if (!shouldRender) return;
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        onClose();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [shouldRender, onClose]);
+  }, [isOpen, onClose]);
 
   if (!shouldRender || typeof document === 'undefined') return null;
 

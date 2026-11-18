@@ -113,6 +113,7 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           initialBookingCode={reviewsCtrl.initialBookingCode}
           onSubmitReview={reviewsCtrl.addReview}
           onCheckEligibility={reviewsCtrl.checkEligibility}
+          accommodationTitle={data.title}
         />
       </div>
 

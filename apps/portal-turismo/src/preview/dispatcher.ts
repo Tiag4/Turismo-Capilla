@@ -51,6 +51,34 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     }
   }
 
+  // 2b. Actualizar DuoAccess en vivo si hay imágenes o bajadas personalizadas
+  if (payload.duoAccessConfig) {
+    if (payload.duoAccessConfig.whatToDoImageUrl !== undefined) {
+      const imgEl = document.querySelector<HTMLImageElement>('[data-duo-what-img]');
+      if (imgEl) {
+        imgEl.src = payload.duoAccessConfig.whatToDoImageUrl || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
+      }
+    }
+    if (payload.duoAccessConfig.whatToDoSubtitle !== undefined) {
+      const descEl = document.querySelector('[data-duo-what-desc]');
+      if (descEl) {
+        descEl.textContent = payload.duoAccessConfig.whatToDoSubtitle;
+      }
+    }
+    if (payload.duoAccessConfig.whereToSleepImageUrl !== undefined) {
+      const imgEl = document.querySelector<HTMLImageElement>('[data-duo-sleep-img]');
+      if (imgEl) {
+        imgEl.src = payload.duoAccessConfig.whereToSleepImageUrl || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80';
+      }
+    }
+    if (payload.duoAccessConfig.whereToSleepSubtitle !== undefined) {
+      const descEl = document.querySelector('[data-duo-sleep-desc]');
+      if (descEl) {
+        descEl.textContent = payload.duoAccessConfig.whereToSleepSubtitle;
+      }
+    }
+  }
+
   // 3. Actualizar Final CTA en vivo si hay textos personalizados
   if (payload.finalCtaConfig) {
     if (payload.finalCtaConfig.title) {

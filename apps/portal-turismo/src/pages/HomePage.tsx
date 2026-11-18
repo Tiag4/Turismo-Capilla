@@ -40,6 +40,28 @@ export const HomePage: React.FC = () => {
     };
   });
 
+  const [duoAccessConfig] = useState<{
+    whatToDoImageUrl?: string;
+    whatToDoSubtitle?: string;
+    whereToSleepImageUrl?: string;
+    whereToSleepSubtitle?: string;
+  }>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('turismo_capilla_portal_cms_config');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.duoAccessConfig) {
+            return parsed.duoAccessConfig;
+          }
+        }
+      } catch {
+        // Fallback default
+      }
+    }
+    return {};
+  });
+
   useEffect(() => {
     // 1. Inicializar canal de comunicación interactivo si estamos en modo CMS Preview (?preview=true)
     const cleanupPreview = initPortalPreviewDispatcher();
@@ -150,7 +172,12 @@ export const HomePage: React.FC = () => {
       </div>
 
       <div id="section-duoAccess" data-editable="duoAccess" className="w-full">
-        <DuoAccessSection />
+        <DuoAccessSection
+          whatToDoImageUrl={duoAccessConfig.whatToDoImageUrl}
+          whatToDoSubtitle={duoAccessConfig.whatToDoSubtitle}
+          whereToSleepImageUrl={duoAccessConfig.whereToSleepImageUrl}
+          whereToSleepSubtitle={duoAccessConfig.whereToSleepSubtitle}
+        />
       </div>
 
       <div id="section-culturalAgenda" data-editable="culturalAgenda" className="w-full">

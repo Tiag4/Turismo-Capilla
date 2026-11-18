@@ -20,6 +20,10 @@ export interface SectionEditorPanelProps {
   onChangeHeroTitle: (val: string) => void;
   onChangeHeroSubtitle: (val: string) => void;
   onChangeHeroImageUrl?: (val: string) => void;
+  onChangeDuoWhatToDoImageUrl?: (val: string) => void;
+  onChangeDuoWhatToDoSubtitle?: (val: string) => void;
+  onChangeDuoWhereToSleepImageUrl?: (val: string) => void;
+  onChangeDuoWhereToSleepSubtitle?: (val: string) => void;
   onChangeCtaTitle: (val: string) => void;
   onChangeCtaSubtitle: (val: string) => void;
   onChangeCtaButtonText: (val: string) => void;
@@ -35,6 +39,10 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
   onChangeHeroTitle,
   onChangeHeroSubtitle,
   onChangeHeroImageUrl,
+  onChangeDuoWhatToDoImageUrl,
+  onChangeDuoWhatToDoSubtitle,
+  onChangeDuoWhereToSleepImageUrl,
+  onChangeDuoWhereToSleepSubtitle,
   onChangeCtaTitle,
   onChangeCtaSubtitle,
   onChangeCtaButtonText,
@@ -47,6 +55,17 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Estados para subida de imágenes de DuoAccess
+  const [isUploadingWhat, setIsUploadingWhat] = useState(false);
+  const [whatUploadError, setWhatUploadError] = useState<string | null>(null);
+  const [whatUploadSuccess, setWhatUploadSuccess] = useState(false);
+  const whatFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [isUploadingSleep, setIsUploadingSleep] = useState(false);
+  const [sleepUploadError, setSleepUploadError] = useState<string | null>(null);
+  const [sleepUploadSuccess, setSleepUploadSuccess] = useState(false);
+  const sleepFileInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!selectedSectionId) {
     return (
@@ -102,6 +121,76 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
       setIsUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleWhatImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setWhatUploadError('El archivo seleccionado debe ser una imagen válida (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setWhatUploadError('La imagen no puede superar los 8 MB de tamaño.');
+      return;
+    }
+
+    try {
+      setIsUploadingWhat(true);
+      setWhatUploadError(null);
+      setWhatUploadSuccess(false);
+      const res = await mediaService.uploadImage(file, 'portal/duo-access');
+      if (res?.url && onChangeDuoWhatToDoImageUrl) {
+        onChangeDuoWhatToDoImageUrl(res.url);
+        setWhatUploadSuccess(true);
+        setTimeout(() => setWhatUploadSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to upload what-to-do image to Cloudinary:', err);
+      setWhatUploadError('Error al subir a Cloudinary. Verificá que el backend esté encendido.');
+    } finally {
+      setIsUploadingWhat(false);
+      if (whatFileInputRef.current) {
+        whatFileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleSleepImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setSleepUploadError('El archivo seleccionado debe ser una imagen válida (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setSleepUploadError('La imagen no puede superar los 8 MB de tamaño.');
+      return;
+    }
+
+    try {
+      setIsUploadingSleep(true);
+      setSleepUploadError(null);
+      setSleepUploadSuccess(false);
+      const res = await mediaService.uploadImage(file, 'portal/duo-access');
+      if (res?.url && onChangeDuoWhereToSleepImageUrl) {
+        onChangeDuoWhereToSleepImageUrl(res.url);
+        setSleepUploadSuccess(true);
+        setTimeout(() => setSleepUploadSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to upload where-to-sleep image to Cloudinary:', err);
+      setSleepUploadError('Error al subir a Cloudinary. Verificá que el backend esté encendido.');
+    } finally {
+      setIsUploadingSleep(false);
+      if (sleepFileInputRef.current) {
+        sleepFileInputRef.current.value = '';
       }
     }
   };
@@ -387,7 +476,259 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
         </div>
       )}
 
-      {['duoAccess', 'featuredAttractions', 'astrotourismTeaser', 'valleyMap'].includes(selectedSectionId) && (
+      {selectedSectionId === 'duoAccess' && (
+        <div className="space-y-5">
+          {/* Tarjeta 1: Qué Hacer */}
+          <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-3.5">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--color-sand-200)]">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-[var(--color-emerald-portal-700)] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  Tarjeta A
+                </span>
+                <h4 className="font-display font-black text-xs text-[var(--color-sand-900)] mt-1">
+                  Qué Hacer (Paseos & Senderos)
+                </h4>
+              </div>
+              {config.duoAccessConfig?.whatToDoImageUrl &&
+                config.duoAccessConfig.whatToDoImageUrl !==
+                  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80' && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onChangeDuoWhatToDoImageUrl?.(
+                        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+                      )
+                    }
+                    className="text-[11px] font-bold text-[var(--color-terracotta-600)] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    title="Restaurar fotografía predeterminada de Los Terrones"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Restaurar foto</span>
+                  </button>
+                )}
+            </div>
+
+            {/* Vista previa de imagen Qué Hacer */}
+            <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-[var(--color-sand-300)] bg-stone-900 shadow-inner group">
+              <img
+                src={
+                  config.duoAccessConfig?.whatToDoImageUrl ||
+                  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+                }
+                alt="Vista previa de Qué Hacer"
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-2.5">
+                <span className="text-[10px] text-white font-medium">
+                  {config.duoAccessConfig?.whatToDoImageUrl?.includes('cloudinary')
+                    ? '☁️ Alojada en Cloudinary'
+                    : '🏔️ Fotografía Predeterminada (Los Terrones)'}
+                </span>
+              </div>
+            </div>
+
+            {/* Subida a Cloudinary para Qué Hacer */}
+            <input
+              ref={whatFileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/avif"
+              onChange={handleWhatImageUpload}
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              disabled={isUploadingWhat}
+              onClick={() => whatFileInputRef.current?.click()}
+              className={`w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                isUploadingWhat
+                  ? 'bg-[var(--color-sand-200)] text-[var(--color-sand-500)] cursor-not-allowed'
+                  : 'bg-[var(--color-emerald-portal-600)] hover:bg-[var(--color-emerald-portal-700)] text-white'
+              }`}
+            >
+              {isUploadingWhat ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Subiendo a Cloudinary...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Subir Imagen a Cloudinary</span>
+                </>
+              )}
+            </button>
+
+            {/* URL manual Qué Hacer */}
+            <div>
+              <label className="block text-[11px] font-medium text-[var(--color-sand-600)] mb-1">
+                O ingresá/pegá una URL directa:
+              </label>
+              <input
+                type="url"
+                value={config.duoAccessConfig?.whatToDoImageUrl ?? ''}
+                onChange={(e) => onChangeDuoWhatToDoImageUrl?.(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-3 py-1.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
+              />
+            </div>
+
+            {whatUploadError && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{whatUploadError}</span>
+              </div>
+            )}
+
+            {whatUploadSuccess && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>Imagen subida con éxito y aplicada a 'Qué Hacer'.</span>
+              </div>
+            )}
+
+            {/* Bajada Qué Hacer */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
+                Bajada Descriptiva / Subtítulo
+              </label>
+              <textarea
+                rows={3}
+                value={config.duoAccessConfig?.whatToDoSubtitle ?? ''}
+                onChange={(e) => onChangeDuoWhatToDoSubtitle?.(e.target.value)}
+                placeholder="12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones..."
+                className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-emerald-portal-600)]"
+              />
+            </div>
+          </div>
+
+          {/* Tarjeta 2: Dónde Dormir */}
+          <div className="p-4 rounded-2xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-3.5">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--color-sand-200)]">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-[var(--color-terracotta-700)] bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                  Tarjeta B
+                </span>
+                <h4 className="font-display font-black text-xs text-[var(--color-sand-900)] mt-1">
+                  Dónde Dormir (Cabañas & Posadas)
+                </h4>
+              </div>
+              {config.duoAccessConfig?.whereToSleepImageUrl &&
+                config.duoAccessConfig.whereToSleepImageUrl !==
+                  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80' && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onChangeDuoWhereToSleepImageUrl?.(
+                        'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+                      )
+                    }
+                    className="text-[11px] font-bold text-[var(--color-terracotta-600)] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    title="Restaurar fotografía predeterminada de Cabañas"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Restaurar foto</span>
+                  </button>
+                )}
+            </div>
+
+            {/* Vista previa de imagen Dónde Dormir */}
+            <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-[var(--color-sand-300)] bg-stone-900 shadow-inner group">
+              <img
+                src={
+                  config.duoAccessConfig?.whereToSleepImageUrl ||
+                  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+                }
+                alt="Vista previa de Dónde Dormir"
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-2.5">
+                <span className="text-[10px] text-white font-medium">
+                  {config.duoAccessConfig?.whereToSleepImageUrl?.includes('cloudinary')
+                    ? '☁️ Alojada en Cloudinary'
+                    : '🏡 Fotografía Predeterminada (Cabañas Serranas)'}
+                </span>
+              </div>
+            </div>
+
+            {/* Subida a Cloudinary para Dónde Dormir */}
+            <input
+              ref={sleepFileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/avif"
+              onChange={handleSleepImageUpload}
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              disabled={isUploadingSleep}
+              onClick={() => sleepFileInputRef.current?.click()}
+              className={`w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                isUploadingSleep
+                  ? 'bg-[var(--color-sand-200)] text-[var(--color-sand-500)] cursor-not-allowed'
+                  : 'bg-[var(--color-terracotta-500)] hover:bg-[var(--color-terracotta-600)] text-white'
+              }`}
+            >
+              {isUploadingSleep ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Subiendo a Cloudinary...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Subir Imagen a Cloudinary</span>
+                </>
+              )}
+            </button>
+
+            {/* URL manual Dónde Dormir */}
+            <div>
+              <label className="block text-[11px] font-medium text-[var(--color-sand-600)] mb-1">
+                O ingresá/pegá una URL directa:
+              </label>
+              <input
+                type="url"
+                value={config.duoAccessConfig?.whereToSleepImageUrl ?? ''}
+                onChange={(e) => onChangeDuoWhereToSleepImageUrl?.(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-3 py-1.5 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-terracotta-500)]"
+              />
+            </div>
+
+            {sleepUploadError && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{sleepUploadError}</span>
+              </div>
+            )}
+
+            {sleepUploadSuccess && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>Imagen subida con éxito y aplicada a 'Dónde Dormir'.</span>
+              </div>
+            )}
+
+            {/* Bajada Dónde Dormir */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)] mb-1">
+                Bajada Descriptiva / Subtítulo
+              </label>
+              <textarea
+                rows={3}
+                value={config.duoAccessConfig?.whereToSleepSubtitle ?? ''}
+                onChange={(e) => onChangeDuoWhereToSleepSubtitle?.(e.target.value)}
+                placeholder="Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época..."
+                className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--color-sand-200)] bg-[var(--color-sand-50)] text-[var(--color-sand-900)] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[var(--color-terracotta-500)]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {['featuredAttractions', 'astrotourismTeaser', 'valleyMap'].includes(selectedSectionId) && (
         <div className="p-4 rounded-xl bg-white border border-[var(--color-sand-200)] shadow-2xs space-y-2">
           <div className="flex items-center gap-2 text-[var(--color-sand-700)] font-bold text-xs">
             <Info className="w-4 h-4" />

@@ -67,13 +67,15 @@ export const PaymentBankSection: React.FC<PaymentBankSectionProps> = ({
         <label className="block text-xs font-bold text-sand-700 uppercase tracking-wider mb-2">
           Porcentaje de Seña Requerido (%)
         </label>
-        <div className="flex flex-wrap items-center gap-2 mb-3">
+        <div role="radiogroup" aria-label="Porcentaje de seña requerido" className="flex flex-wrap items-center gap-2 mb-3">
           {percentagePresets.map((pct) => (
             <button
               key={pct}
               type="button"
+              role="radio"
+              aria-checked={downPaymentPercentage === pct}
               onClick={() => setDownPaymentPercentage(pct)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+              className={`px-4 py-2 min-h-[38px] rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                 downPaymentPercentage === pct
                   ? 'border-[var(--color-terracotta-500)] bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-700)] shadow-xs'
                   : 'border-sand-200 bg-white text-sand-700 hover:bg-sand-50'
@@ -83,19 +85,23 @@ export const PaymentBankSection: React.FC<PaymentBankSectionProps> = ({
             </button>
           ))}
           <div className="flex items-center gap-1.5 ml-2">
-            <span className="text-xs text-sand-500 font-medium">Personalizado:</span>
+            <label htmlFor="custom-down-payment" className="text-xs text-sand-500 font-medium">
+              Personalizado:
+            </label>
             <div className="relative w-24">
               <input
+                id="custom-down-payment"
                 type="number"
                 min="0"
                 max="100"
+                aria-label="Porcentaje de seña personalizado"
                 value={downPaymentPercentage}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setDownPaymentPercentage(Math.min(100, Math.max(0, Number(e.target.value) || 0)))
                 }
                 className="w-full px-3 py-1.5 pr-6 bg-sand-50/60 border border-sand-300 rounded-lg text-xs font-bold text-sand-900 focus:outline-none focus:ring-2 focus:ring-terracotta-500"
               />
-              <Percent className="w-3 h-3 text-sand-400 absolute right-2 top-2.5" />
+              <Percent className="w-3 h-3 text-sand-400 absolute right-2 top-2.5" aria-hidden="true" />
             </div>
           </div>
         </div>

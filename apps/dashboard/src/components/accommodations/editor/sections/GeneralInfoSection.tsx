@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, Star } from 'lucide-react';
 import { Input } from '../../../ui/Input.tsx';
 import { CustomSelect } from '../../../ui/CustomSelect.tsx';
+import { InfoTooltip } from '../../../ui/Tooltip.tsx';
 import type { AccommodationType } from '../../../../types/accommodation.types.ts';
 
 export interface GeneralInfoSectionProps {
@@ -18,6 +19,10 @@ export interface GeneralInfoSectionProps {
   isAdmin?: boolean;
   isFeatured?: boolean;
   setIsFeatured?: (val: boolean) => void;
+  hostingSinceYear?: number | null;
+  setHostingSinceYear?: (val: number | null) => void;
+  isActive?: boolean;
+  setIsActive?: (val: boolean) => void;
 }
 
 const ACCOMMODATION_TYPE_OPTIONS = [
@@ -42,6 +47,10 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
   isAdmin = false,
   isFeatured = false,
   setIsFeatured,
+  hostingSinceYear,
+  setHostingSinceYear,
+  isActive = true,
+  setIsActive,
 }) => {
   return (
     <div className="bg-white border border-[var(--color-sand-200)] rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-xs">
@@ -65,6 +74,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="ej. Cabañas Pircas del Uritorco"
+            tooltip="Nombre oficial o de fantasía con el que los turistas reconocen tu alojamiento."
             required
           />
         </div>
@@ -74,15 +84,17 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={type}
             onChange={(val) => setType(val as AccommodationType)}
             options={ACCOMMODATION_TYPE_OPTIONS}
+            tooltip="Categoría municipal oficial del complejo o propiedad."
           />
         </div>
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
+        <label htmlFor="accommodation-description" className="text-xs font-semibold text-[var(--color-sand-800)] block mb-1.5">
           Descripción del establecimiento
         </label>
         <textarea
+          id="accommodation-description"
           rows={5}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -96,14 +108,31 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[var(--color-sand-100)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-[var(--color-sand-100)]">
         <div>
           <Input
             label="N° de Habilitación / Matrícula Municipal"
             value={licenseNumber}
             onChange={(e) => setLicenseNumber?.(e.target.value)}
             placeholder="ej. H-4829 / Res. 104-2023"
+            tooltip="Número de registro otorgado por el Municipio de Capilla del Monte que certifica la habilitación oficial."
             helperText="Aparecerá en el portal con el sello oficial de prestador habilitado."
+          />
+        </div>
+        <div>
+          <Input
+            label="Año de inicio de actividad"
+            type="number"
+            min={1950}
+            max={new Date().getFullYear()}
+            value={hostingSinceYear ? String(hostingSinceYear) : ''}
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : null;
+              setHostingSinceYear?.(val && !isNaN(val) ? val : null);
+            }}
+            placeholder="ej. 2014"
+            tooltip="Año en que el establecimiento o prestador inició formalmente su actividad habilitada en Capilla del Monte."
+            helperText="Define la antigüedad que verán los turistas en la ficha oficial."
           />
         </div>
         <div>
@@ -112,6 +141,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             value={responseTime}
             onChange={(e) => setResponseTime?.(e.target.value)}
             placeholder="ej. Responde habitualmente en el día"
+            tooltip="Estimación del tiempo que te toma confirmar consultas o solicitudes a los turistas."
             helperText="Informa al turista la rapidez de atención para consultas y reservas."
           />
         </div>
@@ -142,6 +172,39 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
           </label>
         </div>
       )}
+
+      {/* Control de Disponibilidad y Publicación */}
+      <div className="pt-4 border-t border-[var(--color-sand-200)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--color-sand-50)] border border-[var(--color-sand-200)]">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-[var(--color-sand-900)] block font-['Outfit']">
+              Disponibilidad y Publicación en el Portal
+            </span>
+            <InfoTooltip content="Permite pausar temporalmente todo el establecimiento del catálogo oficial sin perder las reservas previas." />
+          </div>
+          <span className="text-xs text-[var(--color-sand-600)] block mt-0.5">
+            {isActive
+              ? 'El alojamiento está activo y visible públicamente para recibir reservas en el portal.'
+              : 'El alojamiento está pausado. No aparecerá en los resultados del portal ni admitirá solicitudes de reserva.'}
+          </span>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isActive}
+          aria-label="Disponibilidad y Publicación en el Portal"
+          onClick={() => setIsActive?.(!isActive)}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta-500)] focus:ring-offset-2 ${
+            isActive ? 'bg-[var(--color-emerald-portal-600)]' : 'bg-[var(--color-sand-300)]'
+          }`}
+        >
+          <span
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+              isActive ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
+      </div>
     </div>
   );
 };

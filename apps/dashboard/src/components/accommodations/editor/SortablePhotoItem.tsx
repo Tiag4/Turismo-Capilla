@@ -60,6 +60,7 @@ export const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
           type="button"
           {...attributes}
           {...listeners}
+          aria-label={`Arrastrar para reordenar fotografía ${index + 1}`}
           title="Arrastrar para reordenar foto"
           className="absolute top-2 left-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white cursor-grab active:cursor-grabbing transition-colors shadow-xs"
         >

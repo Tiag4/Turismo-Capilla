@@ -91,7 +91,11 @@ export const AccommodationMobileBottomDock: React.FC<AccommodationMobileBottomDo
             </span>
           )}
 
-          {totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
+          {data.verified === false ? (
+            <span className="px-4 py-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold">
+              Pausado temporalmente
+            </span>
+          ) : totalSelectedRooms > 0 && isCapacitySufficient && !dateRangeError ? (
             <Link
               to={wizardUrl}
               className="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:bg-terracotta-700 text-white font-display font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer select-none block text-center"

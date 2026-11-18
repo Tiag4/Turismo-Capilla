@@ -34,6 +34,8 @@ import { PharmacyDutyEditorPage } from './components/emergencies/editor/Pharmacy
 import { ProfileView } from './components/profile/ProfileView.tsx';
 
 import { useDashboardRouter } from './hooks/useDashboardRouter.ts';
+import { WorkspaceSelectorPage } from './components/auth/WorkspaceSelectorPage.tsx';
+import type { UserRole } from './types/auth.types.ts';
 
 const DashboardContent: React.FC = () => {
   const {
@@ -45,7 +47,14 @@ const DashboardContent: React.FC = () => {
     logout,
     updateProfile,
     changePassword,
+    activeWorkspace,
+    switchWorkspace,
+    setActiveWorkspace,
+    isDualRole,
   } = useAuthContext();
+
+  const effectiveRole: UserRole =
+    user?.role === 'ADMIN' ? (activeWorkspace ?? 'ADMIN') : (user?.role ?? 'HOST');
 
   const {
     currentTab,
@@ -86,7 +95,7 @@ const DashboardContent: React.FC = () => {
     calendarView,
     navigateToCalendarBlock,
     navigateToCalendar,
-  } = useDashboardRouter(isAuthenticated && user ? user.role : null);
+  } = useDashboardRouter(isAuthenticated && user && activeWorkspace !== null ? effectiveRole : null);
 
   const isHostRegistrationRoute =
     typeof window !== 'undefined' &&
@@ -100,29 +109,49 @@ const DashboardContent: React.FC = () => {
     return <LoginForm onLogin={login} isLoading={isLoading} error={error} />;
   }
 
+  if (user.role === 'ADMIN' && activeWorkspace === null) {
+    return (
+      <WorkspaceSelectorPage
+        user={user}
+        onSelectWorkspace={(workspace) => {
+          switchWorkspace(workspace);
+          setCurrentTab(workspace === 'ADMIN' ? 'overview' : 'bookings');
+        }}
+        onLogout={logout}
+      />
+    );
+  }
+
   return (
     <DashboardLayout
       user={user}
       currentTab={currentTab}
       onTabChange={setCurrentTab}
       onLogout={logout}
+      effectiveRole={effectiveRole}
+      isDualRole={isDualRole}
+      onSwitchWorkspace={(ws) => {
+        switchWorkspace(ws);
+        setCurrentTab(ws === 'ADMIN' ? 'overview' : 'bookings');
+      }}
+      onOpenWorkspaceSelector={() => setActiveWorkspace(null)}
     >
-      {currentTab === 'overview' && user.role === 'ADMIN' && (
+      {currentTab === 'overview' && effectiveRole === 'ADMIN' && (
         <AdminOverview onNavigateTab={setCurrentTab} />
       )}
 
-      {currentTab === 'portal_cms' && user.role === 'ADMIN' && (
+      {currentTab === 'portal_cms' && effectiveRole === 'ADMIN' && (
         <PortalCustomizerPage
           onNavigateToEvents={() => setCurrentTab('events')}
           onNavigateToAccommodations={() => setCurrentTab('accommodations')}
         />
       )}
 
-      {currentTab === 'mobility' && user.role === 'ADMIN' && (
+      {currentTab === 'mobility' && effectiveRole === 'ADMIN' && (
         <MobilityManagerView />
       )}
 
-      {currentTab === 'events' && user.role === 'ADMIN' && (
+      {currentTab === 'events' && effectiveRole === 'ADMIN' && (
         eventView === 'list' ? (
           <CulturalAgendaManager
             onNavigateCreate={navigateToEventCreate}
@@ -138,7 +167,7 @@ const DashboardContent: React.FC = () => {
         )
       )}
 
-      {currentTab === 'attractions' && user.role === 'ADMIN' && (
+      {currentTab === 'attractions' && effectiveRole === 'ADMIN' && (
         attractionView === 'list' ? (
           <AttractionsManager
             onNavigateCreate={navigateToAttractionCreate}
@@ -154,7 +183,7 @@ const DashboardContent: React.FC = () => {
         )
       )}
 
-      {currentTab === 'emergencies' && user.role === 'ADMIN' && (
+      {currentTab === 'emergencies' && effectiveRole === 'ADMIN' && (
         emergencyView === 'list' ? (
           <EmergencySanitaryManagerView
             onNavigateCreate={navigateToEmergencyCreate}
@@ -170,7 +199,7 @@ const DashboardContent: React.FC = () => {
         )
       )}
 
-      {currentTab === 'alerts' && user.role === 'ADMIN' && (
+      {currentTab === 'alerts' && effectiveRole === 'ADMIN' && (
         alertView === 'list' ? (
           <AlertsManagerView
             onNavigateCreate={navigateToAlertCreate}
@@ -190,7 +219,7 @@ const DashboardContent: React.FC = () => {
 
       {currentTab === 'accommodations' && (
         accommodationView === 'list' ? (
-          user.role === 'ADMIN' ? (
+          effectiveRole === 'ADMIN' ? (
             <ProvidersDirectoryView
               onNavigateCreate={navigateToAccommodationCreate}
               onNavigateEdit={navigateToAccommodationEdit}
@@ -211,7 +240,7 @@ const DashboardContent: React.FC = () => {
         )
       )}
 
-      {currentTab === 'invitations' && user.role === 'ADMIN' && (
+      {currentTab === 'invitations' && effectiveRole === 'ADMIN' && (
         invitationView === 'list' ? (
           <InvitationManager onNavigateCreate={navigateToInvitationCreate} />
         ) : (
@@ -222,11 +251,11 @@ const DashboardContent: React.FC = () => {
         )
       )}
 
-      {currentTab === 'reports' && user.role === 'ADMIN' && <OccupancyReportView />}
-      {currentTab === 'audit' && user.role === 'ADMIN' && <ActivityLogView />}
-      {currentTab === 'moderation' && user.role === 'ADMIN' && <ContentModerationView />}
+      {currentTab === 'reports' && effectiveRole === 'ADMIN' && <OccupancyReportView />}
+      {currentTab === 'audit' && effectiveRole === 'ADMIN' && <ActivityLogView />}
+      {currentTab === 'moderation' && effectiveRole === 'ADMIN' && <ContentModerationView />}
 
-      {currentTab === 'settings' && user.role === 'ADMIN' && (
+      {currentTab === 'settings' && effectiveRole === 'ADMIN' && (
         seasonView === 'list' ? (
           <TourismCalendarSettings
             onNavigateCreate={navigateToSeasonCreate}

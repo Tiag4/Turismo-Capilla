@@ -223,10 +223,11 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                       key={`day-${day}`}
                       type="button"
                       disabled={disabled}
+                      aria-disabled={disabled}
                       onClick={() => handleSelectDay(day)}
                       className={`w-9 h-9 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
                         disabled
-                          ? 'text-stone-300 bg-transparent cursor-not-allowed'
+                          ? 'text-stone-300 bg-transparent cursor-not-allowed line-through'
                           : selected
                           ? 'bg-terracotta-600 text-white shadow-md shadow-terracotta-600/30'
                           : 'text-stone-800 hover:bg-stone-100 hover:text-stone-950'
@@ -342,10 +343,11 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                     key={`day-${day}`}
                     type="button"
                     disabled={disabled}
+                    aria-disabled={disabled}
                     onClick={() => handleSelectDay(day)}
                     className={`w-9 h-9 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
                       disabled
-                        ? 'text-stone-300 bg-transparent cursor-not-allowed'
+                        ? 'text-stone-300 bg-transparent cursor-not-allowed line-through'
                         : selected
                         ? 'bg-terracotta-600 text-white shadow-md shadow-terracotta-600/30'
                         : 'text-stone-800 hover:bg-stone-100 hover:text-stone-950'

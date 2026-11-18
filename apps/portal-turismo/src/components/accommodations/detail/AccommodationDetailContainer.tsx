@@ -68,8 +68,8 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
         <AccommodationDescription description={data.fullDescription} />
       </div>
 
-      {/* Desktop (>= 768px): Grilla Fija 3 Columnas Top */}
-      <div className="hidden md:grid detail-bento-grid pt-2">
+      {/* Desktop (>= 768px): Grilla Fija Top con separación limpia */}
+      <div className="hidden md:grid detail-bento-grid gap-y-6 pt-2">
         <AccommodationLeftCol
           data={data}
           averageRating={reviewsCtrl.stats.averageRating}
@@ -107,7 +107,13 @@ export const AccommodationDetailContainer: React.FC<AccommodationDetailContainer
           isLoading={reviewsCtrl.isLoading}
           submitSuccess={reviewsCtrl.submitSuccess}
           pendingModeration={reviewsCtrl.pendingModeration}
-          onOpenReviewModal={reviewsCtrl.openModal}
+          isSubmitting={reviewsCtrl.isSubmitting}
+          isFormExpanded={reviewsCtrl.isFormExpanded}
+          onToggleForm={() => reviewsCtrl.setIsFormExpanded((prev) => !prev)}
+          initialBookingCode={reviewsCtrl.initialBookingCode}
+          onSubmitReview={reviewsCtrl.addReview}
+          onCheckEligibility={reviewsCtrl.checkEligibility}
+          accommodationTitle={data.title}
         />
       </div>
 

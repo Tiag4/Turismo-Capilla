@@ -13,6 +13,12 @@ export interface CreateReviewInput {
   authorOrigin?: string;
   stayDate: string;
   rating: number;
+  cleanlinessRating?: number;
+  accuracyRating?: number;
+  checkInRating?: number;
+  hostRating?: number;
+  locationRating?: number;
+  valueRating?: number;
   comment: string;
   aspects: ReviewAspect[];
   bookingCode?: string;
@@ -30,6 +36,12 @@ export interface ReviewStats {
   verifiedCount: number;
   distribution: Record<1 | 2 | 3 | 4 | 5, number>;
   aspectCounts: Record<string, number>;
+  cleanlinessAverage: number;
+  accuracyAverage: number;
+  checkInAverage: number;
+  hostAverage: number;
+  locationAverage: number;
+  valueAverage: number;
 }
 
 function sanitizeText(input: string): string {
@@ -59,6 +71,12 @@ function mapApprovedReview(review: Review): ReviewItem {
     authorOrigin: review.guestOrigin ?? undefined,
     stayDate: review.stayDate ?? 'Estadía verificada',
     rating: review.rating,
+    cleanlinessRating: review.cleanlinessRating,
+    accuracyRating: review.accuracyRating ?? review.rating,
+    checkInRating: review.checkInRating ?? review.rating,
+    hostRating: review.hostRating,
+    locationRating: review.locationRating,
+    valueRating: review.valueRating ?? review.rating,
     comment: review.comment,
     aspects: aspects.length > 0 ? aspects : ['Tranquilidad serrana'],
     verifiedBooking: true,
@@ -85,6 +103,24 @@ export function useAccommodationReviews(
   const [lastSubmittedAt, setLastSubmittedAt] = useState<number>(0);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [pendingModeration, setPendingModeration] = useState<boolean>(false);
+  const [initialBookingCode, setInitialBookingCode] = useState<string>('');
+  const [isFormExpanded, setIsFormExpanded] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('reviewBookingCode') || urlParams.get('bookingCode');
+    if (code) {
+      setInitialBookingCode(code.trim().toUpperCase());
+      setIsFormExpanded(true);
+      const el = document.getElementById('opiniones-huespedes');
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+      }
+    }
+  }, []);
 
   // Load local demo data only for non-UUID mock routes (e.g. /alojamientos/acc-1)
   useEffect(() => {
@@ -174,6 +210,43 @@ export function useAccommodationReviews(
       }
     }
 
+    const cleanlinessAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.cleanlinessAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.cleanlinessRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+    const accuracyAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.accuracyAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.accuracyRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+    const checkInAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.checkInAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.checkInRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+    const hostAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.hostAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.hostRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+    const locationAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.locationAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.locationRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+    const valueAverage =
+      apiSummary && apiSummary.totalReviews > 0
+        ? (apiSummary.valueAverage ?? 0)
+        : allReviews.length > 0
+          ? Number((allReviews.reduce((acc, r) => acc + (r.valueRating ?? r.rating), 0) / allReviews.length).toFixed(1))
+          : 0;
+
     if (isRealAccommodation) {
       const totalReviews = apiSummary?.totalReviews ?? allReviews.length;
       const averageRating =
@@ -189,6 +262,12 @@ export function useAccommodationReviews(
         verifiedCount: totalReviews,
         distribution,
         aspectCounts,
+        cleanlinessAverage,
+        accuracyAverage,
+        checkInAverage,
+        hostAverage,
+        locationAverage,
+        valueAverage,
       };
     }
 
@@ -204,7 +283,19 @@ export function useAccommodationReviews(
       averageRating = totalDivisor > 0 ? Number((totalWeighted / totalDivisor).toFixed(1)) : Number((sum / allReviews.length).toFixed(1));
     }
 
-    return { averageRating, totalReviews, verifiedCount, distribution, aspectCounts };
+    return {
+      averageRating,
+      totalReviews,
+      verifiedCount,
+      distribution,
+      aspectCounts,
+      cleanlinessAverage,
+      accuracyAverage,
+      checkInAverage,
+      hostAverage,
+      locationAverage,
+      valueAverage,
+    };
   }, [allReviews, accommodationId, accommodationTitle, apiSummary, baseRating, baseReviewCount, isRealAccommodation]);
 
   const checkEligibility = useCallback(
@@ -277,22 +368,28 @@ export function useAccommodationReviews(
             };
           }
 
-          const cleanlinessRating = input.aspects.includes('Limpieza impecable')
+          const cleanlinessRating = input.cleanlinessRating ?? (input.aspects.includes('Limpieza impecable')
             ? Math.max(4, input.rating)
-            : input.rating;
-          const hostRating = input.aspects.includes('Atención del anfitrión')
+            : input.rating);
+          const accuracyRating = input.accuracyRating ?? input.rating;
+          const checkInRating = input.checkInRating ?? input.rating;
+          const hostRating = input.hostRating ?? (input.aspects.includes('Atención del anfitrión')
             ? Math.max(4, input.rating)
-            : input.rating;
-          const locationRating = input.aspects.includes('Ubicación y vistas')
+            : input.rating);
+          const locationRating = input.locationRating ?? (input.aspects.includes('Ubicación y vistas')
             ? Math.max(4, input.rating)
-            : input.rating;
+            : input.rating);
+          const valueRating = input.valueRating ?? input.rating;
 
           await reviewsService.create({
             bookingCode: cleanCode,
             rating: input.rating,
             cleanlinessRating,
+            accuracyRating,
+            checkInRating,
             hostRating,
             locationRating,
+            valueRating,
             comment: cleanComment,
             guestOrigin: cleanOrigin,
             stayDate: input.stayDate,
@@ -313,6 +410,13 @@ export function useAccommodationReviews(
       }
 
       // Offline mock flow fallback
+      const cleanlinessRating = input.cleanlinessRating ?? input.rating;
+      const accuracyRating = input.accuracyRating ?? input.rating;
+      const checkInRating = input.checkInRating ?? input.rating;
+      const hostRating = input.hostRating ?? input.rating;
+      const locationRating = input.locationRating ?? input.rating;
+      const valueRating = input.valueRating ?? input.rating;
+
       const newReview: ReviewItem = {
         id: `rev-${Date.now()}`,
         accommodationId,
@@ -320,6 +424,12 @@ export function useAccommodationReviews(
         authorOrigin: cleanOrigin || 'Turista Visitante',
         stayDate: input.stayDate || 'Octubre 2026',
         rating: input.rating,
+        cleanlinessRating,
+        accuracyRating,
+        checkInRating,
+        hostRating,
+        locationRating,
+        valueRating,
         comment: cleanComment,
         aspects: input.aspects.length > 0 ? input.aspects : ['Tranquilidad serrana'],
         verifiedBooking: true,
@@ -360,6 +470,9 @@ export function useAccommodationReviews(
     isSubmitting,
     stats,
     isModalOpen,
+    isFormExpanded,
+    setIsFormExpanded,
+    initialBookingCode,
     submitSuccess,
     pendingModeration,
     isRealAccommodation,

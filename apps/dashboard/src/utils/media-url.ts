@@ -12,6 +12,12 @@ export function resolveMediaUrl(url?: string | null): string {
   if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url)) return url;
   if (url.startsWith('data:') || url.startsWith('blob:')) return url;
 
+  // Assets estáticos de la carpeta /public del frontend (/images/, /mocks/, /icons/)
+  if (url.startsWith('/images/') || url.startsWith('/mocks/') || url.startsWith('/icons/')) {
+    return url;
+  }
+
+  // Rutas de almacenamiento local del backend (ej. /uploads/...)
   try {
     const origin = new URL(API_BASE_URL, window.location.origin).origin;
     const path = url.startsWith('/') ? url : `/${url}`;

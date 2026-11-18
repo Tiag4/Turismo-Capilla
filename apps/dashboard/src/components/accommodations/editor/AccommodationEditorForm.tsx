@@ -10,6 +10,7 @@ import type {
   RoomTypeConfig,
 } from '../../../types/accommodation.types.ts';
 import { GeneralInfoSection } from './sections/GeneralInfoSection.tsx';
+import { AccommodationDateAvailabilitySection } from './sections/AccommodationDateAvailabilitySection.tsx';
 import { LocationSection } from './sections/LocationSection.tsx';
 import { PricingCapacitySection } from './sections/PricingCapacitySection.tsx';
 import { RoomTypesInventorySection } from './sections/RoomTypesInventorySection.tsx';
@@ -38,6 +39,7 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [type, setType] = useState<AccommodationType>(initialData?.type || 'CABIN');
+  const [isActive, setIsActive] = useState<boolean>(initialData?.isActive ?? true);
   const [inventoryMode, setInventoryMode] = useState<InventoryMode>(
     initialData?.inventoryMode ||
       (initialData?.type === 'HOTEL' || initialData?.type === 'HOSTEL' ? 'MULTI_ROOM' : 'SINGLE_UNIT')
@@ -94,6 +96,9 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
   const [cancellationPolicy, setCancellationPolicy] = useState(initialData?.cancellationPolicy || '');
   const [licenseNumber, setLicenseNumber] = useState(initialData?.licenseNumber || '');
   const [responseTime, setResponseTime] = useState(initialData?.responseTime || 'Responde habitualmente en el día');
+  const [hostingSinceYear, setHostingSinceYear] = useState<number | null>(initialData?.hostingSinceYear ?? null);
+  const [preparationDays, setPreparationDays] = useState<number>(initialData?.preparationDays ?? 0);
+  const [minNights, setMinNights] = useState<number>(initialData?.minNights ?? 1);
   const [hasBreakfast, setHasBreakfast] = useState<boolean>(
     initialData?.hasBreakfast ??
       (initialData?.amenities?.some((a) => a.toLowerCase().includes('desayuno')) || false)
@@ -157,6 +162,10 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
       cancellationPolicy: cancellationPolicy.trim() || undefined,
       licenseNumber: licenseNumber.trim() || undefined,
       responseTime: responseTime.trim() || undefined,
+      hostingSinceYear: hostingSinceYear || undefined,
+      preparationDays,
+      minNights,
+      isActive,
       hasBreakfast,
       breakfastType: hasBreakfast ? breakfastType : undefined,
       amenities: selectedAmenities,
@@ -231,7 +240,20 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setLicenseNumber={setLicenseNumber}
           responseTime={responseTime}
           setResponseTime={setResponseTime}
+          hostingSinceYear={hostingSinceYear}
+          setHostingSinceYear={setHostingSinceYear}
+          isActive={isActive}
+          setIsActive={setIsActive}
         />
+
+        {mode === 'edit' && initialData?.id && (
+          <AccommodationDateAvailabilitySection
+            accommodationId={initialData.id}
+            accommodationName={initialData.name}
+            inventoryMode={inventoryMode}
+            roomTypes={roomTypes}
+          />
+        )}
 
         <LocationSection
           address={address}
@@ -265,6 +287,10 @@ export const AccommodationEditorForm: React.FC<AccommodationEditorFormProps> = (
           setCheckIn={setCheckIn}
           checkOut={checkOut}
           setCheckOut={setCheckOut}
+          preparationDays={preparationDays}
+          setPreparationDays={setPreparationDays}
+          minNights={minNights}
+          setMinNights={setMinNights}
           hasBreakfast={hasBreakfast}
           setHasBreakfast={setHasBreakfast}
           breakfastType={breakfastType}

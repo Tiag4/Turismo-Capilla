@@ -3,6 +3,7 @@ import { Users, MapPin, Edit3, Power, Camera, ShieldCheck, Coffee, Star } from '
 import type { Accommodation } from '../../types/accommodation.types.ts';
 import { Button } from '../ui/Button.tsx';
 import { ComplianceStatusBadge } from './ComplianceStatusBadge.tsx';
+import { Tooltip } from '../ui/Tooltip.tsx';
 
 export interface AccommodationCardProps {
   accommodation: Accommodation;
@@ -150,38 +151,46 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
       </div>
 
       <div className="p-3 sm:px-5 sm:py-3 bg-[var(--color-sand-50)] border-t border-[var(--color-sand-200)] flex items-center justify-between gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onToggleActive(accommodation)}
-          className="text-xs shrink-0"
+        <Tooltip
+          content={accommodation.isActive ? 'Pausar visibilidad en el portal' : 'Publicar en el portal para recibir reservas'}
+          position="top"
         >
-          <Power className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
-          <span>{accommodation.isActive ? 'Pausar' : 'Activar'}</span>
-        </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleActive(accommodation)}
+            className="text-xs cursor-pointer shrink-0"
+          >
+            <Power className="w-3.5 h-3.5 text-[var(--color-sand-500)]" />
+            <span>{accommodation.isActive ? 'Pausar' : 'Activar'}</span>
+          </Button>
+        </Tooltip>
 
         <div className="flex items-center gap-2 shrink-0">
           {isAdmin && onAudit && (
-            <Button
-              variant="emerald"
-              size="sm"
-              onClick={() => onAudit(accommodation)}
-              className="text-xs shrink-0"
-              title="Auditar habilitación municipal"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Auditar</span>
-            </Button>
+            <Tooltip content="Auditar matrícula municipal y cumplimiento de normas" position="top">
+              <Button
+                variant="emerald"
+                size="sm"
+                onClick={() => onAudit(accommodation)}
+                className="text-xs cursor-pointer shrink-0"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Auditar</span>
+              </Button>
+            </Tooltip>
           )}
-          <Button
-            variant="terracotta"
-            size="sm"
-            onClick={() => onEdit(accommodation)}
-            className="text-xs font-bold flex items-center gap-1.5 shadow-xs shrink-0"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>Editar</span>
-          </Button>
+          <Tooltip content="Editar fotos, tarifas, disponibilidad y políticas" position="top">
+            <Button
+              variant="terracotta"
+              size="sm"
+              onClick={() => onEdit(accommodation)}
+              className="text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Editar</span>
+            </Button>
+          </Tooltip>
         </div>
       </div>
     </div>

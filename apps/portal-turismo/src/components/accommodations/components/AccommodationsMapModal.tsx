@@ -15,19 +15,18 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
   useBodyScrollLock(shouldRender);
   // Scroll Lock obligatorio (AGENTS.md 8.2)
   useEffect(() => {
-    if (!shouldRender) return;
-
-
-
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        onClose();
+      }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-
-      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
 

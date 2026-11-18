@@ -7,6 +7,9 @@ interface ApiDateBlock {
   id: string;
   accommodationId: string;
   accommodationName?: string | null;
+  roomTypeId?: string | null;
+  roomTypeName?: string | null;
+  unitsBlocked?: number | null;
   startDate: string;
   endDate: string;
   reason?: DateBlockReason | null;
@@ -17,6 +20,8 @@ interface ApiDateBlock {
 interface ApiCreateDateBlockBody {
   startDate: string;
   endDate: string;
+  roomTypeId?: string;
+  unitsBlocked?: number;
   reason: DateBlockReason;
   notes?: string;
 }
@@ -83,6 +88,8 @@ class DateBlocksService {
     const body: ApiCreateDateBlockBody = {
       startDate: dto.startDate,
       endDate: dto.endDate,
+      roomTypeId: dto.roomTypeId,
+      unitsBlocked: dto.unitsBlocked,
       reason: dto.reason,
       notes: dto.notes,
     };
@@ -108,6 +115,9 @@ class DateBlocksService {
       id: block.id,
       accommodationId: block.accommodationId,
       accommodationName: block.accommodationName || 'Alojamiento',
+      roomTypeId: block.roomTypeId || undefined,
+      roomTypeName: block.roomTypeName || undefined,
+      unitsBlocked: block.unitsBlocked || 1,
       startDate: block.startDate,
       endDate: block.endDate,
       reason: block.reason || 'MAINTENANCE',

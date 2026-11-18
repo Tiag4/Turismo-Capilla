@@ -3,6 +3,7 @@ import { Eye, Check, X } from 'lucide-react';
 import type { Booking, BookingStatus } from '../../types/booking.types.ts';
 import { BookingStatusBadge } from './BookingStatusBadge.tsx';
 import { Button } from '../ui/Button.tsx';
+import { Tooltip } from '../ui/Tooltip.tsx';
 
 export interface BookingRowProps {
   booking: Booking;
@@ -50,36 +51,42 @@ export const BookingRow: React.FC<BookingRowProps> = ({
       </td>
       <td className="py-3.5 px-3 sm:px-4 text-right">
         <div className="flex items-center justify-end gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onViewDetail(booking)}
-            title="Ver ficha completa"
-            className="p-1.5"
-          >
-            <Eye className="w-4 h-4 text-[var(--color-sand-700)]" />
-          </Button>
+          <Tooltip content="Ver ficha completa y voucher" position="top">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onViewDetail(booking)}
+              aria-label="Ver ficha completa"
+              className="p-1.5 cursor-pointer"
+            >
+              <Eye className="w-4 h-4 text-[var(--color-sand-700)]" />
+            </Button>
+          </Tooltip>
 
           {booking.status === 'PENDING' && (
             <>
-              <Button
-                variant="emerald"
-                size="sm"
-                onClick={() => onQuickStatusChange(booking, 'CONFIRMED')}
-                title="Confirmar reserva"
-                className="p-1.5"
-              >
-                <Check className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => onQuickStatusChange(booking, 'CANCELLED')}
-                title="Rechazar reserva"
-                className="p-1.5"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              <Tooltip content="Confirmar reserva" position="top">
+                <Button
+                  variant="emerald"
+                  size="sm"
+                  onClick={() => onQuickStatusChange(booking, 'CONFIRMED')}
+                  aria-label="Confirmar reserva"
+                  className="p-1.5 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                </Button>
+              </Tooltip>
+              <Tooltip content="Rechazar y liberar fechas" position="top">
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => onQuickStatusChange(booking, 'CANCELLED')}
+                  aria-label="Rechazar reserva"
+                  className="p-1.5 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </Tooltip>
             </>
           )}
         </div>

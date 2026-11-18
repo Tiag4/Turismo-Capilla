@@ -28,21 +28,24 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
   // Scroll Lock obligatorio (AGENTS.md 8.2)
   const { shouldRender, isVisible } = useAnimatedPresence(isOpen, 200);
   useBodyScrollLock(shouldRender);
+
   useEffect(() => {
-    if (!shouldRender) return;
-
-
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') onNext();
-      if (e.key === 'ArrowLeft') onPrev();
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        onClose();
+      } else if (e.key === 'ArrowRight') {
+        onNext();
+      } else if (e.key === 'ArrowLeft') {
+        onPrev();
+      }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-
-      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose, onNext, onPrev]);
 
@@ -54,9 +57,13 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
       role="dialog"
       aria-modal="true"
       aria-label={`Galería de ${title}`}
+      onClick={onClose}
     >
       {/* Barra Superior */}
-      <div className="flex items-center justify-between text-white pb-3 border-b border-white/10">
+      <div
+        className="flex items-center justify-between text-white pb-3 border-b border-white/10"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div>
           <span className="font-display font-black text-base text-white">{title}</span>
           <span className="text-xs text-stone-400 ml-2">
@@ -74,7 +81,10 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
       </div>
 
       {/* Imagen Principal con Flechas */}
-      <div className="relative flex-1 flex items-center justify-center py-4 overflow-hidden">
+      <div
+        className="relative flex-1 flex items-center justify-center py-4 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           onClick={onPrev}
@@ -101,7 +111,10 @@ export const AccommodationGalleryModal: React.FC<AccommodationGalleryModalProps>
       </div>
 
       {/* Tira de Miniaturas Inferior */}
-      <div className="flex items-center justify-center gap-2 overflow-x-auto py-2">
+      <div
+        className="flex items-center justify-center gap-2 overflow-x-auto py-2"
+        onClick={(e) => e.stopPropagation()}
+      >
         {gallery.map((url, idx) => (
           <button
             key={url + idx}

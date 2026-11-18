@@ -29,6 +29,9 @@ export interface AdminSidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   onLogout: () => void;
+  isDualRole?: boolean;
+  onSwitchWorkspace?: (ws: 'ADMIN' | 'HOST') => void;
+  onOpenWorkspaceSelector?: () => void;
 }
 
 interface NavItem {
@@ -59,6 +62,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
   onLogout,
+  isDualRole,
+  onSwitchWorkspace,
+  onOpenWorkspaceSelector,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { shouldRender: shouldRenderMobile, isVisible: isMobileVisible } = useAnimatedPresence(isOpenMobile, 220);
@@ -85,37 +91,76 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const initials = `${user.name?.charAt(0) ?? 'U'}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
 
   const renderContent = (expanded: boolean) => (
-    <div className="flex flex-col h-full justify-between p-3.5 bg-white border-r border-[var(--color-sand-200)] select-none">
-      {/* 1. Header & Brand */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[var(--color-sand-200)]">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[var(--color-emerald-portal-600)] flex items-center justify-center text-white font-extrabold text-sm font-['Outfit'] shadow-xs shrink-0">
-              CM
-            </div>
-            {expanded && (
-              <div className="min-w-0 animate-in fade-in duration-200">
-                <span className="text-xs font-black tracking-wider uppercase text-[var(--color-sand-900)] font-['Outfit'] block truncate">
-                  Turismo Capilla
-                </span>
-                <span className="text-[10px] text-[var(--color-emerald-portal-600)] font-bold uppercase tracking-wider block truncate">
-                  Cámara de Turismo
-                </span>
-              </div>
-            )}
+    <div className="flex flex-col h-full p-3.5 bg-white border-r border-[var(--color-sand-200)] select-none">
+      {/* 1. Header & Brand (shrink-0) */}
+      <div className="shrink-0 flex items-center justify-between pb-3 border-b border-[var(--color-sand-200)]">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-emerald-portal-600)] flex items-center justify-center text-white font-extrabold text-sm font-['Outfit'] shadow-xs shrink-0">
+            CM
           </div>
-          {shouldRenderMobile && (
-            <button
-              onClick={onCloseMobile}
-              className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer md:hidden"
-              aria-label="Cerrar menú"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          {expanded && (
+            <div className="min-w-0 animate-in fade-in duration-200">
+              <span className="text-xs font-black tracking-wider uppercase text-[var(--color-sand-900)] font-['Outfit'] block truncate">
+                Turismo Capilla
+              </span>
+              <span className="text-[10px] text-[var(--color-emerald-portal-600)] font-bold uppercase tracking-wider block truncate">
+                Cámara de Turismo
+              </span>
+            </div>
           )}
         </div>
+        {shouldRenderMobile && (
+          <button
+            onClick={onCloseMobile}
+            className="p-1.5 rounded-lg text-[var(--color-sand-400)] hover:text-[var(--color-sand-800)] hover:bg-[var(--color-sand-100)] transition-colors cursor-pointer md:hidden"
+            aria-label="Cerrar menú"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
+      </div>
 
-        {/* 2. Navigation Links */}
+      {/* 2. Middle Scrollable Area (flex-1 overflow-y-auto min-h-0) */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 py-3 space-y-3 scrollbar-thin">
+        {/* 2.1 Dual Role Switcher */}
+        {isDualRole && expanded && (
+          <div className="p-2.5 rounded-xl bg-[var(--color-sand-100)] border border-[var(--color-sand-200)] space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-[var(--color-sand-600)] uppercase tracking-wider">
+                Espacio Activo
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[var(--color-emerald-portal-600)] text-white">
+                Administración
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                onSwitchWorkspace?.('HOST');
+                if (isOpenMobile) onCloseMobile();
+              }}
+              className="w-full flex items-center justify-center gap-2 py-1.5 px-2.5 rounded-lg text-xs font-bold bg-white text-[var(--color-terracotta-600)] hover:bg-[var(--color-terracotta-50)] border border-[var(--color-sand-200)] transition-colors cursor-pointer shadow-2xs"
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>Ir a Modo Cabañero</span>
+            </button>
+          </div>
+        )}
+
+        {isDualRole && !expanded && (
+          <div className="flex justify-center pb-2 border-b border-[var(--color-sand-200)]">
+            <button
+              type="button"
+              onClick={() => onSwitchWorkspace?.('HOST')}
+              title="Ir a Modo Cabañero (Gestión de Alojamientos)"
+              className="w-10 h-10 rounded-xl bg-[var(--color-sand-100)] hover:bg-[var(--color-terracotta-50)] text-[var(--color-terracotta-600)] border border-[var(--color-sand-200)] flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+
+        {/* 2.2 Navigation Links */}
         <nav className="space-y-1" aria-label="Menú de gestión municipal">
           {ADMIN_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -149,8 +194,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
       </div>
 
-      {/* 3. Operator Profile, External Link & Logout */}
-      <div className="pt-3 border-t border-[var(--color-sand-200)] mt-auto space-y-2">
+      {/* 3. Operator Profile, External Link & Logout (shrink-0) */}
+      <div className="shrink-0 pt-3 border-t border-[var(--color-sand-200)] space-y-2">
         {/* Link al Portal Público */}
         <a
           href={PORTAL_URL}
@@ -206,6 +251,19 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             </div>
           )}
         </button>
+
+        {isDualRole && expanded && onOpenWorkspaceSelector && (
+          <button
+            type="button"
+            onClick={() => {
+              onOpenWorkspaceSelector();
+              if (isOpenMobile) onCloseMobile();
+            }}
+            className="w-full text-center text-[11px] text-[var(--color-sand-500)] hover:text-[var(--color-emerald-portal-700)] py-1 font-semibold transition-colors cursor-pointer"
+          >
+            Cambiar espacio de trabajo
+          </button>
+        )}
 
         <button
           onClick={onLogout}

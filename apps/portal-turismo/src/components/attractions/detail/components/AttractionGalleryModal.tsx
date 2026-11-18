@@ -37,19 +37,24 @@ export const AttractionGalleryModal: React.FC<AttractionGalleryModalProps> = ({
   }, [activeIndex, gallery.length, onSelectIndex]);
 
   useEffect(() => {
-    if (!shouldRender) return;
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') handleNext();
-      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        onClose();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [shouldRender, onClose, handleNext, handlePrev]);
+  }, [isOpen, onClose, handleNext, handlePrev]);
 
   if (!shouldRender || typeof document === 'undefined') return null;
 

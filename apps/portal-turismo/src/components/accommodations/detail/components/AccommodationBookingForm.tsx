@@ -1,6 +1,5 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
-import { CustomDatePicker } from '../../../ui/CustomDatePicker';
+import { DateRangePicker } from '../../../ui/DateRangePicker';
 import { AccommodationGuestsPicker } from './AccommodationGuestsPicker';
 import type { AccommodationDetailData } from '../types';
 import type { UseAccommodationBookingReturn } from '../hooks/useAccommodationBooking';
@@ -46,29 +45,17 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
           <span className="font-display font-extrabold text-base text-stone-900">${price.toLocaleString('es-AR')} ARS</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <CustomDatePicker
-            label="Ingreso"
-            value={checkIn}
-            onChange={(d) => {
-              setCheckIn(d);
-              if (checkOut && d >= checkOut) setCheckOut('');
-            }}
-            minDate={todayStr}
-            blockedRanges={blockedRanges}
-            placeholder="Ingreso"
-            icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
-          />
-          <CustomDatePicker
-            label="Egreso"
-            value={checkOut}
-            onChange={setCheckOut}
-            minDate={checkIn || todayStr}
-            blockedRanges={blockedRanges}
-            placeholder="Egreso"
-            icon={<Calendar className="w-3.5 h-3.5 text-stone-400" />}
-          />
-        </div>
+        <DateRangePicker
+          checkIn={checkIn}
+          checkOut={checkOut}
+          onCheckInChange={setCheckIn}
+          onCheckOutChange={setCheckOut}
+          minDate={todayStr}
+          minNights={data.minNights ?? 1}
+          blockedRanges={blockedRanges}
+          checkInLabel="Ingreso"
+          checkOutLabel="Egreso"
+        />
 
         {dateRangeError && (
           <div

@@ -68,6 +68,9 @@ export interface Accommodation {
   cancellationPolicy?: string;
   licenseNumber?: string;
   responseTime?: string;
+  hostingSinceYear?: number;
+  preparationDays?: number;
+  minNights?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;
   amenities: string[];
@@ -108,8 +111,12 @@ export interface CreateAccommodationDto {
   cancellationPolicy?: string;
   licenseNumber?: string;
   responseTime?: string;
+  hostingSinceYear?: number;
+  preparationDays?: number;
+  minNights?: number;
   hasBreakfast?: boolean;
   breakfastType?: string;
+  isActive?: boolean;
   amenities: string[];
   downPaymentPercentage?: number;
   bankAccountHolder?: string;

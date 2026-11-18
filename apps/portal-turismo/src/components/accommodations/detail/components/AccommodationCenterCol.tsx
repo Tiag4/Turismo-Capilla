@@ -70,7 +70,7 @@ export const AccommodationCenterCol: React.FC<AccommodationCenterColProps> = ({
           <button
             type="button"
             onClick={onOpenAmenities}
-            className="w-full mt-2 py-2.5 px-4 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-50/50 hover:bg-stone-100 text-stone-800 font-display font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer select-none"
+            className="w-full mt-3 mb-6 py-2.5 px-4 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-50/50 hover:bg-stone-100 text-stone-800 font-display font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer select-none"
           >
             <span>{buttonLabel}</span>
             <ChevronRight className="w-3.5 h-3.5 text-stone-500" />

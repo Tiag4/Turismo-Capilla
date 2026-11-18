@@ -84,28 +84,30 @@ export const CategorizedAmenitiesSection: React.FC<CategorizedAmenitiesSectionPr
           return (
             <div key={category.title} className="flex flex-col gap-2.5">
               <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-sand-800)]">
-                <CategoryIcon className="w-4 h-4 text-[var(--color-terracotta-500)] shrink-0" />
+                <CategoryIcon className="w-4 h-4 text-[var(--color-terracotta-500)] shrink-0" aria-hidden="true" />
                 <span>{category.title}</span>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div role="group" aria-label={category.title} className="flex flex-wrap gap-2">
                 {category.items.map((item) => {
                   const isChecked = selectedAmenities.includes(item);
                   return (
                     <button
                       key={item}
                       type="button"
+                      role="checkbox"
+                      aria-checked={isChecked}
                       onClick={() => onToggleAmenity(item)}
-                      className={`text-xs px-3 py-2 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 font-medium ${
+                      className={`text-xs px-3 py-2 min-h-[36px] rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 font-medium ${
                         isChecked
                           ? 'bg-[var(--color-terracotta-500)] text-white shadow-xs'
                           : 'bg-[var(--color-sand-100)] text-[var(--color-sand-800)] hover:bg-[var(--color-sand-200)]'
                       }`}
                     >
                       {isChecked ? (
-                        <Check className="w-3.5 h-3.5 text-white shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
                       ) : (
-                        <Plus className="w-3.5 h-3.5 text-[var(--color-sand-500)] shrink-0" />
+                        <Plus className="w-3.5 h-3.5 text-[var(--color-sand-500)] shrink-0" aria-hidden="true" />
                       )}
                       <span>{item}</span>
                     </button>

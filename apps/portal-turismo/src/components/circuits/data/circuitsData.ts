@@ -21,7 +21,9 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
     coordinates: { lat: -30.8436, lng: -64.4842 },
     image: '/images/attractions/uritorco/uritorco-02.jpg',
     badge: 'Vórtice Principal',
-    bestTime: 'Amanecer y Luna Llena'
+    bestTime: 'Amanecer y Luna Llena',
+    linkedAttractionId: 'uritorco',
+    linkedAttractionName: 'Cerro Uritorco',
   },
   {
     id: 'los-terrones',

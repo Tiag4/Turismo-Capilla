@@ -36,7 +36,10 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
       ) as AdventureActivity[];
 
       const matchesId = (linkedId?: string, itemId?: string) =>
-        linkedId === item.id || linkedId === item.slug || itemId === item.slug;
+        linkedId === item.id ||
+        linkedId === item.slug ||
+        itemId === item.slug ||
+        (Boolean(item.slug) && Boolean(itemId) && itemId!.includes(item.slug));
 
       const matched = [
         ...mystic

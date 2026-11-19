@@ -62,7 +62,8 @@ export const CircuitDetailPage: React.FC = () => {
 
   const linkedAttractionId = isAdventure
     ? activity?.linkedAttractionId
-    : spot?.linkedAttractionId || (spot?.id === 'cerro-uritorco' || spot?.id === 'los-terrones' ? spot.id : undefined);
+    : spot?.linkedAttractionId ||
+      (spot?.id === 'cerro-uritorco' ? 'uritorco' : spot?.id === 'los-terrones' ? 'los-terrones' : undefined);
   const linkedAttractionName = isAdventure
     ? activity?.linkedAttractionName
     : spot?.linkedAttractionName || (spot?.id === 'cerro-uritorco' ? 'Cerro Uritorco' : spot?.id === 'los-terrones' ? 'Los Terrones' : undefined);

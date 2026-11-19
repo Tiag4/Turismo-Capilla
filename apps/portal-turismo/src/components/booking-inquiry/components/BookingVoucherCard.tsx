@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, CheckCircle2, Loader2, Mail, Star } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Eye, Loader2, Mail, Star } from 'lucide-react';
 import { api } from '../../../services/api';
 import type { BookingVoucherRecord } from '../types';
+import { VoucherEmailPreviewModal } from './VoucherEmailPreviewModal';
 
 interface BookingVoucherCardProps {
   voucher: BookingVoucherRecord;
@@ -16,6 +17,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
   const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
   const [resendState, setResendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [resendMessage, setResendMessage] = useState('');
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
 
   const checkoutTimestamp = voucher.checkOut
     ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
@@ -305,6 +307,15 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
 
         <button
           type="button"
+          onClick={() => setShowEmailPreview(true)}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 transition-colors cursor-pointer"
+        >
+          <Eye className="w-4 h-4 text-emerald-portal-600" />
+          <span>Ver Correo Oficial</span>
+        </button>
+
+        <button
+          type="button"
           onClick={handleResendVoucher}
           disabled={resendState === 'sending'}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer"
@@ -340,6 +351,13 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           <span>Descargar / Imprimir Voucher</span>
         </button>
       </div>
+
+      {/* Modal de Previsualización del Correo Institucional */}
+      <VoucherEmailPreviewModal
+        isOpen={showEmailPreview}
+        onClose={() => setShowEmailPreview(false)}
+        voucher={voucher}
+      />
     </div>
   );
 };

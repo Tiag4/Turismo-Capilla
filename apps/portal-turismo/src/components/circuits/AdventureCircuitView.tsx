@@ -1,8 +1,15 @@
 import React from 'react';
 import { ArrowRight, Phone, Star } from 'lucide-react';
 import { ADVENTURE_ACTIVITIES } from './data/circuitsData';
+import type { AdventureActivity } from './types/circuits.types';
 
-export const AdventureCircuitView: React.FC = () => {
+interface AdventureCircuitViewProps {
+  activities?: AdventureActivity[];
+}
+
+export const AdventureCircuitView: React.FC<AdventureCircuitViewProps> = ({
+  activities = ADVENTURE_ACTIVITIES,
+}) => {
   return (
     <div className="space-y-8">
       {/* Cabecera Editorial Limpia */}
@@ -20,7 +27,7 @@ export const AdventureCircuitView: React.FC = () => {
 
       {/* Grilla con Estética de Catálogo de Senderos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
-        {ADVENTURE_ACTIVITIES.map((act) => {
+        {activities.map((act) => {
           const primaryProvider = act.certifiedProviders[0];
           return (
             <article

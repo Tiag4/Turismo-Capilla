@@ -26,6 +26,7 @@ import { MobilityManagerView } from './components/mobility/MobilityManagerView.t
 
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { AttractionEditorPage } from './components/attractions/editor/AttractionEditorPage.tsx';
+import { CircuitsManagerView } from './components/circuits/CircuitsManagerView.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
 import { AlertEditorPage } from './components/alerts/editor/AlertEditorPage.tsx';
@@ -181,6 +182,10 @@ const DashboardContent: React.FC = () => {
             onSuccess={navigateToAttractionList}
           />
         )
+      )}
+
+      {currentTab === 'circuits' && effectiveRole === 'ADMIN' && (
+        <CircuitsManagerView />
       )}
 
       {currentTab === 'emergencies' && effectiveRole === 'ADMIN' && (

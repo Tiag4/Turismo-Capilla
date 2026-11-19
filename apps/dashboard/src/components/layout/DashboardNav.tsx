@@ -7,6 +7,7 @@ export type DashboardTab =
   | 'bookings'
   | 'accommodations'
   | 'attractions'
+  | 'circuits'
   | 'alerts'
   | 'emergencies'
   | 'calendar'

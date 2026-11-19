@@ -181,6 +181,20 @@ export const api = {
     } catch {
       return null;
     }
+  },
+
+  async getCircuitsConfig(): Promise<{
+    mysticSpots?: unknown[];
+    adventureActivities?: unknown[];
+  } | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/circuits`, {}, 4000);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data && typeof data === 'object' && Object.keys(data).length > 0 ? data : null;
+    } catch {
+      return null;
+    }
   },
   async getHealth() {
     const res = await fetchWithTimeout(`${API_BASE_URL}/health`);

@@ -118,9 +118,9 @@ export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
     imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
   },
   duoAccessConfig: {
-    whatToDoImageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    whatToDoImageUrl: '/images/attractions/los-terrones/los-terrones-01.jpg',
     whatToDoSubtitle: '12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones, ollas de agua en La Toma y espejos del dique El Cajón.',
-    whereToSleepImageUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
+    whereToSleepImageUrl: '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
     whereToSleepSubtitle: 'Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época. Trato directo con el prestador, sin comisiones ni sobreprecios.',
   },
   finalCtaConfig: {

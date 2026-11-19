@@ -19,7 +19,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'Contratar guías de montaña habilitados por la Comisión de Turismo para ascensos nocturnos'
     ],
     coordinates: { lat: -30.8436, lng: -64.4842 },
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/attractions/uritorco/uritorco-01.jpg',
     badge: 'Vórtice Principal',
     bestTime: 'Amanecer y Luna Llena'
   },
@@ -40,7 +40,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'El parque cuenta con guardaparques y sendero señalizado de 2.5 horas'
     ],
     coordinates: { lat: -30.7950, lng: -64.5120 },
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/attractions/los-terrones/los-terrones-01.jpg',
     badge: 'Ciudad Perdida',
     bestTime: 'Mañana temprana'
   },
@@ -61,7 +61,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'Prohibido dejar residuos o encender fuego en toda la reserva'
     ],
     coordinates: { lat: -30.8280, lng: -64.4920 },
-    image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/attractions/senderos-del-valle/senderos-del-valle-01.jpg',
     badge: 'Silencio & Meditación',
     bestTime: 'Mediodía y Atardecer'
   },
@@ -81,7 +81,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'Llegar a pie desde el pueblo en una caminata tranquila de 45 minutos'
     ],
     coordinates: { lat: -30.8710, lng: -64.5180 },
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/attractions/balneario-el-paraiso/balneario-el-paraiso-01.jpg',
     badge: 'Vertiente Ancestral',
     bestTime: 'Tardecita serrana'
   },
@@ -101,7 +101,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'Coordinar con guías de astroturismo y vigilias nocturnas autorizadas'
     ],
     coordinates: { lat: -30.7600, lng: -64.5500 },
-    image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/attractions/los-terrones/los-terrones-02.jpg',
     badge: 'Zona de Avistamiento',
     bestTime: 'Noches despejadas'
   }
@@ -215,7 +215,7 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
       { name: 'Uritorco Fly Adventure', contact: '+54 3548 488720', certificationBadge: 'Cámara Turismo Certificada' }
     ],
     coordinates: { lat: -30.9850, lng: -64.5700 },
-    image: 'https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=1200&q=80'
+    image: '/images/attractions/uritorco/uritorco-04.jpg'
   },
   {
     id: 'rappel-los-paredones',
@@ -236,7 +236,7 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
       { name: 'Capilla Vertical Guías de Montaña', contact: '+54 3548 481333', certificationBadge: 'AAGM Matriculado' }
     ],
     coordinates: { lat: -30.8720, lng: -64.5450 },
-    image: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80'
+    image: '/images/attractions/los-mogotes/los-mogotes-01.jpg'
   },
   {
     id: 'espeleologia-ongamira',
@@ -257,7 +257,7 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
       { name: 'Senderos de Ongamira Aventura', contact: '+54 3548 486711', certificationBadge: 'Patrimonio Punilla Oficial' }
     ],
     coordinates: { lat: -30.7720, lng: -64.4480 },
-    image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80'
+    image: '/images/attractions/los-terrones/los-terrones-02.jpg'
   },
   {
     id: 'astroturismo-uritorco',
@@ -278,7 +278,7 @@ export const ADVENTURE_ACTIVITIES: AdventureActivity[] = [
       { name: 'Cielos del Uritorco Astroturismo', contact: '+54 3548 487755', certificationBadge: 'Certificación Cielo Limpio' }
     ],
     coordinates: { lat: -30.8520, lng: -64.5100 },
-    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80'
+    image: '/images/attractions/astroturismo/astroturismo-01.jpg'
   }
 ];
 
@@ -312,7 +312,7 @@ export function getCircuitPlaces(circuitId: CircuitId): MapPlace[] {
       lng: v.coordinates.lng,
       rating: 4.8,
       reviewCount: 85,
-      imageUrl: v.image || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80',
+      imageUrl: v.image || '/images/attractions/calle-techada/calle-techada-01.jpg',
       address: v.address,
       phone: v.phone,
       ctaUrl: `/atractivos?modo=circuitos&circuito=sabores#${v.id}`,
@@ -329,7 +329,7 @@ export function getCircuitPlaces(circuitId: CircuitId): MapPlace[] {
     lng: a.coordinates.lng,
     rating: 4.9,
     reviewCount: 94,
-    imageUrl: a.image || 'https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: a.image || '/images/attractions/uritorco/uritorco-01.jpg',
     address: a.location,
     ctaUrl: `/atractivos?modo=circuitos&circuito=aventura#${a.id}`,
   }));

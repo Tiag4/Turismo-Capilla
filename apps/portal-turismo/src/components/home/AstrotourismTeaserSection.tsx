@@ -8,7 +8,7 @@ export const AstrotourismTeaserSection: React.FC = () => {
         <div className="relative rounded-3xl overflow-hidden bg-sand-900 text-white min-h-[380px] sm:min-h-[440px] flex flex-col justify-end p-8 sm:p-14 border border-sand-800 shadow-xl group">
           {/* Imagen Panorámica Nocturna */}
           <img
-            src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1800&q=85"
+            src="/images/attractions/astroturismo/astroturismo-01.jpg"
             alt="Bóveda celeste estrellada sobre las sierras de Capilla del Monte"
             className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-700 brightness-90 contrast-105"
             loading="lazy"

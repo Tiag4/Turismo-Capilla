@@ -95,7 +95,7 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
     (isRealLocalImage(apiCover) ? apiCover : null) ||
     apiCover ||
     mockCover ||
-    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85';
+    '/images/attractions/uritorco/uritorco-01.jpg';
 
   const hasLocalGallery = matchedMock?.galleryImages?.some((img) => isRealLocalImage(img));
   const galleryImages =

@@ -20,7 +20,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-uritorco-1',
-        url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/uritorco/uritorco-01.jpg',
         publicId: 'uritorco_cover',
       },
     ],
@@ -44,7 +44,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-terrones-1',
-        url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/los-terrones/los-terrones-01.jpg',
         publicId: 'terrones_cover',
       },
     ],
@@ -68,7 +68,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-zapato-1',
-        url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/el-zapato/el-zapato-01.jpg',
         publicId: 'zapato_cover',
       },
     ],
@@ -92,7 +92,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-cajon-1',
-        url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/dique-el-cajon/dique-el-cajon-01.jpg',
         publicId: 'cajon_cover',
       },
     ],
@@ -116,7 +116,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-latoma-1',
-        url: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/la-toma/la-toma-01.jpg',
         publicId: 'latoma_cover',
       },
     ],
@@ -140,7 +140,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-mogotes-1',
-        url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/attractions/los-mogotes/los-mogotes-01.jpg',
         publicId: 'mogotes_cover',
       },
     ],

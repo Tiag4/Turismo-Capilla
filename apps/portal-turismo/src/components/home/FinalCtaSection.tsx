@@ -6,7 +6,7 @@ export const FinalCtaSection: React.FC = () => {
     <section className="w-full relative min-h-[480px] sm:min-h-[560px] flex items-center justify-center bg-sand-950 text-white overflow-hidden py-24 sm:py-32 px-4 sm:px-8 lg:px-12">
       {/* Fotografía Panorámica */}
       <img
-        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2400&q=85"
+        src="/images/attractions/uritorco/uritorco-04.jpg"
         alt="Paisaje serrano de Capilla del Monte al anochecer"
         className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.38] contrast-[1.15]"
         loading="lazy"

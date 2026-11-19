@@ -57,12 +57,17 @@ export const VoucherEmailPreviewModal: React.FC<VoucherEmailPreviewModalProps> =
       isOpen={isOpen}
       onClose={onClose}
       size="xl"
+      heightClassName="h-[94dvh] sm:h-[88vh]"
+      maxHeightClassName="max-h-[94dvh] sm:max-h-[88vh]"
+      bodyClassName="overflow-hidden flex flex-col p-0 sm:p-4 bg-sand-100"
       title="Previsualización del Correo Institucional"
       subtitle={`Despachado a ${voucher.email}`}
       renderHeaderAction={
         <button
           type="button"
           onClick={handleOpenInNewTab}
+          title="Abrir HTML del correo en una pestaña independiente"
+          aria-label="Abrir HTML del correo en una pestaña nueva"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-sand-700 bg-sand-100 hover:bg-sand-200 rounded-lg transition-colors cursor-pointer"
         >
           <ExternalLink className="w-3.5 h-3.5" />
@@ -70,14 +75,12 @@ export const VoucherEmailPreviewModal: React.FC<VoucherEmailPreviewModalProps> =
         </button>
       }
     >
-      <div className="w-full h-full min-h-[480px] sm:min-h-[580px] bg-sand-100 p-2 sm:p-4">
-        <iframe
-          srcDoc={emailHtml}
-          title="Previsualización de correo institucional"
-          className="w-full h-full min-h-[480px] sm:min-h-[580px] rounded-xl border border-sand-300 bg-white shadow-xs"
-          sandbox="allow-same-origin"
-        />
-      </div>
+      <iframe
+        srcDoc={emailHtml}
+        title="Previsualización de correo institucional"
+        className="w-full flex-1 h-full border-0 sm:rounded-xl sm:border sm:border-sand-300 bg-white shadow-xs"
+        sandbox="allow-same-origin"
+      />
     </AdaptiveModal>
   );
 };

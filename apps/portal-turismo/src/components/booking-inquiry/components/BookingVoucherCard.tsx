@@ -23,7 +23,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
     ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
     : NaN;
   const stayFinished =
-    isCompleted || (!Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
+    isCompleted || (isConfirmed && !Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
   const canReview = stayFinished && !isCancelled;
 
   const statusLabel = isCompleted
@@ -385,14 +385,16 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           </Link>
         )}
 
-        <button
-          type="button"
-          onClick={() => setShowEmailPreview(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 transition-colors cursor-pointer"
-        >
-          <Eye className="w-4 h-4 text-emerald-portal-600" />
-          <span>Ver Correo Oficial</span>
-        </button>
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            onClick={() => setShowEmailPreview(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 transition-colors cursor-pointer"
+          >
+            <Eye className="w-4 h-4 text-emerald-portal-600" />
+            <span>Ver Correo Oficial (Dev)</span>
+          </button>
+        )}
 
         <button
           type="button"

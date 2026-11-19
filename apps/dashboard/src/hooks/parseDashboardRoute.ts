@@ -7,6 +7,8 @@ const createDefaultRouteState = (tab: DashboardTab): RouteDetail => ({
   accommodationView: 'list',
   eventView: 'list',
   attractionView: 'list',
+  circuitView: 'list',
+  circuitCategory: 'mistico',
   alertView: 'list',
   emergencyView: 'list',
   seasonView: 'list',
@@ -43,6 +45,27 @@ export const parseRouteFromPath = (pathname: string, role: UserRole): RouteDetai
   const attMatch = normalized.match(/^\/(?:atractivos|senderos|paseos)\/([^/]+)\/editar$/i);
   if (attMatch?.[1]) {
     return { ...base, tab: 'attractions', attractionView: 'edit', attractionEditId: attMatch[1] };
+  }
+
+  // Circuits: /circuitos-tematicos/(mistico|aventura)/nueva|nuevo or /:id/editar
+  const circuitCreateMatch = normalized.match(/^\/circuitos-tematicos\/(mistico|aventura)\/(?:nueva|nuevo)$/i);
+  if (circuitCreateMatch?.[1]) {
+    return {
+      ...base,
+      tab: 'circuits',
+      circuitView: 'create',
+      circuitCategory: circuitCreateMatch[1] as 'mistico' | 'aventura',
+    };
+  }
+  const circuitEditMatch = normalized.match(/^\/circuitos-tematicos\/(mistico|aventura)\/([^/]+)\/editar$/i);
+  if (circuitEditMatch?.[1] && circuitEditMatch?.[2]) {
+    return {
+      ...base,
+      tab: 'circuits',
+      circuitView: 'edit',
+      circuitCategory: circuitEditMatch[1] as 'mistico' | 'aventura',
+      circuitEditId: circuitEditMatch[2],
+    };
   }
 
   // Alerts: /alertas/nueva

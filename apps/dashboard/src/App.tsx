@@ -27,6 +27,7 @@ import { MobilityManagerView } from './components/mobility/MobilityManagerView.t
 import { AttractionsManager } from './components/attractions/AttractionsManager.tsx';
 import { AttractionEditorPage } from './components/attractions/editor/AttractionEditorPage.tsx';
 import { CircuitsManagerView } from './components/circuits/CircuitsManagerView.tsx';
+import { CircuitEditorPage } from './components/circuits/editor/CircuitEditorPage.tsx';
 import { ProvidersDirectoryView } from './components/providers/ProvidersDirectoryView.tsx';
 import { AlertsManagerView } from './components/alerts/AlertsManagerView.tsx';
 import { AlertEditorPage } from './components/alerts/editor/AlertEditorPage.tsx';
@@ -75,6 +76,12 @@ const DashboardContent: React.FC = () => {
     navigateToAttractionCreate,
     navigateToAttractionEdit,
     navigateToAttractionList,
+    circuitView,
+    circuitCategory,
+    circuitEditId,
+    navigateToCircuitCreate,
+    navigateToCircuitEdit,
+    navigateToCircuitList,
     alertView,
     alertEditId,
     navigateToAlertCreate,
@@ -185,7 +192,21 @@ const DashboardContent: React.FC = () => {
       )}
 
       {currentTab === 'circuits' && effectiveRole === 'ADMIN' && (
-        <CircuitsManagerView />
+        circuitView === 'list' ? (
+          <CircuitsManagerView
+            initialCategory={circuitCategory}
+            onNavigateCreate={navigateToCircuitCreate}
+            onNavigateEdit={navigateToCircuitEdit}
+          />
+        ) : (
+          <CircuitEditorPage
+            mode={circuitView}
+            category={circuitCategory}
+            circuitId={circuitEditId}
+            onBack={() => navigateToCircuitList(circuitCategory)}
+            onSuccess={() => navigateToCircuitList(circuitCategory)}
+          />
+        )
       )}
 
       {currentTab === 'emergencies' && effectiveRole === 'ADMIN' && (

@@ -14,6 +14,9 @@ export interface RouteDetail {
   eventEditId?: string;
   attractionView: EntityViewMode;
   attractionEditId?: string;
+  circuitView: EntityViewMode;
+  circuitCategory: 'mistico' | 'aventura';
+  circuitEditId?: string;
   alertView: EntityViewMode;
   alertEditId?: string;
   emergencyView: EntityViewMode;

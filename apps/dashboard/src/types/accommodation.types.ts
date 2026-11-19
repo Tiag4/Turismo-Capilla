@@ -83,6 +83,7 @@ export interface Accommodation {
   bankName?: string;
   complianceStatus?: ComplianceStatus;
   auditRecord?: AccommodationAuditRecord;
+  auditDataJson?: string | null;
   images: AccommodationImage[];
   hostId: string;
   createdAt: string;

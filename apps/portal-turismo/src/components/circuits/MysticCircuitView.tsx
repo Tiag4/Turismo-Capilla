@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { MYSTIC_SPOTS } from './data/circuitsData';
 import type { CircuitSpot } from './types/circuits.types';
@@ -106,13 +107,13 @@ export const MysticCircuitView: React.FC<MysticCircuitViewProps> = ({ spots = MY
 
               {/* Botón CTA */}
               <div className="pt-1">
-                <a
-                  href="#mapa"
+                <Link
+                  to={`/circuitos/mistico/${spot.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
                 >
-                  <span>Ver ubicación en mapa</span>
+                  <span>Ver ficha técnica</span>
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </article>

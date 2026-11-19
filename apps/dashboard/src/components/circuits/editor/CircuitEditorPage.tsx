@@ -4,6 +4,7 @@ import { circuitsConfigService, DEFAULT_CIRCUITS_CONFIG } from '../../../service
 import type { AdventureActivity, CircuitSpot, CircuitsConfig } from '../../../types/circuits.types';
 import { CircuitPhotoDropzone } from '../CircuitPhotoDropzone';
 import { MapLocationPicker } from '../../accommodations/editor/MapLocationPicker';
+import { InfoTooltip } from '../../ui/Tooltip';
 
 export interface CircuitEditorPageProps {
   mode: 'create' | 'edit';
@@ -15,12 +16,19 @@ export interface CircuitEditorPageProps {
 
 interface StringListEditorProps {
   label: string;
+  tooltip?: string;
   placeholder: string;
   items: string[];
   onChange: (next: string[]) => void;
 }
 
-const StringListEditor: React.FC<StringListEditorProps> = ({ label, placeholder, items, onChange }) => {
+const StringListEditor: React.FC<StringListEditorProps> = ({
+  label,
+  tooltip,
+  placeholder,
+  items,
+  onChange,
+}) => {
   const [draft, setDraft] = useState('');
 
   const addItem = () => {
@@ -32,7 +40,10 @@ const StringListEditor: React.FC<StringListEditorProps> = ({ label, placeholder,
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-bold text-[var(--color-sand-700)]">{label}</label>
+      <label className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--color-sand-700)]">
+        <span>{label}</span>
+        {tooltip && <InfoTooltip content={tooltip} />}
+      </label>
       <div className="flex gap-2">
         <input
           value={draft}
@@ -145,13 +156,33 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
     };
   }, [mode, category, circuitId]);
 
+  const currentImages =
+    category === 'mistico'
+      ? spot.galleryImages && spot.galleryImages.length > 0
+        ? spot.galleryImages
+        : spot.image
+        ? [spot.image]
+        : []
+      : activity.galleryImages && activity.galleryImages.length > 0
+      ? activity.galleryImages
+      : activity.image
+      ? [activity.image]
+      : [];
+
+  const handleImagesChange = (nextImages: string[]) => {
+    if (category === 'mistico') {
+      setSpot({ ...spot, image: nextImages[0] || '', galleryImages: nextImages });
+    } else {
+      setActivity({ ...activity, image: nextImages[0] || '', galleryImages: nextImages });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    const currentImage = category === 'mistico' ? spot.image : activity.image;
-    if (!currentImage) {
-      setErrorMsg('Subí una fotografía principal para publicar en el circuito.');
+    if (currentImages.length === 0) {
+      setErrorMsg('Subí al menos una fotografía para publicar en el circuito.');
       return;
     }
 
@@ -208,17 +239,15 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-[var(--color-sand-200)] p-6 sm:p-8 space-y-8">
-        {/* 1. Fotografía en Cloudinary */}
+        {/* 1. Galería de Fotografías en Cloudinary */}
         <section className="space-y-2">
-          <h2 className="text-sm font-black text-[var(--color-sand-900)]">Fotografía Principal (Cloudinary)</h2>
-          <CircuitPhotoDropzone
-            imageUrl={category === 'mistico' ? spot.image : activity.image || ''}
-            onChange={(url) =>
-              category === 'mistico'
-                ? setSpot({ ...spot, image: url })
-                : setActivity({ ...activity, image: url })
-            }
-          />
+          <div className="inline-flex items-center gap-1.5">
+            <h2 className="text-sm font-black text-[var(--color-sand-900)]">
+              Galería Fotográfica (Cloudinary)
+            </h2>
+            <InfoTooltip content="Subí múltiples fotos reales del lugar o actividad. La primera imagen aparece como portada de la tarjeta y las demás se muestran en la ficha técnica." />
+          </div>
+          <CircuitPhotoDropzone images={currentImages} onChange={handleImagesChange} />
         </section>
 
         {/* 2. Ficha Técnica según categoría */}
@@ -245,7 +274,10 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
                 />
               </label>
               <label className="block space-y-1 text-xs font-bold text-[var(--color-sand-700)]">
-                <span>Atributo Telúrico / Energético</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span>Atributo Telúrico / Energético</span>
+                  <InfoTooltip content="Describe la característica energética, cultural o simbólica distintiva del vórtice." />
+                </span>
                 <input
                   value={spot.energyAttribute || ''}
                   placeholder="Ej: Resonancia Acústica & Silencio Profundo"
@@ -255,7 +287,10 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1 text-xs font-bold text-[var(--color-sand-700)]">
-                  <span>Insignia</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span>Insignia</span>
+                    <InfoTooltip content="Etiqueta corta destacada en la ficha (ej: Vórtice Principal)." />
+                  </span>
                   <input
                     value={spot.badge}
                     onChange={(e) => setSpot({ ...spot, badge: e.target.value })}
@@ -263,7 +298,10 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
                   />
                 </label>
                 <label className="block space-y-1 text-xs font-bold text-[var(--color-sand-700)]">
-                  <span>Horario Sugerido</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span>Horario Sugerido</span>
+                    <InfoTooltip content="Franja ideal para vivir la experiencia (ej: Amanecer y Luna Llena)." />
+                  </span>
                   <input
                     value={spot.bestTime || ''}
                     onChange={(e) => setSpot({ ...spot, bestTime: e.target.value })}
@@ -274,7 +312,10 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
             </div>
 
             <label className="block space-y-1 text-xs font-bold text-[var(--color-sand-700)]">
-              <span>Descripción Editorial *</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span>Descripción Editorial *</span>
+                <InfoTooltip content="Relato completo que verá el turista en la ficha técnica del circuito." />
+              </span>
               <textarea
                 required
                 rows={4}
@@ -287,12 +328,14 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <StringListEditor
                 label="Aspectos Clave del Recorrido"
+                tooltip="Puntos salientes del lugar que aparecen listados en la tarjeta y ficha técnica."
                 placeholder="Ej: Cumbre a 1.979 msnm con vista 360°"
                 items={spot.highlights}
                 onChange={(highlights) => setSpot({ ...spot, highlights })}
               />
               <StringListEditor
                 label="Recomendaciones Oficiales"
+                tooltip="Indicaciones prácticas de seguridad, registro o hidratación para el visitante."
                 placeholder="Ej: Llevar mínimo 1.5L de agua"
                 items={spot.recommendations}
                 onChange={(recommendations) => setSpot({ ...spot, recommendations })}
@@ -446,12 +489,14 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               <StringListEditor
                 label="Equipamiento Sugerido"
+                tooltip="Indumentaria o elementos personales que debe llevar el turista."
                 placeholder="Ej: Rompeviento y calzado acordonado"
                 items={activity.suggestedGear}
                 onChange={(suggestedGear) => setActivity({ ...activity, suggestedGear })}
               />
               <StringListEditor
                 label="Requisitos de Seguridad"
+                tooltip="Condiciones obligatorias, seguros o habilitaciones exigidas antes de la actividad."
                 placeholder="Ej: Apto físico y guía matriculado"
                 items={activity.safetyRequirements}
                 onChange={(safetyRequirements) => setActivity({ ...activity, safetyRequirements })}
@@ -462,7 +507,10 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
 
         {/* 3. Geolocalización */}
         <section className="space-y-3 pt-4 border-t border-[var(--color-sand-200)]">
-          <h2 className="text-sm font-black text-[var(--color-sand-900)]">Ubicación en Mapa</h2>
+          <div className="inline-flex items-center gap-1.5">
+            <h2 className="text-sm font-black text-[var(--color-sand-900)]">Ubicación en Mapa</h2>
+            <InfoTooltip content="Arrastrá el marcador o buscá un sector para fijar las coordenadas exactas en el mapa del circuito." />
+          </div>
           <MapLocationPicker
             latitude={category === 'mistico' ? spot.coordinates.lat : activity.coordinates.lat}
             longitude={category === 'mistico' ? spot.coordinates.lng : activity.coordinates.lng}

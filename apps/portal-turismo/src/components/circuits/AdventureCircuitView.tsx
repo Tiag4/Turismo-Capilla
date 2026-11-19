@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Phone, Star } from 'lucide-react';
 import { ADVENTURE_ACTIVITIES } from './data/circuitsData';
 import type { AdventureActivity } from './types/circuits.types';
@@ -121,13 +122,13 @@ export const AdventureCircuitView: React.FC<AdventureCircuitViewProps> = ({
                   ) : (
                     <div />
                   )}
-                  <a
-                    href="#mapa"
+                  <Link
+                    to={`/circuitos/aventura/${act.id}`}
                     className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
                   >
-                    <span>Ver mapa</span>
+                    <span>Ver ficha técnica</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>

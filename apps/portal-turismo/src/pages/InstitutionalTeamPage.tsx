@@ -24,7 +24,7 @@ export const InstitutionalTeamPage: React.FC = () => {
             </h1>
 
             <p className="text-base sm:text-lg text-sand-700 leading-relaxed font-normal max-w-[65ch]">
-              Plataforma desarrollada en el marco de la práctica profesional de diversas cátedras de la Universidad Provincial de Córdoba (Sede Capilla del Monte), en articulación con la Cámara de Turismo de Capilla del Monte.
+              Plataforma desarrollada en el marco de la práctica profesional por estudiantes del último año de la Tecnicatura en Desarrollo de Software de la Universidad Provincial de Córdoba (Sede Capilla del Monte), en articulación con la Cámara de Turismo de Capilla del Monte.
             </p>
           </div>
         </header>

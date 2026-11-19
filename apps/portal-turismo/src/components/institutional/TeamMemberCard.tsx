@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, MapPin } from 'lucide-react';
 import type { TeamMember } from './types';
 
 const GitHubIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
@@ -40,9 +40,16 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
           <h3 className="font-display font-bold text-lg sm:text-xl text-sand-900 leading-snug truncate">
             {member.name}
           </h3>
-          <span className="text-sm text-sand-500 font-medium block mt-0.5">
-            @{member.githubUsername}
-          </span>
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+            <span className="text-sm text-sand-500 font-medium">
+              @{member.githubUsername}
+            </span>
+            <span className="text-sand-300 font-bold" aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1 text-xs text-sand-600 font-medium">
+              <MapPin className="w-3 h-3 text-terracotta-500 shrink-0" aria-hidden="true" />
+              <span>{member.location}</span>
+            </span>
+          </div>
         </div>
       </div>
 

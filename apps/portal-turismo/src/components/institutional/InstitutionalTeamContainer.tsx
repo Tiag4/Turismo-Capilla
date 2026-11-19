@@ -32,7 +32,7 @@ export const InstitutionalTeamContainer: React.FC = () => {
             Estudiantes a cargo del desarrollo
           </h2>
           <p className="text-sm sm:text-base text-sand-600 leading-relaxed font-normal">
-            Integrantes de la carrera de informática de la Universidad Provincial de Córdoba (Sede Capilla del Monte).
+            Estudiantes del último año de la Tecnicatura en Desarrollo de Software de la Universidad Provincial de Córdoba (Sede Capilla del Monte).
           </p>
         </div>
 

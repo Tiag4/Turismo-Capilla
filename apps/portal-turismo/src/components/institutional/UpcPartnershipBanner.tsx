@@ -9,7 +9,7 @@ export const UpcPartnershipBanner: React.FC = () => {
         </h2>
 
         <p className="text-sm sm:text-base text-sand-300 leading-relaxed font-normal">
-          Esta plataforma fue realizada como proyecto de práctica profesional y articulación académica entre diversas cátedras de informática de la <strong className="text-white font-semibold">Universidad Provincial de Córdoba (Sede Capilla del Monte)</strong> y la <strong className="text-white font-semibold">Cámara de Turismo de Capilla del Monte</strong>, con el objetivo de brindar una herramienta digital accesible y de gestión directa para prestadores y visitantes de nuestra comunidad serrana.
+          Esta plataforma fue realizada como proyecto de práctica profesional y articulación académica por estudiantes del último año de la Tecnicatura en Desarrollo de Software de la <strong className="text-white font-semibold">Universidad Provincial de Córdoba (Sede Capilla del Monte)</strong> junto a la <strong className="text-white font-semibold">Cámara de Turismo de Capilla del Monte</strong>, con el objetivo de brindar una herramienta digital accesible y de gestión directa para prestadores y visitantes de nuestra comunidad serrana.
         </p>
       </div>
     </section>

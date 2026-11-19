@@ -4,6 +4,7 @@ export interface TeamMember {
   githubUsername: string;
   githubUrl: string;
   avatarUrl: string;
+  location: string;
 }
 
 export const TEAM_MEMBERS: TeamMember[] = [
@@ -13,6 +14,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     githubUsername: 'Martino17x',
     githubUrl: 'https://github.com/Martino17x',
     avatarUrl: 'https://avatars.githubusercontent.com/u/108624897?v=4',
+    location: 'Cruz del Eje',
   },
   {
     id: 'juan-cruz-larcher',
@@ -20,6 +22,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     githubUsername: 'juanetee07',
     githubUrl: 'https://github.com/juanetee07',
     avatarUrl: 'https://avatars.githubusercontent.com/u/111915741?v=4',
+    location: 'Cruz del Eje',
   },
   {
     id: 'tiago-amante-nicolitsis',
@@ -27,5 +30,6 @@ export const TEAM_MEMBERS: TeamMember[] = [
     githubUsername: 'Tiag4',
     githubUrl: 'https://github.com/Tiag4',
     avatarUrl: 'https://avatars.githubusercontent.com/u/166666475?v=4',
+    location: 'Capilla del Monte',
   },
 ];

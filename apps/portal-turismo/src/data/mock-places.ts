@@ -298,9 +298,9 @@ export const MOCK_PLACES: MapPlace[] = [
     duration: '7 - 8 hs ida y vuelta',
     rating: 4.9,
     reviewCount: 412,
-    imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+    imageUrl: '/images/attractions/uritorco/uritorco-02.jpg',
     galleryImages: [
-      '/images/attractions/uritorco/uritorco-01.jpg',
+      '/images/attractions/uritorco/uritorco-02.jpg',
       '/images/attractions/uritorco/uritorco-02.jpg',
       '/images/attractions/uritorco/uritorco-03.jpg',
       '/images/attractions/uritorco/uritorco-04.jpg',

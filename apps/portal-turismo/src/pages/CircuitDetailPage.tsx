@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Camera, CheckCircle2, Compass, MapPin, Mountain, Phone, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Camera,
+  CheckCircle2,
+  Compass,
+  MapPin,
+  Mountain,
+  Phone,
+  ShieldCheck,
+} from 'lucide-react';
 import { api } from '../services/api';
 import { ADVENTURE_ACTIVITIES, MYSTIC_SPOTS } from '../components/circuits/data/circuitsData';
 import type { AdventureActivity, CircuitSpot } from '../components/circuits/types/circuits.types';
 import { AttractionGalleryModal } from '../components/attractions/detail/components/AttractionGalleryModal';
+import { NearbyAccommodationsCard } from '../components/attractions/detail/components/NearbyAccommodationsCard';
 import { InteractiveMapContainer } from '../components/map/InteractiveMapContainer';
 
 export const CircuitDetailPage: React.FC = () => {
@@ -49,6 +60,13 @@ export const CircuitDetailPage: React.FC = () => {
     : spot?.subtitle;
   const itemDescription = isAdventure ? activity?.description : spot?.description;
 
+  const linkedAttractionId = isAdventure
+    ? activity?.linkedAttractionId
+    : spot?.linkedAttractionId || (spot?.id === 'cerro-uritorco' || spot?.id === 'los-terrones' ? spot.id : undefined);
+  const linkedAttractionName = isAdventure
+    ? activity?.linkedAttractionName
+    : spot?.linkedAttractionName || (spot?.id === 'cerro-uritorco' ? 'Cerro Uritorco' : spot?.id === 'los-terrones' ? 'Los Terrones' : undefined);
+
   const rawGallery = isAdventure
     ? activity?.galleryImages && activity.galleryImages.length > 0
       ? activity.galleryImages
@@ -62,7 +80,7 @@ export const CircuitDetailPage: React.FC = () => {
     : [];
 
   const gallery =
-    rawGallery.length > 0 ? rawGallery : ['/images/attractions/uritorco/uritorco-01.jpg'];
+    rawGallery.length > 0 ? rawGallery : ['/images/attractions/uritorco/uritorco-02.jpg'];
 
   const coords = (isAdventure ? activity?.coordinates : spot?.coordinates) ?? {
     lat: -30.857,
@@ -71,8 +89,8 @@ export const CircuitDetailPage: React.FC = () => {
 
   if (isLoading && !itemTitle) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-16">
-        <div className="h-96 rounded-3xl bg-sand-200/60 animate-pulse" />
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-12">
+        <div className="h-[460px] rounded-3xl bg-sand-200/60 animate-pulse" />
       </div>
     );
   }
@@ -93,8 +111,9 @@ export const CircuitDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-sand-50 min-h-screen pb-20">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-8 pt-6 sm:pt-10 space-y-8">
+    <div className="bg-sand-50 min-h-screen pb-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-10 space-y-8">
+        {/* Breadcrumb */}
         <Link
           to={`/atractivos?modo=circuitos&circuito=${isAdventure ? 'aventura' : 'mistico'}`}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-sand-700 hover:text-terracotta-600 transition-colors"
@@ -103,8 +122,8 @@ export const CircuitDetailPage: React.FC = () => {
           <span>Volver a Circuitos Temáticos Oficiales</span>
         </Link>
 
-        {/* Encabezado y Galería */}
-        <header className="space-y-4">
+        {/* Encabezado */}
+        <header className="space-y-3 max-w-4xl">
           <div className="inline-flex items-center gap-2 text-xs font-bold text-terracotta-700">
             {isAdventure ? <Mountain className="w-4 h-4" /> : <Compass className="w-4 h-4" />}
             <span>{isAdventure ? 'Turismo Alternativo & Aventura' : 'Circuito Místico & Energético'}</span>
@@ -115,90 +134,87 @@ export const CircuitDetailPage: React.FC = () => {
           {itemSubtitle && <p className="text-base sm:text-lg text-sand-600 font-medium">{itemSubtitle}</p>}
         </header>
 
-        {/* Portada + Botón de Galería Múltiple */}
-        <div className="relative rounded-3xl overflow-hidden border border-sand-200 bg-sand-200 aspect-16/9 max-h-[540px]">
-          <img
-            src={gallery[0]}
-            alt={itemTitle}
-            className="w-full h-full object-cover cursor-pointer"
-            onClick={() => {
-              setActivePhotoIndex(0);
-              setIsGalleryOpen(true);
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setActivePhotoIndex(0);
-              setIsGalleryOpen(true);
-            }}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sand-950/85 hover:bg-sand-950 text-white text-xs font-bold cursor-pointer"
-          >
-            <Camera className="w-4 h-4" />
-            <span>Ver galería ({gallery.length} {gallery.length === 1 ? 'foto' : 'fotos'})</span>
-          </button>
-        </div>
+        {/* Galería Panorámica Full-Width (1 o múltiple) */}
+        {gallery.length > 1 ? (
+          <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-3 rounded-3xl overflow-hidden max-h-[520px]">
+            <div
+              className="lg:col-span-8 h-[300px] sm:h-[420px] lg:h-[520px] overflow-hidden cursor-pointer bg-sand-200"
+              onClick={() => {
+                setActivePhotoIndex(0);
+                setIsGalleryOpen(true);
+              }}
+            >
+              <img src={gallery[0]} alt={itemTitle} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-3 h-[520px]">
+              {gallery.slice(1, 3).map((imgUrl, idx) => (
+                <div
+                  key={`${imgUrl}-${idx}`}
+                  className="overflow-hidden cursor-pointer bg-sand-200"
+                  onClick={() => {
+                    setActivePhotoIndex(idx + 1);
+                    setIsGalleryOpen(true);
+                  }}
+                >
+                  <img src={imgUrl} alt={`${itemTitle} ${idx + 2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePhotoIndex(0);
+                setIsGalleryOpen(true);
+              }}
+              className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sand-950/85 hover:bg-sand-950 text-white text-xs font-bold cursor-pointer"
+            >
+              <Camera className="w-4 h-4" />
+              <span>Ver galería ({gallery.length} fotos)</span>
+            </button>
+          </div>
+        ) : (
+          <div className="relative rounded-3xl overflow-hidden border border-sand-200 bg-sand-200 w-full h-[300px] sm:h-[440px] lg:h-[520px]">
+            <img
+              src={gallery[0]}
+              alt={itemTitle}
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={() => {
+                setActivePhotoIndex(0);
+                setIsGalleryOpen(true);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setActivePhotoIndex(0);
+                setIsGalleryOpen(true);
+              }}
+              className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sand-950/85 hover:bg-sand-950 text-white text-xs font-bold cursor-pointer"
+            >
+              <Camera className="w-4 h-4" />
+              <span>Ampliar fotografía</span>
+            </button>
+          </div>
+        )}
 
-        {/* Telemetría Técnica */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 py-5 border-y border-sand-200">
-          {isAdventure && activity ? (
-            <>
-              <div>
-                <span className="text-xs text-sand-500 block">Modalidad</span>
-                <span className="font-bold text-sm text-sand-950">{activity.modalityLabel}</span>
-              </div>
-              <div>
-                <span className="text-xs text-sand-500 block">Dificultad</span>
-                <span className="font-bold text-sm text-sand-950">{activity.difficulty}</span>
-              </div>
-              <div>
-                <span className="text-xs text-sand-500 block">Duración estimada</span>
-                <span className="font-bold text-sm text-sand-950">{activity.duration}</span>
-              </div>
-              <div>
-                <span className="text-xs text-sand-500 block">Sector</span>
-                <span className="font-bold text-sm text-sand-950">{activity.location}</span>
-              </div>
-            </>
-          ) : (
-            spot && (
-              <>
-                <div>
-                  <span className="text-xs text-sand-500 block">Horario sugerido</span>
-                  <span className="font-bold text-sm text-sand-950">{spot.bestTime || 'Diurno'}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-sand-500 block">Atributo destacado</span>
-                  <span className="font-bold text-sm text-sand-950">{spot.energyAttribute || 'Patrimonio serrano'}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-sand-500 block">Categoría</span>
-                  <span className="font-bold text-sm text-sand-950">{spot.badge}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-sand-500 block">Registro</span>
-                  <span className="font-bold text-sm text-sand-950">Acceso oficial</span>
-                </div>
-              </>
-            )
-          )}
-        </section>
-
-        {/* Cuerpo Editorial */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-8 space-y-8">
-            <section className="space-y-3">
-              <h2 className="font-display font-black text-2xl text-sand-950">Descripción de la experiencia</h2>
+        {/* Layout 8 + 4 idéntico al de Atractivos */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start pt-2">
+          {/* Columna Izquierda Principal */}
+          <div className="lg:col-span-8 space-y-10">
+            <section className="space-y-4">
+              <h2 className="font-display font-black text-2xl sm:text-3xl text-sand-950">
+                Descripción de la experiencia
+              </h2>
               <p className="text-sand-700 leading-relaxed text-base whitespace-pre-line">{itemDescription}</p>
             </section>
 
             {isAdventure && activity ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-sand-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-sand-200">
                 <div className="space-y-3">
                   <h3 className="font-display font-bold text-lg text-sand-950">Equipamiento sugerido</h3>
-                  <ul className="space-y-2 text-sm text-sand-700">
+                  <ul className="space-y-2.5 text-sm text-sand-700">
                     {activity.suggestedGear.map((g, i) => (
-                      <li key={i} className="flex items-start gap-2">
+                      <li key={i} className="flex items-start gap-2.5">
                         <CheckCircle2 className="w-4 h-4 text-terracotta-600 shrink-0 mt-0.5" />
                         <span>{g}</span>
                       </li>
@@ -207,9 +223,9 @@ export const CircuitDetailPage: React.FC = () => {
                 </div>
                 <div className="space-y-3">
                   <h3 className="font-display font-bold text-lg text-sand-950">Requisitos de seguridad</h3>
-                  <ul className="space-y-2 text-sm text-sand-700">
+                  <ul className="space-y-2.5 text-sm text-sand-700">
                     {activity.safetyRequirements.map((r, i) => (
-                      <li key={i} className="flex items-start gap-2">
+                      <li key={i} className="flex items-start gap-2.5">
                         <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                         <span>{r}</span>
                       </li>
@@ -219,12 +235,12 @@ export const CircuitDetailPage: React.FC = () => {
               </div>
             ) : (
               spot && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-sand-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-sand-200">
                   <div className="space-y-3">
-                    <h3 className="font-display font-bold text-lg text-sand-950">Aspectos clave</h3>
-                    <ul className="space-y-2 text-sm text-sand-700">
+                    <h3 className="font-display font-bold text-lg text-sand-950">Aspectos clave del recorrido</h3>
+                    <ul className="space-y-2.5 text-sm text-sand-700">
                       {spot.highlights.map((h, i) => (
-                        <li key={i} className="flex items-start gap-2">
+                        <li key={i} className="flex items-start gap-2.5">
                           <CheckCircle2 className="w-4 h-4 text-terracotta-600 shrink-0 mt-0.5" />
                           <span>{h}</span>
                         </li>
@@ -233,9 +249,9 @@ export const CircuitDetailPage: React.FC = () => {
                   </div>
                   <div className="space-y-3">
                     <h3 className="font-display font-bold text-lg text-sand-950">Recomendaciones oficiales</h3>
-                    <ul className="space-y-2 text-sm text-sand-700">
+                    <ul className="space-y-2.5 text-sm text-sand-700">
                       {spot.recommendations.map((rec, i) => (
-                        <li key={i} className="flex items-start gap-2">
+                        <li key={i} className="flex items-start gap-2.5">
                           <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                           <span>{rec}</span>
                         </li>
@@ -245,13 +261,110 @@ export const CircuitDetailPage: React.FC = () => {
                 </div>
               )
             )}
+
+            {/* Mapa Georreferenciado */}
+            <section className="space-y-3 pt-6 border-t border-sand-200">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-terracotta-600" />
+                <h2 className="font-display font-black text-xl text-sand-950">Ubicación exacta en el mapa</h2>
+              </div>
+              <InteractiveMapContainer
+                showFilters={false}
+                heightClassName="h-[400px]"
+                places={[
+                  {
+                    id: id || 'circuit-point',
+                    type: 'attraction',
+                    title: itemTitle,
+                    subtitle: itemSubtitle || '',
+                    category: isAdventure ? 'Turismo Alternativo' : 'Circuito Místico',
+                    lat: coords.lat,
+                    lng: coords.lng,
+                    rating: 4.9,
+                    reviewCount: 100,
+                    imageUrl: gallery[0],
+                    address: 'Capilla del Monte, Córdoba',
+                    verified: true,
+                    isFeatured: true,
+                    ctaUrl: `/circuitos/${category}/${id}`,
+                  },
+                ]}
+              />
+            </section>
           </div>
 
-          {/* Columna Lateral de Prestadores (Aventura) o Referencia */}
-          <aside className="lg:col-span-4 space-y-6">
+          {/* Columna Derecha Sticky: Ficha Técnica, Atractivo Vinculado, Prestadores y Alojamientos */}
+          <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            {/* Telemetría / Datos Técnicos */}
+            <div className="p-6 rounded-2xl border border-sand-200 bg-white space-y-4">
+              <h3 className="font-display font-black text-base text-sand-950">Ficha técnica</h3>
+              <div className="divide-y divide-sand-200 text-sm">
+                {isAdventure && activity ? (
+                  <>
+                    <div className="py-2.5 flex justify-between gap-2">
+                      <span className="text-sand-500">Modalidad</span>
+                      <span className="font-bold text-sand-950 text-right">{activity.modalityLabel}</span>
+                    </div>
+                    <div className="py-2.5 flex justify-between gap-2">
+                      <span className="text-sand-500">Dificultad</span>
+                      <span className="font-bold text-sand-950">{activity.difficulty}</span>
+                    </div>
+                    <div className="py-2.5 flex justify-between gap-2">
+                      <span className="text-sand-500">Duración</span>
+                      <span className="font-bold text-sand-950">{activity.duration}</span>
+                    </div>
+                    <div className="py-2.5 flex justify-between gap-2">
+                      <span className="text-sand-500">Sector</span>
+                      <span className="font-bold text-sand-950 text-right">{activity.location}</span>
+                    </div>
+                  </>
+                ) : (
+                  spot && (
+                    <>
+                      <div className="py-2.5 flex justify-between gap-2">
+                        <span className="text-sand-500">Horario sugerido</span>
+                        <span className="font-bold text-sand-950 text-right">{spot.bestTime || 'Diurno'}</span>
+                      </div>
+                      <div className="py-2.5 flex justify-between gap-2">
+                        <span className="text-sand-500">Atributo</span>
+                        <span className="font-bold text-sand-950 text-right">
+                          {spot.energyAttribute || 'Patrimonio serrano'}
+                        </span>
+                      </div>
+                      <div className="py-2.5 flex justify-between gap-2">
+                        <span className="text-sand-500">Categoría</span>
+                        <span className="font-bold text-sand-950">{spot.badge}</span>
+                      </div>
+                    </>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Atractivo Oficial Vinculado */}
+            {linkedAttractionId && (
+              <div className="p-6 rounded-2xl border border-sand-200 bg-white space-y-3">
+                <span className="text-xs font-bold text-terracotta-700 block">Atractivo oficial asociado</span>
+                <p className="font-display font-black text-base text-sand-950">
+                  {linkedAttractionName || 'Ver sendero y telemetría'}
+                </p>
+                <p className="text-xs text-sand-600 leading-relaxed">
+                  Consultá la altimetría, protocolo de seguridad, tarifas de acceso y estado de habilitación del atractivo.
+                </p>
+                <Link
+                  to={`/atractivos/${linkedAttractionId}`}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-sand-900 hover:bg-terracotta-600 text-white text-xs font-bold transition-colors"
+                >
+                  <span>Ir a la ficha del atractivo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            )}
+
+            {/* Prestadores Habilitados (Aventura) */}
             {isAdventure && activity && activity.certifiedProviders.length > 0 && (
               <div className="p-6 rounded-2xl border border-sand-200 bg-white space-y-4">
-                <h3 className="font-display font-black text-lg text-sand-950">Prestadores habilitados</h3>
+                <h3 className="font-display font-black text-base text-sand-950">Prestadores habilitados</h3>
                 <div className="divide-y divide-sand-200">
                   {activity.certifiedProviders.map((prov, idx) => (
                     <div key={idx} className="py-3 first:pt-0 last:pb-0 space-y-1.5">
@@ -273,38 +386,11 @@ export const CircuitDetailPage: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Alojamientos Cercanos Reales */}
+            <NearbyAccommodationsCard />
           </aside>
         </div>
-
-        {/* Mapa Georreferenciado */}
-        <section className="space-y-3 pt-4 border-t border-sand-200">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-terracotta-600" />
-            <h2 className="font-display font-black text-xl text-sand-950">Ubicación exacta en el mapa</h2>
-          </div>
-          <InteractiveMapContainer
-            showFilters={false}
-            heightClassName="h-[380px]"
-            places={[
-              {
-                id: id || 'circuit-point',
-                type: 'attraction',
-                title: itemTitle,
-                subtitle: itemSubtitle || '',
-                category: isAdventure ? 'Turismo Alternativo' : 'Circuito Místico',
-                lat: coords.lat,
-                lng: coords.lng,
-                rating: 4.9,
-                reviewCount: 100,
-                imageUrl: gallery[0],
-                address: 'Capilla del Monte, Córdoba',
-                verified: true,
-                isFeatured: true,
-                ctaUrl: `/circuitos/${category}/${id}`,
-              },
-            ]}
-          />
-        </section>
       </div>
 
       <AttractionGalleryModal

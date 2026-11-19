@@ -197,9 +197,9 @@ export const ATTRACTIONS_DATA: AttractionItem[] = [
     difficulty: 'Alta',
     rating: 4.9,
     reviewCount: 412,
-    coverImage: '/images/attractions/uritorco/uritorco-01.jpg',
+    coverImage: '/images/attractions/uritorco/uritorco-02.jpg',
     galleryImages: [
-      '/images/attractions/uritorco/uritorco-01.jpg',
+      '/images/attractions/uritorco/uritorco-02.jpg',
       '/images/attractions/uritorco/uritorco-02.jpg',
       '/images/attractions/uritorco/uritorco-03.jpg',
       '/images/attractions/uritorco/uritorco-04.jpg',

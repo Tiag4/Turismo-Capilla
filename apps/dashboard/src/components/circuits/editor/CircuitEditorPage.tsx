@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Plus, Save, Trash2 } from 'lucide-react';
 import { circuitsConfigService, DEFAULT_CIRCUITS_CONFIG } from '../../../services/circuitsConfig.service';
+import { attractionsService } from '../../../services/attractions.service';
+import type { Attraction } from '../../../types/attraction.types';
 import type { AdventureActivity, CircuitSpot, CircuitsConfig } from '../../../types/circuits.types';
 import { CircuitPhotoDropzone } from '../CircuitPhotoDropzone';
 import { MapLocationPicker } from '../../accommodations/editor/MapLocationPicker';
@@ -125,6 +127,7 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
   onSuccess,
 }) => {
   const [config, setConfig] = useState<CircuitsConfig>(DEFAULT_CIRCUITS_CONFIG);
+  const [attractions, setAttractions] = useState<Attraction[]>([]);
   const [spot, setSpot] = useState<CircuitSpot>(createEmptySpot);
   const [activity, setActivity] = useState<AdventureActivity>(createEmptyActivity);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,11 +136,14 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
 
   useEffect(() => {
     let active = true;
-    circuitsConfigService
-      .fetchConfig()
-      .then((loaded) => {
+    Promise.all([
+      circuitsConfigService.fetchConfig(),
+      attractionsService.getAll().catch(() => [] as Attraction[]),
+    ])
+      .then(([loaded, attractionList]) => {
         if (!active) return;
         setConfig(loaded);
+        setAttractions(attractionList);
         if (mode === 'edit' && circuitId) {
           if (category === 'mistico') {
             const found = loaded.mysticSpots.find((s) => s.id === circuitId);
@@ -505,9 +511,47 @@ export const CircuitEditorPage: React.FC<CircuitEditorPageProps> = ({
           </section>
         )}
 
-        {/* 3. Geolocalización */}
-        <section className="space-y-3 pt-4 border-t border-[var(--color-sand-200)]">
-          <div className="inline-flex items-center gap-1.5">
+        {/* 3. Vinculación con Atractivo Oficial y Geolocalización */}
+        <section className="space-y-4 pt-4 border-t border-[var(--color-sand-200)]">
+          <label className="block space-y-1 text-xs font-bold text-[var(--color-sand-700)]">
+            <span className="inline-flex items-center gap-1.5">
+              <span>Atractivo Oficial Vinculado (opcional)</span>
+              <InfoTooltip content="Si este circuito se desarrolla en un sendero o atractivo del catálogo, vinculalo para que aparezca cruzado en ambas fichas técnicas." />
+            </span>
+            <select
+              value={
+                category === 'mistico'
+                  ? spot.linkedAttractionId || ''
+                  : activity.linkedAttractionId || ''
+              }
+              onChange={(e) => {
+                const selected = attractions.find((a) => a.id === e.target.value);
+                if (category === 'mistico') {
+                  setSpot({
+                    ...spot,
+                    linkedAttractionId: selected?.id || undefined,
+                    linkedAttractionName: selected?.name || undefined,
+                  });
+                } else {
+                  setActivity({
+                    ...activity,
+                    linkedAttractionId: selected?.id || undefined,
+                    linkedAttractionName: selected?.name || undefined,
+                  });
+                }
+              }}
+              className="w-full px-3 py-2 rounded-xl border border-[var(--color-sand-300)] text-sm font-normal bg-white"
+            >
+              <option value="">Sin atractivo vinculado</option>
+              {attractions.map((att) => (
+                <option key={att.id} value={att.id}>
+                  {att.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="inline-flex items-center gap-1.5 pt-2">
             <h2 className="text-sm font-black text-[var(--color-sand-900)]">Ubicación en Mapa</h2>
             <InfoTooltip content="Arrastrá el marcador o buscá un sector para fijar las coordenadas exactas en el mapa del circuito." />
           </div>

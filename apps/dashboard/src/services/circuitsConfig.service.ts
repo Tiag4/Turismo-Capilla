@@ -18,7 +18,7 @@ export const DEFAULT_CIRCUITS_CONFIG: CircuitsConfig = {
         'Realizar el ascenso con calzado de montaña y registro obligatorio en base La Toma',
       ],
       coordinates: { lat: -30.8436, lng: -64.4842 },
-      image: '/images/attractions/uritorco/uritorco-01.jpg',
+      image: '/images/attractions/uritorco/uritorco-02.jpg',
       badge: 'Vórtice Principal',
       bestTime: 'Amanecer y Luna Llena',
     },

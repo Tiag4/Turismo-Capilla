@@ -19,7 +19,7 @@ export const MYSTIC_SPOTS: CircuitSpot[] = [
       'Contratar guías de montaña habilitados por la Comisión de Turismo para ascensos nocturnos'
     ],
     coordinates: { lat: -30.8436, lng: -64.4842 },
-    image: '/images/attractions/uritorco/uritorco-01.jpg',
+    image: '/images/attractions/uritorco/uritorco-02.jpg',
     badge: 'Vórtice Principal',
     bestTime: 'Amanecer y Luna Llena'
   },
@@ -329,7 +329,7 @@ export function getCircuitPlaces(circuitId: CircuitId): MapPlace[] {
     lng: a.coordinates.lng,
     rating: 4.9,
     reviewCount: 94,
-    imageUrl: a.image || '/images/attractions/uritorco/uritorco-01.jpg',
+    imageUrl: a.image || '/images/attractions/uritorco/uritorco-02.jpg',
     address: a.location,
     ctaUrl: `/atractivos?modo=circuitos&circuito=aventura#${a.id}`,
   }));

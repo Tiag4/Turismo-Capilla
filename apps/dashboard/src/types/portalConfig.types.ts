@@ -115,7 +115,7 @@ export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
   heroConfig: {
     title: 'El valle del Uritorco, directo y sin intermediarios.',
     subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
-    imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+    imageUrl: '/images/attractions/uritorco/uritorco-02.jpg',
   },
   duoAccessConfig: {
     whatToDoImageUrl: '/images/attractions/los-terrones/los-terrones-01.jpg',

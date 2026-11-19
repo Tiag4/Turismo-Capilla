@@ -47,7 +47,7 @@ export const CHECKPOINTS: Checkpoint[] = [
     keyAdvice: 'Control de seguridad: si llegás después de las 14:00 hs, debés iniciar el retorno sin continuar a la cumbre.',
     cutoffTimeNotice: '14:00 hs — Límite de avance',
     features: ['Punto de decisión técnica', 'Abrigo natural de piedra', 'Último retén antes del acarreo final'],
-    imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+    imageUrl: '/images/attractions/uritorco/uritorco-02.jpg',
     gradientPct: 22,
   },
   {

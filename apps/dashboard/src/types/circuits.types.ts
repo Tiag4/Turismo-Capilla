@@ -14,6 +14,8 @@ export interface CircuitSpot {
   galleryImages?: string[];
   badge: string;
   bestTime?: string;
+  linkedAttractionId?: string;
+  linkedAttractionName?: string;
 }
 
 export interface AdventureActivity {
@@ -38,6 +40,8 @@ export interface AdventureActivity {
   };
   image?: string;
   galleryImages?: string[];
+  linkedAttractionId?: string;
+  linkedAttractionName?: string;
 }
 
 export interface CircuitsConfig {

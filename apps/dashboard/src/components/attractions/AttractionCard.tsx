@@ -35,7 +35,7 @@ export const AttractionCard: React.FC<AttractionCardProps> = ({
   const statusConfig = STATUS_BADGES[currentStatus] || STATUS_BADGES.OPEN;
   const coverImg =
     item.images?.[0]?.url ||
-    '/images/attractions/uritorco/uritorco-01.jpg';
+    '/images/attractions/uritorco/uritorco-02.jpg';
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

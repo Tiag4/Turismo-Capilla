@@ -254,10 +254,10 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-sand-800)]">
                 Fotografía Panorámica (Hero)
               </label>
-              {config.heroConfig.imageUrl && config.heroConfig.imageUrl !== '/images/attractions/uritorco/uritorco-01.jpg' && (
+              {config.heroConfig.imageUrl && config.heroConfig.imageUrl !== '/images/attractions/uritorco/uritorco-02.jpg' && (
                 <button
                   type="button"
-                  onClick={() => onChangeHeroImageUrl?.('/images/attractions/uritorco/uritorco-01.jpg')}
+                  onClick={() => onChangeHeroImageUrl?.('/images/attractions/uritorco/uritorco-02.jpg')}
                   className="text-[11px] font-bold text-[var(--color-terracotta-600)] hover:underline inline-flex items-center gap-1 cursor-pointer"
                   title="Restaurar fotografía original del Cerro Uritorco"
                 >
@@ -270,7 +270,7 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
             {/* Previsualización de la Imagen */}
             <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-[var(--color-sand-300)] bg-stone-900 shadow-inner group">
               <img
-                src={config.heroConfig.imageUrl || '/images/attractions/uritorco/uritorco-01.jpg'}
+                src={config.heroConfig.imageUrl || '/images/attractions/uritorco/uritorco-02.jpg'}
                 alt="Vista previa del hero"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
               />

@@ -95,7 +95,7 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
     (isRealLocalImage(mockCover) ? mockCover : null) ||
     apiCover ||
     mockCover ||
-    '/images/attractions/uritorco/uritorco-01.jpg';
+    '/images/attractions/uritorco/uritorco-02.jpg';
 
   const validApiGallery = (apiItem.images ?? [])
     .map((img) => img.url)

@@ -9,7 +9,7 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   title = 'El valle del Uritorco, directo y sin intermediarios.',
-  description = 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+  description = 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Cámara de Turismo.',
   imageUrl = '/images/attractions/uritorco/uritorco-01.jpg',
 }) => {
   return (

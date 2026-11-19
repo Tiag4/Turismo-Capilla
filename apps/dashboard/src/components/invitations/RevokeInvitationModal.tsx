@@ -51,7 +51,7 @@ export const RevokeInvitationModal: React.FC<RevokeInvitationModalProps> = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="Revocar Invitación de Prestador"
-      subtitle="Acción irrevocable de la Secretaría de Turismo"
+      subtitle="Acción irrevocable de la Cámara de Turismo"
       maxWidth="md"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

@@ -154,7 +154,7 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             </div>
             <div>
               <span className="text-xs font-bold text-sand-900 block font-['Outfit']">
-                Alojamiento Destacado en Portada (Comisión de Turismo)
+                Alojamiento Destacado en Portada (Cámara de Turismo)
               </span>
               <p className="text-[11px] text-sand-600">
                 Al marcarse, este establecimiento figurará prioritariamente en la sección &quot;Cabañas y Posadas del Valle&quot; del inicio.

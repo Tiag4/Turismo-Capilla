@@ -106,7 +106,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
               Voucher Oficial de Reserva
             </span>
             <span className="text-xs text-sand-500 font-mono">
-              Comisión de Turismo de Capilla del Monte
+              Cámara de Turismo de Capilla del Monte
             </span>
           </div>
         </div>

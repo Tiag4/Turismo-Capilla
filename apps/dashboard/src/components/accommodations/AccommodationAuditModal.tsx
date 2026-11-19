@@ -76,7 +76,7 @@ export const AccommodationAuditModal: React.FC<AccommodationAuditModalProps> = (
       isOpen={isOpen}
       onClose={onClose}
       title={`Auditoría Municipal: ${accommodation.name}`}
-      subtitle="Inspección y certificación formal de la Comisión de Turismo"
+      subtitle="Inspección y certificación formal de la Cámara de Turismo"
       maxWidth="lg"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">

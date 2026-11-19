@@ -287,7 +287,7 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
               Evaluaciones de Huéspedes
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              Establecimiento formalmente auditado por la Secretaría de Turismo. Sé el primer turista en compartir tu experiencia tras completar tu estadía.
+              Establecimiento formalmente auditado por la Cámara de Turismo. Sé el primer turista en compartir tu experiencia tras completar tu estadía.
             </p>
           </div>
         )}

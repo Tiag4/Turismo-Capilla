@@ -48,7 +48,7 @@ export const BookingInquiryEmptyState: React.FC = () => {
           <FileCheck className="w-4 h-4 text-uritorco-600" />
           <h4 className="font-bold text-sand-900">Voucher Imprimible</h4>
           <p className="text-sand-600 text-[11px] leading-relaxed">
-            Descargá o imprimí el comprobante para presentarlo en el check-in o ante la Secretaría de Turismo.
+            Descargá o imprimí el comprobante para presentarlo en el check-in o ante la Cámara de Turismo.
           </p>
         </div>
       </div>

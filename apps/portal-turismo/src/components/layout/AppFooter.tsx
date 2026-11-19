@@ -54,14 +54,23 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onMapaClick, onOpenEmergen
             Plataforma oficial de la Cámara de Turismo de Capilla del Monte. Información verificada de circuitos serranos y reservas directas con prestadores habilitados oficialmente, sin comisiones ocultas.
           </p>
 
-          <div className="pt-3 border-t border-sand-800/90 max-w-md space-y-1.5">
+          <div className="pt-3 border-t border-sand-800/90 max-w-md space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-white">
               <GraduationCap className="w-4 h-4 text-primary-400 shrink-0" />
-              <span>Convenio Institucional UPC</span>
+              <span>Desarrollado por estudiantes de la UPC</span>
             </div>
             <p className="text-xs text-sand-400 leading-relaxed">
-              Alianza estratégica con la <strong className="text-sand-200 font-semibold">Universidad Provincial de Córdoba (UPC)</strong> para la profesionalización del sector, prácticas profesionales y desarrollo turístico sostenible en el Valle de Punilla.
+              Plataforma desarrollada por estudiantes de la <strong className="text-sand-200 font-semibold">Universidad Provincial de Córdoba (UPC)</strong> en articulación con la Cámara de Turismo de Capilla del Monte para potenciar la actividad turística local.
             </p>
+            <div className="pt-1">
+              <Link
+                to="/institucional/equipo"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-400 hover:text-primary-300 transition-colors group/team focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 rounded-xs"
+              >
+                <span>Conocé al equipo desarrollador</span>
+                <span className="group-hover/team:translate-x-1 transition-transform">→</span>
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center gap-2.5 pt-1 flex-wrap">
@@ -150,12 +159,13 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onMapaClick, onOpenEmergen
       </div>
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 mt-12 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-sand-400 gap-4">
-        <span>© 2026 Cámara de Turismo de Capilla del Monte · Convenio Institucional UPC.</span>
+        <span>© 2026 Cámara de Turismo de Capilla del Monte · Desarrollado por estudiantes de la UPC.</span>
         <div className="flex items-center gap-6 flex-wrap justify-center">
           <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
           <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>
           <Link to="/atractivos?modo=circuitos" className="hover:text-sand-300 transition-colors">Circuitos</Link>
           <Link to="/como-llegar" className="hover:text-sand-300 transition-colors">Cómo Llegar</Link>
+          <Link to="/institucional/equipo" className="text-sand-300 hover:text-primary-400 font-semibold transition-colors">Equipo Desarrollador</Link>
           <Link to="/emergencias" className="hover:text-red-300 text-red-400 font-semibold transition-colors">Emergencias</Link>
           <a href={DASHBOARD_URL} className="hover:text-sand-300 transition-colors">Panel Prestadores</a>
         </div>

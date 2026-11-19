@@ -50,8 +50,9 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
             )}
           </section>
 
-          {/* Monitor Altimétrico Interactivo para Senderos de Trekking */}
-          {item.isTrekking && (
+          {/* Monitor Altimétrico Interactivo (solo Cerro Uritorco hasta parametrizar perfiles por sendero) */}
+          {item.isTrekking &&
+            (item.slug === 'cerro-uritorco' || item.title.toLowerCase().includes('uritorco')) && (
             <section className="space-y-6 pt-8 border-t border-sand-200/80">
               <div>
                 <h2 className="font-display font-black text-2xl text-sand-950">

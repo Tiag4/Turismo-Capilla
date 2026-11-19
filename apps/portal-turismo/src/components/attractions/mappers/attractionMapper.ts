@@ -87,22 +87,23 @@ export function mapApiToAttractionItem(apiItem: Attraction): AttractionItem {
 
   const apiCover = apiItem.images?.[0]?.url;
   const mockCover = matchedMock?.coverImage;
+  const isValidApiCover = Boolean(apiCover && !apiCover.includes('unsplash.com'));
 
-  // Prioridad inteligente: si el mock local tiene una foto real en disco (/images/attractions/...),
-  // la priorizamos sobre el placeholder mock de Unsplash que venga de la base de datos de la API
+  // Priorizar siempre fotos reales cargadas desde el CMS; usar fallback local solo si la API no tiene foto válida
   const coverImage =
+    (isValidApiCover ? apiCover : null) ||
     (isRealLocalImage(mockCover) ? mockCover : null) ||
-    (isRealLocalImage(apiCover) ? apiCover : null) ||
     apiCover ||
     mockCover ||
     '/images/attractions/uritorco/uritorco-01.jpg';
 
-  const hasLocalGallery = matchedMock?.galleryImages?.some((img) => isRealLocalImage(img));
+  const validApiGallery = (apiItem.images ?? [])
+    .map((img) => img.url)
+    .filter((url) => Boolean(url) && !url.includes('unsplash.com'));
+
   const galleryImages =
-    hasLocalGallery && matchedMock?.galleryImages
-      ? matchedMock.galleryImages
-      : apiItem.images && apiItem.images.length > 0
-      ? apiItem.images.map((img) => img.url)
+    validApiGallery.length > 0
+      ? validApiGallery
       : matchedMock?.galleryImages ?? [coverImage];
 
   const estimatedDuration =

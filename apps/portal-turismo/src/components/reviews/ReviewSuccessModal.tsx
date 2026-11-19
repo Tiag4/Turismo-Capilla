@@ -41,7 +41,7 @@ export const ReviewSuccessModal: React.FC<ReviewSuccessModalProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 ${
+      className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       role="dialog"
@@ -51,10 +51,14 @@ export const ReviewSuccessModal: React.FC<ReviewSuccessModalProps> = ({
       <div className="fixed inset-0 bg-sand-950/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div
-        className={`relative w-full max-w-md rounded-3xl bg-sand-50 border border-sand-300 shadow-2xl p-6 sm:p-8 text-center space-y-5 transition-all duration-200 ${
-          isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-3'
+        className={`relative w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-sand-50 border border-sand-300 shadow-2xl p-6 sm:p-8 text-center space-y-5 transition-all duration-200 ${
+          isVisible ? 'scale-100 translate-y-0' : 'sm:scale-95 translate-y-full sm:translate-y-3'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden -mt-2 pb-1 flex justify-center">
+          <div className="w-12 h-1.5 bg-sand-300 rounded-full" />
+        </div>
         <button
           type="button"
           onClick={onClose}

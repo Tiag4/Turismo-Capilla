@@ -85,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 transition-opacity duration-200 ease-out ${
+      className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 transition-opacity duration-200 ease-out ${
         isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       role="dialog"
@@ -101,15 +101,20 @@ export const Modal: React.FC<ModalProps> = ({
         aria-hidden="true"
       />
 
-      {/* Modal Surface */}
+      {/* Modal Surface / Bottomsheet en móvil */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full ${maxWidthStyles} bg-[#FAF8F5] border border-[var(--color-sand-300)] rounded-2xl shadow-2xl overflow-hidden z-10 transition-all duration-200 ease-out transform ${
-          isVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-2 opacity-0'
+        className={`relative w-full ${maxWidthStyles} max-h-[92vh] sm:max-h-[85vh] bg-[#FAF8F5] border border-[var(--color-sand-300)] rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col transition-all duration-200 ease-out transform ${
+          isVisible ? 'scale-100 translate-y-0 opacity-100' : 'sm:scale-95 translate-y-full sm:translate-y-2 opacity-0'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-white">
+          <div className="w-12 h-1.5 bg-[var(--color-sand-300)] rounded-full" />
+        </div>
+
         {/* Modal Header */}
-        <div className="flex items-start justify-between p-5 sm:p-6 border-b border-[var(--color-sand-200)] bg-white">
+        <div className="flex items-start justify-between p-5 sm:p-6 border-b border-[var(--color-sand-200)] bg-white shrink-0">
           <div>
             <h3 id="modal-title" className="text-lg font-bold text-[var(--color-sand-900)] font-['Outfit']">
               {title}

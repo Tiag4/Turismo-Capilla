@@ -117,6 +117,11 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
           isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 sm:scale-95 translate-y-8 sm:translate-y-3'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-white">
+          <div className="w-12 h-1.5 bg-stone-300 rounded-full" />
+        </div>
+
         {/* Header fijo */}
         <div className="shrink-0 flex items-center justify-between px-5 sm:px-8 lg:px-10 py-4 sm:py-5 border-b border-stone-200/80 bg-white z-10">
           <div className="flex items-center gap-3">

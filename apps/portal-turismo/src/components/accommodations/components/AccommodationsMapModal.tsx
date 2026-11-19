@@ -33,7 +33,7 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
   if (!shouldRender || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm transition-opacity"
@@ -41,13 +41,18 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
         aria-hidden="true"
       />
 
-      {/* Contenedor del Modal */}
+      {/* Contenedor del Modal / Bottomsheet en móvil */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Mapa Territorial de Alojamientos"
-        className={`relative w-full max-w-6xl h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10 transition-all duration-200 ease-out ${isVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-3 opacity-0'}`}
+        className={`relative w-full max-w-6xl h-[92vh] sm:h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col z-10 transition-all duration-200 ease-out ${isVisible ? 'scale-100 translate-y-0 opacity-100' : 'sm:scale-95 translate-y-full sm:translate-y-3 opacity-0'}`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-[#FAF8F5]">
+          <div className="w-12 h-1.5 bg-stone-300 rounded-full" />
+        </div>
+
         {/* Barra Superior */}
         <div className="px-6 py-4 border-b border-stone-200 bg-[#FAF8F5] flex items-center justify-between">
           <div className="flex items-center gap-2">

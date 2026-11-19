@@ -135,7 +135,7 @@ export const AccommodationReviewModal: React.FC<AccommodationReviewModalProps> =
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 transition-opacity duration-200 ${
+      className={`fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-6 transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       role="dialog"
@@ -149,15 +149,20 @@ export const AccommodationReviewModal: React.FC<AccommodationReviewModalProps> =
         aria-hidden="true"
       />
 
-      {/* Modal Container */}
+      {/* Modal / Bottomsheet Container */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full max-w-xl max-h-[88vh] overflow-hidden rounded-3xl bg-sand-50 border border-sand-300 shadow-2xl flex flex-col transition-all duration-200 transform ${
-          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-3'
+        className={`relative w-full max-w-xl max-h-[92vh] sm:max-h-[88vh] overflow-hidden rounded-t-3xl sm:rounded-3xl bg-sand-50 border border-sand-300 shadow-2xl flex flex-col transition-all duration-200 transform ${
+          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 sm:scale-95 translate-y-full sm:translate-y-3'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-sand-50">
+          <div className="w-12 h-1.5 bg-stone-300 rounded-full" />
+        </div>
+
         {/* Cabecera fija */}
-        <div className="shrink-0 flex items-start justify-between gap-4 px-6 py-5 sm:px-8 sm:py-6 border-b border-sand-200 bg-sand-50">
+        <div className="shrink-0 flex items-start justify-between gap-4 px-6 py-4 sm:px-8 sm:py-6 border-b border-sand-200 bg-sand-50">
           <div>
             <h2
               id="review-modal-title"

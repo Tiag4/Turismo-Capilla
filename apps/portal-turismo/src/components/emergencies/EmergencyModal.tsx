@@ -58,16 +58,21 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose 
       aria-labelledby="emergency-modal-title"
       aria-describedby="emergency-modal-desc"
       onClick={onClose}
-      className={`fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
+      className={`fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-sand-50 rounded-3xl max-w-3xl w-full max-h-[88vh] overflow-hidden border border-sand-300 shadow-2xl flex flex-col transition-all duration-200 ${
-          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'
+        className={`bg-sand-50 rounded-t-3xl sm:rounded-3xl max-w-3xl w-full max-h-[92vh] sm:max-h-[88vh] overflow-hidden border-t sm:border border-sand-300 shadow-2xl flex flex-col transition-all duration-200 ${
+          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-sand-50">
+          <div className="w-12 h-1.5 bg-sand-300 rounded-full" />
+        </div>
+
         {/* Cabecera fija */}
         <div className="shrink-0 flex items-start justify-between gap-4 px-6 py-5 sm:px-8 sm:py-6 border-b border-sand-200 bg-sand-50">
           <div className="space-y-1">

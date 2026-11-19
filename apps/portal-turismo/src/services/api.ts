@@ -171,7 +171,17 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutM
   }
 }
 
-export const api = {
+export const api = {
+  async getPortalConfig(): Promise<Record<string, any> | null> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/portal-config`, {}, 4000);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data && typeof data === 'object' && Object.keys(data).length > 0 ? data : null;
+    } catch {
+      return null;
+    }
+  },
   async getHealth() {
     const res = await fetchWithTimeout(`${API_BASE_URL}/health`);
     if (!res.ok) throw new Error('Error de conexión con el servidor');

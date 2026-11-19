@@ -1,7 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export const FinalCtaSection: React.FC = () => {
+export interface FinalCtaSectionProps {
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+}
+
+export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
+  title = '¿Listo para descubrir Capilla del Monte?',
+  subtitle = 'Encontrá tu próximo lugar favorito y empezá a planificar tu visita.',
+  buttonText = 'Explorar ahora',
+}) => {
   return (
     <section className="w-full relative min-h-[480px] sm:min-h-[560px] flex items-center justify-center bg-sand-950 text-white overflow-hidden py-24 sm:py-32 px-4 sm:px-8 lg:px-12">
       {/* Fotografía Panorámica */}
@@ -18,13 +28,13 @@ export const FinalCtaSection: React.FC = () => {
           data-cta-title
           className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] drop-shadow-sm"
         >
-          ¿Listo para descubrir Capilla del Monte?
+          {title}
         </h2>
         <p
           data-cta-subtitle
           className="text-lg sm:text-2xl text-sand-100/90 font-normal max-w-2xl mx-auto leading-relaxed"
         >
-          Encontrá tu próximo lugar favorito y empezá a planificar tu visita.
+          {subtitle}
         </p>
 
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -32,7 +42,7 @@ export const FinalCtaSection: React.FC = () => {
             to="/alojamientos"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold text-base tracking-wide transition-colors shadow-xl shadow-primary-500/30 cursor-pointer"
           >
-            <span data-cta-button>Explorar ahora</span>
+            <span data-cta-button>{buttonText}</span>
             <span>→</span>
           </Link>
           <button

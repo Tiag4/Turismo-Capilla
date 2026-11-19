@@ -491,12 +491,12 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
               </div>
               {config.duoAccessConfig?.whatToDoImageUrl &&
                 config.duoAccessConfig.whatToDoImageUrl !==
-                  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80' && (
+                  '/images/attractions/los-terrones/los-terrones-01.jpg' && (
                   <button
                     type="button"
                     onClick={() =>
                       onChangeDuoWhatToDoImageUrl?.(
-                        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+                        '/images/attractions/los-terrones/los-terrones-01.jpg'
                       )
                     }
                     className="text-[11px] font-bold text-[var(--color-terracotta-600)] hover:underline inline-flex items-center gap-1 cursor-pointer"
@@ -513,7 +513,7 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
               <img
                 src={
                   config.duoAccessConfig?.whatToDoImageUrl ||
-                  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+                  '/images/attractions/los-terrones/los-terrones-01.jpg'
                 }
                 alt="Vista previa de Qué Hacer"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
@@ -615,12 +615,12 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
               </div>
               {config.duoAccessConfig?.whereToSleepImageUrl &&
                 config.duoAccessConfig.whereToSleepImageUrl !==
-                  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80' && (
+                  '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg' && (
                   <button
                     type="button"
                     onClick={() =>
                       onChangeDuoWhereToSleepImageUrl?.(
-                        'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+                        '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg'
                       )
                     }
                     className="text-[11px] font-bold text-[var(--color-terracotta-600)] hover:underline inline-flex items-center gap-1 cursor-pointer"
@@ -637,7 +637,7 @@ export const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({
               <img
                 src={
                   config.duoAccessConfig?.whereToSleepImageUrl ||
-                  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+                  '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg'
                 }
                 alt="Vista previa de Dónde Dormir"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"

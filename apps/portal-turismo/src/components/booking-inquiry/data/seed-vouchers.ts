@@ -8,7 +8,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     accommodationZone: 'La Toma',
     accommodationAddress: 'Camino a La Toma km 1.5, Capilla del Monte',
     accommodationImage:
-      'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80',
+      '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
     firstName: 'Martino',
     lastName: 'Gómez',
     email: 'turista@capilladelmonte.gov.ar',
@@ -40,7 +40,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     accommodationZone: 'Casco Histórico',
     accommodationAddress: 'Av. Pueyrredón 320, Capilla del Monte',
     accommodationImage:
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+      '/images/accommodations/adrianita-hosteria/adrianita-01.jpg',
     firstName: 'Mariana',
     lastName: 'Rossi',
     email: 'mariana.rossi@email.com',
@@ -72,7 +72,7 @@ export const SEED_VOUCHERS: BookingVoucherRecord[] = [
     accommodationZone: 'Falda del Uritorco',
     accommodationAddress: 'Ruta 38 y acceso norte, Capilla del Monte',
     accommodationImage:
-      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
+      '/images/accommodations/alpa-sierras/alpa-sierras-01.jpg',
     firstName: 'Lucas',
     lastName: 'Fernández',
     email: 'lucas.fdz@gmail.com',

@@ -132,7 +132,7 @@ function buildRoomTypes(place: MapPlace, basePrice: number, mode: InventoryMode)
             : ['Cocina equipada', 'Parrilla individual', 'Cochera techada', 'WiFi Fibra'],
         imageUrl:
           place.imageUrl ||
-          'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80',
+          '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
       },
     ];
   }
@@ -158,7 +158,7 @@ function buildRoomTypes(place: MapPlace, basePrice: number, mode: InventoryMode)
       availableStock: 4,
       breakfastIncluded: true,
       amenities: ['Desayuno serrano', 'WiFi alta velocidad', 'Aire frío/calor', 'Baño privado'],
-      imageUrl: place.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+      imageUrl: place.imageUrl || '/images/accommodations/adrianita-hosteria/adrianita-01.jpg',
     },
     {
       id: `${place.id}-room-sup`,
@@ -174,7 +174,7 @@ function buildRoomTypes(place: MapPlace, basePrice: number, mode: InventoryMode)
       availableStock: 3,
       breakfastIncluded: true,
       amenities: ['Vista al Uritorco', 'Deck privado', 'Desayuno incluido', 'Frigobar', 'Cochera cubierta'],
-      imageUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '/images/accommodations/alpa-sierras/alpa-sierras-01.jpg',
     },
     {
       id: `${place.id}-room-fam`,
@@ -190,7 +190,7 @@ function buildRoomTypes(place: MapPlace, basePrice: number, mode: InventoryMode)
       availableStock: 2,
       breakfastIncluded: true,
       amenities: ['2 Dormitorios', 'Cocina completa', 'Hogar a leña', 'Asador individual', 'Cochera doble'],
-      imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '/images/accommodations/la-atalaya/la-atalaya-01.jpg',
     },
   ];
 }

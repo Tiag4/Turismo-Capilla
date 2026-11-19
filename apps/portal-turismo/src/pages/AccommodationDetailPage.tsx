@@ -9,7 +9,7 @@ function mapApiToPlace(item: Accommodation): MapPlace {
   const mainImage =
     item.images?.find((img) => img.isMain)?.url ||
     item.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=800&q=80';
+    '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
 
   const typeMap: Record<string, string> = {
     CABIN: 'Cabaña de Montaña',

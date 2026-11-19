@@ -33,7 +33,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
   const mainImage =
     accommodation.images?.find((img) => img.isMain)?.url ||
     accommodation.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80';
+    '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
   const hasBreakfast = Boolean(
     accommodation.hasBreakfast ||
       accommodation.amenities?.some((a) => a.toLowerCase().includes('desayuno'))

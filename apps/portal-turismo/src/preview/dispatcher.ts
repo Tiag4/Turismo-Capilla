@@ -56,7 +56,7 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     if (payload.duoAccessConfig.whatToDoImageUrl !== undefined) {
       const imgEl = document.querySelector<HTMLImageElement>('[data-duo-what-img]');
       if (imgEl) {
-        imgEl.src = payload.duoAccessConfig.whatToDoImageUrl || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
+        imgEl.src = payload.duoAccessConfig.whatToDoImageUrl || '/images/attractions/los-terrones/los-terrones-01.jpg';
       }
     }
     if (payload.duoAccessConfig.whatToDoSubtitle !== undefined) {
@@ -68,7 +68,7 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     if (payload.duoAccessConfig.whereToSleepImageUrl !== undefined) {
       const imgEl = document.querySelector<HTMLImageElement>('[data-duo-sleep-img]');
       if (imgEl) {
-        imgEl.src = payload.duoAccessConfig.whereToSleepImageUrl || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80';
+        imgEl.src = payload.duoAccessConfig.whereToSleepImageUrl || '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
       }
     }
     if (payload.duoAccessConfig.whereToSleepSubtitle !== undefined) {

@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export const DEFAULT_WHAT_TO_DO_IMG =
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
+  '/images/attractions/los-terrones/los-terrones-01.jpg';
 export const DEFAULT_WHAT_TO_DO_SUBTITLE =
   '12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones, ollas de agua en La Toma y espejos del dique El Cajón.';
 
 export const DEFAULT_WHERE_TO_SLEEP_IMG =
-  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80';
+  '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg';
 export const DEFAULT_WHERE_TO_SLEEP_SUBTITLE =
   'Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época. Trato directo con el prestador, sin comisiones ni sobreprecios.';
 

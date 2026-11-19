@@ -8,13 +8,15 @@ interface EmergencyFloatingButtonProps {
 
 export const EmergencyFloatingButton: React.FC<EmergencyFloatingButtonProps> = ({ onOpen }) => {
   const location = useLocation();
-  // Elevate button when a sticky bottom checkout dock or booking wizard bar is active
-  const hasBottomDock = location.pathname.startsWith('/alojamientos/') || location.pathname.includes('/reserva');
+  // Elevate button only when the accommodation detail mobile bottom dock is active
+  const hasBottomDock =
+    location.pathname.startsWith('/alojamientos/') &&
+    !location.pathname.endsWith('/reservar');
 
   return (
     <aside
       aria-label="Acceso rápido a emergencias"
-      className={`fixed right-4 sm:right-6 z-[100] transition-all duration-300 print:hidden ${
+      className={`fixed right-4 sm:right-6 z-40 transition-all duration-300 print:hidden ${
         hasBottomDock ? 'bottom-24 sm:bottom-28' : 'bottom-4 sm:bottom-6'
       }`}
     >

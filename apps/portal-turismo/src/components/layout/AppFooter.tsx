@@ -159,7 +159,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onMapaClick, onOpenEmergen
       </div>
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 mt-12 pt-8 border-t border-sand-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-sand-400 gap-4">
-        <span>© 2026 Cámara de Turismo de Capilla del Monte · Desarrollado por estudiantes de la UPC.</span>
+        <span>© 2026 Cámara de Turismo de Capilla del Monte · Desarrollado por estudiantes de la UPC (Sede Capilla del Monte).</span>
         <div className="flex items-center gap-6 flex-wrap justify-center">
           <Link to="/alojamientos" className="hover:text-sand-300 transition-colors">Alojamientos</Link>
           <Link to="/atractivos" className="hover:text-sand-300 transition-colors">Paseos</Link>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, CheckCircle2, Loader2, Mail, Star } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Eye, Loader2, Mail, Star, Copy, Check, MessageSquare, Printer } from 'lucide-react';
 import { api } from '../../../services/api';
 import type { BookingVoucherRecord } from '../types';
+import { VoucherEmailPreviewModal } from './VoucherEmailPreviewModal';
 
 interface BookingVoucherCardProps {
   voucher: BookingVoucherRecord;
@@ -16,12 +17,13 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
   const [copied, setCopied] = useState<'cbu' | 'alias' | null>(null);
   const [resendState, setResendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [resendMessage, setResendMessage] = useState('');
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
 
   const checkoutTimestamp = voucher.checkOut
     ? new Date(`${voucher.checkOut}T23:59:59`).getTime()
     : NaN;
   const stayFinished =
-    isCompleted || (!Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
+    isCompleted || (isConfirmed && !Number.isNaN(checkoutTimestamp) && checkoutTimestamp < Date.now());
   const canReview = stayFinished && !isCancelled;
 
   const statusLabel = isCompleted
@@ -38,7 +40,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
       ? 'bg-rose-700 text-white'
       : isConfirmed
         ? 'bg-emerald-portal-500 text-white'
-        : 'bg-amber-500 text-white';
+        : 'bg-amber-600 text-white';
 
   const downPaymentPercentage = voucher.downPaymentPercentage ?? 50;
   const downPaymentAmount =
@@ -92,207 +94,287 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
   };
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-sand-300 p-6 sm:p-8 shadow-sm space-y-6 print:border-none print:shadow-none print:p-0">
+    <article className="bg-white rounded-3xl border border-sand-300 p-6 sm:p-10 shadow-xs space-y-8 print:border-none print:shadow-none print:p-0">
       {/* Cabecera del Voucher con Sello Institucional */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sand-200 pb-5">
-        <div className="flex items-center gap-3">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sand-200 pb-6">
+        <div className="flex items-center gap-3.5">
           <img
             src="/cropped-logo-capilla-del-monte-2024.png"
-            alt="Capilla del Monte"
-            className="h-10 w-auto object-contain"
+            alt="Logotipo de Capilla del Monte"
+            className="h-11 w-auto object-contain"
           />
           <div>
-            <span className="font-display font-bold text-lg text-sand-900 block leading-tight">
+            <h2 className="font-display font-extrabold text-xl sm:text-2xl text-sand-900 leading-tight">
               Voucher Oficial de Reserva
-            </span>
-            <span className="text-xs text-sand-500 font-mono">
+            </h2>
+            <p className="text-xs text-sand-500 font-mono">
               Cámara de Turismo de Capilla del Monte
-            </span>
+            </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {voucher.isDemo && (
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white shadow-xs">
-              Modo Demostración (Datos Locales)
+            <span className="px-3 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white shadow-xs">
+              Modo Demostración
             </span>
           )}
           <span
-            className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase ${statusClassName}`}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-black tracking-wider uppercase ${statusClassName}`}
           >
             {statusLabel}
           </span>
         </div>
-      </div>
+      </header>
 
-      {/* Código y Ficha del Alojamiento */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-        <div className="md:col-span-2 flex flex-col sm:flex-row items-start gap-4">
+      {/* Ficha del Alojamiento & Localizador (Lienzo Único sin cajas anidadas) */}
+      <section aria-label="Ficha del establecimiento y localizador" className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
           <img
             src={voucher.accommodationImage}
             alt={voucher.accommodationTitle}
-            className="w-full sm:w-28 h-28 rounded-xl object-cover border border-sand-200 shrink-0"
+            className="w-full sm:w-32 h-32 rounded-2xl object-cover border border-sand-200 shrink-0"
           />
-          <div className="space-y-1">
-            <span className="text-[11px] font-bold text-uritorco-700 uppercase tracking-wider block">
+          <div className="space-y-1.5 min-w-0">
+            <span className="text-xs font-bold text-uritorco-700 uppercase tracking-wider block">
               {voucher.accommodationZone} · Prestador Habilitado
             </span>
-            <h3 className="font-display font-black text-xl text-sand-900 leading-tight">
+            <h3 className="font-display font-extrabold text-2xl text-sand-900 leading-tight">
               {voucher.accommodationTitle}
             </h3>
-            <p className="text-xs text-sand-600">
-              {voucher.accommodationAddress}
+            <p className="text-sm text-sand-600 leading-relaxed">
+              📍 {voucher.accommodationAddress}
             </p>
-            <div className="pt-1 text-xs text-sand-700">
-              <span className="font-semibold">Contacto anfitrión: </span>
-              <span>{voucher.hostPhone || '+54 9 3548 40-1122'}</span>
-            </div>
+            <p className="text-xs text-sand-700 pt-0.5">
+              <span className="font-semibold text-sand-900">Contacto anfitrión:</span> {voucher.hostPhone || '+54 9 3548 40-1122'}
+            </p>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 text-center space-y-1">
-          <span className="text-[10px] font-bold text-sand-500 uppercase tracking-wider block">
-            Código Único de Trámite
+        {/* Localizador Oficial - Diseño Tipográfico sin caja flotante */}
+        <div className="lg:text-right lg:border-l lg:border-sand-200 lg:pl-6 space-y-1">
+          <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+            Localizador Oficial
           </span>
-          <span className="font-mono font-black text-xl text-terracotta-600 block tracking-wider">
+          <span className="font-mono font-black text-2xl sm:text-3xl text-terracotta-600 block tracking-wider leading-none">
             {voucher.code}
           </span>
-          <span className="text-[11px] text-sand-500 block">
+          <span className="text-xs text-sand-500 block pt-1">
             Emitido el {new Date(voucher.createdAt).toLocaleDateString('es-AR')}
           </span>
         </div>
-      </div>
+      </section>
 
-      {/* Cuadrícula de Datos de Estadía y Pasajeros */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-sand-50/70 border border-sand-200/80 text-xs">
-        <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Ingreso</span>
-          <span className="font-bold text-sand-900 text-sm">{voucher.checkIn || 'A coordinar'}</span>
-          <span className="text-sand-500 text-[11px]">Desde las 14:00 hs</span>
-        </div>
-        <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Egreso</span>
-          <span className="font-bold text-sand-900 text-sm">{voucher.checkOut || 'A coordinar'}</span>
-          <span className="text-sand-500 text-[11px]">Hasta las 10:00 hs</span>
-        </div>
-        <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Duración</span>
-          <span className="font-bold text-sand-900 text-sm">{voucher.nightsCount} noches</span>
-          <span className="text-sand-500 text-[11px]">{voucher.rooms} alojamiento</span>
-        </div>
-        <div>
-          <span className="font-semibold text-sand-500 block uppercase text-[10px]">Titular</span>
-          <span className="font-bold text-sand-900 text-sm truncate block">
-            {voucher.firstName} {voucher.lastName}
-          </span>
-          <span className="text-sand-500 text-[11px]">
-            {voucher.adults} adultos {voucher.children > 0 ? `· ${voucher.children} niños` : ''}
-          </span>
-        </div>
-      </div>
-
-      {/* Desglose Tarifario y Condiciones de Pago */}
-      <div className="pt-2 border-t border-sand-200 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-amber-50/50 border border-amber-200/80">
-          <div>
-            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Total Estadía Pactada</span>
-            <span className="font-display font-black text-xl text-sand-900">
-              ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-sand-600">ARS</span>
+      {/* Tira Horizontal de Estadía y Pasajeros (Sin tarjetitas internas) */}
+      <section aria-label="Datos de estadía y pasajeros" className="py-6 border-y border-sand-200">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+              Ingreso
+            </span>
+            <span className="font-display font-bold text-sand-900 text-base sm:text-lg block">
+              {voucher.checkIn || 'A coordinar'}
+            </span>
+            <span className="text-xs text-sand-600 block">
+              Desde las 14:00 hs
             </span>
           </div>
-          <div>
-            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Seña Requerida ({downPaymentPercentage}%)</span>
-            <span className="font-display font-black text-xl text-amber-900">
-              ${downPaymentAmount.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-amber-800">ARS</span>
+
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+              Egreso
+            </span>
+            <span className="font-display font-bold text-sand-900 text-base sm:text-lg block">
+              {voucher.checkOut || 'A coordinar'}
+            </span>
+            <span className="text-xs text-sand-600 block">
+              Hasta las 10:00 hs
             </span>
           </div>
-          <div>
-            <span className="text-[10px] text-amber-900/70 uppercase font-bold block">Saldo al Ingreso</span>
-            <span className="font-display font-black text-xl text-emerald-800">
-              ${remainingBalance.toLocaleString('es-AR')} <span className="text-xs font-sans font-bold text-emerald-700">ARS</span>
+
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+              Duración
+            </span>
+            <span className="font-display font-bold text-sand-900 text-base sm:text-lg block">
+              {voucher.nightsCount} {voucher.nightsCount === 1 ? 'noche' : 'noches'}
+            </span>
+            <span className="text-xs text-sand-600 block">
+              {voucher.rooms || 1} {voucher.rooms === 1 ? 'unidad' : 'unidades'}
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+              Titular
+            </span>
+            <span className="font-display font-bold text-sand-900 text-base sm:text-lg block truncate">
+              {voucher.firstName} {voucher.lastName}
+            </span>
+            <span className="text-xs text-sand-600 block">
+              {voucher.adults} adultos{voucher.children > 0 ? ` · ${voucher.children} niños` : ''}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Liquidación Financiera de la Estadía (Sin fondo amarillo lavado ni tarjetas sueltas) */}
+      <section aria-label="Liquidación de la estadía" className="space-y-4">
+        <h4 className="font-display font-bold text-base text-sand-900">
+          Liquidación de la Estadía
+        </h4>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-4 border-b border-sand-200">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-sand-500 uppercase tracking-wider block">
+              Total Estadía Pactada
+            </span>
+            <div className="font-display font-extrabold text-2xl sm:text-3xl text-sand-900">
+              ${(voucher.finalPrice ?? 0).toLocaleString('es-AR')}{' '}
+              <span className="text-xs font-sans font-bold text-sand-500">ARS</span>
+            </div>
+            <span className="text-xs text-sand-500 block">
+              Tarifa final pactada con el establecimiento
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-terracotta-700 uppercase tracking-wider block">
+              Seña Requerida ({downPaymentPercentage}%)
+            </span>
+            <div className="font-display font-black text-2xl sm:text-3xl text-terracotta-600">
+              ${downPaymentAmount.toLocaleString('es-AR')}{' '}
+              <span className="text-xs font-sans font-bold text-terracotta-700">ARS</span>
+            </div>
+            <span className="text-xs text-terracotta-800 font-medium block">
+              Monto para confirmar la reserva
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider block">
+              Saldo al Ingreso
+            </span>
+            <div className="font-display font-extrabold text-2xl sm:text-3xl text-emerald-800">
+              ${remainingBalance.toLocaleString('es-AR')}{' '}
+              <span className="text-xs font-sans font-bold text-emerald-700">ARS</span>
+            </div>
+            <span className="text-xs text-sand-500 block">
+              Se abona al anfitrión en el check-in
             </span>
           </div>
         </div>
 
-        {/* Datos Bancarios para la Seña */}
-        <div className="p-4 rounded-xl bg-sand-50 border border-sand-200 space-y-3">
-          <div className="border-b border-sand-200 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+        {/* Datos Bancarios para la Transferencia (Sin anidación de cajas) */}
+        <div className="pt-2 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
             <h4 className="font-display font-bold text-sm text-sand-900">
               Datos para el Depósito de la Seña Bancaria
             </h4>
-            <span className="text-[11px] text-sand-500 font-medium">
-              Transferencia directa al anfitrión prestador
+            <span className="text-xs text-sand-500">
+              Transferencia directa a la cuenta del anfitrión
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div>
-              <span className="text-[10px] text-sand-500 uppercase font-bold block">Titular de la Cuenta</span>
-              <span className="font-semibold text-sand-900 block">{voucher.bankAccountHolder || 'Administración Cabañas Capilla'}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-sand-500 uppercase font-bold block">Entidad Bancaria</span>
-              <span className="font-semibold text-sand-900 block">{voucher.bankName || 'Banco de la Nación Argentina'}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div className="space-y-1">
+              <span className="text-[11px] text-sand-500 uppercase font-semibold block">Titular de la cuenta</span>
+              <span className="font-semibold text-sand-900 text-sm block">
+                {voucher.bankAccountHolder || 'Administración Cabañas Capilla'}
+              </span>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <span className="text-[10px] text-sand-500 uppercase font-bold block">CBU / CVU</span>
-                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+            <div className="space-y-1">
+              <span className="text-[11px] text-sand-500 uppercase font-semibold block">Entidad Bancaria</span>
+              <span className="font-semibold text-sand-900 text-sm block">
+                {voucher.bankName || 'Banco de la Nación Argentina'}
+              </span>
+            </div>
+
+            {/* CBU con botón copiar plano */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] text-sand-500 uppercase font-semibold block">CBU / CVU</span>
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-xs font-bold text-sand-900 bg-sand-100 px-2 py-1 rounded-md select-all truncate">
                   {voucher.bankCbu || '0110485530048500123456'}
-                </span>
+                </code>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(voucher.bankCbu || '0110485530048500123456', 'cbu')}
+                  className="px-2.5 py-1 rounded-lg bg-sand-100 hover:bg-sand-200 text-sand-800 text-xs font-bold shrink-0 transition-colors cursor-pointer print:hidden flex items-center gap-1"
+                  title="Copiar CBU"
+                >
+                  {copied === 'cbu' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">Copiado</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-sand-600" />
+                      <span>Copiar</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => handleCopy(voucher.bankCbu || '0110485530048500123456', 'cbu')}
-                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
-              >
-                {copied === 'cbu' ? '¡Copiado!' : 'Copiar'}
-              </button>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-white border border-sand-200 flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <span className="text-[10px] text-sand-500 uppercase font-bold block">Alias Bancario</span>
-                <span className="font-mono text-xs font-bold text-sand-900 select-all truncate block">
+            {/* Alias con botón copiar plano */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] text-sand-500 uppercase font-semibold block">Alias Bancario</span>
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-xs font-bold text-terracotta-600 bg-sand-100 px-2 py-1 rounded-md select-all truncate">
                   {voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL'}
-                </span>
+                </code>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL', 'alias')}
+                  className="px-2.5 py-1 rounded-lg bg-sand-100 hover:bg-sand-200 text-sand-800 text-xs font-bold shrink-0 transition-colors cursor-pointer print:hidden flex items-center gap-1"
+                  title="Copiar Alias"
+                >
+                  {copied === 'alias' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">Copiado</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-sand-600" />
+                      <span>Copiar</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => handleCopy(voucher.bankAlias || 'CAPILLA.RESERVA.OFICIAL', 'alias')}
-                className="px-2 py-1 rounded bg-sand-100 hover:bg-sand-200 text-sand-800 text-[11px] font-bold shrink-0 transition-colors cursor-pointer print:hidden"
-              >
-                {copied === 'alias' ? '¡Copiado!' : 'Copiar'}
-              </button>
             </div>
           </div>
-          <p className="text-[11px] text-sand-500 italic pt-1">
-            Una vez realizada la transferencia de la seña, enviá el comprobante al anfitrión para validar y garantizar tu lugar.
+
+          <p className="text-xs text-sand-500 italic pt-1">
+            Una vez realizada la transferencia de la seña, enviá el comprobante al anfitrión por WhatsApp para validar y garantizar tu lugar.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* Acciones del Voucher (Ocultas al imprimir con @media print) */}
+      {/* Estado del Reenvío de Correo */}
       {resendMessage && (
         <div
           role="status"
-          className={`flex items-start gap-2 p-3 rounded-xl border text-xs font-semibold print:hidden ${
+          className={`flex items-start gap-2.5 p-3.5 rounded-xl border text-xs font-semibold print:hidden ${
             resendState === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
               : 'bg-rose-50 border-rose-200 text-rose-900'
           }`}
         >
           {resendState === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
           ) : (
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
           )}
           <span>{resendMessage}</span>
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-sand-200 print:hidden">
+      {/* Barra de Acciones del Voucher (Ocultas al imprimir con @media print) */}
+      <footer className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-sand-200 print:hidden">
         {canReview && (
           <Link
             to={`/resenas/nueva?code=${encodeURIComponent(voucher.code)}`}
@@ -301,6 +383,17 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
             <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
             <span>Calificar Estadía</span>
           </Link>
+        )}
+
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            onClick={() => setShowEmailPreview(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-sand-300 bg-white text-sand-800 hover:bg-sand-100 transition-colors cursor-pointer"
+          >
+            <Eye className="w-4 h-4 text-emerald-portal-600" />
+            <span>Ver Correo Oficial (Dev)</span>
+          </button>
         )}
 
         <button
@@ -323,9 +416,7 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-uritorco-600 hover:bg-uritorco-700 text-white transition-colors"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.297.144.35.491 1.199.534 1.286.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-          </svg>
+          <MessageSquare className="w-4 h-4" />
           <span>Chat con Anfitrión</span>
         </a>
 
@@ -334,12 +425,17 @@ export const BookingVoucherCard: React.FC<BookingVoucherCardProps> = ({ voucher,
           onClick={onPrint}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-sand-900 hover:bg-sand-800 text-white transition-colors cursor-pointer"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-          </svg>
+          <Printer className="w-4 h-4" />
           <span>Descargar / Imprimir Voucher</span>
         </button>
-      </div>
-    </div>
+      </footer>
+
+      {/* Modal de Previsualización del Correo Institucional (Bottomsheet en móvil) */}
+      <VoucherEmailPreviewModal
+        isOpen={showEmailPreview}
+        onClose={() => setShowEmailPreview(false)}
+        voucher={voucher}
+      />
+    </article>
   );
 };

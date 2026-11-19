@@ -35,7 +35,7 @@ export const BookingWizardSuccess: React.FC<BookingWizardSuccessProps> = ({ data
           ¡Gracias, {form.firstName}!
         </h2>
         <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto">
-          Hemos enviado los datos de tu reserva a <strong className="text-stone-900">{data.title}</strong>. El anfitrión se comunicará con vos para coordinar los detalles.
+          Hemos enviado los datos de tu reserva a <strong className="text-stone-900">{data.title}</strong> y despachamos automáticamente el voucher oficial por correo electrónico a <strong className="text-stone-900">{form.email}</strong>.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Clock3, X } from 'lucide-react';
-import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import React from 'react';
+import { CheckCircle2, Clock3 } from 'lucide-react';
+import { AdaptiveModal } from '../ui/AdaptiveModal';
 
 interface ReviewSuccessModalProps {
   isOpen: boolean;
@@ -15,85 +15,48 @@ export const ReviewSuccessModal: React.FC<ReviewSuccessModalProps> = ({
   accommodationName,
   onClose,
 }) => {
-  const [isRendered, setIsRendered] = useState(isOpen);
-  const [isVisible, setIsVisible] = useState(false);
-  useBodyScrollLock(isRendered);
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsRendered(true);
-
-      const frame = requestAnimationFrame(() => setIsVisible(true));
-      return () => cancelAnimationFrame(frame);
-    }
-
-    setIsVisible(false);
-
-    const timer = setTimeout(() => setIsRendered(false), 220);
-    return () => clearTimeout(timer);
-  }, [isOpen]);
-
-  useEffect(() => () => {
-
-  }, []);
-
-  if (!isRendered) return null;
-
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="review-success-title"
+    <AdaptiveModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      hideHeader
+      bodyClassName="p-6 sm:p-8 text-center space-y-5"
     >
-      <div className="fixed inset-0 bg-sand-950/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-
-      <div
-        className={`relative w-full max-w-md rounded-3xl bg-sand-50 border border-sand-300 shadow-2xl p-6 sm:p-8 text-center space-y-5 transition-all duration-200 ${
-          isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-3'
-        }`}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-sand-500 hover:bg-sand-200 hover:text-sand-800 transition-colors cursor-pointer"
-          aria-label="Cerrar confirmación de reseña"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-uritorco-100 flex items-center justify-center">
-          <CheckCircle2 className="w-9 h-9 text-uritorco-600" />
-        </div>
-
-        <div className="space-y-2">
-          <h2 id="review-success-title" className="font-display font-black text-xl text-sand-950">
-            ¡Gracias por compartir tu experiencia!
-          </h2>
-          <p className="text-sm text-sand-600">
-            Tu reseña de <strong className="text-sand-900">{accommodationName}</strong> fue registrada
-            correctamente para la reserva <span className="font-mono font-bold text-terracotta-600">{bookingCode}</span>.
-          </p>
-        </div>
-
-        <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-left">
-          <Clock3 className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-900 font-medium">
-            La Cámara de Turismo revisará tu testimonio. Una vez aprobado, se publicará en la ficha
-            del alojamiento y se sumará al promedio de calificaciones.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="w-full px-5 py-3 rounded-xl bg-sand-900 hover:bg-sand-800 text-white font-display font-bold text-sm transition-colors cursor-pointer"
-        >
-          Entendido
-        </button>
+      <div className="mx-auto w-16 h-16 rounded-2xl bg-uritorco-100 flex items-center justify-center">
+        <CheckCircle2 className="w-9 h-9 text-uritorco-600" />
       </div>
-    </div>
+
+      <div className="space-y-2">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-uritorco-100 text-uritorco-800">
+          <Clock3 className="w-3.5 h-3.5" />
+          En proceso de moderación oficial
+        </span>
+        <h3 id="review-success-title" className="text-xl sm:text-2xl font-black font-display text-sand-900">
+          ¡Reseña Recibida!
+        </h3>
+        <p className="text-sm text-sand-600 leading-relaxed">
+          Gracias por calificar tu estadía en <strong className="text-sand-900">{accommodationName}</strong>.
+          {bookingCode && (
+            <span className="block mt-1 font-mono text-xs text-sand-500">
+              Código de trámite: {bookingCode}
+            </span>
+          )}
+        </p>
+      </div>
+
+      <p className="text-xs text-sand-500 leading-relaxed bg-sand-100/60 p-3.5 rounded-xl border border-sand-200">
+        Para garantizar la veracidad del portal, el equipo de la Secretaría de Turismo
+        revisará el comentario antes de su publicación definitiva.
+      </p>
+
+      <button
+        type="button"
+        onClick={onClose}
+        className="w-full py-3 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-sm transition-colors cursor-pointer"
+      >
+        Entendido
+      </button>
+    </AdaptiveModal>
   );
 };

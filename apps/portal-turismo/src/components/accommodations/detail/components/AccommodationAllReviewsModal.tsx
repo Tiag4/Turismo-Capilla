@@ -113,10 +113,15 @@ export const AccommodationAllReviewsModal: React.FC<AccommodationAllReviewsModal
       {/* Modal / Drawer Container (Mucho más ancho en desktop para albergar las 7 columnas sin scroll) */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full sm:w-[95vw] md:max-w-5xl lg:max-w-6xl xl:max-w-[1200px] h-[94vh] sm:h-[88vh] max-h-[94vh] sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl bg-white border border-stone-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-200 transform ${
-          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 sm:scale-95 translate-y-8 sm:translate-y-3'
+        className={`relative w-full sm:w-[95vw] md:max-w-5xl lg:max-w-6xl xl:max-w-[1200px] h-[94vh] sm:h-[88vh] max-h-[94vh] sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl bg-white border border-stone-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-250 transform ${
+          isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 sm:scale-95 translate-y-full sm:translate-y-3'
         }`}
       >
+        {/* Mobile Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-white">
+          <div className="w-12 h-1.5 bg-stone-300 rounded-full" />
+        </div>
+
         {/* Header fijo */}
         <div className="shrink-0 flex items-center justify-between px-5 sm:px-8 lg:px-10 py-4 sm:py-5 border-b border-stone-200/80 bg-white z-10">
           <div className="flex items-center gap-3">

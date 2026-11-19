@@ -197,7 +197,7 @@ export const FeaturedCabinsSection: React.FC = () => {
               Cabañas y Posadas del Valle
             </h2>
             <p className="mt-3 text-base text-sand-700 leading-relaxed font-normal">
-              Establecimientos formalmente inspeccionados por la Secretaría de Turismo, con habilitación vigente y contacto directo.
+              Establecimientos formalmente inspeccionados por la Cámara de Turismo, con habilitación vigente y contacto directo.
             </p>
           </div>
 

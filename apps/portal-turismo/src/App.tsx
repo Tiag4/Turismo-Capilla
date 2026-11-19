@@ -15,6 +15,7 @@ import { EmergencyPage } from './pages/EmergencyPage';
 import { BookingInquiryPage } from './pages/BookingInquiryPage';
 import { AccommodationBookingWizardPage } from './pages/AccommodationBookingWizardPage';
 import { ReviewSubmissionPage } from './pages/ReviewSubmissionPage';
+import { InstitutionalTeamPage } from './pages/InstitutionalTeamPage';
 
 export const App: React.FC = () => {
   return (
@@ -35,6 +36,8 @@ export const App: React.FC = () => {
             <Route path="astroturismo" element={<AstrotourismPage />} />
             <Route path="reservas/consulta" element={<BookingInquiryPage />} />
             <Route path="resenas/nueva" element={<ReviewSubmissionPage />} />
+            <Route path="institucional/equipo" element={<InstitutionalTeamPage />} />
+            <Route path="creditos" element={<Navigate to="/institucional/equipo" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

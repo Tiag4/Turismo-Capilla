@@ -58,12 +58,12 @@ export const ProviderDetailModal: React.FC<ProviderDetailModalProps> = ({
   const cleanPhone = (provider.phone || '').replace(/[^0-9]/g, '');
   const waUrl = cleanPhone
     ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-        `Hola ${provider.name}, te contactamos desde la Secretaría de Turismo de Capilla del Monte respecto a tus establecimientos en la plataforma.`
+        `Hola ${provider.name}, te contactamos desde la Cámara de Turismo de Capilla del Monte respecto a tus establecimientos en la plataforma.`
       )}`
     : null;
 
   const mailUrl = `mailto:${provider.email}?subject=${encodeURIComponent(
-    'Comunicación Oficial — Secretaría de Turismo Capilla del Monte'
+    'Comunicación Oficial — Cámara de Turismo Capilla del Monte'
   )}`;
 
   return (

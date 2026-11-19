@@ -217,7 +217,7 @@ export const CircuitInteractiveMap: React.FC<CircuitInteractiveMapProps> = ({ ac
 
           <div className="pt-3 border-t border-sand-200 text-xs text-sand-500 flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
-            <span>Puntos auditados por la Secretaría de Turismo.</span>
+            <span>Puntos auditados por la Cámara de Turismo.</span>
           </div>
         </div>
       </div>

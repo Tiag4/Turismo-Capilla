@@ -63,7 +63,7 @@ export const InvitationManager: React.FC<InvitationManagerProps> = ({
         <span className="font-bold text-sand-900 mr-1">
           Garantía Institucional:
         </span>
-        Cada invitación oficial es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Secretaría de Turismo de Capilla del Monte antes de recibir pagos o reservas.
+        Cada invitación oficial es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Cámara de Turismo de Capilla del Monte antes de recibir pagos o reservas.
       </div>
 
       {error && (

@@ -59,7 +59,7 @@ export const BookingVoucherPrint: React.FC<BookingVoucherPrintProps> = ({
                 </h3>
               </div>
               <p className="text-xs text-[var(--color-sand-800)] font-medium">
-                Secretaría y Comisión de Turismo — OTA Oficial Municipal
+                Cámara de Turismo — OTA Oficial de Capilla del Monte
               </p>
               <div className="flex items-center gap-1.5 text-[10px] text-[var(--color-emerald-portal-600)] font-bold">
                 <ShieldCheck className="w-3.5 h-3.5" />

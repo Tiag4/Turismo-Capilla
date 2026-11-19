@@ -35,7 +35,7 @@ export const HomePage: React.FC = () => {
     }
     return {
       title: 'El valle del Uritorco, directo y sin intermediarios.',
-      subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+      subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Cámara de Turismo.',
       imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
     };
   });

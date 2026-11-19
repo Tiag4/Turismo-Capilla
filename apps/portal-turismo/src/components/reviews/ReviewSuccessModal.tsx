@@ -81,7 +81,7 @@ export const ReviewSuccessModal: React.FC<ReviewSuccessModalProps> = ({
         <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-left">
           <Clock3 className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-900 font-medium">
-            La Comisión de Turismo revisará tu testimonio. Una vez aprobado, se publicará en la ficha
+            La Cámara de Turismo revisará tu testimonio. Una vez aprobado, se publicará en la ficha
             del alojamiento y se sumará al promedio de calificaciones.
           </p>
         </div>

@@ -62,7 +62,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 Acceso al Panel de Gestión
               </h1>
               <p className="text-sm text-[var(--color-sand-700)] leading-relaxed">
-                Ingresá con tu cuenta institucional. El sistema detecta automáticamente si sos prestador o parte de la Comisión de Turismo.
+                Ingresá con tu cuenta institucional. El sistema detecta automáticamente si sos prestador o parte de la Cámara de Turismo.
               </p>
             </div>
 
@@ -165,7 +165,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
           <footer className="pt-6 border-t border-[var(--color-sand-200)]">
             <p className="text-xs text-[var(--color-sand-600)] leading-relaxed">
-              Comisión de Turismo de Capilla del Monte · Acceso exclusivo para prestadores adheridos y administración municipal.
+              Cámara de Turismo de Capilla del Monte · Acceso exclusivo para prestadores adheridos y administración.
             </p>
           </footer>
         </div>

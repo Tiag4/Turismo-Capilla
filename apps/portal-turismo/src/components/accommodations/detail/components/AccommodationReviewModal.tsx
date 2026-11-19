@@ -190,7 +190,7 @@ export const AccommodationReviewModal: React.FC<AccommodationReviewModalProps> =
                 </h3>
                 <p className="text-sm text-stone-600 max-w-md mx-auto">
                   {isPendingModeration
-                    ? 'Tu opinión fue registrada correctamente y se publicará en la ficha del alojamiento una vez validada por la Comisión de Turismo.'
+                    ? 'Tu opinión fue registrada correctamente y se publicará en la ficha del alojamiento una vez validada por la Cámara de Turismo.'
                     : 'Tu opinión ya fue publicada en la ficha del alojamiento y ayuda a futuros viajeros a elegir con confianza en Capilla del Monte.'}
                 </p>
               </div>

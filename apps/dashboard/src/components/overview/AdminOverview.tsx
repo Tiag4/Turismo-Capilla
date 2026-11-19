@@ -119,7 +119,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigateTab }) =
             Inicio
           </h1>
           <p className="text-xs sm:text-sm text-sand-500 mt-0.5">
-            Panel de Administración · Secretaría de Turismo de Capilla del Monte.
+            Panel de Administración · Cámara de Turismo de Capilla del Monte.
           </p>
         </div>
 

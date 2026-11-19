@@ -103,7 +103,7 @@ export const InvitationCreatePage: React.FC<InvitationCreatePageProps> = ({
             Garantía Institucional de Seguridad y Verificación
           </h2>
           <p className="text-xs text-sand-600 leading-relaxed">
-            Cada enlace de invitación emitido es de uso único y valida que el alojamiento fue inspeccionado y habilitado por la Secretaría de Turismo de Capilla del Monte antes de quedar visible para turistas.
+            Cada enlace de invitación emitido es de uso único y valida que el alojamiento fue inspeccionado y habilitado por la Cámara de Turismo de Capilla del Monte antes de quedar visible para turistas.
           </p>
         </div>
       </div>

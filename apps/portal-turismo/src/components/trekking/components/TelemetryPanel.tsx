@@ -103,7 +103,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ telemetry }) => 
         <div className="p-3 bg-sand-200/50 text-sand-700 rounded-xl flex items-center justify-between text-xs border border-sand-200">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-uritorco-600 shrink-0" />
-            <span>Sendero habilitado en condiciones normales por Secretaría de Turismo.</span>
+            <span>Sendero habilitado en condiciones normales por Cámara de Turismo.</span>
           </div>
           <span className="hidden sm:inline font-semibold text-sand-900">
             Registro previo en La Toma

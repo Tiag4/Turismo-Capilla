@@ -61,6 +61,7 @@ metadata:
     - Prohibido badges de conteo pegados al H1 (ej: `3 unidades`) cuando el dato ya está expuesto en las pestañas o filtros de la misma vista.
 33. **PROHIBICIÓN DE "STATUS DOT SOUP" EN TABLAS Y FILAS**: Prohibido saturar celdas de tablas o filas de listados con puntitos de color decorativos (dots) estáticos o titilantes (`● Habilitado`, `● Suspendido`). El estado en tablas densas se comunica con tipografía nítida o badges sólidos discretos de alto contraste.
 34. **PROHIBICIÓN TOTAL DE ANIDACIÓN DE CARDS (CERO CARDS DENTRO DE CARDS)**: Si una sección o panel ya se encuentra delimitado por un contenedor blanco con borde, sus componentes y registros internos JAMÁS deben ser tarjetas blancas anidadas con bordes y sombras secundarias. Deben fluir como filas planas, tablas o bloques delimitados por divisores sutiles (`border-t` o `divide-y`).
+35. **PROHIBICIÓN DE BUZZWORDS DE IA Y DISCURSO RIMBOMBANTE ("SOBERANÍA DIGITAL", ETC.)**: Prohibido el uso exagerado o impostado de la palabra "soberanía" (como "soberanía digital", "soberanía tecnológica", "soluciones soberanas") y términos rimbombantes de pitch o plantillas de IA en copy institucional, descripciones o microcopy. Es puro AI slop. La comunicación debe ser natural, humana, directa y honesta, reflejando el trabajo real sin grandilocuencia artificial.
 
 
 ## Reglas de Componentes (Filtros y Chips)
@@ -112,6 +113,7 @@ metadata:
 | Bordes "Featured Tier" SaaS | `border-2 border-terracotta-200` simulando el plan recomendado de un SaaS | Bordes neutros uniformes; todas las opciones tienen igual peso operativo |
 | Badges de obviedad | Recordar el rol (`Cabañero / Prestador`) o sesión (`Acceso Autorizado por Token`) | Omitir; la autenticación y el contexto de la vista hacen obvio el estado |
 | Status Dot Soup en tablas | Puntitos de color (`● Habilitado`, `● Activo`) en celdas tabulares | Tipografía nítida o badges sólidos discretos sin puntitos decorativos |
+| Buzzwords de IA ("Soberanía digital", etc.) | Textos rimbombantes sobre "soberanía tecnológica", "soluciones soberanas" o tríadas de marketing cliché | Copy humano, sobrio y honesto; explicar la función o contexto real sin jerga grandilocuente |
 ## Comandos
 
 ```bash
@@ -182,5 +184,6 @@ rg "bg-(blue|purple|gray)-|text-(blue|purple|gray)-|#[0-9a-fA-F]{6}" apps
 - [ ] No usa status dots decorativos antes del texto en botones de filtro rápidos.
 - [ ] No usa barras laterales (aside sidebars) injustificadas si no hay contenido secundario sustancial.
 - [ ] No usa fondos pastel semi-transparentes deslavados (`bg-amber-500/10`, `bg-blue-100`, etc.) en banners, alertas, barras de estado o contenedores.
+- [ ] No usa buzzwords infladas de IA ni repite la palabra "soberanía" ("soberanía digital") como cliché de marketing.
 - [ ] Usa tokens de tema.
 - [ ] Mantiene identidad Turismo-Capilla.

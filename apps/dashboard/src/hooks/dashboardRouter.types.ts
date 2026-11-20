@@ -14,6 +14,9 @@ export interface RouteDetail {
   eventEditId?: string;
   attractionView: EntityViewMode;
   attractionEditId?: string;
+  circuitView: EntityViewMode;
+  circuitCategory: 'mistico' | 'aventura';
+  circuitEditId?: string;
   alertView: EntityViewMode;
   alertEditId?: string;
   emergencyView: EntityViewMode;
@@ -29,6 +32,7 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
   bookings: '/reservas',
   accommodations: '/mis-cabanas',
   attractions: '/atractivos',
+  circuits: '/circuitos-tematicos',
   alerts: '/alertas',
   emergencies: '/guardias-farmacias',
   calendar: '/calendario',
@@ -47,6 +51,8 @@ export const TAB_ROUTE_MAP: Record<DashboardTab, string> = {
 
 export const ROUTE_ALIASES: Record<string, DashboardTab> = {
   '/guardias-farmacias': 'emergencies',
+  '/circuitos-tematicos': 'circuits',
+  '/circuitos': 'circuits',
   '/emergencias': 'emergencies',
   '/farmacias': 'emergencies',
   '/agenda-cultural': 'events',

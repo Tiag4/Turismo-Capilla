@@ -4,6 +4,7 @@ import type {
   ComplianceStatus,
   ComplianceChecklist,
 } from '../types/accommodation.types.ts';
+import { accommodationsService } from '../services/accommodations.service.ts';
 
 const AUDIT_STORAGE_KEY = 'turismo_capilla_accommodations_audit';
 
@@ -42,6 +43,8 @@ export function useAdminAudit() {
         const existing = getSavedAudits();
         existing[accommodationId] = record;
         localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(existing));
+
+        await accommodationsService.saveAudit(accommodationId, JSON.stringify(record));
 
         return record;
       } catch (err: any) {

@@ -1,13 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export const UritorcoHighlightSection: React.FC = () => {
+export interface UritorcoHighlightSectionProps {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export const UritorcoHighlightSection: React.FC<UritorcoHighlightSectionProps> = ({
+  title = 'Cerro Uritorco',
+  description = 'El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.',
+  imageUrl = '/images/attractions/uritorco/uritorco-02.jpg',
+}) => {
   return (
     <section className="w-full bg-[#0e261d] text-white overflow-hidden relative">
       {/* Fotografía Panorámica */}
       <div className="w-full relative h-[500px] sm:h-[620px] lg:h-[720px] overflow-hidden">
         <img
-          src="/images/attractions/uritorco/uritorco-02.jpg"
+          src={imageUrl}
           alt="Cerro Uritorco y las Sierras Chicas al atardecer"
           className="w-full h-full object-cover object-center brightness-95 contrast-105"
           loading="lazy"
@@ -23,13 +33,13 @@ export const UritorcoHighlightSection: React.FC = () => {
               data-uritorco-title
               className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.05]"
             >
-              Cerro Uritorco
+              {title}
             </h2>
             <p
               data-uritorco-desc
               className="text-base sm:text-xl text-sand-100/90 leading-relaxed font-normal max-w-3xl"
             >
-              El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.
+              {description}
             </p>
           </div>
 

@@ -47,6 +47,7 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: 'mobility', label: 'Cómo Llegar y Movilidad', icon: Navigation },
   { id: 'events', label: 'Agenda Cultural', icon: CalendarDays },
   { id: 'attractions', label: 'Atractivos y Senderos', icon: Compass },
+  { id: 'circuits', label: 'Circuitos Temáticos', icon: Compass },
   { id: 'emergencies', label: 'Guardias y Farmacias', icon: ShieldAlert },
   { id: 'accommodations', label: 'Prestadores Adheridos', icon: Home },
   { id: 'invitations', label: 'Invitaciones a Prestadores', icon: KeyRound },

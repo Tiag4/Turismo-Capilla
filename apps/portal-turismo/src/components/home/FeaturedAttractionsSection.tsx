@@ -1,16 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MOCK_PLACES } from '../../data/mock-places';
+import { MOCK_PLACES, type MapPlace } from '../../data/mock-places';
+import { api } from '../../services/api';
+import { mapApiToAttractionItem } from '../attractions/mappers/attractionMapper';
+
+function getFallbackAttractions(): MapPlace[] {
+  const featured = MOCK_PLACES.filter((p) => p.type === 'attraction');
+  const ids = ['att-2', 'att-4', 'att-5', 'att-3', 'att-7', 'att-8'];
+  const ordered = ids
+    .map((id) => featured.find((p) => p.id === id))
+    .filter((p): p is MapPlace => Boolean(p));
+  return ordered.length >= 6 ? ordered : featured.slice(0, 6);
+}
 
 export const FeaturedAttractionsSection: React.FC = () => {
-  const featuredAttractions = MOCK_PLACES.filter((p) => p.type === 'attraction');
+  const [attractions, setAttractions] = useState<MapPlace[]>(() => getFallbackAttractions());
 
-  const terrones = featuredAttractions.find((p) => p.id === 'att-2') || featuredAttractions[0];
-  const elCajon = featuredAttractions.find((p) => p.id === 'att-4') || featuredAttractions[1];
-  const laToma = featuredAttractions.find((p) => p.id === 'att-5') || featuredAttractions[2];
-  const elZapato = featuredAttractions.find((p) => p.id === 'att-3') || featuredAttractions[3];
-  const losMogotes = featuredAttractions.find((p) => p.id === 'att-7') || featuredAttractions[4];
-  const calleTechada = featuredAttractions.find((p) => p.id === 'att-8') || featuredAttractions[5];
+  useEffect(() => {
+    let active = true;
+    api
+      .getAttractions()
+      .then((apiItems) => {
+        if (!active || !Array.isArray(apiItems) || apiItems.length === 0) return;
+
+        // Sort featured attractions first to honor Dashboard CMS selection
+        const sorted = [...apiItems].sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)));
+        const mapped: MapPlace[] = sorted.slice(0, 6).map((item) => {
+          const detail = mapApiToAttractionItem(item);
+          return {
+            id: detail.id,
+            type: 'attraction',
+            title: detail.title,
+            subtitle: detail.subtitle,
+            category: detail.categoryLabel,
+            lat: detail.coordinates.lat,
+            lng: detail.coordinates.lng,
+            rating: detail.rating,
+            reviewCount: detail.reviewCount,
+            imageUrl: detail.coverImage,
+            address: detail.address,
+            verified: true,
+            isFeatured: Boolean(item.isFeatured),
+            distanceFromCenter: detail.distanceFromCenter,
+            duration: detail.trailSpecs?.estimatedDuration || '1 a 2 horas',
+            difficulty: detail.difficulty,
+            ctaUrl: `/atractivos/${detail.slug || detail.id}`,
+          };
+        });
+
+        if (mapped.length > 0) {
+          setAttractions(mapped);
+        }
+      })
+      .catch(() => {
+        // Keep static fallback if backend is unreachable
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const [terrones, elCajon, laToma, elZapato, losMogotes, calleTechada] = attractions;
 
   return (
     <section className="py-16 sm:py-24 bg-sand-50">

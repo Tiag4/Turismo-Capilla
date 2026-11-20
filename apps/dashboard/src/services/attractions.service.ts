@@ -20,7 +20,7 @@ const MOCK_ATTRACTIONS: Attraction[] = [
     images: [
       {
         id: 'img-uritorco-1',
-        url: '/images/attractions/uritorco/uritorco-01.jpg',
+        url: '/images/attractions/uritorco/uritorco-02.jpg',
         publicId: 'uritorco_cover',
       },
     ],

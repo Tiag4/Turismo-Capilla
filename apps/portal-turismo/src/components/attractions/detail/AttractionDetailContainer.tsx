@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Compass, Mountain } from 'lucide-react';
 import type { AttractionItem } from '../types';
+import { api } from '../../../services/api';
+import { ADVENTURE_ACTIVITIES, MYSTIC_SPOTS } from '../../circuits/data/circuitsData';
+import type { AdventureActivity, CircuitSpot } from '../../circuits/types/circuits.types';
 import { AttractionHeroBento } from './components/AttractionHeroBento';
 import { AttractionTelemetryBar } from './components/AttractionTelemetryBar';
 import { AttractionSafetyProtocol } from './components/AttractionSafetyProtocol';
@@ -13,6 +18,55 @@ interface AttractionDetailContainerProps {
 }
 
 export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps> = ({ item }) => {
+  const [linkedCircuits, setLinkedCircuits] = useState<
+    { id: string; category: 'mistico' | 'aventura'; title: string; subtitle: string }[]
+  >([]);
+
+  useEffect(() => {
+    let active = true;
+    api.getCircuitsConfig().then((remote) => {
+      if (!active) return;
+      const mystic = (
+        remote?.mysticSpots && remote.mysticSpots.length > 0 ? remote.mysticSpots : MYSTIC_SPOTS
+      ) as CircuitSpot[];
+      const adventure = (
+        remote?.adventureActivities && remote.adventureActivities.length > 0
+          ? remote.adventureActivities
+          : ADVENTURE_ACTIVITIES
+      ) as AdventureActivity[];
+
+      const matchesId = (linkedId?: string, itemId?: string) =>
+        linkedId === item.id ||
+        linkedId === item.slug ||
+        itemId === item.slug ||
+        (Boolean(item.slug) && Boolean(itemId) && itemId!.includes(item.slug));
+
+      const matched = [
+        ...mystic
+          .filter((s) => matchesId(s.linkedAttractionId, s.id))
+          .map((s) => ({
+            id: s.id,
+            category: 'mistico' as const,
+            title: s.title,
+            subtitle: s.subtitle,
+          })),
+        ...adventure
+          .filter((a) => matchesId(a.linkedAttractionId))
+          .map((a) => ({
+            id: a.id,
+            category: 'aventura' as const,
+            title: a.title,
+            subtitle: `${a.modalityLabel} · ${a.location}`,
+          })),
+      ];
+
+      setLinkedCircuits(matched);
+    });
+    return () => {
+      active = false;
+    };
+  }, [item.id, item.slug]);
+
   return (
     <div className="space-y-8">
       {/* Portada Bento Principal y Cabecera */}
@@ -50,8 +104,9 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
             )}
           </section>
 
-          {/* Monitor Altimétrico Interactivo para Senderos de Trekking */}
-          {item.isTrekking && (
+          {/* Monitor Altimétrico Interactivo (solo Cerro Uritorco hasta parametrizar perfiles por sendero) */}
+          {item.isTrekking &&
+            (item.slug === 'cerro-uritorco' || item.title.toLowerCase().includes('uritorco')) && (
             <section className="space-y-6 pt-8 border-t border-sand-200/80">
               <div>
                 <h2 className="font-display font-black text-2xl text-sand-950">
@@ -71,6 +126,44 @@ export const AttractionDetailContainer: React.FC<AttractionDetailContainerProps>
           {/* Checklist de Mochila solo para excursiones de montaña reales */}
           {item.isTrekking && (
             <AttractionGearChecklist recommendedGear={item.practicalInfo.recommendedGear} />
+          )}
+
+          {/* Circuitos Temáticos vinculados a este atractivo */}
+          {linkedCircuits.length > 0 && (
+            <section className="space-y-4 pt-8 border-t border-sand-200/80">
+              <h2 className="font-display font-black text-2xl text-sand-950">
+                Circuitos Temáticos vinculados
+              </h2>
+              <div className="divide-y divide-sand-200 border border-sand-200 rounded-2xl bg-white overflow-hidden">
+                {linkedCircuits.map((circuit) => (
+                  <Link
+                    key={`${circuit.category}-${circuit.id}`}
+                    to={`/circuitos/${circuit.category}/${circuit.id}`}
+                    className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-sand-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {circuit.category === 'mistico' ? (
+                        <Compass className="w-5 h-5 text-terracotta-600 shrink-0" />
+                      ) : (
+                        <Mountain className="w-5 h-5 text-uritorco-700 shrink-0" />
+                      )}
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-terracotta-700 block">
+                          {circuit.category === 'mistico'
+                            ? 'Circuito Místico & Energético'
+                            : 'Turismo Alternativo & Aventura'}
+                        </span>
+                        <h3 className="font-display font-bold text-base text-sand-950 truncate">
+                          {circuit.title}
+                        </h3>
+                        <p className="text-xs text-sand-600 truncate">{circuit.subtitle}</p>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-sand-500 shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            </section>
           )}
         </div>
 

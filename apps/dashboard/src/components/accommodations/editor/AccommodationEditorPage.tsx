@@ -116,6 +116,15 @@ export const AccommodationEditorPage: React.FC<AccommodationEditorPageProps> = (
             isMain: Boolean(image.isMain),
           });
         }
+
+        // Persistir cambio de portada si se seleccionó una imagen ya existente
+        const initialMainId = initialImages.find((img) => img.isMain)?.id;
+        const currentExistingMain = galleryImages.find(
+          (img) => !img.file && initialIds.has(img.id) && img.isMain
+        );
+        if (currentExistingMain && currentExistingMain.id !== initialMainId) {
+          await accommodationsService.setMainImage(accommodationId, currentExistingMain.id);
+        }
       } else {
         const finalImages = galleryImages.map((image) => ({
           ...image,

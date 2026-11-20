@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -54,6 +54,17 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [isIframeLoading, setIsIframeLoading] = useState(true);
   const [isSavedRecently, setIsSavedRecently] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    portalConfigService.fetchConfig().then((loaded) => {
+      if (active) setConfig(loaded);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const events = culturalEventsService.getActiveEvents();
@@ -109,15 +120,31 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
     setActiveTab('properties');
   };
 
-  const handleSave = () => {
-    portalConfigService.saveConfig(config);
-    setIsSavedRecently(true);
-    setTimeout(() => setIsSavedRecently(false), 2500);
+  const handleSave = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      await portalConfigService.saveConfig(config);
+      setIsSavedRecently(true);
+      setTimeout(() => setIsSavedRecently(false), 2500);
+    } catch (err) {
+      console.error('Error guardando configuración de portada en backend:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleReset = () => {
-    const reset = portalConfigService.resetConfig();
-    setConfig(reset);
+  const handleReset = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      const reset = await portalConfigService.resetConfig();
+      setConfig(reset);
+    } catch (err) {
+      console.error('Error restableciendo configuración de portada:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReloadIframe = () => {
@@ -142,9 +169,6 @@ export const PortalCustomizerPage: React.FC<PortalCustomizerPageProps> = ({
               <h1 className="font-display font-black text-sm text-[var(--color-sand-900)] leading-tight">
                 Personalizador de Portada
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white shadow-2xs">
-                Prototipo CMS (Local)
-              </span>
             </div>
             <p className="text-[11px] text-[var(--color-sand-600)]">
               Reordená secciones en vivo y personalizá los textos de la página principal.

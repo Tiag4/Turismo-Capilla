@@ -38,6 +38,8 @@ export const useDashboardRouter = (role: UserRole | null) => {
       accommodationView: 'list',
       eventView: 'list',
       attractionView: 'list',
+      circuitView: 'list',
+      circuitCategory: 'mistico',
       alertView: 'list',
       emergencyView: 'list',
       seasonView: 'list',
@@ -84,6 +86,34 @@ export const useDashboardRouter = (role: UserRole | null) => {
 
   const navigateToAttractionList = useCallback(() => {
     pushRoute({ ...routeState, tab: 'attractions', attractionView: 'list', attractionEditId: undefined }, '/atractivos');
+  }, [routeState, pushRoute]);
+
+  // Circuits
+  const navigateToCircuitCreate = useCallback((category: 'mistico' | 'aventura') => {
+    pushRoute(
+      { ...routeState, tab: 'circuits', circuitView: 'create', circuitCategory: category, circuitEditId: undefined },
+      `/circuitos-tematicos/${category}/nueva`
+    );
+  }, [routeState, pushRoute]);
+
+  const navigateToCircuitEdit = useCallback((category: 'mistico' | 'aventura', id: string) => {
+    pushRoute(
+      { ...routeState, tab: 'circuits', circuitView: 'edit', circuitCategory: category, circuitEditId: id },
+      `/circuitos-tematicos/${category}/${id}/editar`
+    );
+  }, [routeState, pushRoute]);
+
+  const navigateToCircuitList = useCallback((category?: 'mistico' | 'aventura') => {
+    pushRoute(
+      {
+        ...routeState,
+        tab: 'circuits',
+        circuitView: 'list',
+        circuitCategory: category ?? routeState.circuitCategory,
+        circuitEditId: undefined,
+      },
+      '/circuitos-tematicos'
+    );
   }, [routeState, pushRoute]);
 
   // Alerts
@@ -204,6 +234,12 @@ export const useDashboardRouter = (role: UserRole | null) => {
     navigateToAttractionCreate,
     navigateToAttractionEdit,
     navigateToAttractionList,
+    circuitView: routeState.circuitView,
+    circuitCategory: routeState.circuitCategory,
+    circuitEditId: routeState.circuitEditId,
+    navigateToCircuitCreate,
+    navigateToCircuitEdit,
+    navigateToCircuitList,
     alertView: routeState.alertView,
     alertEditId: routeState.alertEditId,
     navigateToAlertCreate,

@@ -1,4 +1,5 @@
 import type { CulturalEvent } from '../types/culturalEvent.types';
+import { API_BASE_URL } from './api';
 
 const INITIAL_EVENTS: CulturalEvent[] = [
   {
@@ -74,13 +75,6 @@ const INITIAL_EVENTS: CulturalEvent[] = [
 ];
 
 const STORAGE_KEY = 'turismo_capilla_cultural_events';
-
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' &&
-    (import.meta.env?.VITE_API_URL || import.meta.env?.PUBLIC_API_URL)) ||
-  (import.meta.env?.DEV
-    ? 'http://localhost:8080/api/v1'
-    : 'https://turismo-capilla-backend.onrender.com/api/v1');
 
 function getStoredEvents(): CulturalEvent[] {
   try {

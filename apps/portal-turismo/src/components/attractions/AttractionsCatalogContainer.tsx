@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Compass, Mountain, MapPin } from 'lucide-react';
 import { useAttractionsFilter } from './hooks/useAttractionsFilter';
@@ -9,18 +9,38 @@ import { AttractionCard } from './components/AttractionCard';
 import { AttractionsEmptyState } from './components/AttractionsEmptyState';
 import { CircuitTabs } from '../circuits/CircuitTabs';
 import { MysticCircuitView } from '../circuits/MysticCircuitView';
-import { GastronomicCircuitView } from '../circuits/GastronomicCircuitView';
 import { AdventureCircuitView } from '../circuits/AdventureCircuitView';
 import { InteractiveMapContainer } from '../map/InteractiveMapContainer';
-import { getCircuitPlaces } from '../circuits/data/circuitsData';
-import type { CircuitId } from '../circuits/types/circuits.types';
+import { ADVENTURE_ACTIVITIES, MYSTIC_SPOTS, getCircuitPlaces } from '../circuits/data/circuitsData';
+import type { AdventureActivity, CircuitId, CircuitSpot } from '../circuits/types/circuits.types';
+import { api } from '../../services/api';
 
 export const AttractionsCatalogContainer: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // SSOT: el modo y el circuito se derivan directamente de la URL sin estados duplicados ni useEffects reactivos
+  // SSOT: el modo y el circuito se derivan directamente de la URL sin estados duplicados
   const viewMode = searchParams.get('modo') === 'circuitos' ? 'circuitos' : 'senderos';
-  const activeCircuit = (searchParams.get('circuito') as CircuitId) || 'mistico';
+  const rawCircuit = searchParams.get('circuito') as CircuitId | null;
+  const activeCircuit: CircuitId = rawCircuit === 'aventura' ? 'aventura' : 'mistico';
+
+  const [mysticSpots, setMysticSpots] = useState<CircuitSpot[]>(MYSTIC_SPOTS);
+  const [adventureActivities, setAdventureActivities] = useState<AdventureActivity[]>(ADVENTURE_ACTIVITIES);
+
+  useEffect(() => {
+    let active = true;
+    api.getCircuitsConfig().then((remote) => {
+      if (!active || !remote) return;
+      if (Array.isArray(remote.mysticSpots) && remote.mysticSpots.length > 0) {
+        setMysticSpots(remote.mysticSpots as CircuitSpot[]);
+      }
+      if (Array.isArray(remote.adventureActivities) && remote.adventureActivities.length > 0) {
+        setAdventureActivities(remote.adventureActivities as AdventureActivity[]);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const {
     search,
@@ -59,8 +79,47 @@ export const AttractionsCatalogContainer: React.FC = () => {
   };
 
   const circuitPlaces = useMemo(() => {
+    if (activeCircuit === 'mistico') {
+      return mysticSpots.map((spot) => ({
+        id: spot.id,
+        type: 'attraction' as const,
+        title: spot.title,
+        subtitle: spot.subtitle,
+        category: 'Circuito Místico',
+        lat: spot.coordinates?.lat ?? -30.857,
+        lng: spot.coordinates?.lng ?? -64.515,
+        rating: 4.9,
+        reviewCount: 120,
+        imageUrl: spot.image,
+        address: 'Capilla del Monte, Córdoba',
+        verified: true,
+        isFeatured: true,
+        distanceFromCenter: spot.bestTime || 'Paseo Diurno',
+        ctaUrl: `/atractivos?modo=circuitos&circuito=mistico#${spot.id}`,
+      }));
+    }
+    if (activeCircuit === 'aventura') {
+      return adventureActivities.map((act) => ({
+        id: act.id,
+        type: 'attraction' as const,
+        title: act.title,
+        subtitle: `${act.modalityLabel} · ${act.location}`,
+        category: 'Turismo Alternativo',
+        lat: act.coordinates?.lat ?? -30.857,
+        lng: act.coordinates?.lng ?? -64.515,
+        rating: 4.9,
+        reviewCount: 94,
+        imageUrl: act.image || '/images/attractions/los-terrones/los-terrones-01.jpg',
+        address: act.location,
+        verified: true,
+        isFeatured: true,
+        distanceFromCenter: act.duration,
+        difficulty: act.difficulty,
+        ctaUrl: `/atractivos?modo=circuitos&circuito=aventura#${act.id}`,
+      }));
+    }
     return getCircuitPlaces(activeCircuit);
-  }, [activeCircuit]);
+  }, [activeCircuit, mysticSpots, adventureActivities]);
 
   return (
     <div className="space-y-8">
@@ -72,15 +131,15 @@ export const AttractionsCatalogContainer: React.FC = () => {
         isLoading={isLoading}
       />
 
-      {/* Selector de Modo de Exploración Integrado (Anti-Vibecoded & Gestalt) */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-sand-200/70 rounded-2xl border border-sand-300/70 max-w-fit">
+      {/* Selector de Modo Editorial sin bandejas ni tarjetitis (Anti-Vibecoded) */}
+      <div className="flex flex-wrap items-center gap-6 border-b border-sand-200">
         <button
           type="button"
           onClick={() => handleSelectViewMode('senderos')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 pb-3 -mb-px text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer ${
             viewMode === 'senderos'
-              ? 'bg-white text-sand-900 shadow-xs border border-sand-300/60'
-              : 'text-sand-700 hover:text-sand-950 hover:bg-white/40'
+              ? 'border-terracotta-600 text-sand-950'
+              : 'border-transparent text-sand-600 hover:text-sand-900'
           }`}
         >
           <Mountain className={`w-4 h-4 ${viewMode === 'senderos' ? 'text-terracotta-600' : 'text-sand-500'}`} />
@@ -91,10 +150,10 @@ export const AttractionsCatalogContainer: React.FC = () => {
         <button
           type="button"
           onClick={() => handleSelectViewMode('circuitos')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 pb-3 -mb-px text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer ${
             viewMode === 'circuitos'
-              ? 'bg-white text-sand-900 shadow-xs border border-sand-300/60'
-              : 'text-sand-700 hover:text-sand-950 hover:bg-white/40'
+              ? 'border-terracotta-600 text-sand-950'
+              : 'border-transparent text-sand-600 hover:text-sand-900'
           }`}
         >
           <Compass className={`w-4 h-4 ${viewMode === 'circuitos' ? 'text-terracotta-600' : 'text-sand-500'}`} />
@@ -142,9 +201,8 @@ export const AttractionsCatalogContainer: React.FC = () => {
           />
 
           {/* Contenido Curado del Circuito Seleccionado */}
-          {activeCircuit === 'mistico' && <MysticCircuitView />}
-          {activeCircuit === 'sabores' && <GastronomicCircuitView />}
-          {activeCircuit === 'aventura' && <AdventureCircuitView />}
+          {activeCircuit === 'mistico' && <MysticCircuitView spots={mysticSpots} />}
+          {activeCircuit === 'aventura' && <AdventureCircuitView activities={adventureActivities} />}
 
           {/* Mapa Interactivo Oficial Reutilizado (Leaflet con Topografía) */}
           <div className="space-y-3 pt-4" id="mapa">

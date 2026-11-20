@@ -13,8 +13,11 @@ export interface CircuitSpot {
     lng: number;
   };
   image: string;
+  galleryImages?: string[];
   badge: string;
   bestTime?: string;
+  linkedAttractionId?: string;
+  linkedAttractionName?: string;
 }
 
 export interface GastronomicVenue {
@@ -33,6 +36,9 @@ export interface GastronomicVenue {
   };
   features: string[];
   image?: string;
+  galleryImages?: string[];
+  linkedAttractionId?: string;
+  linkedAttractionName?: string;
 }
 
 export interface AdventureActivity {
@@ -56,4 +62,7 @@ export interface AdventureActivity {
     lng: number;
   };
   image?: string;
+  galleryImages?: string[];
+  linkedAttractionId?: string;
+  linkedAttractionName?: string;
 }

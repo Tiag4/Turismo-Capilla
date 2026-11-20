@@ -46,7 +46,7 @@ export function applyPortalPreview(payload: PortalCMSPreviewPayload): void {
     if (payload.heroConfig.imageUrl !== undefined) {
       const imgEl = document.querySelector<HTMLImageElement>('[data-hero-image]');
       if (imgEl) {
-        imgEl.src = payload.heroConfig.imageUrl || '/images/attractions/uritorco/uritorco-01.jpg';
+        imgEl.src = payload.heroConfig.imageUrl || '/images/attractions/uritorco/uritorco-02.jpg';
       }
     }
   }

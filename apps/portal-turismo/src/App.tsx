@@ -8,6 +8,7 @@ import { AccommodationsPage } from './pages/AccommodationsPage';
 import { AccommodationDetailPage } from './pages/AccommodationDetailPage';
 import { AttractionsPage } from './pages/AttractionsPage';
 import { AttractionDetailPage } from './pages/AttractionDetailPage';
+import { CircuitDetailPage } from './pages/CircuitDetailPage';
 import { AstrotourismPage } from './pages/AstrotourismPage';
 import { MobilityGuidePage } from './pages/MobilityGuidePage';
 import { EmergencyPage } from './pages/EmergencyPage';
@@ -31,6 +32,7 @@ export const App: React.FC = () => {
             <Route path="atractivos" element={<AttractionsPage />} />
             <Route path="atractivos/:id" element={<AttractionDetailPage />} />
             <Route path="circuitos" element={<Navigate to="/atractivos?modo=circuitos" replace />} />
+            <Route path="circuitos/:category/:id" element={<CircuitDetailPage />} />
             <Route path="como-llegar" element={<MobilityGuidePage />} />
             <Route path="emergencias" element={<EmergencyPage />} />
             <Route path="astroturismo" element={<AstrotourismPage />} />

@@ -1,9 +1,70 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MOCK_PLACES } from '../../../../data/mock-places';
+import { api } from '../../../../services/api';
+
+interface NearbyStaySummary {
+  id: string;
+  title: string;
+  zone: string;
+  imageUrl: string;
+  pricePerNight: number;
+}
+
+function getFallbackStays(): NearbyStaySummary[] {
+  return MOCK_PLACES.filter((p) => p.type === 'accommodation')
+    .slice(0, 2)
+    .map((p) => ({
+      id: p.id,
+      title: p.title,
+      zone: p.zone || 'Capilla del Monte',
+      imageUrl: p.imageUrl,
+      pricePerNight: p.pricePerNight ?? 0,
+    }));
+}
 
 export const NearbyAccommodationsCard: React.FC = () => {
-  // Select 2 verified accommodations
-  const nearbyStays = MOCK_PLACES.filter((p) => p.type === 'accommodation').slice(0, 2);
+  const [nearbyStays, setNearbyStays] = useState<NearbyStaySummary[]>(() => getFallbackStays());
+
+  useEffect(() => {
+    let active = true;
+    api
+      .getAccommodations()
+      .then((items) => {
+        if (!active || !Array.isArray(items) || items.length === 0) return;
+
+        const sorted = [...items]
+          .filter((item) => item.isActive)
+          .sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)))
+          .slice(0, 2);
+
+        if (sorted.length === 0) return;
+
+        setNearbyStays(
+          sorted.map((item) => {
+            const parsedPrice =
+              typeof item.pricePerNight === 'string' ? parseFloat(item.pricePerNight) : item.pricePerNight;
+            return {
+              id: item.id,
+              title: item.name,
+              zone: item.locality || 'Capilla del Monte',
+              imageUrl:
+                item.images?.find((img) => img.isMain)?.url ||
+                item.images?.[0]?.url ||
+                '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
+              pricePerNight: isNaN(parsedPrice) ? 0 : parsedPrice,
+            };
+          }),
+        );
+      })
+      .catch(() => {
+        // Keep static fallback if backend is unreachable
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-4 pb-6 border-b border-sand-200/80">
@@ -14,16 +75,16 @@ export const NearbyAccommodationsCard: React.FC = () => {
           </svg>
           <span>Alojamientos Cercanos</span>
         </h3>
-        <a href="/alojamientos" className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700">
+        <Link to="/alojamientos" className="text-xs font-bold text-terracotta-600 hover:text-terracotta-700">
           Ver todos
-        </a>
+        </Link>
       </div>
 
       <div className="space-y-2.5">
         {nearbyStays.map((stay) => (
-          <a
+          <Link
             key={stay.id}
-            href={`/alojamientos/${stay.id}`}
+            to={`/alojamientos/${stay.id}`}
             className="group flex items-center gap-3 p-2 rounded-xl border border-sand-200/60 hover:bg-sand-100/70 transition-all"
           >
             <img
@@ -44,7 +105,7 @@ export const NearbyAccommodationsCard: React.FC = () => {
                 <span className="text-[10px] font-normal text-sand-500">/ noche</span>
               </span>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

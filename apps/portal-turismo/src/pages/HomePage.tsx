@@ -11,11 +11,12 @@ import { FeaturedCabinsSection } from '../components/home/FeaturedCabinsSection'
 import { ValleyMapSection } from '../components/home/ValleyMapSection';
 import { FinalCtaSection } from '../components/home/FinalCtaSection';
 import { initPortalPreviewDispatcher } from '../preview/dispatcher';
+import { api } from '../services/api';
 import type { CulturalEvent } from '../types/culturalEvent.types';
 
 export const HomePage: React.FC = () => {
   const [liveEvents, setLiveEvents] = useState<CulturalEvent[] | undefined>(undefined);
-  const [heroConfig] = useState<{
+  const [heroConfig, setHeroConfig] = useState<{
     title?: string;
     subtitle?: string;
     imageUrl?: string;
@@ -36,11 +37,11 @@ export const HomePage: React.FC = () => {
     return {
       title: 'El valle del Uritorco, directo y sin intermediarios.',
       subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Cámara de Turismo.',
-      imageUrl: '/images/attractions/uritorco/uritorco-01.jpg',
+      imageUrl: '/images/attractions/uritorco/uritorco-02.jpg',
     };
   });
 
-  const [duoAccessConfig] = useState<{
+  const [duoAccessConfig, setDuoAccessConfig] = useState<{
     whatToDoImageUrl?: string;
     whatToDoSubtitle?: string;
     whereToSleepImageUrl?: string;
@@ -62,7 +63,34 @@ export const HomePage: React.FC = () => {
     return {};
   });
 
+  const [uritorcoConfig, setUritorcoConfig] = useState<{
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+  }>({});
+
+  const [finalCtaConfig, setFinalCtaConfig] = useState<{
+    title?: string;
+    subtitle?: string;
+    buttonText?: string;
+  }>({});
+
+  const [sectionsVisibility, setSectionsVisibility] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
+    let active = true;
+    // Cargar configuración dinámica del portal desde el backend (fuera de preview override)
+    if (!window.location.search.includes('preview=true')) {
+      api.getPortalConfig().then((remote) => {
+        if (!active || !remote) return;
+        if (remote.heroConfig) setHeroConfig((prev) => ({ ...prev, ...remote.heroConfig }));
+        if (remote.duoAccessConfig) setDuoAccessConfig((prev) => ({ ...prev, ...remote.duoAccessConfig }));
+        if (remote.uritorcoConfig) setUritorcoConfig(remote.uritorcoConfig);
+        if (remote.finalCtaConfig) setFinalCtaConfig(remote.finalCtaConfig);
+        if (remote.sectionsVisibility) setSectionsVisibility(remote.sectionsVisibility);
+      });
+    }
+
     // 1. Inicializar canal de comunicación interactivo si estamos en modo CMS Preview (?preview=true)
     const cleanupPreview = initPortalPreviewDispatcher();
     window.__portalEventUpdateCallback = (events: CulturalEvent[]) => {
@@ -155,58 +183,87 @@ export const HomePage: React.FC = () => {
     );
 
     return () => {
+      active = false;
       mm.revert();
       cleanupPreview();
       delete window.__portalEventUpdateCallback;
     };
   }, []);
 
+  const isVisible = (sectionKey: string) => sectionsVisibility[sectionKey] !== false;
+
   return (
     <div id="sections-container" className="flex flex-col">
-      <div id="section-hero" data-editable="hero" className="w-full">
-        <HeroSection
-          title={heroConfig.title}
-          description={heroConfig.subtitle}
-          imageUrl={heroConfig.imageUrl}
-        />
-      </div>
+      {isVisible('hero') && (
+        <div id="section-hero" data-editable="hero" className="w-full">
+          <HeroSection
+            title={heroConfig.title}
+            description={heroConfig.subtitle}
+            imageUrl={heroConfig.imageUrl}
+          />
+        </div>
+      )}
 
-      <div id="section-duoAccess" data-editable="duoAccess" className="w-full">
-        <DuoAccessSection
-          whatToDoImageUrl={duoAccessConfig.whatToDoImageUrl}
-          whatToDoSubtitle={duoAccessConfig.whatToDoSubtitle}
-          whereToSleepImageUrl={duoAccessConfig.whereToSleepImageUrl}
-          whereToSleepSubtitle={duoAccessConfig.whereToSleepSubtitle}
-        />
-      </div>
+      {isVisible('duoAccess') && (
+        <div id="section-duoAccess" data-editable="duoAccess" className="w-full">
+          <DuoAccessSection
+            whatToDoImageUrl={duoAccessConfig.whatToDoImageUrl}
+            whatToDoSubtitle={duoAccessConfig.whatToDoSubtitle}
+            whereToSleepImageUrl={duoAccessConfig.whereToSleepImageUrl}
+            whereToSleepSubtitle={duoAccessConfig.whereToSleepSubtitle}
+          />
+        </div>
+      )}
 
-      <div id="section-culturalAgenda" data-editable="culturalAgenda" className="w-full">
-        <CulturalAgendaSection eventsOverride={liveEvents} />
-      </div>
+      {isVisible('culturalAgenda') && (
+        <div id="section-culturalAgenda" data-editable="culturalAgenda" className="w-full">
+          <CulturalAgendaSection eventsOverride={liveEvents} />
+        </div>
+      )}
 
-      <div id="section-featuredAttractions" data-editable="featuredAttractions" className="w-full">
-        <FeaturedAttractionsSection />
-      </div>
+      {isVisible('featuredAttractions') && (
+        <div id="section-featuredAttractions" data-editable="featuredAttractions" className="w-full">
+          <FeaturedAttractionsSection />
+        </div>
+      )}
 
-      <div id="section-uritorcoHighlight" data-editable="uritorcoHighlight" className="w-full">
-        <UritorcoHighlightSection />
-      </div>
+      {isVisible('uritorcoHighlight') && (
+        <div id="section-uritorcoHighlight" data-editable="uritorcoHighlight" className="w-full">
+          <UritorcoHighlightSection
+            title={uritorcoConfig.title}
+            description={uritorcoConfig.description}
+            imageUrl={uritorcoConfig.imageUrl}
+          />
+        </div>
+      )}
 
-      <div id="section-astrotourismTeaser" data-editable="astrotourismTeaser" className="w-full">
-        <AstrotourismTeaserSection />
-      </div>
+      {isVisible('astrotourismTeaser') && (
+        <div id="section-astrotourismTeaser" data-editable="astrotourismTeaser" className="w-full">
+          <AstrotourismTeaserSection />
+        </div>
+      )}
 
-      <div id="section-featuredCabins" data-editable="featuredCabins" className="w-full">
-        <FeaturedCabinsSection />
-      </div>
+      {isVisible('featuredCabins') && (
+        <div id="section-featuredCabins" data-editable="featuredCabins" className="w-full">
+          <FeaturedCabinsSection />
+        </div>
+      )}
 
-      <div id="section-valleyMap" data-editable="valleyMap" className="w-full">
-        <ValleyMapSection />
-      </div>
+      {isVisible('valleyMap') && (
+        <div id="section-valleyMap" data-editable="valleyMap" className="w-full">
+          <ValleyMapSection />
+        </div>
+      )}
 
-      <div id="section-finalCta" data-editable="finalCta" className="w-full">
-        <FinalCtaSection />
-      </div>
+      {isVisible('finalCta') && (
+        <div id="section-finalCta" data-editable="finalCta" className="w-full">
+          <FinalCtaSection
+            title={finalCtaConfig.title}
+            subtitle={finalCtaConfig.subtitle}
+            buttonText={finalCtaConfig.buttonText}
+          />
+        </div>
+      )}
     </div>
   );
 };

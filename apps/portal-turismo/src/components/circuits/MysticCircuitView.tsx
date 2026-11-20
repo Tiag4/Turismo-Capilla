@@ -1,8 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { MYSTIC_SPOTS } from './data/circuitsData';
+import type { CircuitSpot } from './types/circuits.types';
 
-export const MysticCircuitView: React.FC = () => {
+interface MysticCircuitViewProps {
+  spots?: CircuitSpot[];
+}
+
+export const MysticCircuitView: React.FC<MysticCircuitViewProps> = ({ spots = MYSTIC_SPOTS }) => {
   return (
     <div className="space-y-8">
       {/* Cabecera Editorial Limpia (Anti-Vibecoded) */}
@@ -20,7 +26,7 @@ export const MysticCircuitView: React.FC = () => {
 
       {/* Grilla Curada con Estética de Catálogo de Senderos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
-        {MYSTIC_SPOTS.map((spot) => (
+        {spots.map((spot) => (
           <article
             key={spot.id}
             id={spot.id}
@@ -101,13 +107,13 @@ export const MysticCircuitView: React.FC = () => {
 
               {/* Botón CTA */}
               <div className="pt-1">
-                <a
-                  href="#mapa"
+                <Link
+                  to={`/circuitos/mistico/${spot.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
                 >
-                  <span>Ver ubicación en mapa</span>
+                  <span>Ver ficha técnica</span>
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </article>

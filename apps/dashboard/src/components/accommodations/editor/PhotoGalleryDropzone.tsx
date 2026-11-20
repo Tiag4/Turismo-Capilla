@@ -256,6 +256,8 @@ export const PhotoGalleryDropzone: React.FC<PhotoGalleryDropzoneProps> = ({
                   url={img.url}
                   index={index}
                   isMain={img.isMain}
+                  status={img.status}
+                  rejectionReason={img.rejectionReason}
                   onSetMain={handleSetMain}
                   onRemove={handleRemove}
                 />

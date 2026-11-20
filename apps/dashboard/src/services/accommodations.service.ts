@@ -27,10 +27,26 @@ function normalizeAccommodation(accommodation: Accommodation): Accommodation {
     pricingService.getByAccommodationId(accommodation.id)?.minNightsBase ??
     1;
 
+  let auditRecord = accommodation.auditRecord;
+  let complianceStatus = accommodation.complianceStatus;
+  if (!auditRecord && accommodation.auditDataJson) {
+    try {
+      const parsed = JSON.parse(accommodation.auditDataJson);
+      if (parsed && typeof parsed === 'object') {
+        auditRecord = parsed;
+        complianceStatus = parsed.status || complianceStatus;
+      }
+    } catch {
+      // Ignore malformed audit JSON
+    }
+  }
+
   return {
     ...accommodation,
     isFeatured: Boolean(accommodation.isFeatured),
     minNights,
+    auditRecord,
+    complianceStatus,
     images: (accommodation.images ?? []).map(normalizeImage),
   };
 }
@@ -321,6 +337,18 @@ export const accommodationsService = {
 
   async deleteImage(accommodationId: string, imageId: string): Promise<void> {
     await apiClient.delete<void>(`/accommodations/${accommodationId}/images/${imageId}`);
+  },
+
+  async setMainImage(accommodationId: string, imageId: string): Promise<AccommodationImage> {
+    const updated = await apiClient.patch<AccommodationImage>(
+      `/accommodations/${accommodationId}/images/${imageId}/main`,
+      {}
+    );
+    return normalizeImage(updated);
+  },
+
+  async saveAudit(accommodationId: string, auditDataJson: string): Promise<void> {
+    await apiClient.patch(`/accommodations/${accommodationId}/audit`, auditDataJson);
   },
 
   async update(id: string, dto: Partial<CreateAccommodationDto>): Promise<Accommodation> {

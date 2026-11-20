@@ -1,8 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Phone, Star } from 'lucide-react';
 import { ADVENTURE_ACTIVITIES } from './data/circuitsData';
+import type { AdventureActivity } from './types/circuits.types';
 
-export const AdventureCircuitView: React.FC = () => {
+interface AdventureCircuitViewProps {
+  activities?: AdventureActivity[];
+}
+
+export const AdventureCircuitView: React.FC<AdventureCircuitViewProps> = ({
+  activities = ADVENTURE_ACTIVITIES,
+}) => {
   return (
     <div className="space-y-8">
       {/* Cabecera Editorial Limpia */}
@@ -20,7 +28,7 @@ export const AdventureCircuitView: React.FC = () => {
 
       {/* Grilla con Estética de Catálogo de Senderos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-2">
-        {ADVENTURE_ACTIVITIES.map((act) => {
+        {activities.map((act) => {
           const primaryProvider = act.certifiedProviders[0];
           return (
             <article
@@ -114,13 +122,13 @@ export const AdventureCircuitView: React.FC = () => {
                   ) : (
                     <div />
                   )}
-                  <a
-                    href="#mapa"
+                  <Link
+                    to={`/circuitos/aventura/${act.id}`}
                     className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold bg-sand-900 text-white hover:bg-terracotta-600 transition-colors"
                   >
-                    <span>Ver mapa</span>
+                    <span>Ver ficha técnica</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>

@@ -119,7 +119,7 @@ export const DateRangeMonthCalendar: React.FC<DateRangeMonthCalendarProps> = ({
                   disabled
                     ? 'text-stone-300 line-through cursor-not-allowed'
                     : isCheckIn || isCheckOut
-                      ? 'bg-stone-900 text-white font-bold shadow-sm'
+                      ? 'bg-terracotta-600 text-white font-bold shadow-sm shadow-terracotta-600/30'
                       : isInRange || isHoverRange
                         ? 'text-stone-900 hover:bg-stone-200/80 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950 cursor-pointer'

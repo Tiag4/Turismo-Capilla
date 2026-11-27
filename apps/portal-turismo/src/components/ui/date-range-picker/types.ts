@@ -15,6 +15,8 @@ export interface DateRangePickerProps {
   preferredPlacement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   checkInLabel?: string;
   checkOutLabel?: string;
+  checkInPlaceholder?: string;
+  checkOutPlaceholder?: string;
 }
 
 export type FocusedRangeInput = 'checkIn' | 'checkOut';

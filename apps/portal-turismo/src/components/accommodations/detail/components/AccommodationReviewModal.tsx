@@ -284,7 +284,7 @@ export const AccommodationReviewModal: React.FC<AccommodationReviewModalProps> =
                 type="text"
                 value={bookingCode}
                 onChange={(e) => setBookingCode(e.target.value.toUpperCase())}
-                placeholder="Ej. CAP-2026-8492"
+                placeholder="Ej. CAP-2026-K9M4X7Q2"
                 maxLength={20}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sand-300 text-sm font-mono text-stone-900 placeholder:font-sans uppercase focus:outline-none focus:border-terracotta-500"
               />

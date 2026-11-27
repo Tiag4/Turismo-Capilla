@@ -36,7 +36,7 @@ export const ReviewSubmissionContainer: React.FC = () => {
               </h2>
               <p className="text-sm text-sand-600">
                 Solo los huéspedes que completaron su estadía pueden calificar el alojamiento.
-                El código figura en tu voucher oficial con formato <span className="font-mono font-bold">CAP-2026-XXXX</span>.
+                El código figura en tu voucher oficial con formato <span className="font-mono font-bold">CAP-2026-XXXXXXXX</span> (o CAP-2026-XXXX).
               </p>
             </div>
 
@@ -49,7 +49,7 @@ export const ReviewSubmissionContainer: React.FC = () => {
                 type="text"
                 value={code}
                 onChange={(event) => handleCodeChange(event.target.value)}
-                placeholder="CAP-2026-8492"
+                placeholder="CAP-2026-K9M4X7Q2"
                 autoComplete="off"
                 className="w-full rounded-xl border border-sand-300 bg-sand-50 px-4 py-3 font-mono text-sm font-bold tracking-wider text-sand-900 uppercase placeholder:text-sand-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500"
               />

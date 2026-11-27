@@ -11,7 +11,7 @@ interface BookingInquirySearchFormProps {
   error: string | null;
 }
 
-const DEMO_CODES = ['CAP-2026-8492', 'CAP-2026-5120', 'CAP-2026-3310'];
+const DEMO_CODES = ['CAP-2026-K9M4X7Q2', 'CAP-2026-8492', 'CAP-2026-5120'];
 
 export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> = ({
   code,
@@ -45,7 +45,7 @@ export const BookingInquirySearchForm: React.FC<BookingInquirySearchFormProps> =
               type="text"
               value={code}
               onChange={(e) => onCodeChange(e.target.value)}
-              placeholder="CAP-2026-XXXX"
+              placeholder="CAP-2026-K9M4X7Q2"
               className="w-full px-3.5 py-2.5 rounded-xl bg-sand-50 border border-sand-300 font-mono text-sm uppercase text-sand-900 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500 focus:bg-white transition-all shadow-xs"
             />
           </div>

@@ -31,6 +31,8 @@ export function useSmartFloating({
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [coords, setCoords] = useState<FloatingCoords | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   const calculatePosition = useCallback(() => {
     if (!triggerRef.current) return;
@@ -139,14 +141,14 @@ export function useSmartFloating({
         popoverRef.current &&
         !popoverRef.current.contains(target)
       ) {
-        onClose();
+        onCloseRef.current();
       }
     };
 
     // Close on Escape
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -161,7 +163,7 @@ export function useSmartFloating({
       document.removeEventListener('mousedown', handleOutsideClick);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, calculatePosition, onClose]);
+  }, [isOpen, calculatePosition]);
 
   return {
     triggerRef,

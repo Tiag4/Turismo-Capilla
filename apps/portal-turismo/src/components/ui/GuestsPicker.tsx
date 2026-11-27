@@ -102,9 +102,13 @@ export const GuestsPicker: React.FC<GuestsPickerProps> = ({
     setIsMounted(true);
   }, []);
 
+  const handleClose = React.useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
   const { triggerRef, popoverRef, coords } = useSmartFloating({
     isOpen,
-    onClose: () => setIsOpen(false),
+    onClose: handleClose,
     preferredPlacement: 'bottom',
     estimatedHeight: showChildAges && value.childrenCount > 0 ? 380 : 280,
     estimatedWidth: 320,

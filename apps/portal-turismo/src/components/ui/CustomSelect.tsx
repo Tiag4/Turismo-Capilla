@@ -40,9 +40,13 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     setIsMounted(true);
   }, []);
 
+  const handleClose = React.useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
   const { triggerRef, popoverRef, coords } = useSmartFloating({
     isOpen,
-    onClose: () => setIsOpen(false),
+    onClose: handleClose,
     preferredPlacement: 'bottom',
     estimatedHeight: isCompact ? 220 : 280,
     estimatedWidth: isCompact ? 180 : 260,

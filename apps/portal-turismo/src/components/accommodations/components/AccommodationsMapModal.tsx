@@ -2,13 +2,15 @@ import React from 'react';
 import { MapPin } from 'lucide-react';
 import { InteractiveMapContainer } from '../../map/InteractiveMapContainer';
 import { AdaptiveModal } from '../../ui/AdaptiveModal';
+import type { MapPlace } from '../../../data/mock-places';
 
 interface AccommodationsMapModalProps {
   isOpen: boolean;
   onClose: () => void;
+  places?: MapPlace[];
 }
 
-export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ isOpen, onClose }) => {
+export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ isOpen, onClose, places }) => {
   return (
     <AdaptiveModal
       isOpen={isOpen}
@@ -34,7 +36,7 @@ export const AccommodationsMapModal: React.FC<AccommodationsMapModalProps> = ({ 
       }
     >
       <div className="w-full h-full min-h-[400px] relative">
-        <InteractiveMapContainer />
+        <InteractiveMapContainer places={places} showFilters={false} heightClassName="h-full" />
       </div>
     </AdaptiveModal>
   );

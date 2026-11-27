@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect, type Option } from '../ui/CustomSelect';
-import { CustomDatePicker } from '../ui/CustomDatePicker';
+import { DateRangePicker } from '../ui/DateRangePicker';
+import { GuestsPicker, type GuestsSelection } from '../ui/GuestsPicker';
 
 const CATEGORY_OPTIONS: Option[] = [
   { value: 'alojamientos', label: 'Alojamientos & Cabañas', description: '12 establecimientos habilitados' },
@@ -9,31 +10,19 @@ const CATEGORY_OPTIONS: Option[] = [
   { value: 'patrimonio', label: 'Patrimonio & Casonas', description: 'Circuito histórico de casonas' },
 ];
 
-const GUEST_OPTIONS: Option[] = [
-  { value: '2', label: '2 adultos · 1 cabaña', description: 'Ideal para parejas' },
-  { value: '1', label: '1 adulto · 1 cabaña', description: 'Viajero individual' },
-  { value: '3', label: '3 adultos · 1 cabaña', description: 'Habitación o cabaña triple' },
-  { value: '4', label: 'Familia (4 personas)', description: 'Cabaña de 2 dormitorios' },
-  { value: '5', label: 'Grupo (5+ personas)', description: 'Cabaña grande o casa de campo' },
-];
-
 export const HeroSearchBar: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('alojamientos');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
+    adults: 2,
+    childrenCount: 0,
+    childAges: [],
+    rooms: 1,
+  });
 
   const todayStr = new Date().toISOString().split('T')[0];
-
-  // Gestalt & Nielsen #1: Visibility of system status (calcular noches dinámicamente)
-  const nightsCount = useMemo(() => {
-    if (!checkIn || !checkOut) return null;
-    const d1 = new Date(checkIn);
-    const d2 = new Date(checkOut);
-    const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
-    return diff > 0 ? diff : null;
-  }, [checkIn, checkOut]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +38,16 @@ export const HeroSearchBar: React.FC = () => {
     const params = new URLSearchParams();
     if (checkIn) params.set('checkIn', checkIn);
     if (checkOut) params.set('checkOut', checkOut);
-    if (guests) params.set('guests', guests);
+    
+    const totalGuests = guestsSelection.adults + (guestsSelection.childrenCount ?? 0);
+    params.set('guests', String(totalGuests));
+    params.set('adults', String(guestsSelection.adults));
+    if ((guestsSelection.childrenCount ?? 0) > 0) {
+      params.set('children', String(guestsSelection.childrenCount));
+    }
+    if ((guestsSelection.rooms ?? 1) > 1) {
+      params.set('rooms', String(guestsSelection.rooms));
+    }
 
     const query = params.toString();
     navigate(query ? `/alojamientos?${query}` : '/alojamientos');
@@ -58,7 +56,7 @@ export const HeroSearchBar: React.FC = () => {
   return (
     <div className="bg-white rounded-3xl shadow-2xl p-5 sm:p-6 border border-stone-200/90 max-w-6xl mx-auto text-stone-900">
       <form onSubmit={handleSearch} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.1fr_auto] gap-3.5 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.25fr_2fr_1.1fr_auto] gap-3.5 items-center">
           {/* Categoría Custom */}
           <CustomSelect
             label="¿Qué estás buscando?"
@@ -73,64 +71,29 @@ export const HeroSearchBar: React.FC = () => {
             }
           />
 
-          {/* Ingreso Custom */}
-          <CustomDatePicker
-            label="Ingreso"
-            value={checkIn}
-            onChange={(date) => {
-              setCheckIn(date);
-              if (checkOut && date >= checkOut) {
-                setCheckOut('');
-              }
-            }}
-            minDate={todayStr}
-            placeholder="Seleccionar"
-            icon={
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-                <line x1="16" x2="16" y1="2" y2="6" />
-                <line x1="8" x2="8" y1="2" y2="6" />
-                <line x1="3" x2="21" y1="10" y2="10" />
-              </svg>
-            }
-          />
-
-          {/* Egreso Custom con indicador visual de noches (Steve Krug & Nielsen #1) */}
-          <div className="relative">
-            <CustomDatePicker
-              label="Egreso"
-              value={checkOut}
-              onChange={setCheckOut}
-              minDate={checkIn || todayStr}
-              placeholder="Seleccionar"
-              icon={
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2" />
-                  <path d="m9 11 3 3L22 4" />
-                </svg>
-              }
+          {/* Rango de Fechas Inteligente (Ingreso & Egreso) */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <DateRangePicker
+              checkIn={checkIn}
+              checkOut={checkOut}
+              onCheckInChange={setCheckIn}
+              onCheckOutChange={setCheckOut}
+              minDate={todayStr}
+              checkInLabel="Ingreso"
+              checkOutLabel="Egreso"
+              checkInPlaceholder="Seleccionar"
+              checkOutPlaceholder="Seleccionar"
             />
-            {nightsCount !== null && (
-              <span className="absolute top-2.5 right-3 bg-terracotta-100 text-terracotta-800 border border-terracotta-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full pointer-events-none select-none">
-                {nightsCount} {nightsCount === 1 ? 'noche' : 'noches'}
-              </span>
-            )}
           </div>
 
-          {/* Viajeros Custom */}
-          <CustomSelect
+          {/* Selector de Huéspedes / Viajeros Interactivo */}
+          <GuestsPicker
             label="Viajeros"
-            value={guests}
-            onChange={setGuests}
-            options={GUEST_OPTIONS}
-            icon={
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            }
+            value={guestsSelection}
+            onChange={setGuestsSelection}
+            variant="search"
+            showRooms={true}
+            showChildAges={true}
           />
 
           {/* Botón Buscar (Ley de Fitts: Gran objetivo táctil y visual) */}

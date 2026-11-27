@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, Calendar, Users } from 'lucide-react';
-import { CustomDatePicker } from '../../ui/CustomDatePicker';
-import { CustomSelect, type Option } from '../../ui/CustomSelect';
+import { Search } from 'lucide-react';
+import { DateRangePicker } from '../../ui/DateRangePicker';
+import { GuestsPicker, type GuestsSelection } from '../../ui/GuestsPicker';
 
 interface AccommodationsHeaderProps {
   searchQuery: string;
@@ -10,19 +10,12 @@ interface AccommodationsHeaderProps {
   onCheckInChange: (date: string) => void;
   checkOut: string;
   onCheckOutChange: (date: string) => void;
-  guests: string;
-  onGuestsChange: (guests: string) => void;
-  nightsCount: number | null;
+  guests?: string;
+  onGuestsChange?: (guests: string) => void;
+  guestsSelection: GuestsSelection;
+  onGuestsSelectionChange: (selection: GuestsSelection) => void;
+  nightsCount?: number | null;
 }
-
-const GUEST_OPTIONS: Option[] = [
-  { value: '', label: 'Cualquier capacidad' },
-  { value: '1', label: '1 persona (individual)' },
-  { value: '2', label: '2 personas (pareja)' },
-  { value: '3', label: '3 personas (triple)' },
-  { value: '4', label: '4 personas (familia)' },
-  { value: '5', label: '5+ personas (grupo)' },
-];
 
 export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
   searchQuery,
@@ -31,9 +24,8 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
   onCheckInChange,
   checkOut,
   onCheckOutChange,
-  guests,
-  onGuestsChange,
-  nightsCount,
+  guestsSelection,
+  onGuestsSelectionChange,
 }) => {
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -50,10 +42,10 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
       </div>
 
       {/* Buscador Cápsula Compacto */}
-      <div className="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border border-stone-200 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
+      <div className="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border border-stone-200 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_1.8fr_1.1fr] gap-3 items-center">
         {/* Input de Búsqueda por Nombre o Zona */}
         <div className="relative">
-          <label className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 px-1">
+          <label className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 px-1 select-none">
             <Search className="w-3.5 h-3.5 text-terracotta-600" />
             <span>Zona o Nombre</span>
           </label>
@@ -66,45 +58,29 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
           />
         </div>
 
-        {/* Ingreso */}
-        <CustomDatePicker
-          label="Ingreso"
-          value={checkIn}
-          onChange={(date) => {
-            onCheckInChange(date);
-            if (checkOut && date >= checkOut) {
-              onCheckOutChange('');
-            }
-          }}
-          minDate={todayStr}
-          placeholder="Ingreso"
-          icon={<Calendar className="w-3.5 h-3.5" />}
-        />
-
-        {/* Egreso con Badge de Noches */}
-        <div className="relative">
-          <CustomDatePicker
-            label="Egreso"
-            value={checkOut}
-            onChange={onCheckOutChange}
-            minDate={checkIn || todayStr}
-            placeholder="Egreso"
-            icon={<Calendar className="w-3.5 h-3.5" />}
+        {/* Fechas de Estadía */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <DateRangePicker
+            checkIn={checkIn}
+            checkOut={checkOut}
+            onCheckInChange={onCheckInChange}
+            onCheckOutChange={onCheckOutChange}
+            minDate={todayStr}
+            checkInLabel="Ingreso"
+            checkOutLabel="Egreso"
+            checkInPlaceholder="Ingreso"
+            checkOutPlaceholder="Egreso"
           />
-          {nightsCount !== null && (
-            <span className="absolute top-2.5 right-3 bg-terracotta-100 text-terracotta-800 border border-terracotta-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full pointer-events-none select-none">
-              {nightsCount} {nightsCount === 1 ? 'noche' : 'noches'}
-            </span>
-          )}
         </div>
 
-        {/* Huéspedes */}
-        <CustomSelect
+        {/* Huéspedes Interactivo */}
+        <GuestsPicker
           label="Huéspedes"
-          value={guests}
-          onChange={onGuestsChange}
-          options={GUEST_OPTIONS}
-          icon={<Users className="w-3.5 h-3.5" />}
+          value={guestsSelection}
+          onChange={onGuestsSelectionChange}
+          variant="search"
+          showRooms={true}
+          showChildAges={true}
         />
       </div>
     </header>

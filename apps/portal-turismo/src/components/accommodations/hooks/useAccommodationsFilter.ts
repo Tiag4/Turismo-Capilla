@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { MOCK_PLACES, type MapPlace } from '../../../data/mock-places';
 import { api, type Accommodation } from '../../../services/api';
+import type { GuestsSelection } from '../../ui/GuestsPicker';
 
 export type AccommodationTypeFilter = 'all' | 'cabin' | 'inn' | 'hotel' | 'apartment';
 export type AmenityFilter = 'pileta' | 'wifi' | 'estacionamiento' | 'pet' | 'asador' | 'desayuno';
@@ -27,8 +28,8 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     lat: item.latitude ?? -30.857,
     lng: item.longitude ?? -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
-    rating: 4.9,
-    reviewCount: 20,
+    rating: item.averageRating != null ? item.averageRating : 0,
+    reviewCount: item.reviewCount != null ? item.reviewCount : 0,
     imageUrl: mainImage,
     galleryImages: item.images?.map((img) => img.url),
     address: item.address,
@@ -67,10 +68,31 @@ export function useAccommodationsFilter() {
   const [sortOption, setSortOption] = useState<SortOption>('recommended');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [selectedZone, setSelectedZone] = useState('');
+  const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
+    adults: 2,
+    childrenCount: 0,
+    childAges: [],
+    rooms: 1,
+  });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [places, setPlaces] = useState<MapPlace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const totalGuests = guestsSelection.adults + (guestsSelection.childrenCount ?? 0);
+  const guests = String(totalGuests);
+
+  const setGuests = useCallback((val: string) => {
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num > 0) {
+      setGuestsSelection((prev) => ({
+        ...prev,
+        adults: num,
+        childrenCount: 0,
+        childAges: [],
+      }));
+    }
+  }, []);
 
   // Sync initial state from URL query parameters safely
   useEffect(() => {
@@ -80,15 +102,31 @@ export function useAccommodationsFilter() {
     const qAmenity = params.get('amenity');
     const qCheckIn = params.get('checkIn');
     const qCheckOut = params.get('checkOut');
+    const qZone = params.get('zone');
     const qGuests = params.get('guests');
+    const qAdults = params.get('adults');
+    const qChildren = params.get('children');
+    const qRooms = params.get('rooms');
     const qSearch = params.get('q') || params.get('search');
 
     if (qCheckIn) setCheckIn(qCheckIn);
     if (qCheckOut) setCheckOut(qCheckOut);
-    if (qGuests) setGuests(qGuests);
+    if (qZone) setSelectedZone(qZone);
     if (qSearch) setSearchQuery(qSearch);
     if (qType && ['all', 'cabin', 'inn', 'hotel', 'apartment'].includes(qType)) {
       setSelectedType(qType);
+    }
+
+    if (qAdults || qChildren || qGuests) {
+      const parsedAdults = qAdults ? Math.max(1, parseInt(qAdults, 10)) : (qGuests ? Math.max(1, parseInt(qGuests, 10)) : 2);
+      const parsedChildren = qChildren ? Math.max(0, parseInt(qChildren, 10)) : 0;
+      const parsedRooms = qRooms ? Math.max(1, parseInt(qRooms, 10)) : 1;
+      setGuestsSelection({
+        adults: parsedAdults,
+        childrenCount: parsedChildren,
+        childAges: Array(parsedChildren).fill(null),
+        rooms: parsedRooms,
+      });
     }
 
     const initialAmenities: AmenityFilter[] = [];
@@ -101,16 +139,87 @@ export function useAccommodationsFilter() {
     if (initialAmenities.length > 0) setSelectedAmenities(initialAmenities);
   }, []);
 
+  // Update URL search parameters when filters change
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+
+    if (checkIn) url.searchParams.set('checkIn', checkIn);
+    else url.searchParams.delete('checkIn');
+
+    if (checkOut) url.searchParams.set('checkOut', checkOut);
+    else url.searchParams.delete('checkOut');
+
+    if (selectedZone) url.searchParams.set('zone', selectedZone);
+    else url.searchParams.delete('zone');
+
+    url.searchParams.set('guests', String(totalGuests));
+    url.searchParams.set('adults', String(guestsSelection.adults));
+    if ((guestsSelection.childrenCount ?? 0) > 0) {
+      url.searchParams.set('children', String(guestsSelection.childrenCount));
+    } else {
+      url.searchParams.delete('children');
+    }
+
+    if ((guestsSelection.rooms ?? 1) > 1) {
+      url.searchParams.set('rooms', String(guestsSelection.rooms));
+    } else {
+      url.searchParams.delete('rooms');
+    }
+
+    if (selectedType !== 'all') {
+      url.searchParams.set('type', selectedType);
+    } else {
+      url.searchParams.delete('type');
+    }
+
+    window.history.replaceState({}, '', url.toString());
+  }, [checkIn, checkOut, selectedZone, totalGuests, guestsSelection.adults, guestsSelection.childrenCount, guestsSelection.rooms, selectedType]);
+
   // Fetch real data from backend API with transparent fallback to mock data only if needed
   useEffect(() => {
     let isCancelled = false;
     async function loadApiAccommodations() {
       try {
         setIsLoading(true);
-        const data = await api.getAccommodations();
+        const params: {
+          checkIn?: string;
+          checkOut?: string;
+          guests?: number;
+          type?: string;
+        } = {};
+
+        // Only query real backend availability if BOTH dates are present
+        if (checkIn && checkOut) {
+          params.checkIn = checkIn;
+          params.checkOut = checkOut;
+        }
+
+        if (totalGuests > 0) {
+          params.guests = totalGuests;
+        }
+
+        if (selectedType !== 'all') {
+          const apiTypeMap: Record<string, string> = {
+            cabin: 'CABIN',
+            hotel: 'HOTEL',
+            apartment: 'APARTMENT',
+            inn: 'HOSTEL',
+          };
+          if (apiTypeMap[selectedType]) {
+            params.type = apiTypeMap[selectedType];
+          }
+        }
+
+        const data = await api.getAccommodations(params);
         if (!isCancelled) {
-          if (Array.isArray(data) && data.length > 0) {
-            setPlaces(data.map(mapApiToPlace));
+          if (Array.isArray(data)) {
+            // When querying the backend with dates, empty array means no accommodations are available for those dates
+            if (data.length > 0 || (checkIn && checkOut)) {
+              setPlaces(data.map(mapApiToPlace));
+            } else {
+              setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
+            }
           } else {
             setPlaces(MOCK_PLACES.filter((p) => p.type === 'accommodation'));
           }
@@ -121,11 +230,12 @@ export function useAccommodationsFilter() {
         if (!isCancelled) setIsLoading(false);
       }
     }
+
     loadApiAccommodations();
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [checkIn, checkOut, totalGuests, selectedType]);
 
   // Toggle amenity filter (multi-select)
   const toggleAmenity = useCallback((amenity: AmenityFilter) => {
@@ -159,14 +269,21 @@ export function useAccommodationsFilter() {
     }
 
     // 2. Filter by Guest Count (Capacity)
-    if (guests) {
-      const guestNum = parseInt(guests, 10);
-      if (!isNaN(guestNum) && guestNum > 1) {
-        list = list.filter((p) => parseMaxCapacity(p.capacity) >= guestNum);
-      }
+    if (totalGuests > 1) {
+      list = list.filter((p) => parseMaxCapacity(p.capacity) >= totalGuests);
     }
 
-    // 3. Filter by Selected Amenities (conjunction / AND logic)
+    // 3. Filter by Zone
+    if (selectedZone) {
+      const z = selectedZone.toLowerCase().replace(/-/g, ' ').trim();
+      list = list.filter((p) => {
+        const pZone = (p.zone ?? '').toLowerCase();
+        const pAddress = (p.address ?? '').toLowerCase();
+        return pZone.includes(z) || pAddress.includes(z);
+      });
+    }
+
+    // 4. Filter by Selected Amenities (conjunction / AND logic)
     if (selectedAmenities.length > 0) {
       list = list.filter((p) => {
         return selectedAmenities.every((amenity) => {
@@ -208,16 +325,27 @@ export function useAccommodationsFilter() {
       list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
     }
     return list;
-  }, [places, selectedType, guests, selectedAmenities, searchQuery, sortOption]);
+  }, [places, selectedType, totalGuests, selectedZone, selectedAmenities, searchQuery, sortOption]);
 
   const resetFilters = useCallback(() => {
     setSelectedType('all');
     setSelectedAmenities([]);
+    setSelectedZone('');
     setSearchQuery('');
-    setGuests('2');
+    setGuestsSelection({
+      adults: 2,
+      childrenCount: 0,
+      childAges: [],
+      rooms: 1,
+    });
     setCheckIn('');
     setCheckOut('');
     setSortOption('recommended');
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.search = '';
+      window.history.replaceState({}, '', url.pathname);
+    }
   }, []);
 
   const openMap = useCallback(() => setIsMapOpen(true), []);
@@ -236,8 +364,12 @@ export function useAccommodationsFilter() {
     setCheckIn,
     checkOut,
     setCheckOut,
+    selectedZone,
+    setSelectedZone,
     guests,
     setGuests,
+    guestsSelection,
+    setGuestsSelection,
     nightsCount,
     isMapOpen,
     openMap,

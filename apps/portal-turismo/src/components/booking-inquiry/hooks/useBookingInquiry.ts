@@ -83,7 +83,7 @@ export function useBookingInquiry() {
     const cleanEmail = searchEmail.trim();
 
     if (!cleanCode) {
-      setError('Ingresá el código de reserva oficial (ej. CAP-2026-8492)');
+      setError('Ingresá el código de reserva oficial (ej. CAP-2026-K9M4X7Q2 o CAP-2026-8492)');
       return;
     }
 

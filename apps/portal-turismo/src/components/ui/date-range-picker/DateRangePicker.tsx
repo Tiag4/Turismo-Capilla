@@ -19,6 +19,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   preferredPlacement = 'bottom',
   checkInLabel = 'Llegada',
   checkOutLabel = 'Salida',
+  checkInPlaceholder = 'Seleccionar',
+  checkOutPlaceholder = 'Seleccionar',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -88,6 +90,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         onOpen={handleOpen}
         checkInLabel={checkInLabel}
         checkOutLabel={checkOutLabel}
+        checkInPlaceholder={checkInPlaceholder}
+        checkOutPlaceholder={checkOutPlaceholder}
+        nightsCount={picker.nightsCount}
       />
 
       {/* Popover / Modal Flotante */}

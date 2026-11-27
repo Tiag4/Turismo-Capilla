@@ -347,7 +347,7 @@ export function useAccommodationReviews(
       if (!isValidBookingCodeFormat(cleanCode)) {
         return {
           ok: false,
-          error: 'El código de reserva debe tener el formato CAP-YYYY-XXXX (ej. CAP-2026-4812).',
+          error: 'El código de reserva debe tener el formato oficial CAP-YYYY-XXXXXXXX (ej. CAP-2026-K9M4X7Q2 o formato previo CAP-2026-4812).',
         };
       }
 

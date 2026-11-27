@@ -97,6 +97,8 @@ export interface Accommodation {
   isActive: boolean;
   hasBreakfast?: boolean;
   isFeatured?: boolean;
+  averageRating?: number | null;
+  reviewCount?: number;
   featuredBadgeTheme?: 'DARK' | 'LIGHT' | null;
   images: { id: string; url: string; publicId: string; isMain: boolean }[];
   downPaymentPercentage?: number;
@@ -126,6 +128,7 @@ export interface BookingPayload {
   guestPhone: string;
   guestOrigin?: string;
   notes?: string;
+  promoCode?: string;
   items?: Array<{
     roomTypeId: string;
     ratePlanId?: string;
@@ -143,6 +146,9 @@ export interface BookingResult {
   totalNights: number;
   guestCount?: number;
   pricePerNight?: number | string;
+  subtotalAmount?: number | string;
+  promoCode?: string;
+  discountAmount?: number | string;
   totalAmount: number | string;
   downPaymentPercentage?: number;
   downPaymentAmount?: number | string;
@@ -301,7 +307,7 @@ export const api = {
       return data || { message: 'Voucher reenviado por correo electrónico' };
     } catch (err: unknown) {
       if (err instanceof ApiRequestError) throw err;
-      return { message: `Voucher oficial despachado correctamente a ${email}.` };
+      throw new ApiRequestError('No se pudo establecer conexión con el servidor para despachar el correo. Verificá tu conexión e intentá nuevamente.', 0);
     }
   },
 

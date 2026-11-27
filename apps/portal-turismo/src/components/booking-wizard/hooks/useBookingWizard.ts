@@ -136,6 +136,7 @@ export function useBookingWizard(data: AccommodationDetailData) {
     setIsSubmitting(true);
     setSubmitError(null);
     let finalCode = '';
+    let apiResult: Awaited<ReturnType<typeof api.createBooking>> | null = null;
 
     try {
       // Parse multi-unit room selection if specified
@@ -157,6 +158,13 @@ export function useBookingWizard(data: AccommodationDetailData) {
         if (parsed.length > 0) {
           items = parsed;
         }
+      } else if (data.inventoryMode === 'MULTI_ROOM' && data.roomTypes && data.roomTypes.length > 0) {
+        const firstRoom = data.roomTypes[0];
+        items = [{
+          roomTypeId: firstRoom.id,
+          quantity: 1,
+          guests: initialParams.adults + initialParams.children,
+        }];
       }
 
       const payload = {
@@ -169,9 +177,10 @@ export function useBookingWizard(data: AccommodationDetailData) {
         guestPhone: form.phone,
         guestOrigin: form.country,
         notes: form.specialRequests,
+        promoCode: form.discountPercent > 0 ? form.promoCode.trim().toUpperCase() : undefined,
         ...(items ? { items } : {}),
       };
-      const apiResult = await api.createBooking(payload);
+      apiResult = await api.createBooking(payload);
       if (apiResult?.bookingCode) {
         finalCode = apiResult.bookingCode;
       } else {
@@ -211,10 +220,13 @@ export function useBookingWizard(data: AccommodationDetailData) {
           children: initialParams.children,
           childAges: initialParams.childAges,
           rooms: initialParams.rooms,
-          finalPrice,
+          totalAmount: apiResult?.totalAmount ?? finalPrice,
+          finalPrice: apiResult?.totalAmount ?? finalPrice,
           downPaymentPercentage,
-          downPaymentAmount,
-          remainingBalance,
+          downPaymentAmount: apiResult?.downPaymentAmount ?? downPaymentAmount,
+          remainingBalance: apiResult?.remainingBalance ?? remainingBalance,
+          promoCode: apiResult?.promoCode || (form.discountPercent > 0 ? form.promoCode.trim().toUpperCase() : undefined),
+          discountAmount: apiResult?.discountAmount ?? discountAmount,
           bankAccountHolder: data.bankAccountHolder || 'Administración Cabañas Capilla',
           bankCbu: data.bankCbu || '0110485530048500123456',
           bankAlias: data.bankAlias || 'CAPILLA.RESERVA.OFICIAL',
@@ -231,12 +243,14 @@ export function useBookingWizard(data: AccommodationDetailData) {
     setIsSubmitting(false);
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [form, data, initialParams, nightsCount, finalPrice, downPaymentPercentage, downPaymentAmount, remainingBalance]);
+  }, [form, data, initialParams, nightsCount, finalPrice, downPaymentPercentage, downPaymentAmount, remainingBalance, discountAmount]);
 
   const whatsappUrl = useMemo(() => {
+    const rawPhone = data.phone ? data.phone.replace(/\D/g, '') : '';
+    const phone = rawPhone.length >= 8 ? rawPhone : '5493548000000';
     const msg = `Hola! Quiero confirmar mi solicitud de reserva oficial *${bookingCode}* para *${data.title}* a nombre de *${form.firstName} ${form.lastName}*. Total: $${finalPrice.toLocaleString('es-AR')} ARS (Seña: $${downPaymentAmount.toLocaleString('es-AR')} ARS).`;
-    return `https://wa.me/5493548000000?text=${encodeURIComponent(msg)}`;
-  }, [bookingCode, data.title, form.firstName, form.lastName, finalPrice, downPaymentAmount]);
+    return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  }, [bookingCode, data.title, data.phone, form.firstName, form.lastName, finalPrice, downPaymentAmount]);
 
   return {
     step,

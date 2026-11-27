@@ -25,13 +25,11 @@ export const AccommodationBookingFormFields: React.FC<AccommodationBookingFormFi
     nightsCount,
     totalPrice,
     depositRequired,
-    guestName,
-    setGuestName,
-    guestEmail,
-    setGuestEmail,
-    guestPhone,
-    setGuestPhone,
   } = booking;
+
+  const [guestName, setGuestName] = React.useState('');
+  const [guestPhone, setGuestPhone] = React.useState('');
+  const [guestEmail, setGuestEmail] = React.useState('');
 
   const todayStr = new Date().toISOString().split('T')[0];
   const price = data.pricePerNight ?? 0;

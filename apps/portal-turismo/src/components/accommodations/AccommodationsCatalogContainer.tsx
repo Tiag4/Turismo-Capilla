@@ -94,7 +94,13 @@ export const AccommodationsCatalogContainer: React.FC = () => {
       <FloatingMapTrigger totalCount={totalCount} onOpenMap={openMap} />
 
       {/* Modal Drawer con Mapa Interactivo */}
-      {isMapOpen && <AccommodationsMapModal isOpen={isMapOpen} onClose={closeMap} />}
+      {isMapOpen && (
+        <AccommodationsMapModal
+          isOpen={isMapOpen}
+          onClose={closeMap}
+          places={filteredAccommodations}
+        />
+      )}
     </div>
   );
 };

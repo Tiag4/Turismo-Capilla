@@ -201,12 +201,12 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
 
     const cleanCode = bookingCode.trim().toUpperCase();
     if (!cleanCode) {
-      setFormError('Ingresá el código de reserva oficial de tu estadía (formato CAP-YYYY-XXXX).');
+      setFormError('Ingresá el código de reserva oficial de tu estadía (ej: CAP-2026-K9M4X7Q2 o CAP-2026-4812).');
       return;
     }
 
     if (!isValidBookingCodeFormat(cleanCode)) {
-      setFormError('El código debe tener el formato oficial CAP-YYYY-XXXX (ej: CAP-2026-4812).');
+      setFormError('El código debe tener el formato oficial CAP-YYYY-XXXXXXXX (ej: CAP-2026-K9M4X7Q2 o CAP-2026-4812).');
       return;
     }
 
@@ -392,7 +392,7 @@ export const AccommodationReviewsSection: React.FC<AccommodationReviewsSectionPr
                     required
                     value={bookingCode}
                     onChange={(e) => setBookingCode(e.target.value.toUpperCase())}
-                    placeholder="CAP-2026-XXXX"
+                    placeholder="CAP-2026-K9M4X7Q2"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-sand-300 bg-white text-xs sm:text-sm text-stone-900 font-mono font-bold tracking-wider uppercase focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                   />
                   {isVerifyingEligibility && (

@@ -14,7 +14,7 @@ export const BookingInquiryEmptyState: React.FC = () => {
             ¿Dónde encuentro mi código de reserva?
           </h3>
           <p className="text-xs sm:text-sm text-sand-600 leading-relaxed max-w-lg mx-auto">
-            Tu código oficial tiene el formato <code className="font-mono bg-sand-200/80 px-1.5 py-0.5 rounded text-sand-900 font-bold">CAP-2026-XXXX</code> y fue asignado al confirmar tu solicitud o enviado a tu correo electrónico.
+            Tu código oficial tiene el formato <code className="font-mono bg-sand-200/80 px-1.5 py-0.5 rounded text-sand-900 font-bold">CAP-2026-XXXXXXXX</code> (o formato numérico previo) y fue asignado al confirmar tu solicitud o enviado a tu correo electrónico.
           </p>
         </div>
 

@@ -24,14 +24,6 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  // Booking Modal & Request state (Legacy fallback if needed)
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [guestName, setGuestName] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-
   // Multi-room inventory selection state: roomId -> quantity
   const [roomQuantities, setRoomQuantities] = useState<Record<string, number>>(() => {
     const firstRoom = data.roomTypes?.[0];
@@ -175,15 +167,6 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     setActivePhotoIndex((prev) => (prev - 1 + data.gallery.length) % data.gallery.length);
   }, [data.gallery.length]);
 
-  // Booking Modal handlers
-  const openBookingModal = useCallback(() => {
-    setIsBookingModalOpen(true);
-  }, []);
-
-  const closeBookingModal = useCallback(() => {
-    setIsBookingModalOpen(false);
-  }, []);
-
   // Amenities Drawer state & handlers
   const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
   const openAmenities = useCallback(() => setIsAmenitiesOpen(true), []);
@@ -230,20 +213,6 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     }
     return `/alojamientos/${data.id}/reservar?${params.toString()}`;
   }, [data.id, checkIn, checkOut, guestsSelection, totalSelectedRooms, selectedRoomsList, effectiveNightlyRate]);
-
-  // Form submission
-  const handleSubmitBooking = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!guestName || !guestPhone) return;
-
-      setIsSubmitting(true);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    },
-    [guestName, guestPhone]
-  );
 
   // In-page reservation card visibility (for mobile bottom dock appearance)
   const [isReservationCardVisible, setIsReservationCardVisible] = useState(true);
@@ -294,21 +263,9 @@ export function useAccommodationBooking({ data }: UseAccommodationBookingProps) 
     closeGallery,
     nextPhoto,
     prevPhoto,
-    isBookingModalOpen,
-    openBookingModal,
-    closeBookingModal,
     isAmenitiesOpen,
     openAmenities,
     closeAmenities,
-    guestName,
-    setGuestName,
-    guestEmail,
-    setGuestEmail,
-    guestPhone,
-    setGuestPhone,
-    isSubmitting,
-    isSuccess,
-    handleSubmitBooking,
     whatsappUrl,
   };
 }

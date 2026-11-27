@@ -28,8 +28,8 @@ function mapApiToPlace(item: Accommodation): MapPlace {
     lat: item.latitude ?? -30.857,
     lng: item.longitude ?? -64.515,
     pricePerNight: isNaN(price) ? 95000 : price,
-    rating: 4.9,
-    reviewCount: 20,
+    rating: item.averageRating != null ? item.averageRating : 0,
+    reviewCount: item.reviewCount != null ? item.reviewCount : 0,
     imageUrl: mainImage,
     galleryImages: item.images?.map((img) => img.url),
     address: item.address,
@@ -68,6 +68,7 @@ export function useAccommodationsFilter() {
   const [sortOption, setSortOption] = useState<SortOption>('recommended');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
+  const [selectedZone, setSelectedZone] = useState('');
   const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
     adults: 2,
     childrenCount: 0,
@@ -101,6 +102,7 @@ export function useAccommodationsFilter() {
     const qAmenity = params.get('amenity');
     const qCheckIn = params.get('checkIn');
     const qCheckOut = params.get('checkOut');
+    const qZone = params.get('zone');
     const qGuests = params.get('guests');
     const qAdults = params.get('adults');
     const qChildren = params.get('children');
@@ -109,6 +111,7 @@ export function useAccommodationsFilter() {
 
     if (qCheckIn) setCheckIn(qCheckIn);
     if (qCheckOut) setCheckOut(qCheckOut);
+    if (qZone) setSelectedZone(qZone);
     if (qSearch) setSearchQuery(qSearch);
     if (qType && ['all', 'cabin', 'inn', 'hotel', 'apartment'].includes(qType)) {
       setSelectedType(qType);
@@ -147,6 +150,9 @@ export function useAccommodationsFilter() {
     if (checkOut) url.searchParams.set('checkOut', checkOut);
     else url.searchParams.delete('checkOut');
 
+    if (selectedZone) url.searchParams.set('zone', selectedZone);
+    else url.searchParams.delete('zone');
+
     url.searchParams.set('guests', String(totalGuests));
     url.searchParams.set('adults', String(guestsSelection.adults));
     if ((guestsSelection.childrenCount ?? 0) > 0) {
@@ -168,7 +174,7 @@ export function useAccommodationsFilter() {
     }
 
     window.history.replaceState({}, '', url.toString());
-  }, [checkIn, checkOut, totalGuests, guestsSelection.adults, guestsSelection.childrenCount, guestsSelection.rooms, selectedType]);
+  }, [checkIn, checkOut, selectedZone, totalGuests, guestsSelection.adults, guestsSelection.childrenCount, guestsSelection.rooms, selectedType]);
 
   // Fetch real data from backend API with transparent fallback to mock data only if needed
   useEffect(() => {
@@ -267,7 +273,17 @@ export function useAccommodationsFilter() {
       list = list.filter((p) => parseMaxCapacity(p.capacity) >= totalGuests);
     }
 
-    // 3. Filter by Selected Amenities (conjunction / AND logic)
+    // 3. Filter by Zone
+    if (selectedZone) {
+      const z = selectedZone.toLowerCase().replace(/-/g, ' ').trim();
+      list = list.filter((p) => {
+        const pZone = (p.zone ?? '').toLowerCase();
+        const pAddress = (p.address ?? '').toLowerCase();
+        return pZone.includes(z) || pAddress.includes(z);
+      });
+    }
+
+    // 4. Filter by Selected Amenities (conjunction / AND logic)
     if (selectedAmenities.length > 0) {
       list = list.filter((p) => {
         return selectedAmenities.every((amenity) => {
@@ -309,11 +325,12 @@ export function useAccommodationsFilter() {
       list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
     }
     return list;
-  }, [places, selectedType, totalGuests, selectedAmenities, searchQuery, sortOption]);
+  }, [places, selectedType, totalGuests, selectedZone, selectedAmenities, searchQuery, sortOption]);
 
   const resetFilters = useCallback(() => {
     setSelectedType('all');
     setSelectedAmenities([]);
+    setSelectedZone('');
     setSearchQuery('');
     setGuestsSelection({
       adults: 2,
@@ -347,6 +364,8 @@ export function useAccommodationsFilter() {
     setCheckIn,
     checkOut,
     setCheckOut,
+    selectedZone,
+    setSelectedZone,
     guests,
     setGuests,
     guestsSelection,

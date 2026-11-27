@@ -1,8 +1,6 @@
 import { apiClient } from './api.client.ts';
 import type { DateBlock, CreateDateBlockDto, DateBlockReason } from '../types/date-block.types.ts';
 
-const STORAGE_KEY = 'turismo_capilla_date_blocks';
-
 interface ApiDateBlock {
   id: string;
   accommodationId: string;
@@ -31,25 +29,6 @@ type DataSource = 'remote' | 'local';
 class DateBlocksService {
   private lastSource: DataSource = 'remote';
 
-  private getStorage(): DateBlock[] {
-    if (typeof window === 'undefined') return [];
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private setStorage(blocks: DateBlock[]): void {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks));
-    } catch {
-      // Ignorar errores de almacenamiento
-    }
-  }
-
   getLastSource(): DataSource {
     return this.lastSource;
   }
@@ -71,17 +50,14 @@ class DateBlocksService {
     );
 
     if (fulfilled.length === 0) {
-      this.lastSource = 'local';
-      const localBlocks = this.getStorage();
-      return localBlocks.filter((block) => accommodationIds.includes(block.accommodationId));
+      this.lastSource = 'remote';
+      return [];
     }
 
     this.lastSource = 'remote';
-    const blocks = fulfilled
+    return fulfilled
       .flatMap((result) => result.value)
       .map((block) => this.mapFromApi(block));
-    this.setStorage(blocks);
-    return blocks;
   }
 
   async create(dto: CreateDateBlockDto): Promise<DateBlock> {

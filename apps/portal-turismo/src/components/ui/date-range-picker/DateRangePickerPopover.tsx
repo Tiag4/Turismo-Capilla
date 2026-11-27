@@ -195,7 +195,7 @@ export const DateRangePickerPopover = React.forwardRef<HTMLDivElement, DateRange
           top: coords.top !== undefined ? `${coords.top}px` : 'auto',
           bottom: coords.bottom !== undefined ? `${coords.bottom}px` : 'auto',
           left: `${coords.left}px`,
-          zIndex: 50,
+          zIndex: 99999,
         }}
       >
         {popoverContent}

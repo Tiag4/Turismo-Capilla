@@ -1,0 +1,135 @@
+export interface HomeSectionItem {
+  id: string;
+  name: string;
+  description: string;
+  category: 'core' | 'content' | 'marketing';
+}
+
+export interface DuoAccessConfig {
+  whatToDoImageUrl?: string;
+  whatToDoSubtitle?: string;
+  whereToSleepImageUrl?: string;
+  whereToSleepSubtitle?: string;
+}
+
+export interface PortalCMSConfig {
+  sectionsOrder: string[];
+  sectionsVisibility: Record<string, boolean>;
+  heroConfig: {
+    title: string;
+    subtitle: string;
+    imageUrl?: string;
+  };
+  duoAccessConfig?: DuoAccessConfig;
+  finalCtaConfig?: {
+    title: string;
+    subtitle: string;
+    buttonText: string;
+  };
+  uritorcoConfig?: {
+    title: string;
+    subtitle: string;
+  };
+}
+
+export const CANONICAL_HOME_SECTIONS: HomeSectionItem[] = [
+  {
+    id: 'hero',
+    name: 'Portada y Buscador (Hero)',
+    description: 'Fotografía panorámica, título de impacto y buscador integrado de cabañas.',
+    category: 'core',
+  },
+  {
+    id: 'duoAccess',
+    name: 'Acceso Dual (Paseos & Alojamientos)',
+    description: 'Tarjetas de bifurcación rápida hacia catálogo de cabañas o paseos.',
+    category: 'core',
+  },
+  {
+    id: 'culturalAgenda',
+    name: 'Agenda Cultural y Eventos',
+    description: 'Festivales, peñas, teatro y ferias comunitarias de Capilla del Monte.',
+    category: 'content',
+  },
+  {
+    id: 'featuredAttractions',
+    name: 'Atractivos Turísticos Destacados',
+    description: 'Paseos naturales, Los Terrones, El Zapato y balnearios serranos.',
+    category: 'content',
+  },
+  {
+    id: 'uritorcoHighlight',
+    name: 'Bloque Especial Cerro Uritorco',
+    description: 'Datos técnicos, senderos de ascenso e información de seguridad.',
+    category: 'content',
+  },
+  {
+    id: 'astrotourismTeaser',
+    name: 'Astroturismo y Cielos Limpios',
+    description: 'Experiencia nocturna, cielo oscuro certificado y miradores astronómicos.',
+    category: 'content',
+  },
+  {
+    id: 'featuredCabins',
+    name: 'Cabañas y Alojamientos Destacados',
+    description: 'Establecimientos con disponibilidad y tarifas verificadas oficialmente.',
+    category: 'marketing',
+  },
+  {
+    id: 'valleyMap',
+    name: 'Mapa del Valle de Punilla',
+    description: 'Ubicación geográfica de puntos de interés y accesos terrestres.',
+    category: 'marketing',
+  },
+  {
+    id: 'finalCta',
+    name: 'Pie Promocional de Cierre',
+    description: 'Llamado a la acción para planificar la estadía en Capilla del Monte.',
+    category: 'marketing',
+  },
+];
+
+export const DEFAULT_PORTAL_CONFIG: PortalCMSConfig = {
+  sectionsOrder: [
+    'hero',
+    'duoAccess',
+    'culturalAgenda',
+    'featuredAttractions',
+    'uritorcoHighlight',
+    'astrotourismTeaser',
+    'featuredCabins',
+    'valleyMap',
+    'finalCta',
+  ],
+  sectionsVisibility: {
+    hero: true,
+    duoAccess: true,
+    culturalAgenda: true,
+    featuredAttractions: true,
+    uritorcoHighlight: true,
+    astrotourismTeaser: true,
+    featuredCabins: true,
+    valleyMap: true,
+    finalCta: true,
+  },
+  heroConfig: {
+    title: 'El valle del Uritorco, directo y sin intermediarios.',
+    subtitle: 'Paseos de montaña, geología milenaria y reservas seguras con prestadores habilitados oficialmente por la Secretaría de Turismo.',
+    imageUrl: '/images/attractions/uritorco/uritorco-02.jpg',
+  },
+  duoAccessConfig: {
+    whatToDoImageUrl: '/images/attractions/los-terrones/los-terrones-01.jpg',
+    whatToDoSubtitle: '12 senderos catalogados: ascensos al Cerro Uritorco, cañadones rojizos en Los Terrones, ollas de agua en La Toma y espejos del dique El Cajón.',
+    whereToSleepImageUrl: '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
+    whereToSleepSubtitle: 'Cabañas de piedra y algarrobo, posadas de montaña y hosterías de época. Trato directo con el prestador, sin comisiones ni sobreprecios.',
+  },
+  finalCtaConfig: {
+    title: '¿Listo para descubrir Capilla del Monte?',
+    subtitle: 'Encontrá tu próximo lugar favorito y empezá a planificar tu visita.',
+    buttonText: 'Explorar ahora',
+  },
+  uritorcoConfig: {
+    title: 'Cerro Uritorco',
+    subtitle: 'El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.',
+  },
+};

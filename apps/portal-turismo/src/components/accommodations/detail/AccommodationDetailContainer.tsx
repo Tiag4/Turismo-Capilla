@@ -1,0 +1,168 @@
+import React, { useMemo } from 'react';
+import { Star } from 'lucide-react';
+import type { MapPlace } from '../../../data/mock-places';
+import { getAccommodationDetail } from './getAccommodationDetail';
+import { useAccommodationBooking } from './hooks/useAccommodationBooking';
+import { useAccommodationReviews } from './hooks/useAccommodationReviews';
+import { AccommodationGalleryBento } from './components/AccommodationGalleryBento';
+import { AccommodationLeftCol, AccommodationDescription } from './components/AccommodationLeftCol';
+import { AccommodationCenterCol } from './components/AccommodationCenterCol';
+import { AccommodationStickyWidget } from './components/AccommodationStickyWidget';
+import { AccommodationMobileBottomDock } from './components/AccommodationMobileBottomDock';
+import { AccommodationGalleryModal } from './components/AccommodationGalleryModal';
+import { AccommodationAmenitiesDrawer } from './components/AccommodationAmenitiesDrawer';
+import { AccommodationHostAndRooms } from './components/AccommodationHostAndRooms';
+import { AccommodationLocationSnippet } from './components/AccommodationLocationSnippet';
+import { AccommodationRulesPolicies } from './components/AccommodationRulesPolicies';
+import { AccommodationMultiRoomSelector } from './components/AccommodationMultiRoomSelector';
+import { AccommodationReviewsSection } from './components/AccommodationReviewsSection';
+import { AccommodationReviewModal } from './components/AccommodationReviewModal';
+
+interface AccommodationDetailContainerProps {
+  place: MapPlace;
+}
+
+export const AccommodationDetailContainer: React.FC<AccommodationDetailContainerProps> = ({ place }) => {
+  const data = useMemo(() => getAccommodationDetail(place), [place]);
+  const booking = useAccommodationBooking({ data });
+  const reviewsCtrl = useAccommodationReviews(data.id, data.title, data.rating, data.reviewCount);
+
+  return (
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 lg:pt-12 space-y-6 sm:space-y-10 pb-28">
+      {/* Mobile Title & Rating */}
+      <div className="md:hidden space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="#opiniones-huespedes"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-900 text-white text-xs font-extrabold"
+          >
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            <span>{reviewsCtrl.stats.averageRating.toFixed(1)}</span>
+            <span className="text-stone-300 font-medium">({reviewsCtrl.stats.totalReviews} reseñas)</span>
+          </a>
+        </div>
+        <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-stone-900 tracking-tight leading-tight">
+          {data.title}
+        </h1>
+      </div>
+
+      {/* Gallery Bento / Carousel */}
+      <AccommodationGalleryBento
+        id={data.id}
+        gallery={data.gallery}
+        title={data.title}
+        onOpenGallery={booking.openGallery}
+      />
+
+      {/* Mobile (< 768px): Jerarquía en columna única */}
+      <div className="md:hidden space-y-8 pt-2">
+        <div ref={booking.cardObserverRef}>
+          <AccommodationStickyWidget data={data} booking={booking} />
+        </div>
+        <AccommodationCenterCol
+          unitDetails={data.unitDetails}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
+          onOpenAmenities={booking.openAmenities}
+        />
+        <AccommodationDescription description={data.fullDescription} />
+      </div>
+
+      {/* Desktop (>= 768px): Grilla Fija Top con separación limpia */}
+      <div className="hidden md:grid detail-bento-grid gap-y-6 pt-2">
+        <AccommodationLeftCol
+          data={data}
+          averageRating={reviewsCtrl.stats.averageRating}
+          totalReviews={reviewsCtrl.stats.totalReviews}
+        />
+        <AccommodationCenterCol
+          unitDetails={data.unitDetails}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
+          onOpenAmenities={booking.openAmenities}
+        />
+        <AccommodationStickyWidget data={data} booking={booking} />
+      </div>
+
+      {/* Selector de Habitaciones Múltiples e Inventario (Issue #82) */}
+      <AccommodationMultiRoomSelector
+        inventoryMode={data.inventoryMode}
+        roomTypes={data.roomTypes}
+        roomQuantities={booking.roomQuantities}
+        onChangeQuantity={booking.setRoomQuantity}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
+      />
+
+      {/* Secciones Extendidas: Anfitrión, Dormitorios, Ubicación, Normas y Opiniones */}
+      <div className="space-y-10 pt-6 border-t border-stone-200/80">
+        <AccommodationHostAndRooms data={data} />
+        <AccommodationLocationSnippet data={data} />
+        <AccommodationRulesPolicies rules={data.rules} />
+        <AccommodationReviewsSection
+          reviews={reviewsCtrl.reviews}
+          stats={reviewsCtrl.stats}
+          isLoading={reviewsCtrl.isLoading}
+          submitSuccess={reviewsCtrl.submitSuccess}
+          pendingModeration={reviewsCtrl.pendingModeration}
+          isSubmitting={reviewsCtrl.isSubmitting}
+          isFormExpanded={reviewsCtrl.isFormExpanded}
+          onToggleForm={() => reviewsCtrl.setIsFormExpanded((prev) => !prev)}
+          initialBookingCode={reviewsCtrl.initialBookingCode}
+          onSubmitReview={reviewsCtrl.addReview}
+          onCheckEligibility={reviewsCtrl.checkEligibility}
+          accommodationTitle={data.title}
+        />
+      </div>
+
+      {/* Sticky Checkout Bar (Resumen en Tiempo Real) */}
+      <AccommodationMobileBottomDock
+        data={data}
+        nightsCount={booking.nightsCount}
+        totalPrice={booking.totalPrice}
+        wizardUrl={booking.wizardUrl}
+        isVisible={true}
+        totalSelectedRooms={booking.totalSelectedRooms}
+        totalSelectedCapacity={booking.totalSelectedCapacity}
+        totalRequestedGuests={booking.totalRequestedGuests}
+        isCapacitySufficient={booking.isCapacitySufficient}
+        dateRangeError={booking.dateRangeError}
+      />
+
+      {/* Modals & Drawers */}
+      {true && (
+        <AccommodationGalleryModal
+          isOpen={booking.isGalleryOpen}
+          onClose={booking.closeGallery}
+          gallery={data.gallery}
+          activeIndex={booking.activePhotoIndex}
+          onSelectIndex={booking.openGallery}
+          onNext={booking.nextPhoto}
+          onPrev={booking.prevPhoto}
+          title={data.title}
+        />
+      )}
+
+      {true && (
+        <AccommodationAmenitiesDrawer
+          isOpen={booking.isAmenitiesOpen}
+          onClose={booking.closeAmenities}
+          title={data.title}
+          amenities={data.amenities}
+          hasBreakfast={data.hasBreakfast}
+        />
+      )}
+
+      <AccommodationReviewModal
+        isOpen={reviewsCtrl.isModalOpen}
+        onClose={reviewsCtrl.closeModal}
+        accommodationTitle={data.title}
+        isSubmitting={reviewsCtrl.isSubmitting}
+        onSubmitReview={reviewsCtrl.addReview}
+      />
+    </div>
+  );
+};
+

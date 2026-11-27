@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenGraph — Panel de Gestión de Prestadores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background-color: #FAF8F5;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1C1917;
+      display: flex;
+    }
+    .left-col {
+      width: 630px;
+      height: 630px;
+      padding: 56px 40px 50px 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo-camara {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+    }
+    .brand-divider {
+      width: 1px;
+      height: 36px;
+      background-color: #D6CEBE;
+    }
+    .brand-logo-upc {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+    .content-block {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .main-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -0.035em;
+      color: #1C1917;
+    }
+    .main-title .accent {
+      color: #749B3F;
+      display: block;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+    .description {
+      font-size: 17px;
+      line-height: 1.55;
+      color: #44403C;
+      max-width: 520px;
+      font-weight: 450;
+    }
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14.5px;
+      color: #292524;
+      font-weight: 600;
+    }
+    .feature-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background-color: #749B3F;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .footer-bar {
+      border-top: 1px solid #E7E0D4;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+    }
+    .footer-credit {
+      color: #78716C;
+      font-weight: 500;
+    }
+    .footer-credit strong {
+      color: #1C1917;
+      font-weight: 600;
+    }
+    .footer-domain {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #1C1917;
+      letter-spacing: -0.01em;
+    }
+    .right-col {
+      width: 570px;
+      height: 630px;
+      padding: 0 32px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mockup-frame {
+      width: 538px;
+      height: 336px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #E7E0D4;
+      box-shadow: 0 20px 48px rgba(28, 25, 23, 0.12);
+      background-color: #FFFFFF;
+      position: relative;
+    }
+    .mockup-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="left-col">
+    <div class="brand-header">
+      <img src="../assets/cropped-logo-capilla-del-monte-2024.png" alt="Cámara de Turismo" class="brand-logo-camara">
+      <div class="brand-divider"></div>
+      <img src="../assets/logo-upc.png" alt="Universidad Provincial de Córdoba" class="brand-logo-upc">
+    </div>
+
+    <div class="content-block">
+      <h1 class="main-title">
+        Panel de Gestión
+        <span class="accent">Cabañeros & Prestadores</span>
+      </h1>
+      <p class="description">
+        Administrá tus alojamientos, fotos, tarifas y disponibilidad en tiempo real. Sincronización instantánea con el portal oficial y reservas sin intermediarios.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feature-check">✓</span>
+          <span>Calendario de reservas y disponibilidad en tiempo real</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>
+          <span>Tarifas por noche y temporadas sin comisiones</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>
+          <span>Habilitación formal verificada por la Cámara de Turismo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span class="footer-credit">Desarrollo <strong>UPC Sede Capilla del Monte</strong></span>
+      <span class="footer-domain">prestadores.turismocapilla.org.ar</span>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="mockup-frame">
+      <img src="../assets/dashboard-preview.png" alt="Captura real del Panel de Gestión de Prestadores">
+    </div>
+  </div>
+</body>
+</html>

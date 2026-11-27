@@ -1,0 +1,91 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+export interface UritorcoHighlightSectionProps {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export const UritorcoHighlightSection: React.FC<UritorcoHighlightSectionProps> = ({
+  title = 'Cerro Uritorco',
+  description = 'El pico más alto de las Sierras Chicas y el símbolo indiscutido de Capilla del Monte. Se sube desde el Camino al Cerro, temprano a la mañana, y desde la cumbre se ve todo el Valle de Punilla, Los Gigantes y las Salinas Grandes.',
+  imageUrl = '/images/attractions/uritorco/uritorco-02.jpg',
+}) => {
+  return (
+    <section className="w-full bg-[#0e261d] text-white overflow-hidden relative">
+      {/* Fotografía Panorámica */}
+      <div className="w-full relative h-[500px] sm:h-[620px] lg:h-[720px] overflow-hidden">
+        <img
+          src={imageUrl}
+          alt="Cerro Uritorco y las Sierras Chicas al atardecer"
+          className="w-full h-full object-cover object-center brightness-95 contrast-105"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0e261d] via-black/20 to-black/60" />
+      </div>
+
+      {/* Panel de Información */}
+      <div className="w-full bg-[#0e261d] -mt-16 sm:-mt-28 relative z-10 rounded-t-[32px] sm:rounded-t-[48px] border-t border-white/10 pt-12 sm:pt-16 pb-16 sm:pb-24">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
+          <div className="max-w-4xl space-y-4">
+            <h2
+              data-uritorco-title
+              className="font-display font-black text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.05]"
+            >
+              {title}
+            </h2>
+            <p
+              data-uritorco-desc
+              className="text-base sm:text-xl text-sand-100/90 leading-relaxed font-normal max-w-3xl"
+            >
+              {description}
+            </p>
+          </div>
+
+          <div className="border-t border-white/15 pt-8 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-primary-400">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+                </svg>
+                <span className="text-[11px] font-bold tracking-widest uppercase text-sand-300">Altura</span>
+              </div>
+              <p className="font-display font-bold text-xl sm:text-2xl text-white tracking-tight">1.979 m s. n. m.</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-primary-400">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span className="text-[11px] font-bold tracking-widest uppercase text-sand-300">Ascenso</span>
+              </div>
+              <p className="font-display font-bold text-xl sm:text-2xl text-white tracking-tight">5 a 7 h ida y vuelta</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-primary-400">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <span className="text-[11px] font-bold tracking-widest uppercase text-sand-300">Ingreso</span>
+              </div>
+              <p className="font-display font-bold text-xl sm:text-2xl text-white tracking-tight">Arancelado</p>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <Link
+              to="/atractivos/uritorco"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-sand-900 font-bold text-sm tracking-wide hover:bg-sand-100 transition-colors cursor-pointer"
+            >
+              <span>Ver detalles y recomendaciones de ascenso</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

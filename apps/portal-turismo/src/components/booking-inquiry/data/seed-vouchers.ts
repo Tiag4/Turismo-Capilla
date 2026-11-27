@@ -1,0 +1,138 @@
+import type { BookingVoucherRecord } from '../types';
+
+export const SEED_VOUCHERS: BookingVoucherRecord[] = [
+  {
+    code: 'CAP-2026-8492',
+    accommodationId: 'acc-1',
+    accommodationTitle: 'Cabañas Valle del Sol',
+    accommodationZone: 'La Toma',
+    accommodationAddress: 'Camino a La Toma km 1.5, Capilla del Monte',
+    accommodationImage:
+      '/images/accommodations/el-aguaribay/el-aguaribay-01.jpg',
+    firstName: 'Martino',
+    lastName: 'Gómez',
+    email: 'turista@capilladelmonte.gov.ar',
+    phone: '+54 9 351 555-1234',
+    checkIn: '2026-09-18',
+    checkOut: '2026-09-22',
+    nightsCount: 4,
+    adults: 2,
+    children: 1,
+    childAges: [7],
+    rooms: 1,
+    finalPrice: 380000,
+    downPaymentPercentage: 50,
+    downPaymentAmount: 190000,
+    remainingBalance: 190000,
+    bankAccountHolder: 'Valle del Sol Cabañas SRL',
+    bankCbu: '0110485530048500123456',
+    bankAlias: 'VALLEDELSOL.CAPILLA',
+    bankName: 'Banco de la Nación Argentina',
+    status: 'COMPLETED',
+    createdAt: '2026-09-08T14:30:00Z',
+    hostPhone: '+54 9 3548 40-1122',
+    isDemo: true,
+  },
+  {
+    code: 'CAP-2026-5120',
+    accommodationId: 'acc-2',
+    accommodationTitle: 'Hostería Los Portales',
+    accommodationZone: 'Casco Histórico',
+    accommodationAddress: 'Av. Pueyrredón 320, Capilla del Monte',
+    accommodationImage:
+      '/images/accommodations/adrianita-hosteria/adrianita-01.jpg',
+    firstName: 'Mariana',
+    lastName: 'Rossi',
+    email: 'mariana.rossi@email.com',
+    phone: '+54 9 11 4444-5555',
+    checkIn: '2026-10-02',
+    checkOut: '2026-10-05',
+    nightsCount: 3,
+    adults: 2,
+    children: 0,
+    childAges: [],
+    rooms: 1,
+    finalPrice: 360000,
+    downPaymentPercentage: 30,
+    downPaymentAmount: 108000,
+    remainingBalance: 252000,
+    bankAccountHolder: 'Hostería Los Portales',
+    bankCbu: '0200345601000004567890',
+    bankAlias: 'LOSPORTALES.TURISMO',
+    bankName: 'Banco de la Provincia de Córdoba (Bancor)',
+    status: 'PENDING_CONFIRMATION',
+    createdAt: '2026-09-07T11:20:00Z',
+    hostPhone: '+54 9 3548 41-9988',
+    isDemo: true,
+  },
+  {
+    code: 'CAP-2026-3310',
+    accommodationId: 'acc-3',
+    accommodationTitle: 'Refugio Serrano Altas Cumbres',
+    accommodationZone: 'Falda del Uritorco',
+    accommodationAddress: 'Ruta 38 y acceso norte, Capilla del Monte',
+    accommodationImage:
+      '/images/accommodations/alpa-sierras/alpa-sierras-01.jpg',
+    firstName: 'Lucas',
+    lastName: 'Fernández',
+    email: 'lucas.fdz@gmail.com',
+    phone: '+54 9 341 678-9012',
+    checkIn: '2026-11-12',
+    checkOut: '2026-11-15',
+    nightsCount: 3,
+    adults: 2,
+    children: 0,
+    childAges: [],
+    rooms: 1,
+    finalPrice: 435000,
+    downPaymentPercentage: 40,
+    downPaymentAmount: 174000,
+    remainingBalance: 261000,
+    bankAccountHolder: 'Refugio Altas Cumbres SH',
+    bankCbu: '0720123488000034567812',
+    bankAlias: 'REFUGIO.ALTASCUMBRES',
+    bankName: 'Banco Santander Argentina',
+    status: 'CONFIRMED',
+    createdAt: '2026-09-06T18:45:00Z',
+    hostPhone: '+54 9 3548 42-3344',
+    isDemo: true,
+  },
+];
+
+export function lookupBooking(code: string, email?: string): BookingVoucherRecord | null {
+  if (!code) return null;
+  const normalizedCode = code.trim().toUpperCase();
+  const normalizedEmail = (email || '').trim().toLowerCase();
+
+  // 1. Check client local storage
+  if (typeof window !== 'undefined') {
+    try {
+      const stored: BookingVoucherRecord[] = JSON.parse(
+        localStorage.getItem('capilla_bookings') || '[]',
+      );
+      const match = stored.find((r) => {
+        const matchesCode = r.code.toUpperCase() === normalizedCode;
+        if (!matchesCode) return false;
+        if (normalizedEmail) {
+          return r.email.toLowerCase() === normalizedEmail;
+        }
+        return true;
+      });
+      if (match) return { ...match, isDemo: match.isDemo ?? false };
+    } catch {
+      // Fall through to seed records
+    }
+  }
+
+  // 2. Check seed records
+  const seedMatch = SEED_VOUCHERS.find((r) => {
+    const matchesCode = r.code.toUpperCase() === normalizedCode;
+    if (!matchesCode) return false;
+    if (normalizedEmail) {
+      return r.email.toLowerCase() === normalizedEmail;
+    }
+    return true;
+  });
+
+  return seedMatch ? { ...seedMatch, isDemo: true } : null;
+}

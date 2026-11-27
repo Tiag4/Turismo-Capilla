@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+.astro/
+out/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE & OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Temporary files
+.atl/
+tmp/
+scratch/
+*.tmp
+
+# Drive export folder (untracked for security)
+Turismo-Capilla-Drive/
+entrega-drive/
+
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/

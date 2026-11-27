@@ -1,0 +1,95 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { useAdminInvitations } from '../../hooks/useAdminInvitations.ts';
+import { InvitationList } from './InvitationList.tsx';
+import { RevokeInvitationModal } from './RevokeInvitationModal.tsx';
+import { Button } from '../ui/Button.tsx';
+import type { InvitationToken } from '../../types/invitation.types.ts';
+
+export interface InvitationManagerProps {
+  onNavigateCreate?: () => void;
+}
+
+export const InvitationManager: React.FC<InvitationManagerProps> = ({
+  onNavigateCreate,
+}) => {
+  const { invitations, isLoading, error, revokeInvitation } = useAdminInvitations();
+
+  // Revoke state
+  const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
+  const [revokingInvitation, setRevokingInvitation] = useState<InvitationToken | null>(null);
+  const [isRevoking, setIsRevoking] = useState(false);
+
+  const handleOpenRevoke = (invitation: InvitationToken) => {
+    setRevokingInvitation(invitation);
+    setIsRevokeModalOpen(true);
+  };
+
+  const handleRevoke = async (id: string, reason: string) => {
+    setIsRevoking(true);
+    try {
+      await revokeInvitation(id, reason);
+      setIsRevokeModalOpen(false);
+    } finally {
+      setIsRevoking(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-sand-900 font-['Outfit']">
+            Invitaciones Oficiales a Prestadores
+          </h2>
+          <p className="text-xs text-sand-500 font-medium">
+            Envío de enlaces seguros para el registro y habilitación formal de cabañas
+          </p>
+        </div>
+        <Button
+          variant="emerald"
+          onClick={() => onNavigateCreate?.()}
+          size="md"
+          className="font-bold cursor-pointer"
+        >
+          <Plus className="w-4 h-4 mr-1.5" />
+          <span>Nueva Invitación</span>
+        </Button>
+      </div>
+
+      {/* Institutional Security Notice */}
+      <div className="border-l-2 border-emerald-600 pl-3.5 py-1 text-xs text-sand-700 leading-relaxed">
+        <span className="font-bold text-sand-900 mr-1">
+          Garantía Institucional:
+        </span>
+        Cada invitación oficial es de uso único y valida que la propiedad fue formalmente inspeccionada y habilitada por la Cámara de Turismo de Capilla del Monte antes de recibir pagos o reservas.
+      </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-800"
+        >
+          {error}
+        </div>
+      )}
+
+      {/* List */}
+      <InvitationList
+        invitations={invitations}
+        isLoading={isLoading}
+        onOpenRevoke={handleOpenRevoke}
+      />
+
+      {/* Revoke Modal */}
+      <RevokeInvitationModal
+        isOpen={isRevokeModalOpen}
+        onClose={() => setIsRevokeModalOpen(false)}
+        invitation={revokingInvitation}
+        onRevoke={handleRevoke}
+        isLoading={isRevoking}
+      />
+    </div>
+  );
+};

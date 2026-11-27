@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect, type Option } from '../ui/CustomSelect';
 import { DateRangePicker } from '../ui/DateRangePicker';
+import { GuestsPicker, type GuestsSelection } from '../ui/GuestsPicker';
 
 const CATEGORY_OPTIONS: Option[] = [
   { value: 'alojamientos', label: 'Alojamientos & Cabañas', description: '12 establecimientos habilitados' },
@@ -9,20 +10,17 @@ const CATEGORY_OPTIONS: Option[] = [
   { value: 'patrimonio', label: 'Patrimonio & Casonas', description: 'Circuito histórico de casonas' },
 ];
 
-const GUEST_OPTIONS: Option[] = [
-  { value: '2', label: '2 adultos · 1 cabaña', description: 'Ideal para parejas' },
-  { value: '1', label: '1 adulto · 1 cabaña', description: 'Viajero individual' },
-  { value: '3', label: '3 adultos · 1 cabaña', description: 'Habitación o cabaña triple' },
-  { value: '4', label: 'Familia (4 personas)', description: 'Cabaña de 2 dormitorios' },
-  { value: '5', label: 'Grupo (5+ personas)', description: 'Cabaña grande o casa de campo' },
-];
-
 export const HeroSearchBar: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('alojamientos');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [guestsSelection, setGuestsSelection] = useState<GuestsSelection>({
+    adults: 2,
+    childrenCount: 0,
+    childAges: [],
+    rooms: 1,
+  });
 
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -40,7 +38,16 @@ export const HeroSearchBar: React.FC = () => {
     const params = new URLSearchParams();
     if (checkIn) params.set('checkIn', checkIn);
     if (checkOut) params.set('checkOut', checkOut);
-    if (guests) params.set('guests', guests);
+    
+    const totalGuests = guestsSelection.adults + (guestsSelection.childrenCount ?? 0);
+    params.set('guests', String(totalGuests));
+    params.set('adults', String(guestsSelection.adults));
+    if ((guestsSelection.childrenCount ?? 0) > 0) {
+      params.set('children', String(guestsSelection.childrenCount));
+    }
+    if ((guestsSelection.rooms ?? 1) > 1) {
+      params.set('rooms', String(guestsSelection.rooms));
+    }
 
     const query = params.toString();
     navigate(query ? `/alojamientos?${query}` : '/alojamientos');
@@ -79,20 +86,14 @@ export const HeroSearchBar: React.FC = () => {
             />
           </div>
 
-          {/* Viajeros Custom */}
-          <CustomSelect
+          {/* Selector de Huéspedes / Viajeros Interactivo */}
+          <GuestsPicker
             label="Viajeros"
-            value={guests}
-            onChange={setGuests}
-            options={GUEST_OPTIONS}
-            icon={
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            }
+            value={guestsSelection}
+            onChange={setGuestsSelection}
+            variant="search"
+            showRooms={true}
+            showChildAges={true}
           />
 
           {/* Botón Buscar (Ley de Fitts: Gran objetivo táctil y visual) */}

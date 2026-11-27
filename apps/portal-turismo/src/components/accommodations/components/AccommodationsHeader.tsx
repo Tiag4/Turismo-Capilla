@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, Users } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { DateRangePicker } from '../../ui/DateRangePicker';
-import { CustomSelect, type Option } from '../../ui/CustomSelect';
+import { GuestsPicker, type GuestsSelection } from '../../ui/GuestsPicker';
 
 interface AccommodationsHeaderProps {
   searchQuery: string;
@@ -10,19 +10,12 @@ interface AccommodationsHeaderProps {
   onCheckInChange: (date: string) => void;
   checkOut: string;
   onCheckOutChange: (date: string) => void;
-  guests: string;
-  onGuestsChange: (guests: string) => void;
+  guests?: string;
+  onGuestsChange?: (guests: string) => void;
+  guestsSelection: GuestsSelection;
+  onGuestsSelectionChange: (selection: GuestsSelection) => void;
   nightsCount?: number | null;
 }
-
-const GUEST_OPTIONS: Option[] = [
-  { value: '', label: 'Cualquier capacidad' },
-  { value: '1', label: '1 persona (individual)' },
-  { value: '2', label: '2 personas (pareja)' },
-  { value: '3', label: '3 personas (triple)' },
-  { value: '4', label: '4 personas (familia)' },
-  { value: '5', label: '5+ personas (grupo)' },
-];
 
 export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
   searchQuery,
@@ -31,8 +24,8 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
   onCheckInChange,
   checkOut,
   onCheckOutChange,
-  guests,
-  onGuestsChange,
+  guestsSelection,
+  onGuestsSelectionChange,
 }) => {
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -52,7 +45,7 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
       <div className="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border border-stone-200 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_1.8fr_1.1fr] gap-3 items-center">
         {/* Input de Búsqueda por Nombre o Zona */}
         <div className="relative">
-          <label className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 px-1">
+          <label className="text-[10px] font-bold text-terracotta-700 tracking-wider uppercase flex items-center gap-1.5 mb-1 px-1 select-none">
             <Search className="w-3.5 h-3.5 text-terracotta-600" />
             <span>Zona o Nombre</span>
           </label>
@@ -80,13 +73,14 @@ export const AccommodationsHeader: React.FC<AccommodationsHeaderProps> = ({
           />
         </div>
 
-        {/* Huéspedes */}
-        <CustomSelect
+        {/* Huéspedes Interactivo */}
+        <GuestsPicker
           label="Huéspedes"
-          value={guests}
-          onChange={onGuestsChange}
-          options={GUEST_OPTIONS}
-          icon={<Users className="w-3.5 h-3.5" />}
+          value={guestsSelection}
+          onChange={onGuestsSelectionChange}
+          variant="search"
+          showRooms={true}
+          showChildAges={true}
         />
       </div>
     </header>

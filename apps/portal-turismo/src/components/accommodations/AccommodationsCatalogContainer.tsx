@@ -24,6 +24,8 @@ export const AccommodationsCatalogContainer: React.FC = () => {
     setCheckOut,
     guests,
     setGuests,
+    guestsSelection,
+    setGuestsSelection,
     nightsCount,
     isMapOpen,
     openMap,
@@ -46,6 +48,8 @@ export const AccommodationsCatalogContainer: React.FC = () => {
         onCheckOutChange={setCheckOut}
         guests={guests}
         onGuestsChange={setGuests}
+        guestsSelection={guestsSelection}
+        onGuestsSelectionChange={setGuestsSelection}
         nightsCount={nightsCount}
       />
 
